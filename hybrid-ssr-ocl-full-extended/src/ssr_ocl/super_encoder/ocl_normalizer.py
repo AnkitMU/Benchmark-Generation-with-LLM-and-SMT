@@ -1,36 +1,9 @@
 #!/usr/bin/env python3
-"""
-OCL Constraint Normalization Module
-====================================
-
-This module provides normalization utilities for OCL constraints to improve 
-pattern classification by rewriting logically equivalent but syntactically 
-different OCL idioms into canonical forms.
-
-Key transformations:
-1. Guarded Implication: X->isEmpty() or P  →  X->notEmpty() implies P
-2. De Morgan's Laws: not (A and B)  →  not A or not B
-3. Double Negation: not not P  →  P
-4. Multiplicity-aware rewrites using XMI metadata
-
-This normalization runs BEFORE classification to help the neural classifier
-recognize semantic patterns that may be expressed differently.
-"""
-
 import re
 from typing import Optional
 
 
 class OCLNormalizer:
-    """
-    Normalizes OCL constraints to canonical forms for better classification.
-    
-    Transformations:
-    - Guarded implication idioms (isEmpty() or P → notEmpty() implies P)
-    - Boolean logic simplification
-    - Multiplicity-aware normalization with XMI context
-    """
-    
     # Normalization patterns (priority ordered)
     NORMALIZATION_RULES = [
         # ═══════════════════════════════════════════════════════════════════
@@ -228,17 +201,7 @@ class OCLNormalizer:
 
 
 # Convenience function for quick normalization
-def normalize_ocl(constraint_text: str, enable_logging: bool = False) -> str:
-    """
-    Convenience function to normalize OCL constraint text.
-    
-    Args:
-        constraint_text: The OCL constraint to normalize
-        enable_logging: If True, logs transformations applied
-        
-    Returns:
-        Normalized OCL constraint text
-    """
+def normalize_ocl(constraint_text: str, enable_logging: bool = False) -> str:    
     normalizer = OCLNormalizer(enable_logging=enable_logging)
     return normalizer.normalize(constraint_text)
 

@@ -307,20 +307,33 @@ class GenericGlobalConsistencyChecker:
             if not assoc.is_collection:
                 # Functional reference
                 ref_vars = shared_vars[f'{source}.{ref_name}']
+                ref_present = shared_vars.get(f'{source}.{ref_name}_present')
                 
                 for i in range(n_source):
-                    # Bounds
-                    solver.add(Implies(source_presence[i], And(
-                        ref_vars[i] >= 0,
-                        ref_vars[i] < n_target
-                    )))
+                    # Bounds (only when reference is present if optional)
+                    if ref_present:
+                        solver.add(Implies(And(source_presence[i], ref_present[i]), And(
+                            ref_vars[i] >= 0,
+                            ref_vars[i] < n_target
+                        )))
+                    else:
+                        solver.add(Implies(source_presence[i], And(
+                            ref_vars[i] >= 0,
+                            ref_vars[i] < n_target
+                        )))
                     
                     # Referent totality: if source exists and points to target j, then target j must exist
                     for j in range(n_target):
-                        solver.add(Implies(
-                            And(source_presence[i], ref_vars[i] == j),
-                            target_presence[j]
-                        ))
+                        if ref_present:
+                            solver.add(Implies(
+                                And(source_presence[i], ref_present[i], ref_vars[i] == j),
+                                target_presence[j]
+                            ))
+                        else:
+                            solver.add(Implies(
+                                And(source_presence[i], ref_vars[i] == j),
+                                target_presence[j]
+                            ))
         
         print(f"    Added presence, bounds, and totality constraints")
         
@@ -960,6 +973,28 @@ class GenericGlobalConsistencyChecker:
                 elif op == '<>' or op == '!=':
                     solver.add(Implies(presence[i], attr_vars[i] != bool_value))
             return
+
+        # Try pattern 1b: self.attr OP string literal
+        str_match = re.search(r'self\.(\w+)\s*([=<>!]+)\s*[\'\"]([^\'\"]+)[\'\"]', text)
+        if str_match:
+            attr = str_match.group(1)
+            op = str_match.group(2)
+            value_str = str_match.group(3)
+            value_int = self._string_to_int(value_str)
+            
+            n = scope.get(f'n{context}', 5)
+            presence = shared_vars[f'{context}_presence']
+            attr_vars = shared_vars.get(f'{context}.{attr}')
+            
+            if not attr_vars:
+                raise ValueError(f"Attribute {context}.{attr} not found")
+            
+            for i in range(n):
+                if op == '=' or op == '==':
+                    solver.add(Implies(presence[i], attr_vars[i] == value_int))
+                elif op == '<>' or op == '!=':
+                    solver.add(Implies(presence[i], attr_vars[i] != value_int))
+            return
         
         # Try pattern 1b: self.attr OP constant (including floats and negative numbers)
         match = re.search(r'self\.(\w+)\s*([><=]+)\s*(-?\d+(?:\.\d+)?)', text)
@@ -1035,7 +1070,9 @@ class GenericGlobalConsistencyChecker:
                 raise ValueError(f"Attribute {context}.{attr} not found")
             
             # Encode string value as integer (simple hash or just use length as proxy)
-            value_int = hash(value_str.upper() if operation in ['toUpper', 'toUpperCase'] else value_str.lower()) % 1000000
+            value_int = self._string_to_int(
+                value_str.upper() if operation in ['toUpper', 'toUpperCase'] else value_str.lower()
+            )
             
             # Create uninterpreted function for case conversion (Int -> Int)
             # This allows Z3 to reason about it symbolically without concrete implementation
@@ -1383,21 +1420,9 @@ class GenericGlobalConsistencyChecker:
             # Fallback to uniqueness_constraint
             return self._encode_uniqueness_constraint(solver, shared_vars, scope, context, text)
         
-        collection_name = match.group(1)
-        assoc = self.extractor.get_association_by_ref(context, collection_name)
-        if not assoc:
-            raise ValueError(f"Association {context}.{collection_name} not found")
-        
-        n_context = scope.get(f'n{context}', 5)
-        n_target = scope.get(f'n{assoc.target_class}', 5)
-        rel_matrix = shared_vars[f'{context}.{collection_name}']
-        
-        # All elements in collection must be pairwise distinct (no duplicates)
-        for c in range(n_context):
-            for t1 in range(n_target):
-                for t2 in range(t1 + 1, n_target):
-                    # Cannot both be in same collection
-                    solver.add(Not(And(rel_matrix[c][t1], rel_matrix[c][t2])))
+        # In this encoding, collections are sets (boolean membership), so duplicates are not represented.
+        # The constraint "forAll(x1, x2 | x1 <> x2)" is therefore already satisfied.
+        return
     
     def _encode_exact_count_selection(self, solver: Solver, shared_vars: Dict, scope: Dict,
                                       context: str, text: str):
@@ -1464,18 +1489,80 @@ class GenericGlobalConsistencyChecker:
         
         matrix1 = shared_vars[f'{context}.{coll1}']
         matrix2 = shared_vars[f'{context}.{coll2}']
-        
-        # Intersection elements must be in both
+
+        # Support common usages: isEmpty(), notEmpty(), or size() comparisons.
+        is_empty = re.search(r'->intersection\(self\.\w+\)->isEmpty\(\)', text)
+        is_not_empty = re.search(r'->intersection\(self\.\w+\)->notEmpty\(\)', text)
+        size_match = re.search(r'->intersection\(self\.\w+\)->size\(\)\s*([><=]+)\s*(\d+)', text)
+
+        if not (is_empty or is_not_empty or size_match):
+            # Intersection used as an expression without a comparison: no direct constraint to add.
+            return
+
+        presence = shared_vars[f'{context}_presence']
+        target_presence = shared_vars[f'{assoc1.target_class}_presence']
+
         for c in range(n_context):
-            for t in range(n_target):
-                in_both = And(matrix1[c][t], matrix2[c][t])
-                # Constraint depends on OCL expression context
-                solver.add(Implies(matrix1[c][t], Or(Not(matrix2[c][t]), in_both)))
+            count = Sum([
+                If(And(target_presence[t], matrix1[c][t], matrix2[c][t]), 1, 0)
+                for t in range(n_target)
+            ])
+
+            if is_empty:
+                solver.add(Implies(presence[c], count == 0))
+            elif is_not_empty:
+                solver.add(Implies(presence[c], count > 0))
+            else:
+                op = size_match.group(1)
+                value = int(size_match.group(2))
+                if op == '>':
+                    solver.add(Implies(presence[c], count > value))
+                elif op == '>=':
+                    solver.add(Implies(presence[c], count >= value))
+                elif op == '<':
+                    solver.add(Implies(presence[c], count < value))
+                elif op == '<=':
+                    solver.add(Implies(presence[c], count <= value))
+                elif op == '=' or op == '==':
+                    solver.add(Implies(presence[c], count == value))
     
     def _encode_collection_membership(self, solver: Solver, shared_vars: Dict, scope: Dict,
                                      context: str, text: str):
         """Pattern 7: Collection membership - elem->includes(x)"""
         import re
+
+        # Handle indexOf on collections (asSequence): self.collection->asSequence()->indexOf(self.elem) OP value
+        indexof_match = re.search(
+            r'self\.(\w+)(?:->asSequence\(\))?->indexOf\(([^)]+)\)\s*([><=!]=?|<>)\s*(-?\d+)',
+            text
+        )
+        if indexof_match:
+            collection_name = indexof_match.group(1)
+            element_expr = indexof_match.group(2)
+            op = indexof_match.group(3)
+            value = int(indexof_match.group(4))
+
+            assoc = self.extractor.get_association_by_ref(context, collection_name)
+            if not assoc:
+                raise ValueError(f"Association {context}.{collection_name} not found")
+
+            n_context = scope.get(f'n{context}', 5)
+            presence = shared_vars[f'{context}_presence']
+
+            for i in range(n_context):
+                index_val = self._indexof_value_expr(
+                    solver, shared_vars, scope, context, i, collection_name, element_expr
+                )
+                if index_val is None:
+                    raise ValueError(f"Cannot parse indexOf element: {element_expr}")
+
+                cmp_expr = self._compare_int_expr(index_val, op, value)
+                if cmp_expr is None:
+                    raise ValueError(f"Unsupported operator in indexOf: {op}")
+
+                solver.add(Implies(presence[i], cmp_expr))
+            return
+
         match = re.search(r'self\.(\w+)->includes\(([^)]+)\)', text)
         if not match:
             raise ValueError(f"Cannot parse collection_membership: {text}")
@@ -1492,8 +1579,36 @@ class GenericGlobalConsistencyChecker:
         
         presence = shared_vars[f'{context}_presence']
         rel_matrix = shared_vars[f'{context}.{collection_name}']
+
+        # Try to interpret includes() operand in simple cases.
+        # Case 1: includes(<int>) - treat as target index
+        idx_match = re.fullmatch(r'-?\d+', element)
+        if idx_match:
+            idx = int(idx_match.group(0))
+            if 0 <= idx < n_target:
+                for i in range(n_context):
+                    solver.add(Implies(presence[i], rel_matrix[i][idx]))
+                return
+
+        # Case 2: includes(self.<ref>) where <ref> is a single-valued association
+        ref_match = re.fullmatch(r'self\.(\w+)', element)
+        if ref_match:
+            ref_name = ref_match.group(1)
+            ref_assoc = self.extractor.get_association_by_ref(context, ref_name)
+            if ref_assoc and (not ref_assoc.is_collection) and ref_assoc.target_class == assoc.target_class:
+                ref_vars = shared_vars[f'{context}.{ref_name}']
+                ref_present = shared_vars.get(f'{context}.{ref_name}_present')
+                for i in range(n_context):
+                    membership = Or([
+                        And(ref_vars[i] == j, rel_matrix[i][j]) for j in range(n_target)
+                    ])
+                    if ref_present:
+                        solver.add(Implies(And(presence[i], ref_present[i]), membership))
+                    else:
+                        solver.add(Implies(presence[i], membership))
+                return
         
-        # At least one element must be in collection
+        # Fallback: at least one element must be in collection
         for i in range(n_context):
             has_element = Or([rel_matrix[i][j] for j in range(n_target)])
             solver.add(Implies(presence[i], has_element))
@@ -1508,8 +1623,10 @@ class GenericGlobalConsistencyChecker:
         # Format 2: self <> null or self.attr <> null means "must not be null"
         # Format 3: self = null or self.attr = null means "must be null"
         
+        is_undefined = 'oclIsUndefined()' in text
         is_negated_check = text.strip().startswith('not(') and '<> null' in text
-        is_not_null = ('<> null' in text and not is_negated_check) or 'oclIsUndefined()' in text
+        is_not_null = ('<> null' in text and not is_negated_check)
+        is_null = ('= null' in text) or is_negated_check or is_undefined
         
         # Extract attribute or reference name
         match = re.search(r'self(?:\.(\w+))?', text)
@@ -1534,7 +1651,7 @@ class GenericGlobalConsistencyChecker:
                     if is_not_null:
                         # Must be present
                         solver.add(Implies(presence[i], ref_present[i]))
-                    else:
+                    elif is_null:
                         # Must be absent
                         solver.add(Implies(presence[i], Not(ref_present[i])))
         except:
@@ -1920,6 +2037,23 @@ class GenericGlobalConsistencyChecker:
                             # Add implication
                             solver.add(Implies(condition, consequence))
                         return
+            
+            # Fallback: parse arbitrary boolean expressions for condition and consequence
+            try:
+                n = scope.get(f'n{context}', 5)
+                presence = shared_vars[f'{context}_presence']
+                parsed_ok = True
+                for i in range(n):
+                    cond_expr = self._build_boolean_expr(solver, condition_text, context, i, shared_vars, scope)
+                    cons_expr = self._build_boolean_expr(solver, consequence_text, context, i, shared_vars, scope)
+                    if cond_expr is None or cons_expr is None:
+                        parsed_ok = False
+                        break
+                    solver.add(Implies(And(presence[i], cond_expr), cons_expr))
+                if parsed_ok:
+                    return
+            except Exception:
+                pass
         
         # If no 'implies', treat as simple attribute comparison
         # Delegate to attribute_comparison encoder
@@ -1986,6 +2120,26 @@ class GenericGlobalConsistencyChecker:
                     for t in range(n_target):
                         # If in coll1, must be in coll2
                         solver.add(Implies(matrix1[c][t], matrix2[c][t]))
+
+        # Check for disjointness via excludesAll rewrite: self.coll1->forAll(x | not self.coll2->includes(x))
+        disjoint_match = re.search(r'self\.(\w+)->forAll\(\w+\s*\|\s*not\s+self\.(\w+)->includes\(\w+\)\)', text)
+        if disjoint_match:
+            coll1 = disjoint_match.group(1)
+            coll2 = disjoint_match.group(2)
+            
+            assoc1 = self.extractor.get_association_by_ref(context, coll1)
+            assoc2 = self.extractor.get_association_by_ref(context, coll2)
+            
+            if assoc1 and assoc2 and assoc1.target_class == assoc2.target_class:
+                n_context = scope.get(f'n{context}', 5)
+                n_target = scope.get(f'n{assoc1.target_class}', 5)
+                
+                matrix1 = shared_vars[f'{context}.{coll1}']
+                matrix2 = shared_vars[f'{context}.{coll2}']
+                
+                for c in range(n_context):
+                    for t in range(n_target):
+                        solver.add(Implies(matrix1[c][t], Not(matrix2[c][t])))
     
     def _encode_ordering_ranking(self, solver: Solver, shared_vars: Dict, scope: Dict,
                                 context: str, text: str):
@@ -2158,11 +2312,12 @@ class GenericGlobalConsistencyChecker:
                 n_context = scope.get(f'n{context}', 5)
                 n_target = scope.get(f'n{assoc.target_class}', 5)
                 rel_matrix = shared_vars[f'{context}.{collection_name}']
+                presence = shared_vars[f'{context}_presence']
                 
                 # At least one element exists
                 for i in range(n_context):
                     has_any = Or([rel_matrix[i][j] for j in range(n_target)])
-                    solver.add(has_any)
+                    solver.add(Implies(presence[i], has_any))
 
 
 
@@ -2266,6 +2421,7 @@ class GenericGlobalConsistencyChecker:
 
     def _parse_forall_constraint(self, text: str) -> Optional[Dict]:
         """Parse forAll constraint into structured components"""
+        import re
         # First, normalize whitespace
         text = ' '.join(text.split())
         
@@ -2274,15 +2430,17 @@ class GenericGlobalConsistencyChecker:
         pattern = r'self\.([\w\.]+)->forAll\((\w+)\s*\|\s*(.+)\)'
         match = re.search(pattern, text)
         
-        if not match:
+        if match:
+            navigation_path = match.group(1)
+            condition = match.group(3)
+        else:
             # Try alternative pattern without explicit variable
             pattern2 = r'self\.([\w\.]+)->forAll\([^|]+\|\s*(.+)\)'
-            match = re.search(pattern2, text)
-            if not match:
+            match2 = re.search(pattern2, text)
+            if not match2:
                 return None
-        
-        navigation_path = match.group(1)
-        condition = match.group(2) if match else match.group(2)  # group index may vary
+            navigation_path = match2.group(1)
+            condition = match2.group(2)
         
         # Extract variable name if present
         var_match = re.search(r'forAll\((\w+)\s*\|', text)
@@ -2296,6 +2454,33 @@ class GenericGlobalConsistencyChecker:
             'var_name': var_name,
             'condition': condition,
             'condition_tree': condition_tree
+        }
+
+    def _parse_condition(self, condition: str) -> Dict:
+        """Parse a simple condition into an AST-like dict (limited support)."""
+        import re
+        condition = condition.strip()
+        # Strip outer parentheses
+        condition = condition.strip('() ')
+
+        # Support simple comparisons: var.attr OP constant
+        match = re.search(r'(?:self|\w+)\.(\w+)\s*(<=|>=|<|>|=|==)\s*(-?\d+(?:\.\d+)?)', condition)
+        if not match:
+            raise ValueError(f"Unsupported forAll condition: {condition}")
+
+        attr = match.group(1)
+        op = match.group(2)
+        value_str = match.group(3)
+        value = float(value_str) if '.' in value_str else int(value_str)
+
+        if op == '==':
+            op = '='
+
+        return {
+            'type': 'comparison',
+            'left': {'attr': attr},
+            'op': op,
+            'right': {'value': value}
         }
 
 
@@ -2366,6 +2551,61 @@ class GenericGlobalConsistencyChecker:
                 
                 # Add: if in relation, then condition must hold
                 solver.add(Implies(in_relation, condition))
+
+    def _encode_nested_forall(self, solver, shared_vars, scope,
+                              context, chain, condition_tree):
+        """Encode nested forAll constraint across a navigation chain."""
+        source_class = chain[0][0]
+        n_source = scope.get(f'n{source_class}', 5)
+        source_presence = shared_vars[f'{source_class}_presence']
+
+        final_class = chain[-1][2]
+        n_final = scope.get(f'n{final_class}', 5)
+
+        # Build reachability from source to final target through the chain.
+        def step_relation(step_idx, src_idx, tgt_idx):
+            src_class, assoc_name, tgt_class = chain[step_idx]
+            assoc = self.extractor.get_association_by_ref(src_class, assoc_name)
+            if not assoc:
+                return False
+
+            target_presence = shared_vars.get(f'{tgt_class}_presence')
+            if assoc.is_collection:
+                rel_matrix = shared_vars[f'{src_class}.{assoc_name}']
+                base = rel_matrix[src_idx][tgt_idx]
+            else:
+                ref_vars = shared_vars[f'{src_class}.{assoc_name}']
+                base = (ref_vars[src_idx] == tgt_idx)
+                ref_present = shared_vars.get(f'{src_class}.{assoc_name}_present')
+                if ref_present:
+                    base = And(ref_present[src_idx], base)
+
+            if target_presence:
+                base = And(target_presence[tgt_idx], base)
+            return base
+
+        def build_path(step_idx, current_idx, target_idx):
+            if step_idx == len(chain) - 1:
+                return step_relation(step_idx, current_idx, target_idx)
+
+            next_class = chain[step_idx][2]
+            n_next = scope.get(f'n{next_class}', 5)
+            parts = []
+            for next_idx in range(n_next):
+                parts.append(And(
+                    step_relation(step_idx, current_idx, next_idx),
+                    build_path(step_idx + 1, next_idx, target_idx)
+                ))
+            return Or(parts) if parts else False
+
+        # For each source and final target, enforce condition along reachable paths.
+        for s in range(n_source):
+            for t in range(n_final):
+                reachable = build_path(0, s, t)
+                condition = self._build_condition_for_instance(
+                    condition_tree, final_class, t, shared_vars
+                )
+                solver.add(Implies(And(source_presence[s], reachable), condition))
 
 
     def _build_condition_for_instance(self, condition_tree, target_class, 
@@ -2763,6 +3003,439 @@ class GenericGlobalConsistencyChecker:
                     has_elements = Or([rel_matrix[c][t] for t in range(n_target)])
                     solver.add(Implies(presence[c], has_elements))
     
+    def _split_top_level(self, text: str, sep: str) -> List[str]:
+        """Split by separator at top-level (respect parentheses)."""
+        parts = []
+        depth = 0
+        i = 0
+        start = 0
+        lower = text.lower()
+        sep_len = len(sep)
+        while i <= len(text) - sep_len:
+            ch = text[i]
+            if ch == '(':
+                depth += 1
+            elif ch == ')':
+                depth = max(0, depth - 1)
+            if depth == 0 and lower[i:i + sep_len] == sep:
+                parts.append(text[start:i].strip())
+                start = i + sep_len
+                i = start
+                continue
+            i += 1
+        if parts:
+            parts.append(text[start:].strip())
+        return parts if parts else [text.strip()]
+
+    def _strip_outer_parens(self, expr: str) -> str:
+        """Remove a single layer of matching outer parentheses."""
+        expr = expr.strip()
+        if not (expr.startswith('(') and expr.endswith(')')):
+            return expr
+        depth = 0
+        for i, ch in enumerate(expr):
+            if ch == '(':
+                depth += 1
+            elif ch == ')':
+                depth -= 1
+                if depth == 0 and i != len(expr) - 1:
+                    return expr
+        return expr[1:-1].strip() if depth == 0 else expr
+
+    def _compare_int_expr(self, expr, op: str, value: int):
+        """Compare a Z3 Int expr with a constant using an operator."""
+        if op == '>':
+            return expr > value
+        if op == '>=':
+            return expr >= value
+        if op == '<':
+            return expr < value
+        if op == '<=':
+            return expr <= value
+        if op in ['=', '==']:
+            return expr == value
+        if op in ['<>', '!=']:
+            return expr != value
+        return None
+
+    def _ensure_indexof_encoding(self, solver: Solver, shared_vars: Dict, scope: Dict,
+                                 context: str, collection_name: str):
+        """Ensure indexOf support variables/constraints exist for a collection."""
+        key = f'indexof.{context}.{collection_name}'
+        if key in shared_vars:
+            return shared_vars[key]
+
+        assoc = self.extractor.get_association_by_ref(context, collection_name)
+        if not assoc or not assoc.is_collection:
+            return None
+
+        n_context = scope.get(f'n{context}', 5)
+        n_target = scope.get(f'n{assoc.target_class}', 5)
+        rel_matrix = shared_vars[f'{context}.{collection_name}']
+        source_presence = shared_vars[f'{context}_presence']
+
+        idxs = [
+            [Int(f"Idx_{context}_{collection_name}_{s}_{t}") for t in range(n_target)]
+            for s in range(n_context)
+        ]
+        shared_vars[key] = idxs
+
+        for s in range(n_context):
+            count = Sum([If(rel_matrix[s][t], 1, 0) for t in range(n_target)])
+
+            for t in range(n_target):
+                solver.add(Implies(
+                    source_presence[s],
+                    If(rel_matrix[s][t],
+                       And(idxs[s][t] >= 1, idxs[s][t] <= n_target),
+                       idxs[s][t] == 0)
+                ))
+
+            # Distinct indices for included elements
+            for t1 in range(n_target):
+                for t2 in range(t1 + 1, n_target):
+                    solver.add(Implies(
+                        And(source_presence[s], rel_matrix[s][t1], rel_matrix[s][t2]),
+                        idxs[s][t1] != idxs[s][t2]
+                    ))
+
+            # Enforce contiguity: indices cover 1..count with no gaps
+            for p in range(1, n_target + 1):
+                exists_p = Or([idxs[s][t] == p for t in range(n_target)])
+                solver.add(Implies(And(source_presence[s], count >= p), exists_p))
+                solver.add(Implies(And(source_presence[s], count < p), Not(exists_p)))
+
+        return idxs
+
+    def _indexof_value_expr(self, solver: Solver, shared_vars: Dict, scope: Dict,
+                            context: str, idx: int, collection_name: str, element_expr: str):
+        """Build a Z3 Int expr for indexOf(...) at a specific instance."""
+        import re
+
+        assoc = self.extractor.get_association_by_ref(context, collection_name)
+        if not assoc:
+            return None
+
+        # Element should be a self.<ref> to same target class
+        element_expr = element_expr.strip()
+        ref_match = re.fullmatch(r'self\.(\w+)', element_expr)
+        if not ref_match:
+            return None
+
+        element_ref = ref_match.group(1)
+        element_assoc = self.extractor.get_association_by_ref(context, element_ref)
+        if not element_assoc or element_assoc.is_collection:
+            return None
+        if element_assoc.target_class != assoc.target_class:
+            return None
+
+        ref_vars = shared_vars[f'{context}.{element_ref}']
+        ref_present = shared_vars.get(f'{context}.{element_ref}_present')
+
+        # Collection case (with ordering)
+        if assoc.is_collection:
+            n_target = scope.get(f'n{assoc.target_class}', 5)
+            idxs = self._ensure_indexof_encoding(solver, shared_vars, scope, context, collection_name)
+            if idxs is None:
+                return None
+
+            index_val = Sum([If(ref_vars[idx] == j, idxs[idx][j], 0) for j in range(n_target)])
+            if ref_present:
+                index_val = If(ref_present[idx], index_val, 0)
+            return index_val
+
+        # Single-valued reference treated as sequence of length 0/1
+        ref_present_coll = shared_vars.get(f'{context}.{collection_name}_present')
+        coll_ref_vars = shared_vars[f'{context}.{collection_name}']
+
+        eq = coll_ref_vars[idx] == ref_vars[idx]
+        if ref_present_coll:
+            eq = And(ref_present_coll[idx], eq)
+        if ref_present:
+            eq = And(ref_present[idx], eq)
+        return If(eq, 1, 0)
+
+    def _build_boolean_expr(self, solver: Solver, expr: str, context: str, idx: int,
+                            shared_vars: Dict, scope: Dict):
+        """Build a Z3 boolean expression for a given instance index."""
+        expr = expr.strip()
+        expr = self._strip_outer_parens(expr)
+
+        if expr.lower().startswith('not '):
+            inner = expr[4:].strip()
+            inner_expr = self._build_boolean_expr(solver, inner, context, idx, shared_vars, scope)
+            return Not(inner_expr) if inner_expr is not None else None
+        if expr.lower().startswith('not(') and expr.endswith(')'):
+            inner = expr[4:-1].strip()
+            inner_expr = self._build_boolean_expr(solver, inner, context, idx, shared_vars, scope)
+            return Not(inner_expr) if inner_expr is not None else None
+
+        # OR split
+        parts = self._split_top_level(expr, ' or ')
+        if len(parts) > 1:
+            sub = [self._build_boolean_expr(solver, p, context, idx, shared_vars, scope) for p in parts]
+            if any(s is None for s in sub):
+                return None
+            return Or(sub)
+
+        # AND split
+        parts = self._split_top_level(expr, ' and ')
+        if len(parts) > 1:
+            sub = [self._build_boolean_expr(solver, p, context, idx, shared_vars, scope) for p in parts]
+            if any(s is None for s in sub):
+                return None
+            return And(sub)
+
+        return self._build_atom_expr(solver, expr, context, idx, shared_vars, scope)
+
+    def _build_atom_expr(self, solver: Solver, expr: str, context: str, idx: int,
+                         shared_vars: Dict, scope: Dict):
+        """Build Z3 expression for a single atomic predicate."""
+        import re
+
+        # size() comparisons
+        size_match = re.search(r'self\.(\w+)(?:->|\.)size\(\)\s*([><=!]=?|<>)\s*(-?\d+)', expr)
+        if size_match:
+            collection_name = size_match.group(1)
+            op = size_match.group(2)
+            value = int(size_match.group(3))
+
+            assoc = self.extractor.get_association_by_ref(context, collection_name)
+            if not assoc:
+                return None
+
+            target_class = assoc.target_class
+            n_target = scope.get(f'n{target_class}', 5)
+            target_presence = shared_vars[f'{target_class}_presence']
+            rel_matrix = shared_vars[f'{context}.{collection_name}']
+
+            count = Sum([
+                If(And(target_presence[j], rel_matrix[idx][j]), 1, 0)
+                for j in range(n_target)
+            ])
+
+            if op == '>':
+                return count > value
+            if op == '>=':
+                return count >= value
+            if op == '<':
+                return count < value
+            if op == '<=':
+                return count <= value
+            if op in ['=', '==']:
+                return count == value
+            if op in ['<>', '!=']:
+                return count != value
+
+        # isEmpty / notEmpty
+        empty_match = re.search(r'self\.(\w+)->(isEmpty|notEmpty)\(\)', expr)
+        if empty_match:
+            collection_name = empty_match.group(1)
+            is_not_empty = empty_match.group(2) == 'notEmpty'
+            assoc = self.extractor.get_association_by_ref(context, collection_name)
+            if not assoc:
+                return None
+
+            target_class = assoc.target_class
+            n_target = scope.get(f'n{target_class}', 5)
+            target_presence = shared_vars[f'{target_class}_presence']
+            rel_matrix = shared_vars[f'{context}.{collection_name}']
+            count = Sum([
+                If(And(target_presence[j], rel_matrix[idx][j]), 1, 0)
+                for j in range(n_target)
+            ])
+            return count > 0 if is_not_empty else count == 0
+
+        # includes()
+        includes_match = re.search(r'self\.(\w+)->includes\(([^)]+)\)', expr)
+        if includes_match:
+            collection_name = includes_match.group(1)
+            element = includes_match.group(2).strip()
+
+            assoc = self.extractor.get_association_by_ref(context, collection_name)
+            if not assoc:
+                return None
+
+            target_class = assoc.target_class
+            n_target = scope.get(f'n{target_class}', 5)
+            rel_matrix = shared_vars[f'{context}.{collection_name}']
+
+            # includes(<int>) => index
+            idx_match = re.fullmatch(r'-?\d+', element)
+            if idx_match:
+                elem_idx = int(idx_match.group(0))
+                if 0 <= elem_idx < n_target:
+                    return rel_matrix[idx][elem_idx]
+                return None
+
+            # includes(self.<ref>) where <ref> is a single-valued association
+            ref_match = re.fullmatch(r'self\.(\w+)', element)
+            if ref_match:
+                ref_name = ref_match.group(1)
+                ref_assoc = self.extractor.get_association_by_ref(context, ref_name)
+                if ref_assoc and (not ref_assoc.is_collection) and ref_assoc.target_class == assoc.target_class:
+                    ref_vars = shared_vars[f'{context}.{ref_name}']
+                    ref_present = shared_vars.get(f'{context}.{ref_name}_present')
+                    membership = Or([
+                        And(ref_vars[idx] == j, rel_matrix[idx][j]) for j in range(n_target)
+                    ])
+                    if ref_present:
+                        return And(ref_present[idx], membership)
+                    return membership
+
+        # indexOf(): self.collection->asSequence()->indexOf(self.elem) OP value
+        indexof_match = re.search(
+            r'self\.(\w+)(?:->asSequence\(\))?->indexOf\(([^)]+)\)\s*([><=!]=?|<>)\s*(-?\d+)',
+            expr
+        )
+        if indexof_match:
+            collection_name = indexof_match.group(1)
+            element_expr = indexof_match.group(2)
+            op = indexof_match.group(3)
+            value = int(indexof_match.group(4))
+
+            index_val = self._indexof_value_expr(
+                solver, shared_vars, scope, context, idx, collection_name, element_expr
+            )
+            if index_val is None:
+                return None
+            return self._compare_int_expr(index_val, op, value)
+
+        # null / undefined checks
+        null_match = re.search(r'self\.(\w+)\s*(<>|!=|=|==)\s*null', expr)
+        if null_match:
+            ref_name = null_match.group(1)
+            op = null_match.group(2)
+            ref_present = shared_vars.get(f'{context}.{ref_name}_present')
+            if ref_present is not None:
+                return ref_present[idx] if op in ['<>', '!='] else Not(ref_present[idx])
+
+            # Attributes and required refs are never null
+            attr_vars = shared_vars.get(f'{context}.{ref_name}')
+            if attr_vars is not None:
+                return BoolVal(op in ['<>', '!='])
+            return None
+
+        undef_match = re.search(r'self\.(\w+)\.oclIsUndefined\(\)', expr)
+        if undef_match:
+            ref_name = undef_match.group(1)
+            ref_present = shared_vars.get(f'{context}.{ref_name}_present')
+            if ref_present is not None:
+                return Not(ref_present[idx])
+            return BoolVal(False)
+
+        defined_match = re.search(r'self\.(\w+)\.oclIsDefined\(\)', expr)
+        if defined_match:
+            ref_name = defined_match.group(1)
+            ref_present = shared_vars.get(f'{context}.{ref_name}_present')
+            if ref_present is not None:
+                return ref_present[idx]
+            return BoolVal(True)
+
+        # attr in {v1, v2}
+        in_match = re.search(r'self\.(\w+)\s+in\s+\{([^}]+)\}', expr)
+        if in_match:
+            attr = in_match.group(1)
+            raw_vals = in_match.group(2)
+            values = [v.strip() for v in raw_vals.split(',') if v.strip()]
+            attr_vars = shared_vars.get(f'{context}.{attr}')
+            if not attr_vars:
+                return None
+            disj = []
+            for v in values:
+                if v.lower() in ['true', 'false']:
+                    disj.append(attr_vars[idx] == (v.lower() == 'true'))
+                elif re.fullmatch(r'-?\d+(?:\.\d+)?', v):
+                    val = float(v) if '.' in v else int(v)
+                    disj.append(attr_vars[idx] == val)
+                else:
+                    v_clean = v.strip('\'"')
+                    disj.append(attr_vars[idx] == self._string_to_int(v_clean))
+            return Or(disj) if disj else None
+
+        # boolean attribute: self.attr
+        bool_attr_match = re.fullmatch(r'self\.(\w+)', expr)
+        if bool_attr_match:
+            attr = bool_attr_match.group(1)
+            attr_vars = shared_vars.get(f'{context}.{attr}')
+            if attr_vars:
+                try:
+                    if is_bool(attr_vars[0]):
+                        return attr_vars[idx]
+                except Exception:
+                    pass
+
+        # attribute comparisons
+        comp_expr = self._build_attr_comparison_expr(expr, context, idx, shared_vars)
+        if comp_expr is not None:
+            return comp_expr
+
+        return None
+
+    def _build_attr_comparison_expr(self, expr: str, context: str, idx: int, shared_vars: Dict):
+        """Build attribute comparison expression for a specific instance."""
+        import re
+
+        # self.attr OP self.attr2
+        match = re.search(r'self\.(\w+)\s*([><=]+)\s*self\.(\w+)', expr)
+        if match:
+            attr1 = match.group(1)
+            op = match.group(2)
+            attr2 = match.group(3)
+            vars1 = shared_vars.get(f'{context}.{attr1}')
+            vars2 = shared_vars.get(f'{context}.{attr2}')
+            if not vars1 or not vars2:
+                return None
+            if op == '>':
+                return vars1[idx] > vars2[idx]
+            if op == '>=':
+                return vars1[idx] >= vars2[idx]
+            if op == '<':
+                return vars1[idx] < vars2[idx]
+            if op == '<=':
+                return vars1[idx] <= vars2[idx]
+            if op in ['=', '==']:
+                return vars1[idx] == vars2[idx]
+            if op in ['<>', '!=']:
+                return vars1[idx] != vars2[idx]
+
+        # self.attr OP constant (bool, number, string)
+        match = re.search(r'self\.(\w+)\s*([><=!]=?|<>)\s*(.+)', expr)
+        if match:
+            attr = match.group(1)
+            op = match.group(2)
+            raw_val = match.group(3).strip()
+            vars1 = shared_vars.get(f'{context}.{attr}')
+            if not vars1:
+                return None
+
+            # bool
+            if raw_val.lower() in ['true', 'false']:
+                value = raw_val.lower() == 'true'
+            # number
+            elif re.fullmatch(r'-?\d+(?:\.\d+)?', raw_val):
+                value = float(raw_val) if '.' in raw_val else int(raw_val)
+            # string literal
+            elif (raw_val.startswith("'") and raw_val.endswith("'")) or (raw_val.startswith('"') and raw_val.endswith('"')):
+                value = self._string_to_int(raw_val.strip('\'"'))
+            else:
+                return None
+
+            if op == '>':
+                return vars1[idx] > value
+            if op == '>=':
+                return vars1[idx] >= value
+            if op == '<':
+                return vars1[idx] < value
+            if op == '<=':
+                return vars1[idx] <= value
+            if op in ['=', '==']:
+                return vars1[idx] == value
+            if op in ['<>', '!=']:
+                return vars1[idx] != value
+
+        return None
+
     def _encode_boolean_operations(self, solver: Solver, shared_vars: Dict, scope: Dict,
                                    context: str, text: str):
         """Pattern 35: Boolean operations (and, or, not, xor)"""
@@ -2829,6 +3502,22 @@ class GenericGlobalConsistencyChecker:
                     )))
             return
         
+        # Try generic boolean parser (supports and/or/not with parentheses)
+        try:
+            n = scope.get(f'n{context}', 5)
+            presence = shared_vars[f'{context}_presence']
+            parsed_ok = True
+            for i in range(n):
+                expr = self._build_boolean_expr(solver, text, context, i, shared_vars, scope)
+                if expr is None:
+                    parsed_ok = False
+                    break
+                solver.add(Implies(presence[i], expr))
+            if parsed_ok:
+                return
+        except Exception:
+            pass
+
         # Handle composite constraints with 'and' (general case)
         if ' and ' in text:
             parts = text.split(' and ', maxsplit=1)  # Split into 2 parts
@@ -3277,6 +3966,10 @@ class GenericGlobalConsistencyChecker:
             return Int  # Encode strings as integers
         else:
             return Int  # Default to Int
+
+    def _string_to_int(self, value: str) -> int:
+        """Encode a string literal as an Int (consistent with other string encodings)."""
+        return hash(value) % 1000000
     
     def _print_example_instance(self, model, shared_vars: Dict, scope: Dict):
         """Print example instance with meaningful values (generic)"""

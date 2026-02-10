@@ -273,7 +273,67 @@ def rewrite_attribute_value_in_set(text: str) -> str:
     Example: "self.status in {'active', 'pending'}"
     Note: Full implementation would need proper parsing; this is a simplified version
     """
-    # For now, return as-is (full implementation would parse the set and expand to OR)
+    # Pattern: self.attr in {v1, v2, v3}
+    match = re.search(r'self\.(\w+)\s+in\s+\{([^}]+)\}', text)
+    if not match:
+        return text
+
+    attr = match.group(1)
+    raw_vals = match.group(2)
+    values = [v.strip() for v in raw_vals.split(',') if v.strip()]
+    if not values:
+        return text
+
+    # Build OR chain: self.attr = v1 or self.attr = v2 ...
+    return " or ".join([f"self.{attr} = {v}" for v in values])
+
+
+def rewrite_includesAll_excludesAll(text: str) -> str:
+    """
+    Rewrite: includesAll/excludesAll to forAll with includes.
+    
+    Examples:
+      self.a->includesAll(self.b) → self.a->forAll(x | self.b->includes(x))
+      self.a->excludesAll(self.b) → self.a->forAll(x | not self.b->includes(x))
+    """
+    match = re.search(r'(self\.\w+)->includesAll\((self\.\w+)\)', text)
+    if match:
+        coll1 = match.group(1)
+        coll2 = match.group(2)
+        return f"{coll1}->forAll(x | {coll2}->includes(x))"
+
+    match = re.search(r'(self\.\w+)->excludesAll\((self\.\w+)\)', text)
+    if match:
+        coll1 = match.group(1)
+        coll2 = match.group(2)
+        return f"{coll1}->forAll(x | not {coll2}->includes(x))"
+
+    return text
+
+
+def rewrite_three_way_comparison(text: str) -> str:
+    """
+    Rewrite: self.a < self.b < self.c → self.a < self.b and self.b < self.c
+    """
+    if ' and ' in text:
+        return text
+
+    match = re.search(r'self\.(\w+)\s*([<>]=?)\s*self\.(\w+)\s*([<>]=?)\s*self\.(\w+)', text)
+    if not match:
+        return text
+
+    a, op1, b, op2, c = match.group(1), match.group(2), match.group(3), match.group(4), match.group(5)
+    return f"self.{a} {op1} self.{b} and self.{b} {op2} self.{c}"
+
+
+def rewrite_string_not_empty(text: str) -> str:
+    """
+    Rewrite: self.attr <> '' → self.attr.size() > 0
+    """
+    match = re.search(r'self\.(\w+)\s*(<>|!=)\s*[\'\"]{2}', text)
+    if match:
+        attr = match.group(1)
+        return f"self.{attr}.size() > 0"
     return text
 
 
@@ -414,10 +474,18 @@ class PatternMapperV2:
         mappings['numeric_positive'] = PatternMapping('numeric_comparison', 'attr > 0')
         mappings['numeric_non_negative'] = PatternMapping('numeric_comparison', 'attr >= 0')
         mappings['numeric_bounded'] = PatternMapping('numeric_comparison', 'attr in range')
-        mappings['three_way_comparison'] = PatternMapping('numeric_comparison', 'a < b < c')
+        mappings['three_way_comparison'] = PatternMapping(
+            'boolean_operations',
+            'a < b < c → a < b and b < c',
+            rewrite_fn=rewrite_three_way_comparison
+        )
         mappings['two_attributes_equal'] = PatternMapping('numeric_comparison', 'attr1 = attr2')
         mappings['two_attributes_not_equal'] = PatternMapping('numeric_comparison', 'attr1 <> attr2')
-        mappings['attribute_value_in_set'] = PatternMapping('numeric_comparison', 'attr in {v1, v2, ...}')
+        mappings['attribute_value_in_set'] = PatternMapping(
+            'boolean_operations',
+            'attr in {v1, v2, ...} → OR chain',
+            rewrite_fn=rewrite_attribute_value_in_set
+        )
         
         # Arithmetic → arithmetic_expression
         mappings['numeric_sum_constraint'] = PatternMapping('arithmetic_expression', 'attr1 + attr2 = value')
@@ -435,7 +503,11 @@ class PatternMapperV2:
         mappings['numeric_multiple_of'] = PatternMapping('div_mod_operations', 'attr mod N = 0')
         
         # String operations
-        mappings['string_not_empty'] = PatternMapping('string_operations', 'str.size() > 0')
+        mappings['string_not_empty'] = PatternMapping(
+            'string_operations',
+            "str <> '' → str.size() > 0",
+            rewrite_fn=rewrite_string_not_empty
+        )
         mappings['string_min_length'] = PatternMapping('string_operations', 'str.size() >= N')
         mappings['string_max_length'] = PatternMapping('string_operations', 'str.size() <= N')
         mappings['string_exact_length'] = PatternMapping('string_operations', 'str.size() = N')
@@ -473,7 +545,11 @@ class PatternMapperV2:
         mappings['collection_including'] = PatternMapping('including_excluding', 'collection->including()')
         mappings['collection_excluding'] = PatternMapping('including_excluding', 'collection->excluding()')
         mappings['includes_excludes'] = PatternMapping('collection_membership', 'includes/excludes')
-        mappings['includesAll_excludesAll'] = PatternMapping('subset_disjointness', 'includesAll/excludesAll')
+        mappings['includesAll_excludesAll'] = PatternMapping(
+            'subset_disjointness',
+            'includesAll/excludesAll → forAll + includes',
+            rewrite_fn=rewrite_includesAll_excludesAll
+        )
         mappings['union_operation'] = PatternMapping('union_intersection', 'A->union(B)')
         mappings['intersection_operation'] = PatternMapping('set_intersection', 'A->intersection(B)')
         mappings['difference_operation'] = PatternMapping('symmetric_difference', 'A - B')

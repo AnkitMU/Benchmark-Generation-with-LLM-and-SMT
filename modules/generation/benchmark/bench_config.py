@@ -1,5 +1,9 @@
 """
 Benchmark configuration schema and defaults.
+
+Includes ComplexityConfig for research-grade complexity-based generation
+using metrics from "A new set of metrics for measuring the complexity of
+OCL expressions" (Jha, Monahan, Wu - STAF 2025).
 """
 from __future__ import annotations
 from dataclasses import dataclass, field, asdict
@@ -17,6 +21,44 @@ OPERATORS = [
 ]
 
 TYPES = ["Integer", "Real", "String", "Boolean", "Enum"]
+
+# TC-based difficulty levels (5 buckets)
+TC_DIFFICULTY_LEVELS = ["trivial", "easy", "medium", "hard", "expert"]
+
+
+@dataclass
+class ComplexityConfig:
+    """
+    Configuration for complexity-based benchmark generation.
+
+    Users can specify target Total Complexity (TC) ranges and customise
+    all weights from the paper's metric framework.
+    """
+    # Target TC range for generated constraints
+    min_tc: float = 0.0
+    max_tc: float = 50.0
+
+    # Dimension weights: TC = w_s*Structural + w_c*Computational + w_d*Dependency
+    structural_weight: float = 1.0
+    computational_weight: float = 1.0
+    dependency_weight: float = 1.0
+
+    # TNC sub-weights: TNC = alpha*NNR-C + beta*WNC + gamma*DN-CA
+    tnc_alpha: float = 0.4
+    tnc_beta: float = 0.3
+    tnc_gamma: float = 0.3
+
+    # Custom operator weight overrides (merged on top of Table 1 defaults)
+    operator_weight_overrides: Dict[str, float] = field(default_factory=dict)
+
+    # TC-based difficulty distribution (percentages, should sum to 100)
+    tc_difficulty_mix: Dict[str, int] = field(default_factory=lambda: {
+        "trivial": 5,
+        "easy": 30,
+        "medium": 40,
+        "hard": 20,
+        "expert": 5,
+    })
 
 
 @dataclass
@@ -86,6 +128,7 @@ class BenchmarkProfile:
     library: LibraryConfig = field(default_factory=LibraryConfig)
     redundancy: RedundancyConfig = field(default_factory=RedundancyConfig)
     edge_cases: EdgeCaseConfig = field(default_factory=EdgeCaseConfig)
+    complexity: ComplexityConfig = field(default_factory=ComplexityConfig)
 
     def to_dict(self):
         return asdict(self)

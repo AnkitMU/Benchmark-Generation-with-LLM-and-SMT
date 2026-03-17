@@ -308,26 +308,48 @@ class EnhancedSuiteController:
             self.logger.dedent()
             
             # ============================================================
-            # STEP 2: Metadata Enrichment
+            # STEP 2: Metadata Enrichment (TC-based complexity metrics)
+            # Always enabled — core complexity metrics for benchmark quality
             # ============================================================
-            if self.enable_research_features:
-                self.logger.step("Applying metadata enrichment...")
+            if True:  # Always run enrichment (complexity metrics are core, not research-only)
+                self.logger.step("Applying metadata enrichment (complexity metrics)...")
                 self.logger.indent()
-                
+
+                # Pass 1: Enrich all constraints (without RUC — needs full set)
                 enriched_constraints = []
                 for i, constraint in enumerate(constraints):
-                    enriched = metadata_enricher.enrich_constraint_metadata(constraint)
+                    enriched = metadata_enricher.enrich_constraint_metadata(
+                        constraint, metamodel=metamodel
+                    )
                     enriched_constraints.append(enriched)
-                    
+
+                # Pass 2: Recompute with full constraint list for RUC (dependency metric)
+                for i, constraint in enumerate(enriched_constraints):
+                    enriched = metadata_enricher.enrich_constraint_metadata(
+                        constraint, metamodel=metamodel, all_constraints=enriched_constraints
+                    )
+                    enriched_constraints[i] = enriched
+
                     if i < 3:  # Show first 3 for debugging
+                        cm = enriched.metadata.get('complexity_metrics', {})
                         self.logger.debug(f"  Constraint {i+1}:")
                         self.logger.debug(f"    - Operators: {enriched.metadata.get('operators_used', [])}")
                         self.logger.debug(f"    - Difficulty: {enriched.metadata.get('difficulty', 'unknown')}")
-                        self.logger.debug(f"    - Nav Depth: {enriched.metadata.get('navigation_depth', 0)}")
-                
+                        self.logger.debug(f"    - TC: {cm.get('tc', 0.0)}")
+
                 constraints = enriched_constraints
+
+                # Log TC distribution
+                tc_scores = [c.metadata.get('complexity_metrics', {}).get('tc', 0.0)
+                             for c in constraints]
+                if tc_scores:
+                    avg_tc = sum(tc_scores) / len(tc_scores)
+                    min_tc = min(tc_scores)
+                    max_tc = max(tc_scores)
+                    self.logger.info(f"TC distribution: min={min_tc:.1f}, avg={avg_tc:.1f}, max={max_tc:.1f}")
+
                 prof_stats['research_features_applied'].append('metadata_enrichment')
-                self.logger.success(f"Enriched {len(constraints)} constraints with metadata")
+                self.logger.success(f"Enriched {len(constraints)} constraints with complexity metrics")
                 self.logger.dedent()
             
             # ============================================================
@@ -645,26 +667,78 @@ class EnhancedSuiteController:
         return prof_stats
     
     def _build_profile_from_spec(self, prof_spec: ProfileSpec, metamodel: Metamodel) -> BenchmarkProfile:
-        """Build BenchmarkProfile from ProfileSpec."""
-        # Get difficulty profile
+        """Build BenchmarkProfile from ProfileSpec including complexity config."""
+        # Get difficulty profile preset
         diff_profile = get_difficulty_profile(prof_spec.complexity_profile)
-        
+
         # Build quantities config
         quantities = QuantitiesConfig(
             invariants=prof_spec.constraints,
             per_class_min=prof_spec.per_class_min or 1,
             per_class_max=prof_spec.per_class_max or 5
         )
-        
+
         # Override families if specified
         if prof_spec.families_pct:
             quantities.families_pct = prof_spec.families_pct
-        
+
         # Build full profile
         from modules.generation.benchmark.bench_config import (
-            BenchmarkProfile, CoverageTargets, LibraryConfig, RedundancyConfig
+            BenchmarkProfile, CoverageTargets, LibraryConfig,
+            RedundancyConfig, ComplexityConfig
         )
-        
+
+        # Build ComplexityConfig from spec + preset defaults
+        complexity = ComplexityConfig()
+
+        # TC range: user override > preset > default
+        if prof_spec.target_tc_range:
+            complexity.min_tc = prof_spec.target_tc_range.get('min', complexity.min_tc)
+            complexity.max_tc = prof_spec.target_tc_range.get('max', complexity.max_tc)
+        elif 'tc_range' in diff_profile:
+            complexity.min_tc = diff_profile['tc_range']['min']
+            complexity.max_tc = diff_profile['tc_range']['max']
+
+        # Dimension weights
+        if prof_spec.dimension_weights:
+            complexity.structural_weight = prof_spec.dimension_weights.get('structural', 1.0)
+            complexity.computational_weight = prof_spec.dimension_weights.get('computational', 1.0)
+            complexity.dependency_weight = prof_spec.dimension_weights.get('dependency', 1.0)
+
+        # TNC sub-weights
+        if prof_spec.tnc_weights:
+            complexity.tnc_alpha = prof_spec.tnc_weights.get('alpha', 0.4)
+            complexity.tnc_beta = prof_spec.tnc_weights.get('beta', 0.3)
+            complexity.tnc_gamma = prof_spec.tnc_weights.get('gamma', 0.3)
+
+        # Operator weight overrides
+        if prof_spec.operator_weight_overrides:
+            complexity.operator_weight_overrides = prof_spec.operator_weight_overrides
+
+        # TC difficulty mix: user override > preset > default
+        if prof_spec.tc_difficulty_mix:
+            complexity.tc_difficulty_mix = prof_spec.tc_difficulty_mix
+        elif 'tc_difficulty_mix' in diff_profile:
+            complexity.tc_difficulty_mix = diff_profile['tc_difficulty_mix']
+
+        # Configure the global complexity weights for metadata enrichment
+        from modules.generation.benchmark.complexity_calculator import ComplexityWeights, DEFAULT_OPERATOR_WEIGHTS
+        from modules.generation.benchmark.metadata_enricher import set_complexity_weights
+
+        op_weights = dict(DEFAULT_OPERATOR_WEIGHTS)
+        op_weights.update(complexity.operator_weight_overrides)
+
+        cw = ComplexityWeights(
+            operator_weights=op_weights,
+            structural_weight=complexity.structural_weight,
+            computational_weight=complexity.computational_weight,
+            dependency_weight=complexity.dependency_weight,
+            tnc_alpha=complexity.tnc_alpha,
+            tnc_beta=complexity.tnc_beta,
+            tnc_gamma=complexity.tnc_gamma,
+        )
+        set_complexity_weights(cw)
+
         profile = BenchmarkProfile(
             quantities=quantities,
             coverage=CoverageTargets(
@@ -674,9 +748,10 @@ class EnhancedSuiteController:
             redundancy=RedundancyConfig(
                 similarity_threshold=prof_spec.similarity_threshold or 0.85,
                 novelty_boost=prof_spec.novelty_boost if prof_spec.novelty_boost is not None else True
-            )
+            ),
+            complexity=complexity,
         )
-        
+
         return profile
     
     def _save_benchmark(

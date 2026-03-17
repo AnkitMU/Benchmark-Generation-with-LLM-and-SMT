@@ -29,16 +29,28 @@ class ProfileSpec:
     sat_ratio: float = 0.7
     unsat_ratio: float = 0.3
     include_unknown: bool = False
-    
+
     # Override default profile settings
     families_pct: Optional[Dict[str, int]] = None
     per_class_min: Optional[int] = None
     per_class_max: Optional[int] = None
     similarity_threshold: Optional[float] = None
     novelty_boost: Optional[bool] = None
-    
-    # Difficulty mix
+
+    # Difficulty mix (legacy 3-bucket system, kept for backward compat)
     difficulty_mix: Optional[Dict[str, float]] = None  # easy/medium/hard
+
+    # --- Complexity-based generation (paper metrics) ---
+    # Target TC range: only generate constraints within this range
+    target_tc_range: Optional[Dict[str, float]] = None  # {"min": 5.0, "max": 25.0}
+    # Dimension weights for TC calculation
+    dimension_weights: Optional[Dict[str, float]] = None  # {"structural": 1.0, ...}
+    # TNC sub-weights
+    tnc_weights: Optional[Dict[str, float]] = None  # {"alpha": 0.4, "beta": 0.3, "gamma": 0.3}
+    # Custom operator weight overrides (merged on top of Table 1 defaults)
+    operator_weight_overrides: Optional[Dict[str, float]] = None
+    # TC-based 5-bucket difficulty distribution
+    tc_difficulty_mix: Optional[Dict[str, int]] = None  # {"trivial":5,"easy":30,...}
 
 
 @dataclass
@@ -151,29 +163,44 @@ class BenchmarkSuite:
             yaml.dump(data, f, default_flow_style=False, sort_keys=False)
 
 
-# Difficulty profile presets
+# Difficulty profile presets (legacy + complexity-aware)
 DIFFICULTY_PROFILES = {
     "easy": {
         "max_depth": 2,
         "max_quantifier_depth": 0,
         "max_hops": 1,
         "allowed_operators": ["=", ">=", "<=", "size", "isEmpty", "notEmpty"],
-        "difficulty_mix": {"easy": 1.0, "medium": 0.0, "hard": 0.0}
+        "difficulty_mix": {"easy": 1.0, "medium": 0.0, "hard": 0.0},
+        # Complexity-aware settings
+        "tc_range": {"min": 0.0, "max": 8.0},
+        "tc_difficulty_mix": {
+            "trivial": 30, "easy": 50, "medium": 20, "hard": 0, "expert": 0
+        },
     },
     "standard": {
         "max_depth": 3,
         "max_quantifier_depth": 1,
         "max_hops": 2,
         "allowed_operators": ["forAll", "exists", "select", "collect", "size", "implies"],
-        "difficulty_mix": {"easy": 0.4, "medium": 0.4, "hard": 0.2}
+        "difficulty_mix": {"easy": 0.4, "medium": 0.4, "hard": 0.2},
+        # Complexity-aware settings
+        "tc_range": {"min": 3.0, "max": 20.0},
+        "tc_difficulty_mix": {
+            "trivial": 5, "easy": 30, "medium": 40, "hard": 20, "expert": 5
+        },
     },
     "advanced": {
         "max_depth": 5,
         "max_quantifier_depth": 2,
         "max_hops": 4,
         "allowed_operators": None,  # All operators
-        "difficulty_mix": {"easy": 0.2, "medium": 0.4, "hard": 0.4}
-    }
+        "difficulty_mix": {"easy": 0.2, "medium": 0.4, "hard": 0.4},
+        # Complexity-aware settings
+        "tc_range": {"min": 8.0, "max": 50.0},
+        "tc_difficulty_mix": {
+            "trivial": 0, "easy": 10, "medium": 30, "hard": 35, "expert": 25
+        },
+    },
 }
 
 

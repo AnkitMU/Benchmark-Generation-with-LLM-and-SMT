@@ -1,55 +1,93 @@
 
-suite_name: "OCL-Benchmark-Balanced"   
-version: "1.0"                          
-description: "Balanced OCL constraint benchmark suite for comprehensive model testing"
+suite_name: "OCL-Benchmark-Balanced"
+version: "2.0"
+description: "Balanced OCL constraint benchmark suite with complexity-aware generation"
 
 models:
- 
-  - xmi: "models/iotsensornetwork.xmi"   # Path to your Ecore/XMI model file (enhanced with boolean attributes)
-    name: "IOTsensornetwork"            # Logical model name (for outputs/reports)
-    profiles:                          
 
-      # --- Balanced Profile: Suitable for general benchmarking ---
-      - name: "balanced"               
-        seed: 42                        # Random seed for reproducibility (change for different variants)
-        constraints: 100             # Target number of constraints to generate
-        complexity_profile: "standard"  # Difficulty preset: easy | standard | advanced
-        
+  - xmi: "models/iotsensornetwork.xmi"
+    name: "IOTsensornetwork"
+    profiles:
+
+      # --- Balanced Profile: Complexity-aware benchmarking ---
+      - name: "balanced"
+        seed: 42
+        constraints: 100
+        complexity_profile: "standard"  # Preset: easy | standard | advanced
+
         # SAT/UNSAT Distribution (must sum to 1.0)
-        sat_ratio: 0.8                  
-        unsat_ratio: 0.2                
-        
-        # Difficulty Mix (must sum to 1.0)
+        sat_ratio: 0.8
+        unsat_ratio: 0.2
+
+        # Legacy Difficulty Mix (3-bucket, kept for backward compat)
         difficulty_mix:
-          easy: 0.3                     # 30% easy (simple patterns, single attributes)
-          medium: 0.5                   # 50% medium (navigation, basic quantifiers)
-          hard: 0.2                     # 20% hard (complex quantifiers, multi-hop navigation)
-        
+          easy: 0.3
+          medium: 0.5
+          hard: 0.2
+
+        # ===== NEW: Complexity-Based Generation (paper metrics) =====
+
+        # Target Total Complexity (TC) range for generated constraints
+        # TC is computed from structural + computational + dependency metrics
+        target_tc_range:
+          min: 3.0
+          max: 20.0
+
+        # TC-based 5-bucket difficulty distribution (percentages, sum to 100)
+        # Based on TC thresholds: trivial<=3, easy<=8, medium<=16, hard<=25, expert>25
+        tc_difficulty_mix:
+          trivial: 5
+          easy: 30
+          medium: 40
+          hard: 20
+          expert: 5
+
+        # Dimension weights for TC = w_s*Structural + w_c*Computational + w_d*Dependency
+        # Adjust to prioritize different complexity dimensions
+        dimension_weights:
+          structural: 1.0
+          computational: 1.0
+          dependency: 0.5
+
+        # TNC sub-weights: TNC = alpha*NNR-C + beta*WNC + gamma*DN-CA
+        # alpha: collection-based complexity, beta: chain dependencies, gamma: depth
+        tnc_weights:
+          alpha: 0.4
+          beta: 0.3
+          gamma: 0.3
+
+        # Optional: Override Table 1 verification-driven operator weights
+        # Default weights: =,<>,>,<,>=,<= -> 1.0; and,or,not -> 1.5;
+        #   implies,xor -> 2.0; select,collect,reject,flatten -> 2.0;
+        #   forAll,exists,closure,iterate -> 3.0; oclAsType -> 2.0; asSet -> 1.5
+        # operator_weight_overrides:
+        #   forAll: 3.5
+        #   closure: 4.0
+
         # Pattern Family Distribution (must sum to 100)
         families_pct:
-          cardinality: 20               # Collection size constraints (isEmpty, notEmpty, size())
-          uniqueness: 15                # Uniqueness/duplicate prevention (isUnique, allDifferent)
-          navigation: 25                # Association navigation (single/multi-hop)
-          quantified: 20                # Universal/existential quantifiers (forAll, exists, select)
-          arithmetic: 15                
-          string: 2                    
-          enum: 3                       
-          type_checks: 0                
-        
-        
-        per_class_min: 3                
-        per_class_max: 25              
-        similarity_threshold: 0.80      
-        novelty_boost: true            
+          cardinality: 20
+          uniqueness: 15
+          navigation: 25
+          quantified: 20
+          arithmetic: 15
+          string: 2
+          enum: 3
+          type_checks: 0
+
+        per_class_min: 3
+        per_class_max: 25
+        similarity_threshold: 0.80
+        novelty_boost: true
 
 verification:
-  enable: true                          
-  implication_use_z3: true             
-  objective: "both"                     
-  per_constraint_timeout_ms: 15000       
-  batch_timeout_ms: 30000               
-  check_global_consistency: true        
+  enable: true
+  implication_use_z3: true
+  objective: "both"
+  per_constraint_timeout_ms: 15000
+  batch_timeout_ms: 30000
+  check_global_consistency: true
 
-output_root: "benchmarks/"              
-framework_version: "2.0"                
-git_commit: null                        
+output_root: "benchmarks/"
+framework_version: "2.0"
+git_commit: null

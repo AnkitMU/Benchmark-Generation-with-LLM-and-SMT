@@ -15,9 +15,10 @@ from modules.core.models import Metamodel, OCLConstraint
 from modules.synthesis.pattern_engine.pattern_registry import PatternRegistry
 from modules.generation.composer.ocl_generator import OCLGenerator
 
-from .bench_config import BenchmarkProfile, FAMILY_KEYS, OPERATORS, TYPES
+from .bench_config import BenchmarkProfile, FAMILY_KEYS, OPERATORS, TYPES, TC_DIFFICULTY_LEVELS
 from .coverage_tracker import compute_coverage, count_operators, nav_hops, quantifier_depth
 from .metadata_enricher import similarity, difficulty_score
+from .complexity_calculator import compute_total_complexity, tc_to_difficulty_label, ComplexityWeights
 
 
 def classify_family(pattern_id: str, category: str) -> str:
@@ -49,12 +50,13 @@ def classify_family(pattern_id: str, category: str) -> str:
 
 
 class CoverageState:
-    """Live coverage tracking during generation."""
+    """Live coverage tracking during generation with TC-based complexity awareness."""
     def __init__(self, metamodel: Metamodel, targets: 'BenchmarkProfile'):
         self.metamodel = metamodel
         self.targets = targets.coverage
+        self.complexity_config = targets.complexity
         self.constraints: List[OCLConstraint] = []
-        
+
         # Track usage
         self.classes_used: Set[str] = set()
         self.attributes_used: Set[Tuple[str, str]] = set()
@@ -63,100 +65,121 @@ class CoverageState:
         self.hop_counts: Dict[int, int] = {0: 0, 1: 0, 2: 0}
         self.depth_counts: Dict[int, int] = {0: 0, 1: 0, 2: 0}
         self.type_counts: Dict[str, int] = {t: 0 for t in TYPES}
-        self.difficulty_counts: Dict[str, int] = {"easy": 0, "medium": 0, "hard": 0}
-        
+
+        # TC-based difficulty tracking (5 buckets)
+        self.difficulty_counts: Dict[str, int] = {k: 0 for k in TC_DIFFICULTY_LEVELS}
+        self.tc_scores: List[float] = []
+
     def add_constraint(self, c: OCLConstraint):
-        """Add constraint and update coverage."""
+        """Add constraint and update coverage including TC metrics."""
         self.constraints.append(c)
         self.classes_used.add(c.context)
-        
+
         ocl = c.ocl
         # Operators
         ops = count_operators(ocl)
         for k, v in ops.items():
             self.operator_counts[k] += v
-        
+
         # Hops
         hops = nav_hops(ocl)
         bucket = 0 if hops == 0 else (1 if hops == 1 else 2)
         self.hop_counts[bucket] += 1
-        
+
         # Depth
         depth = quantifier_depth(ocl)
         bucket = 0 if depth == 0 else (1 if depth == 1 else 2)
         self.depth_counts[bucket] += 1
-        
-        # Difficulty
-        diff = difficulty_score(ocl)
-        diff_key = ["easy", "medium", "hard"][diff]
-        self.difficulty_counts[diff_key] += 1
-    
+
+        # TC-based difficulty (5 buckets)
+        tc_result = compute_total_complexity(ocl, metamodel=self.metamodel, context_class=c.context)
+        tc = tc_result.tc
+        self.tc_scores.append(tc)
+        diff_label = tc_to_difficulty_label(tc)
+        self.difficulty_counts[diff_label] = self.difficulty_counts.get(diff_label, 0) + 1
+
+    def avg_tc(self) -> float:
+        """Return average TC of generated constraints."""
+        return sum(self.tc_scores) / len(self.tc_scores) if self.tc_scores else 0.0
+
     def score(self) -> float:
-        """Compute overall coverage score (0-1)."""
+        """Compute overall coverage score (0-1) including TC difficulty mix."""
         total_classes = len(self.metamodel.classes)
-        total_attrs = sum(len(c.attributes) for c in self.metamodel.classes.values())
-        total_assocs = len(self.metamodel.get_all_associations())
-        
+
         scores = []
-        
+
         # Class coverage
         if total_classes > 0:
             target_classes = self.targets.class_context_pct / 100.0 * total_classes
             scores.append(min(1.0, len(self.classes_used) / max(1, target_classes)))
-        
+
         # Operator coverage
         for op in OPERATORS:
             target = self.targets.operator_mins.get(op, 0)
             if target > 0:
                 scores.append(min(1.0, self.operator_counts[op] / target))
-        
+
         # Hop coverage
         for k in [0, 1, 2]:
             key = str(k) if k < 2 else "2plus"
             target = self.targets.nav_hops.get(key, 0)
             if target > 0:
                 scores.append(min(1.0, self.hop_counts[k] / target))
-        
+
         # Depth coverage
         for k in [0, 1, 2]:
             key = str(k) if k < 2 else "2plus"
             target = self.targets.quantifier_depth.get(key, 0)
             if target > 0:
                 scores.append(min(1.0, self.depth_counts[k] / target))
-        
-        # Difficulty mix
+
+        # TC difficulty mix (5 buckets from paper)
         total = sum(self.difficulty_counts.values()) or 1
-        for key in ["easy", "medium", "hard"]:
-            target_pct = self.targets.difficulty_mix.get(key, 0) / 100.0
-            actual_pct = self.difficulty_counts[key] / total
+        tc_mix = self.complexity_config.tc_difficulty_mix
+        for key in TC_DIFFICULTY_LEVELS:
+            target_pct = tc_mix.get(key, 0) / 100.0
+            actual_pct = self.difficulty_counts.get(key, 0) / total
             scores.append(1.0 - abs(target_pct - actual_pct))
-        
+
+        # TC range penalty: penalize if average TC is outside target range
+        if self.tc_scores:
+            avg = self.avg_tc()
+            min_tc = self.complexity_config.min_tc
+            max_tc = self.complexity_config.max_tc
+            if min_tc <= avg <= max_tc:
+                scores.append(1.0)
+            else:
+                # Distance from target range, normalized
+                dist = min(abs(avg - min_tc), abs(avg - max_tc))
+                range_size = max(max_tc - min_tc, 1.0)
+                scores.append(max(0.0, 1.0 - dist / range_size))
+
         return sum(scores) / max(1, len(scores)) if scores else 0.0
-    
+
     def deficits(self) -> List[Tuple[str, int, int]]:
         """Return list of (target_name, achieved, needed) for unmet targets."""
         gaps = []
-        
+
         # Operators
         for op in OPERATORS:
             target = self.targets.operator_mins.get(op, 0)
             if target > 0 and self.operator_counts[op] < target:
                 gaps.append((f"op:{op}", self.operator_counts[op], target))
-        
+
         # Hops
         for k in [0, 1, 2]:
             key = str(k) if k < 2 else "2plus"
             target = self.targets.nav_hops.get(key, 0)
             if target > 0 and self.hop_counts[k] < target:
                 gaps.append((f"hops:{key}", self.hop_counts[k], target))
-        
+
         # Depth
         for k in [0, 1, 2]:
             key = str(k) if k < 2 else "2plus"
             target = self.targets.quantifier_depth.get(key, 0)
             if target > 0 and self.depth_counts[k] < target:
                 gaps.append((f"depth:{key}", self.depth_counts[k], target))
-        
+
         return gaps
 
 
@@ -406,6 +429,7 @@ class BenchmarkEngineV2:
         self._string_constrained_attrs = defaultdict(set)
         
         coverage = CoverageState(self.metamodel, profile)
+        self._coverage = coverage  # Store reference for complexity steering
         total = profile.quantities.invariants
         
         logger.info(f"Target: {total} invariants")
@@ -793,6 +817,26 @@ class BenchmarkEngineV2:
                         w *= 3.0
                 except Exception:
                     pass
+
+            # COMPLEXITY STEERING: steer pattern selection toward target TC range
+            # Use pattern.complexity (1-5) as a proxy for expected TC
+            if hasattr(self, '_coverage') and self._coverage and self._coverage.tc_scores:
+                avg_tc = self._coverage.avg_tc()
+                min_tc = profile.complexity.min_tc
+                max_tc = profile.complexity.max_tc
+                pattern_complexity = getattr(p, 'complexity', 1)
+                if avg_tc < min_tc:
+                    # Below target: boost high-complexity patterns
+                    if pattern_complexity >= 3:
+                        w *= 2.0
+                    elif pattern_complexity <= 1:
+                        w *= 0.5
+                elif avg_tc > max_tc:
+                    # Above target: boost low-complexity patterns
+                    if pattern_complexity <= 2:
+                        w *= 2.0
+                    elif pattern_complexity >= 4:
+                        w *= 0.5
 
             weights.append(w)
 

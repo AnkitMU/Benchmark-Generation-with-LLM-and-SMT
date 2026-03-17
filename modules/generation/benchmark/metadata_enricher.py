@@ -3,12 +3,37 @@ Rich Metadata Extraction for OCL Constraints
 
 Extracts operators, navigation depth, quantifier depth, and difficulty labels
 to create research-grade benchmark metadata.
+
+Now integrates the comprehensive complexity metrics from:
+"A new set of metrics for measuring the complexity of OCL expressions"
+(Jha, Monahan, Wu - STAF 2025)
 """
 
 import re
-from typing import List, Set, Dict, Any
+from typing import List, Set, Dict, Any, Optional
 from modules.core.models import OCLConstraint
 from .coverage_tracker import nav_hops, quantifier_depth as coverage_quantifier_depth
+from .complexity_calculator import (
+    ComplexityWeights,
+    ComplexityResult,
+    compute_total_complexity,
+    tc_to_difficulty_label,
+    tc_to_score,
+)
+
+# Module-level complexity weights (configurable at runtime)
+_complexity_weights: ComplexityWeights = ComplexityWeights()
+
+
+def set_complexity_weights(weights: ComplexityWeights):
+    """Set the complexity weights used for all enrichment calls."""
+    global _complexity_weights
+    _complexity_weights = weights
+
+
+def get_complexity_weights() -> ComplexityWeights:
+    """Get the current complexity weights."""
+    return _complexity_weights
 
 
 # OCL Operators (grouped by category)
@@ -152,103 +177,84 @@ def count_quantifier_depth(ocl: str) -> int:
     return max_depth
 
 
-def classify_difficulty(constraint: OCLConstraint) -> str:
+def classify_difficulty(constraint: OCLConstraint,
+                        metamodel=None,
+                        all_constraints: Optional[List] = None) -> str:
     """
-    Classify constraint difficulty based on operators, depth, and complexity.
-    
-    Difficulty levels:
-        - trivial: Basic attribute access, simple comparisons
-        - easy: Single collection operation, 1-2 operators
-        - medium: Multiple operators, moderate navigation/quantifier depth
-        - hard: Deep nesting, complex operators, multiple quantifiers
-        - expert: Very deep nesting, advanced OCL features
-    
+    Classify constraint difficulty using Total Complexity (TC) metrics.
+
+    Uses the verification-driven complexity metrics from Jha et al. (STAF 2025)
+    to compute TC and map it to a difficulty label.
+
+    Difficulty levels (TC thresholds):
+        - trivial: TC <= 3
+        - easy:    TC <= 8
+        - medium:  TC <= 16
+        - hard:    TC <= 25
+        - expert:  TC > 25
+
     Args:
         constraint: OCLConstraint with metadata
-        
+        metamodel: Optional Metamodel for cardinality-aware analysis
+        all_constraints: Optional list of all constraints (for RUC)
+
     Returns:
         Difficulty label: "trivial", "easy", "medium", "hard", or "expert"
     """
-    ocl = constraint.ocl
-    
-    # Extract features
-    operators = extract_operators(ocl)
-    nav_depth = count_navigation_depth(ocl)
-    quant_depth = count_quantifier_depth(ocl)
-    
-    # Count operator types
-    has_collection_ops = any(op in operators for op in COLLECTION_OPS)
-    has_quantifiers = any(op in operators for op in ['forAll', 'exists', 'select', 'reject'])
-    has_advanced_ops = any(op in operators for op in ['closure', 'iterate', 'oclIsTypeOf', 'allInstances'])
-    has_let = 'let' in operators
-    
-    # Scoring system
-    score = 0
-    
-    # Base complexity from operator count
-    score += len(operators)
-    
-    # Navigation depth contribution
-    if nav_depth >= 4:
-        score += 3
-    elif nav_depth >= 3:
-        score += 2
-    elif nav_depth >= 2:
-        score += 1
-    
-    # Quantifier depth contribution (heavily weighted)
-    if quant_depth >= 3:
-        score += 5
-    elif quant_depth >= 2:
-        score += 3
-    elif quant_depth >= 1:
-        score += 2
-    
-    # Advanced features
-    if has_advanced_ops:
-        score += 3
-    if has_let:
-        score += 2
-    
-    # Classify based on score
-    if score <= 2:
-        return "trivial"
-    elif score <= 5:
-        return "easy"
-    elif score <= 10:
-        return "medium"
-    elif score <= 15:
-        return "hard"
-    else:
-        return "expert"
+    result = compute_total_complexity(
+        constraint.ocl,
+        metamodel=metamodel,
+        context_class=constraint.context,
+        all_constraints=all_constraints,
+        weights=_complexity_weights,
+    )
+    return tc_to_difficulty_label(result.tc)
 
 
-def enrich_constraint_metadata(constraint: OCLConstraint) -> OCLConstraint:
+def enrich_constraint_metadata(
+    constraint: OCLConstraint,
+    metamodel=None,
+    all_constraints: Optional[List] = None,
+) -> OCLConstraint:
     """
-    Enrich OCLConstraint with operators_used, navigation_depth, 
-    quantifier_depth, and difficulty metadata.
-    
+    Enrich OCLConstraint with operators, navigation depth, quantifier depth,
+    difficulty label, and full complexity metrics (TC-based).
+
     Args:
         constraint: OCLConstraint to enrich
-        
+        metamodel: Optional Metamodel for cardinality-aware NNR-C
+        all_constraints: Optional list of all constraints (for RUC)
+
     Returns:
         Same constraint with updated metadata dict
     """
-    # Extract metadata
+    # Legacy metadata (kept for backward compatibility)
     operators = extract_operators(constraint.ocl)
     nav_depth = count_navigation_depth(constraint.ocl)
     quant_depth = count_quantifier_depth(constraint.ocl)
-    difficulty = classify_difficulty(constraint)
-    
+
+    # Compute full complexity metrics
+    complexity_result = compute_total_complexity(
+        constraint.ocl,
+        metamodel=metamodel,
+        context_class=constraint.context,
+        all_constraints=all_constraints,
+        weights=_complexity_weights,
+    )
+
+    # Difficulty derived from TC
+    difficulty = tc_to_difficulty_label(complexity_result.tc)
+
     # Update metadata dict (preserve existing metadata)
     constraint.metadata.update({
         'operators_used': operators,
         'navigation_depth': nav_depth,
         'quantifier_depth': quant_depth,
         'difficulty': difficulty,
-        'operator_count': len(operators)
+        'operator_count': len(operators),
+        'complexity_metrics': complexity_result.to_dict(),
     })
-    
+
     return constraint
 
 
@@ -307,41 +313,47 @@ def extract_families(constraint: OCLConstraint) -> List[str]:
 def get_enrichment_summary(constraints: List[OCLConstraint]) -> Dict[str, Any]:
     """
     Get summary statistics of enriched constraints.
-    
+
     Args:
         constraints: List of enriched OCLConstraints
-        
+
     Returns:
-        Dictionary with aggregated statistics
+        Dictionary with aggregated statistics including TC distribution
     """
     if not constraints:
         return {}
-    
+
     difficulties = {}
     all_operators = set()
     nav_depths = []
     quant_depths = []
     families_count = {}
-    
+    tc_scores = []
+
     for c in constraints:
         # Difficulty distribution
         diff = c.metadata.get('difficulty', 'unknown')
         difficulties[diff] = difficulties.get(diff, 0) + 1
-        
+
         # All operators used
         ops = c.metadata.get('operators_used', [])
         all_operators.update(ops)
-        
+
         # Depth distributions
         nav_depths.append(c.metadata.get('navigation_depth', 0))
         quant_depths.append(c.metadata.get('quantifier_depth', 0))
-        
+
         # Family distribution
         fams = extract_families(c)
         for fam in fams:
             families_count[fam] = families_count.get(fam, 0) + 1
-    
-    return {
+
+        # TC scores
+        cm = c.metadata.get('complexity_metrics', {})
+        tc = cm.get('tc', 0.0)
+        tc_scores.append(tc)
+
+    summary = {
         'total_constraints': len(constraints),
         'difficulty_distribution': difficulties,
         'unique_operators': len(all_operators),
@@ -356,8 +368,26 @@ def get_enrichment_summary(constraints: List[OCLConstraint]) -> Dict[str, Any]:
             'avg': sum(quant_depths) / len(quant_depths) if quant_depths else 0,
             'distribution': {i: quant_depths.count(i) for i in range(max(quant_depths) + 1)} if quant_depths else {}
         },
-        'family_distribution': families_count
+        'family_distribution': families_count,
     }
+
+    # TC distribution statistics
+    if tc_scores:
+        sorted_tc = sorted(tc_scores)
+        n = len(sorted_tc)
+        mean_tc = sum(sorted_tc) / n
+        median_tc = sorted_tc[n // 2] if n % 2 == 1 else (sorted_tc[n // 2 - 1] + sorted_tc[n // 2]) / 2
+        variance = sum((x - mean_tc) ** 2 for x in sorted_tc) / n
+        stddev_tc = variance ** 0.5
+        summary['total_complexity'] = {
+            'min': round(sorted_tc[0], 3),
+            'max': round(sorted_tc[-1], 3),
+            'mean': round(mean_tc, 3),
+            'median': round(median_tc, 3),
+            'stddev': round(stddev_tc, 3),
+        }
+
+    return summary
 
 
 def normalize_ocl(ocl: str) -> str:
@@ -383,14 +413,15 @@ def similarity(c1: OCLConstraint, c2: OCLConstraint) -> float:
 
 def difficulty_score(ocl: str) -> int:
     """
-    Coarse difficulty bucket based on navigation hops and quantifier depth.
+    Coarse difficulty bucket based on Total Complexity (TC).
+
     Returns: 0 (easy), 1 (medium), 2 (hard)
+
+    Backward compatible signature — now TC-driven instead of
+    simple hops+depth heuristic.
     """
-    hops = nav_hops(ocl)
-    depth = coverage_quantifier_depth(ocl)
-    score = hops + depth
-    if score <= 1:
-        return 0  # easy
-    if score <= 3:
-        return 1  # medium
-    return 2      # hard
+    result = compute_total_complexity(
+        ocl,
+        weights=_complexity_weights,
+    )
+    return tc_to_score(result.tc)

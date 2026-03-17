@@ -1,10 +1,3 @@
-"""
-Semantic Attribute Rules for Business Logic Generation
-
-Provides domain knowledge about attribute semantics to prevent
-nonsensical constraint generation (e.g., dateFrom = dateTo).
-"""
-
 from typing import Dict, List, Set, Tuple
 
 # ===== ATTRIBUTE SEMANTIC GROUPS =====
@@ -37,7 +30,7 @@ DESCRIPTIVE_ATTRIBUTES = {
 }
 
 
-# ===== SEMANTIC COMPATIBILITY RULES =====
+
 
 def get_attribute_semantic_group(attr_name: str) -> str:
     """Get semantic group for an attribute."""
@@ -57,7 +50,6 @@ def get_attribute_semantic_group(attr_name: str) -> str:
         return 'unknown'
 
 
-# ===== FORBIDDEN EQUALITY COMBINATIONS =====
 
 FORBIDDEN_EQUALITY_PAIRS = {
     # Temporal bounds should use comparison, not equality
@@ -151,22 +143,12 @@ def get_preferred_operator_for_pair(attr1: str, attr2: str) -> str:
     if group1 == group2 and group1 in ['identifier', 'status', 'descriptive']:
         return '='
     
-    return None  # No strong preference
+    return None 
 
 
-# ===== PATTERN TEMPLATE VALIDATION =====
+
 
 def is_valid_pattern_template(pattern_id: str, template: str) -> Tuple[bool, str]:
-    """
-    Validate if a pattern template is logically sound.
-    
-    Args:
-        pattern_id: Pattern identifier  
-        template: OCL template string
-        
-    Returns:
-        (is_valid, reason)
-    """
     template_lower = template.lower()
     
     # Tautologies: Always true patterns
@@ -219,8 +201,7 @@ def is_valid_pattern_template(pattern_id: str, template: str) -> Tuple[bool, str
     
     # Invalid operations on wrong types
     if '.notempty()' in template_lower or '.isempty()' in template_lower:
-        # isEmpty/notEmpty only work on collections, not primitives
-        # Check if being called on {attribute} rather than {collection}
+      
         import re
         if re.search(r'\{(?!.*collection)\w*attribute\w*\}\.(notempty|isempty)\(\)', template, re.IGNORECASE):
             return False, f"Invalid operation: isEmpty/notEmpty only work on collections"
@@ -237,8 +218,7 @@ def is_valid_pattern_template(pattern_id: str, template: str) -> Tuple[bool, str
     
     # Arithmetic operations without comparisons
     if '.min(' in template_lower or '.max(' in template_lower or '.abs()' in template_lower:
-        # These return numeric values, need comparison
-        # Check that there's ACTUALLY a comparison operator (not just in parameter names)
+        
         has_comparison = any(f' {op} ' in template or f'{op} ' in template or f' {op}' in template 
                            for op in ['=', '>', '<', '>=', '<=', '<>'])
         if not has_comparison:
@@ -257,23 +237,14 @@ def is_valid_pattern_template(pattern_id: str, template: str) -> Tuple[bool, str
     return True, ""
 
 
-# ===== PATTERN-SPECIFIC RULES =====
+
 
 class SemanticValidator:
     """Validates parameters based on semantic rules."""
     
     @staticmethod
     def validate_two_attribute_pattern(pattern_id: str, params: Dict) -> Tuple[bool, str]:
-        """
-        Validate patterns that compare two attributes.
         
-        Args:
-            pattern_id: Pattern identifier
-            params: Generated parameters
-            
-        Returns:
-            (is_valid, reason)
-        """
         if pattern_id == 'two_attributes_equal':
             attr1 = params.get('first_attribute', '')
             attr2 = params.get('second_attribute', '')
@@ -285,8 +256,6 @@ class SemanticValidator:
             attr1 = params.get('attr1', '')
             attr2 = params.get('attr2', '')
             operator = params.get('operator', '=')
-            
-            # Suggest better operator
             preferred_op = get_preferred_operator_for_pair(attr1, attr2)
             if preferred_op and operator == '=' and preferred_op != '=':
                 return False, f"Use '{preferred_op}' instead of '=' for {attr1} and {attr2}"
@@ -295,27 +264,17 @@ class SemanticValidator:
     
     @staticmethod
     def validate_parameters(pattern_id: str, context: str, params: Dict) -> Tuple[bool, str]:
-        """
-        Main validation entry point.
-        
-        Returns:
-            (is_valid, reason)
-        """
-        # Check two-attribute patterns
         if pattern_id in ['two_attributes_equal', 'two_attributes_not_equal', 'numeric_comparison']:
             return SemanticValidator.validate_two_attribute_pattern(pattern_id, params)
-        
-        # Add more pattern-specific rules here
         
         return True, ""
 
 
-# ===== USAGE EXAMPLE =====
+
 
 if __name__ == '__main__':
     print("=== Semantic Rules Test ===\n")
     
-    # Test cases
     test_pairs = [
         ('dateFrom', 'dateTo'),
         ('mileage', 'tankLevel'),

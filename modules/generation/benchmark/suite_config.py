@@ -1,7 +1,3 @@
-"""
-Benchmark Suite Configuration
-Defines suite-level specs for automatic benchmark generation.
-"""
 from dataclasses import dataclass, field
 from typing import List, Dict, Optional
 import yaml

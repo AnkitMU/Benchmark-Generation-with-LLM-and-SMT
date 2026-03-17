@@ -1,7 +1,3 @@
-"""
-Business Logic Profile - Generates semantically realistic constraints
-Optimized for real-world business rules, not just ML training
-"""
 import sys
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent))
@@ -11,12 +7,6 @@ from modules.generation.benchmark.bench_config import BenchmarkProfile
 def get_business_logic_profile() -> BenchmarkProfile:
     """
     Profile optimized for generating realistic business logic constraints.
-    
-    Key differences from lib_easy/standard/hard:
-    - Suppresses semantically weird patterns (equality of unrelated attributes)
-    - Boosts comparison patterns (<=, >=, <, >) for temporal/numeric
-    - Prioritizes validation rules (not null, ranges, uniqueness)
-    - Emphasizes cardinality and navigation (common in business rules)
     """
     profile = BenchmarkProfile()
     
@@ -37,13 +27,13 @@ def get_business_logic_profile() -> BenchmarkProfile:
         "enum": 0,              # Enums (skip if not in metamodel)
     }
     
-    # === PATTERN WEIGHTS (Key to Business Logic Quality) ===
+
     profile.library.weights = {
         # ============================================
         # SUPPRESS: Semantically Weird Patterns
         # ============================================
-        'two_attributes_equal': 0.0,           #  Disable (causes dateFrom = dateTo)
-        'two_attributes_not_equal': 0.0,       #  Disable (weird in business logic)
+        'two_attributes_equal': 0.0,           
+        'two_attributes_not_equal': 0.0,       
         
         # ============================================
         # BOOST: Comparison Patterns (Business Rules)
@@ -101,16 +91,16 @@ def get_business_logic_profile() -> BenchmarkProfile:
         # ============================================
         # SUPPRESS: Complex/Rare Patterns
         # ============================================
-        'closure_transitive': 0.5,             #  Rare in business logic
-        'nested_quantifiers': 0.5,             #  Complex, rare
-        'tuple_type': 0.0,                     #  Very rare
+        'closure_transitive': 0.5,            
+        'nested_quantifiers': 0.5,             
+        'tuple_type': 0.0,                     
         
         # ============================================
         # BOOST: New Type Operations (Useful)
         # ============================================
-        'oclIsKindOf_check': 5.0,              #  Useful for inheritance
-        'oclIsTypeOf_check': 3.0,              #  Less common
-        'allInstances_check': 2.0,             #  Rare in business rules
+        'oclIsKindOf_check': 5.0,             
+        'oclIsTypeOf_check': 3.0,           
+        'allInstances_check': 2.0,            
         
         # ============================================
         # BOOST: New Collection Operations
@@ -153,7 +143,7 @@ def get_business_logic_profile() -> BenchmarkProfile:
     return profile
 
 
-# === USAGE EXAMPLE ===
+
 if __name__ == '__main__':
     profile = get_business_logic_profile()
     print("Business Logic Profile Created")

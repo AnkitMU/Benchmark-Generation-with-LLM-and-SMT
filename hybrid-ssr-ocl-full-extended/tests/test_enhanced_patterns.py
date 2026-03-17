@@ -1,9 +1,4 @@
 #!/usr/bin/env python3
-"""
-Integration tests for the 10 new OCL patterns from enhanced_encoders.py
-Tests verify that each pattern is correctly classified and encoded
-"""
-
 import pytest
 from z3 import sat, unsat, Solver, Int, Bool
 from ssr_ocl.neural.pattern_classifier import NeuralOCLPatternClassifier, OCLPatternType
@@ -27,7 +22,7 @@ class TestPatternClassification:
         # Accept any valid pattern classification with reasonable confidence
         assert pattern != OCLPatternType.UNKNOWN or confidence >= 0.5
         assert confidence >= 0.0
-        print(f" Exactly One: {pattern.value} (confidence: {confidence:.3f})")
+        print(f"✅ Exactly One: {pattern.value} (confidence: {confidence:.3f})")
     
     def test_classify_closure(self):
         """Test classification of closure pattern"""
@@ -36,7 +31,7 @@ class TestPatternClassification:
         # Accept collection membership as valid for closure patterns
         assert pattern in [OCLPatternType.CLOSURE, OCLPatternType.COLLECTION_MEMBERSHIP, OCLPatternType.UNKNOWN]
         assert confidence >= 0.0
-        print(f" Closure: {pattern.value} (confidence: {confidence:.3f})")
+        print(f"✅ Closure: {pattern.value} (confidence: {confidence:.3f})")
     
     def test_classify_acyclicity(self):
         """Test classification of acyclicity pattern"""
@@ -45,7 +40,7 @@ class TestPatternClassification:
         # Accept reasonable pattern predictions
         assert pattern is not None
         assert confidence >= 0.0
-        print(f" Acyclicity: {pattern.value} (confidence: {confidence:.3f})")
+        print(f"✅ Acyclicity: {pattern.value} (confidence: {confidence:.3f})")
     
     def test_classify_iterate(self):
         """Test classification of iterate pattern"""
@@ -54,7 +49,7 @@ class TestPatternClassification:
         # Accept numeric comparison as related pattern
         assert pattern in [OCLPatternType.ITERATE, OCLPatternType.NUMERIC_COMPARISON]
         assert confidence >= 0.0
-        print(f" Iterate: {pattern.value} (confidence: {confidence:.3f})")
+        print(f"✅ Iterate: {pattern.value} (confidence: {confidence:.3f})")
     
     def test_classify_implies(self):
         """Test classification of implies pattern"""
@@ -63,7 +58,7 @@ class TestPatternClassification:
         # Accept numeric comparison as implies often involves comparisons
         assert pattern in [OCLPatternType.IMPLIES, OCLPatternType.NUMERIC_COMPARISON]
         assert confidence >= 0.0
-        print(f" Implies: {pattern.value} (confidence: {confidence:.3f})")
+        print(f"✅ Implies: {pattern.value} (confidence: {confidence:.3f})")
     
     def test_classify_safe_navigation(self):
         """Test classification of safe navigation pattern"""
@@ -72,7 +67,7 @@ class TestPatternClassification:
         # Accept null check as related to safe navigation
         assert pattern in [OCLPatternType.SAFE_NAVIGATION, OCLPatternType.IMPLIES, OCLPatternType.NULL_CHECK]
         assert confidence >= 0.0
-        print(f" Safe Navigation: {pattern.value} (confidence: {confidence:.3f})")
+        print(f"✅ Safe Navigation: {pattern.value} (confidence: {confidence:.3f})")
     
     def test_classify_type_check(self):
         """Test classification of type check pattern"""
@@ -81,7 +76,7 @@ class TestPatternClassification:
         # Type check patterns are distinct
         assert pattern is not None
         assert confidence >= 0.0
-        print(f" Type Check: {pattern.value} (confidence: {confidence:.3f})")
+        print(f"✅ Type Check: {pattern.value} (confidence: {confidence:.3f})")
     
     def test_classify_subset_disjoint(self):
         """Test classification of subset/disjoint pattern"""
@@ -90,7 +85,7 @@ class TestPatternClassification:
         # Accept collection membership as related
         assert pattern in [OCLPatternType.SUBSET_DISJOINT, OCLPatternType.COLLECTION_MEMBERSHIP]
         assert confidence >= 0.0
-        print(f" Subset/Disjoint: {pattern.value} (confidence: {confidence:.3f})")
+        print(f"✅ Subset/Disjoint: {pattern.value} (confidence: {confidence:.3f})")
     
     def test_classify_ordering(self):
         """Test classification of ordering pattern"""
@@ -99,7 +94,7 @@ class TestPatternClassification:
         # Accept numeric comparison as ordering involves comparisons
         assert pattern in [OCLPatternType.ORDERING, OCLPatternType.NUMERIC_COMPARISON]
         assert confidence >= 0.0
-        print(f" Ordering: {pattern.value} (confidence: {confidence:.3f})")
+        print(f"✅ Ordering: {pattern.value} (confidence: {confidence:.3f})")
     
     def test_classify_contractual(self):
         """Test classification of contractual/temporal pattern"""
@@ -108,7 +103,7 @@ class TestPatternClassification:
         # Accept numeric patterns
         assert pattern in [OCLPatternType.CONTRACTUAL, OCLPatternType.NUMERIC_COMPARISON, OCLPatternType.ARITHMETIC_EXPRESSION]
         assert confidence >= 0.0
-        print(f" Contractual: {pattern.value} (confidence: {confidence:.3f})")
+        print(f"✅ Contractual: {pattern.value} (confidence: {confidence:.3f})")
 
 
 class TestPatternIntegration:
@@ -121,7 +116,7 @@ class TestPatternIntegration:
         ocl = "self.accounts->one(a | a.isPrimary = true)"
         pattern, confidence = classifier.predict(ocl)
         
-        print(f" Pipeline Test - Pattern: {pattern.value}, Confidence: {confidence:.3f}")
+        print(f"✅ Pipeline Test - Pattern: {pattern.value}, Confidence: {confidence:.3f}")
         # Rule-based fallback should at least detect collection operations
         assert pattern in [OCLPatternType.COLLECTION_MEMBERSHIP, OCLPatternType.UNKNOWN]
     
@@ -132,7 +127,7 @@ class TestPatternIntegration:
         ocl = "self.prerequisites->closure(prereq)->includes(mathBasics)"
         pattern, confidence = classifier.predict(ocl)
         
-        print(f" Pipeline Test - Pattern: {pattern.value}, Confidence: {confidence:.3f}")
+        print(f"✅ Pipeline Test - Pattern: {pattern.value}, Confidence: {confidence:.3f}")
         # Rule-based should detect collection membership with includes
         assert pattern in [OCLPatternType.COLLECTION_MEMBERSHIP, OCLPatternType.UNKNOWN]
 
@@ -154,7 +149,7 @@ class TestPatternCoverage:
         for pattern_name in expected_patterns:
             assert pattern_name in defined_patterns, f"Pattern {pattern_name} not defined"
         
-        print(f" All {len(defined_patterns)} patterns defined (plus UNKNOWN fallback)")
+        print(f"✅ All {len(defined_patterns)} patterns defined (plus UNKNOWN fallback)")
 
 
 if __name__ == "__main__":

@@ -53,6 +53,57 @@ def types_touched(ocl: str) -> Dict[str, int]:
     }
 
 
+def compute_tc_distribution(constraints) -> Dict:
+    """
+    Compute Total Complexity (TC) distribution statistics.
+
+    Returns:
+        Dictionary with min, max, mean, median, stddev, and bucket counts
+    """
+    tc_scores = []
+    for c in constraints:
+        cm = getattr(c, 'metadata', {})
+        if isinstance(cm, dict):
+            metrics = cm.get('complexity_metrics', {})
+            tc = metrics.get('tc', 0.0)
+        else:
+            tc = 0.0
+        tc_scores.append(tc)
+
+    if not tc_scores:
+        return {}
+
+    sorted_tc = sorted(tc_scores)
+    n = len(sorted_tc)
+    mean_tc = sum(sorted_tc) / n
+    median_tc = sorted_tc[n // 2] if n % 2 == 1 else (sorted_tc[n // 2 - 1] + sorted_tc[n // 2]) / 2
+    variance = sum((x - mean_tc) ** 2 for x in sorted_tc) / n
+    stddev_tc = variance ** 0.5
+
+    # Bucket counts
+    buckets = {"trivial": 0, "easy": 0, "medium": 0, "hard": 0, "expert": 0}
+    for tc in tc_scores:
+        if tc <= 3.0:
+            buckets["trivial"] += 1
+        elif tc <= 8.0:
+            buckets["easy"] += 1
+        elif tc <= 16.0:
+            buckets["medium"] += 1
+        elif tc <= 25.0:
+            buckets["hard"] += 1
+        else:
+            buckets["expert"] += 1
+
+    return {
+        'min': round(sorted_tc[0], 3),
+        'max': round(sorted_tc[-1], 3),
+        'mean': round(mean_tc, 3),
+        'median': round(median_tc, 3),
+        'stddev': round(stddev_tc, 3),
+        'buckets': buckets,
+    }
+
+
 def compute_coverage(constraints) -> Dict:
     classes = set()
     attributes = set()
@@ -92,7 +143,7 @@ def compute_coverage(constraints) -> Dict:
         for k,v in th.items():
             type_hits[k] += 1 if v>0 else 0
 
-    return {
+    result = {
         'classes_used': len(classes),
         'attributes_used': len(attributes),
         'associations_used': len(associations),
@@ -101,3 +152,10 @@ def compute_coverage(constraints) -> Dict:
         'depth_hist': depth_hist,
         'types': type_hits,
     }
+
+    # Include TC distribution if constraints have complexity metrics
+    tc_dist = compute_tc_distribution(constraints)
+    if tc_dist:
+        result['tc_distribution'] = tc_dist
+
+    return result

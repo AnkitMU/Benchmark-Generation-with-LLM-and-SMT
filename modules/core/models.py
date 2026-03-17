@@ -1,9 +1,3 @@
-"""
-Core Data Models for Revolutionary OCL Generation Framework
-
-This module defines the foundational data structures used throughout the framework.
-"""
-
 import logging
 from dataclasses import dataclass, field
 from typing import List, Dict, Any, Optional, Union, Callable

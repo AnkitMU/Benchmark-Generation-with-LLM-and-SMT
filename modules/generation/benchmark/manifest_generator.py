@@ -1,13 +1,3 @@
-"""
-Manifest Generator for ML-Friendly Output
-
-Generates manifest.jsonl files where each line is a complete JSON object
-representing one constraint with all metadata. This format is ideal for:
-- Machine learning datasets
-- Streaming data processing
-- Line-by-line parsing without loading entire file
-"""
-
 import json
 import sys
 from pathlib import Path

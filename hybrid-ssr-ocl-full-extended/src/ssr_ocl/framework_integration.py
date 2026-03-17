@@ -1,18 +1,4 @@
 #!/usr/bin/env python3
-"""
-Complete Two-Phase Framework Integration
-
-Phase 1: Domain Adaptation (Training)
-  1. Extract Metamodel (Vocabulary) from XMI
-  2. Generate Domain Data using 50 OCL patterns
-  3. Retrain Classifier on merged dataset
-
-Phase 2: OCL Verification (Application)
-  1. Classify Real Constraint
-  2. Apply Algorithm (Classifier)
-  3. Put Pattern in Z3 (Encoder)
-"""
-
 import json
 import sys
 from pathlib import Path

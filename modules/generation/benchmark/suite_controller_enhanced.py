@@ -1,7 +1,4 @@
 """
-Enhanced Benchmark Suite Controller with Advanced Features
-Integrates all 6 advanced features with comprehensive logging.
-
 Features Integrated:
 1. Metadata Enrichment (operators, depth, difficulty)
 2. Manifest Generation (ML-friendly JSONL format)

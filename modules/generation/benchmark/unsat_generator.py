@@ -1,6 +1,4 @@
 """
-SAT/UNSAT Variant Generation
-
 Creates intentionally unsatisfiable (UNSAT) constraints by mutating
 satisfiable (SAT) constraints. This is useful for:
 - Testing solver completeness

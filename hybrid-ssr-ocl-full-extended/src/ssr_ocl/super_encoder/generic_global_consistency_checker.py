@@ -1,30 +1,8 @@
 #!/usr/bin/env python3
-"""
-Generic Global Consistency Checker for OCL Constraints
-======================================================
-
-Verifies that all OCL constraints can be satisfied simultaneously for ANY model.
-
- FULLY GENERIC - Works with:
-- CarRental model
-- University model  
-- Library model
-- ANY Ecore/UML model!
-
-This checker dynamically extracts metamodel from XMI and uses pattern-based
-constraint encoding via enhanced_smt_encoder.
-
-Usage:
-    checker = GenericGlobalConsistencyChecker('model.xmi')
-    result, model = checker.verify_all_constraints(constraints, scope)
-"""
-
 import sys
 from pathlib import Path
 from typing import Dict, List, Tuple, Optional, Any
 from z3 import *
-
-# Handle both relative and absolute imports
 try:
     from ..lowering.association_backed_encoder import XMIMetadataExtractor
     from .enhanced_smt_encoder import EnhancedSMTEncoder
@@ -35,7 +13,7 @@ except ImportError:
     from ssr_ocl.super_encoder.enhanced_smt_encoder import EnhancedSMTEncoder
     from ssr_ocl.super_encoder.date_adapter import DateAdapter
 
-# Import PatternMapperV2 for universal→canonical pattern mapping with rewriting
+
 try:
     # Add framework root to path for importing from modules/
     framework_root = Path(__file__).parent.parent.parent.parent.parent

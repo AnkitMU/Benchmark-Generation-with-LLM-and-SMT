@@ -1,14 +1,3 @@
-"""
-Solver-based Implication Checking for OCL Constraints
-
-Uses Z3 solver to detect logical implications between constraints:
-- C1 implies C2: If C2 is always true when C1 is true
-- C1 equivalent to C2: If C1 ⟺ C2
-- C1 contradicts C2: If C1 ∧ C2 is unsatisfiable
-
-This provides the strongest form of redundancy detection.
-"""
-
 import re
 from typing import List, Tuple, Optional, Dict, Any
 from enum import Enum

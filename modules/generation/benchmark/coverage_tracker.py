@@ -1,7 +1,3 @@
-"""
-Coverage tracker utilities: compute achieved coverage over generated constraints.
-Heuristic string-based analyzers to avoid full AST parsing.
-"""
 from __future__ import annotations
 from typing import Dict, List, Tuple
 import re
@@ -15,27 +11,17 @@ OPERATORS = [
 def count_operators(ocl: str) -> Dict[str, int]:
     counts: Dict[str, int] = {op: 0 for op in OPERATORS}
     for op in OPERATORS:
-        # rough regex word-boundary
         counts[op] = len(re.findall(r"\b"+re.escape(op)+r"\b", ocl))
     return counts
 
 
 def nav_hops(ocl: str) -> int:
-    """
-    Estimate navigation hops.
-    Count '->' plus dot-navigation that follows 'self'.
-    This avoids counting decimals or enum namespace separators.
-    """
     arrow_hops = ocl.count('->')
     dot_hops = len(re.findall(r"\bself\.[A-Za-z_][A-Za-z0-9_]*(?:\.[A-Za-z_][A-Za-z0-9_]*)+", ocl))
     return arrow_hops + dot_hops
 
 
 def quantifier_depth(ocl: str) -> int:
-    """
-    Approximate nesting depth of quantifiers.
-    Count quantifier lambdas like forAll(...|...), exists(...|...), select(...|...), collect(...|...).
-    """
     return len(re.findall(r"->(?:forAll|exists|select|collect)\s*\([^|]*\|", ocl))
 
 

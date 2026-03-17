@@ -1,11 +1,3 @@
-"""
-Constraint Similarity Utilities
-
-Provides two families of similarity checks for OCL constraints:
-1) Structural similarity via lightweight AST + tree-edit distance
-2) Semantic similarity via SentenceTransformer embeddings
-"""
-
 from __future__ import annotations
 
 import re
@@ -16,10 +8,6 @@ import numpy as np
 
 from modules.core.models import OCLConstraint
 
-
-# =========================
-# Structural (AST) Similarity
-# =========================
 
 @dataclass
 class ASTNode:
@@ -284,9 +272,6 @@ def compute_ast_features(constraint: OCLConstraint) -> Dict[str, Any]:
     }
 
 
-# =========================
-# Semantic Similarity
-# =========================
 
 _model = None
 _model_name = 'all-MiniLM-L6-v2'
@@ -297,7 +282,9 @@ def get_sentence_transformer():
     if _model is None:
         try:
             from sentence_transformers import SentenceTransformer
+            print(f"Loading SentenceTransformer model: {_model_name}")
             _model = SentenceTransformer(_model_name)
+            print("Model loaded successfully")
         except ImportError:
             raise ImportError(
                 "sentence-transformers not installed. "

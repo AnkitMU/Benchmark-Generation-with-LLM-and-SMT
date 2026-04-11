@@ -17,7 +17,7 @@ from modules.generation.composer.ocl_generator import OCLGenerator
 
 from .bench_config import BenchmarkProfile, FAMILY_KEYS, OPERATORS, TYPES, TC_DIFFICULTY_LEVELS
 from .coverage_tracker import compute_coverage, count_operators, nav_hops, quantifier_depth
-from .metadata_enricher import similarity, difficulty_score
+from .metadata_enricher import similarity, difficulty_score, get_complexity_weights
 from .complexity_calculator import compute_total_complexity, tc_to_difficulty_label, ComplexityWeights
 
 
@@ -51,10 +51,12 @@ def classify_family(pattern_id: str, category: str) -> str:
 
 class CoverageState:
     """Live coverage tracking during generation with TC-based complexity awareness."""
-    def __init__(self, metamodel: Metamodel, targets: 'BenchmarkProfile'):
+    def __init__(self, metamodel: Metamodel, targets: 'BenchmarkProfile',
+                 complexity_weights: 'ComplexityWeights' = None):
         self.metamodel = metamodel
         self.targets = targets.coverage
         self.complexity_config = targets.complexity
+        self.complexity_weights = complexity_weights
         self.constraints: List[OCLConstraint] = []
 
         # Track usage
@@ -70,8 +72,12 @@ class CoverageState:
         self.difficulty_counts: Dict[str, int] = {k: 0 for k in TC_DIFFICULTY_LEVELS}
         self.tc_scores: List[float] = []
 
+        # Per-dimension score tracking (Structural & Computational)
+        self.structural_scores: List[float] = []
+        self.computational_scores: List[float] = []
+
     def add_constraint(self, c: OCLConstraint):
-        """Add constraint and update coverage including TC metrics."""
+        """Add constraint and update coverage including TC and per-dimension metrics."""
         self.constraints.append(c)
         self.classes_used.add(c.context)
 
@@ -91,16 +97,27 @@ class CoverageState:
         bucket = 0 if depth == 0 else (1 if depth == 1 else 2)
         self.depth_counts[bucket] += 1
 
-        # TC-based difficulty (5 buckets)
-        tc_result = compute_total_complexity(ocl, metamodel=self.metamodel, context_class=c.context)
+        # TC-based difficulty (5 buckets) + per-dimension tracking
+        tc_result = compute_total_complexity(ocl, metamodel=self.metamodel, context_class=c.context,
+                                             weights=self.complexity_weights)
         tc = tc_result.tc
         self.tc_scores.append(tc)
+        self.structural_scores.append(tc_result.structural_total)
+        self.computational_scores.append(tc_result.computational_total)
         diff_label = tc_to_difficulty_label(tc)
         self.difficulty_counts[diff_label] = self.difficulty_counts.get(diff_label, 0) + 1
 
     def avg_tc(self) -> float:
         """Return average TC of generated constraints."""
         return sum(self.tc_scores) / len(self.tc_scores) if self.tc_scores else 0.0
+
+    def avg_structural(self) -> float:
+        """Return average structural complexity of generated constraints."""
+        return sum(self.structural_scores) / len(self.structural_scores) if self.structural_scores else 0.0
+
+    def avg_computational(self) -> float:
+        """Return average computational complexity of generated constraints."""
+        return sum(self.computational_scores) / len(self.computational_scores) if self.computational_scores else 0.0
 
     def score(self) -> float:
         """Compute overall coverage score (0-1) including TC difficulty mix."""
@@ -153,6 +170,32 @@ class CoverageState:
                 dist = min(abs(avg - min_tc), abs(avg - max_tc))
                 range_size = max(max_tc - min_tc, 1.0)
                 scores.append(max(0.0, 1.0 - dist / range_size))
+
+        # Per-dimension range penalties (Structural)
+        if self.structural_scores and self.complexity_config.structural_enabled:
+            s_min = self.complexity_config.structural_target_min
+            s_max = self.complexity_config.structural_target_max
+            if s_min is not None and s_max is not None:
+                avg_s = self.avg_structural()
+                if s_min <= avg_s <= s_max:
+                    scores.append(1.0)
+                else:
+                    dist = min(abs(avg_s - s_min), abs(avg_s - s_max))
+                    range_size = max(s_max - s_min, 1.0)
+                    scores.append(max(0.0, 1.0 - dist / range_size))
+
+        # Per-dimension range penalties (Computational)
+        if self.computational_scores and self.complexity_config.computational_enabled:
+            c_min = self.complexity_config.computational_target_min
+            c_max = self.complexity_config.computational_target_max
+            if c_min is not None and c_max is not None:
+                avg_c = self.avg_computational()
+                if c_min <= avg_c <= c_max:
+                    scores.append(1.0)
+                else:
+                    dist = min(abs(avg_c - c_min), abs(avg_c - c_max))
+                    range_size = max(c_max - c_min, 1.0)
+                    scores.append(max(0.0, 1.0 - dist / range_size))
 
         return sum(scores) / max(1, len(scores)) if scores else 0.0
 
@@ -304,8 +347,21 @@ class BenchmarkEngineV2:
             return True
         return any(x in t_lower for x in ['int', 'long', 'short'])
     
-    def _attribute_names_compatible(self, first_attr: str, second_attr: str) -> bool:
-        """Heuristic compatibility check based on attribute names."""
+    def _attribute_names_compatible(self, first_attr: str, second_attr: str,
+                                     context: str = None) -> bool:
+        """
+        Check if two attributes are semantically compatible for comparison.
+
+        Priority: LLM matrix (Phi-4) → keyword heuristics (fallback).
+        """
+        # 1. Try LLM semantic matrix first (O(1) lookup, pre-computed)
+        if context and hasattr(self, 'semantic_matrix') and self.semantic_matrix:
+            result = self.semantic_matrix.is_comparable(context, first_attr, second_attr)
+            if result is not None:
+                return result
+            # If pair not in matrix, fall through to heuristics
+
+        # 2. Fallback: keyword-based heuristics
         first_lower = first_attr.lower()
         second_lower = second_attr.lower()
 
@@ -343,14 +399,16 @@ class BenchmarkEngineV2:
         return next((a for a in self.metamodel.get_associations_for(context) if a.ref_name == ref_name), None)
     
     def __init__(self, metamodel: Metamodel, enable_semantic_validation: bool = True,
-                 verification_enabled: bool = False):
+                 verification_enabled: bool = False, semantic_matrix=None):
         logger.info("="*80)
         logger.info("Initializing BenchmarkEngineV2")
         logger.info(f"Metamodel: {len(metamodel.classes)} classes")
         logger.info(f"Semantic validation: {'ENABLED' if enable_semantic_validation else 'DISABLED'}")
-        
+        logger.info(f"LLM semantic matrix: {'LOADED' if semantic_matrix else 'NOT AVAILABLE (using heuristics)'}")
+
         self.metamodel = metamodel
         self.verification_enabled = verification_enabled
+        self.semantic_matrix = semantic_matrix  # LLM-based compatibility matrix (or None)
         self.registry = PatternRegistry()
         self.generator = OCLGenerator(pattern_registry=self.registry, metamodel=metamodel)
         logger.debug(f"Pattern registry loaded: {len(self.registry.get_all_patterns())} patterns")
@@ -428,7 +486,8 @@ class BenchmarkEngineV2:
         # Reset per-run string constraint tracking
         self._string_constrained_attrs = defaultdict(set)
         
-        coverage = CoverageState(self.metamodel, profile)
+        coverage = CoverageState(self.metamodel, profile,
+                                  complexity_weights=get_complexity_weights())
         self._coverage = coverage  # Store reference for complexity steering
         total = profile.quantities.invariants
         
@@ -442,15 +501,12 @@ class BenchmarkEngineV2:
         print(f"Classes: {len(self.metamodel.get_class_names())}")
         print(f"Enabled patterns: {len(profile.library.enabled) if profile.library.enabled else len(self.all_patterns)}")
         
-        # Phase 0: DISABLED - Skip metamodel-driven invariants
-        # Using template-based generation only for better semantic quality
-        print(f"\n--- Phase 0: DISABLED (template-based generation only) ---")
-        
         # Initialize empty constraint list and class quota
         constraints = []
         class_quota = {c: 0 for c in self.metamodel.get_class_names()}
-        
+
         # Phase 1: Family-based generation
+        print(f"\n--- Phase 1: Family-based generation ---")
         logger.info("\nPHASE 1: Family-based generation")
         plan = self._plan_families(profile)
         logger.debug(f"Family plan: {plan}")
@@ -838,6 +894,45 @@ class BenchmarkEngineV2:
                     elif pattern_complexity >= 4:
                         w *= 0.5
 
+            # PER-DIMENSION STEERING: steer toward per-dimension target ranges
+            if hasattr(self, '_coverage') and self._coverage:
+                pattern_complexity = getattr(p, 'complexity', 1)
+                cc = profile.complexity
+
+                # Structural steering
+                if (cc.structural_enabled and cc.structural_target_min is not None
+                        and cc.structural_target_max is not None
+                        and self._coverage.structural_scores):
+                    avg_s = self._coverage.avg_structural()
+                    if avg_s < cc.structural_target_min:
+                        # Need more structural complexity: boost navigation-heavy patterns
+                        if pattern_complexity >= 3:
+                            w *= 1.5
+                        elif pattern_complexity <= 1:
+                            w *= 0.7
+                    elif avg_s > cc.structural_target_max:
+                        if pattern_complexity <= 2:
+                            w *= 1.5
+                        elif pattern_complexity >= 4:
+                            w *= 0.7
+
+                # Computational steering
+                if (cc.computational_enabled and cc.computational_target_min is not None
+                        and cc.computational_target_max is not None
+                        and self._coverage.computational_scores):
+                    avg_c = self._coverage.avg_computational()
+                    if avg_c < cc.computational_target_min:
+                        # Need more computational complexity: boost quantifier/iteration patterns
+                        if pattern_complexity >= 3:
+                            w *= 1.5
+                        elif pattern_complexity <= 1:
+                            w *= 0.7
+                    elif avg_c > cc.computational_target_max:
+                        if pattern_complexity <= 2:
+                            w *= 1.5
+                        elif pattern_complexity >= 4:
+                            w *= 0.7
+
             weights.append(w)
 
         # If relevance weighting zeroed out candidates, fall back to uniform weights
@@ -1116,9 +1211,9 @@ class BenchmarkEngineV2:
                             opt_type = self._get_attribute_type(context, opt)
                             if first_type and opt_type and not self._types_compatible(first_type, opt_type):
                                 continue
-                            if not self._attribute_names_compatible(first_attr, opt):
+                            if not self._attribute_names_compatible(first_attr, opt, context=context):
                                 continue
-                            
+
                             filtered_options.append(opt)
                         
                         # Apply filtered options (even if empty to force failure)
@@ -1276,7 +1371,7 @@ class BenchmarkEngineV2:
                 raise ValueError(
                     f"Parameter validation failed: {left_key} and {right_key} must be type-compatible"
                 )
-            if not self._attribute_names_compatible(left, right):
+            if not self._attribute_names_compatible(left, right, context=context):
                 raise ValueError(
                     f"Parameter validation failed: {left_key} and {right_key} must be semantically compatible"
                 )

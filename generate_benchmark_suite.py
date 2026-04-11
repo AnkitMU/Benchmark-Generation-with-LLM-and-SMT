@@ -7,8 +7,11 @@ from pathlib import Path
 # Add project root to path
 sys.path.insert(0, str(Path(__file__).parent))
 
-# Suppress TensorFlow CPU feature info logs
-os.environ.setdefault("TF_CPP_MIN_LOG_LEVEL", "2")
+# Suppress TensorFlow/gRPC issues in conda environments (macOS Apple Silicon)
+os.environ.setdefault("TF_CPP_MIN_LOG_LEVEL", "3")
+os.environ.setdefault("GRPC_POLL_STRATEGY", "poll")
+os.environ.setdefault("no_grpc_proxy", "localhost,127.0.0.1")
+os.environ.setdefault("OBJC_DISABLE_INITIALIZE_FORK_SAFETY", "YES")
 
 from modules.generation.benchmark.suite_config import BenchmarkSuite
 from modules.generation.benchmark.suite_controller_enhanced import EnhancedSuiteController
@@ -122,15 +125,6 @@ Examples:
         print(f"UNSAT: {stats['total_unsat']} ({stats['total_unsat']/stats['total_constraints']*100:.1f}%)" if stats['total_constraints'] > 0 else "UNSAT: 0")
         print(f"Unknown: {stats['total_unknown']}")
         print(f"\nOutputs saved to: {suite.output_root}")
-        
-        if enable_research:
-            #print(f"\n Advanced Features Applied:")
-            print("   Metadata Enrichment")
-            print("   UNSAT Generation")
-            print("   AST Similarity")
-            print("   Semantic Similarity")
-            print("   Implication Checking")
-            print("   Manifest.jsonl")
         
         sys.exit(0)
         

@@ -1,4 +1,3 @@
-
 suite_name: "OCL-Benchmark-Balanced"
 version: "2.0"
 description: "Balanced OCL constraint benchmark suite with complexity-aware generation"
@@ -9,32 +8,23 @@ models:
     name: "IOTsensornetwork"
     profiles:
 
-      # --- Balanced Profile: Complexity-aware benchmarking ---
       - name: "balanced"
         seed: 42
         constraints: 100
-        complexity_profile: "standard"  # Preset: easy | standard | advanced
 
         # SAT/UNSAT Distribution (must sum to 1.0)
         sat_ratio: 0.8
         unsat_ratio: 0.2
 
-        # Legacy Difficulty Mix (3-bucket, kept for backward compat)
-        difficulty_mix:
-          easy: 0.3
-          medium: 0.5
-          hard: 0.2
 
-        # ===== NEW: Complexity-Based Generation (paper metrics) =====
-
-        # Target Total Complexity (TC) range for generated constraints
-        # TC is computed from structural + computational + dependency metrics
+        # Target Total Complexity (TC) range
+        # TC = w_s * Structural + w_c * Computational + w_d * Dependency
         target_tc_range:
           min: 3.0
-          max: 20.0
+          max: 25.0
 
-        # TC-based 5-bucket difficulty distribution (percentages, sum to 100)
-        # Based on TC thresholds: trivial<=3, easy<=8, medium<=16, hard<=25, expert>25
+        # TC-based difficulty distribution (must sum to 100)
+        # Thresholds: trivial<=3, easy<=8, medium<=16, hard<=25, expert>25
         tc_difficulty_mix:
           trivial: 5
           easy: 30
@@ -42,27 +32,81 @@ models:
           hard: 20
           expert: 5
 
-        # Dimension weights for TC = w_s*Structural + w_c*Computational + w_d*Dependency
-        # Adjust to prioritize different complexity dimensions
-        dimension_weights:
-          structural: 1.0
-          computational: 1.0
-          dependency: 0.5
+        # ===== PER-DIMENSION COMPLEXITY CONFIGURATION =====
+        #
+        # Configure Structural and Computational complexity independently.
+        # Each dimension can be enabled/disabled, weighted, and given its own
+        # target range. The engine steers generation to meet per-dimension
+        # targets in addition to the overall TC target.
+        #
+        # Structural = TNC + VRC + WNO + WNM
+        #   where TNC = alpha * NNR-C + beta * WNC + gamma * DN-CA
+        #
+        # Computational = OC + TCC + CIC
 
-        # TNC sub-weights: TNC = alpha*NNR-C + beta*WNC + gamma*DN-CA
-        # alpha: collection-based complexity, beta: chain dependencies, gamma: depth
-        tnc_weights:
-          alpha: 0.4
-          beta: 0.3
-          gamma: 0.3
+        complexity_dimensions:
 
-        # Optional: Override Table 1 verification-driven operator weights
-        # Default weights: =,<>,>,<,>=,<= -> 1.0; and,or,not -> 1.5;
-        #   implies,xor -> 2.0; select,collect,reject,flatten -> 2.0;
-        #   forAll,exists,closure,iterate -> 3.0; oclAsType -> 2.0; asSet -> 1.5
-        # operator_weight_overrides:
-        #   forAll: 3.5
-        #   closure: 4.0
+          structural:
+            enabled: true              # Set false to exclude from TC calculation
+            weight: 1.0               # w_s multiplier in TC formula
+            target_range:              # Target range for structural complexity score
+              min: 2.0
+              max: 15.0
+            # TNC sub-weights: TNC = alpha*NNR-C + beta*WNC + gamma*DN-CA
+            # alpha: collection navigation weight (NNR-C)
+            # beta:  chain dependency weight (WNC)
+            # gamma: depth-of-navigation weight (DN-CA)
+            tnc_weights:
+              alpha: 0.4
+              beta: 0.3
+              gamma: 0.3
+
+          computational:
+            enabled: true              # Set false to exclude from TC calculation
+            weight: 1.0               # w_c multiplier in TC formula
+            target_range:              # Target range for computational complexity score
+              min: 1.0
+              max: 10.0
+
+    
+
+        operator_weights:
+
+          # Comparison operators (baseline weight)
+          # Simple operators, lightweight in verification
+          "=": 1.0
+          "<>": 1.0
+          ">": 1.0
+          "<": 1.0
+          ">=": 1.0
+          "<=": 1.0
+
+          # Logical operators
+          # Require evaluating multiple conditions, increasing complexity slightly
+          "and": 1.5
+          "or": 1.5
+          "not": 1.5
+
+          # Higher logical operators
+          # Introduce logical dependencies, requiring additional verification steps
+          "implies": 2.0
+          "xor": 2.0
+
+          # Collection traversal operations
+          # Involve traversing collections, adding iteration complexity
+          "select": 2.0
+          "collect": 2.0
+          "reject": 2.0
+          "flatten": 2.0
+
+          # Quantifiers & higher-order iteration
+          # Highest complexity due to nested iteration over large collections
+          "forAll": 3.0
+          "exists": 3.0
+          "closure": 3.0
+          "iterate": 3.0
+          "oclAsType": 2.0
+          "asSet": 1.5
 
         # Pattern Family Distribution (must sum to 100)
         families_pct:
@@ -79,6 +123,21 @@ models:
         per_class_max: 25
         similarity_threshold: 0.80
         novelty_boost: true
+
+# ===== SEMANTIC ANALYSIS (LLM-powered, Phi-4 via Ollama) =====
+#
+# Pre-generation phase: Analyzes metamodel attributes using Phi-4 to build
+# a semantic compatibility matrix. Ensures comparisons like salary > age
+# are flagged as semantically invalid, while value > threshold is valid.
+#
+# Runs ONCE per metamodel, cached to disk for reuse.
+# Falls back to keyword heuristics if Ollama is not available.
+semantic:
+  enable: true
+  model: "phi4-mini"                      # 3.8B — lighter, faster
+  # model: "phi4"                        # 14B — more accurate
+  ollama_url: "http://localhost:11434"   # Ollama endpoint
+  use_cache: true                        # Cache results to avoid re-analysis
 
 verification:
   enable: true

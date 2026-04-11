@@ -118,8 +118,19 @@ class MetamodelExtractor:
             
             metamodel = Metamodel()
             
-            # Find all classes
-            for elem in root.findall(".//{http://www.eclipse.org/emf/2002/Ecore}EClass"):
+            # Find all classes — handle both namespace-qualified and xsi:type formats
+            xsi_ns = '{http://www.w3.org/2001/XMLSchema-instance}'
+            ecore_ns = '{http://www.eclipse.org/emf/2002/Ecore}'
+
+            class_elems = root.findall(f".//{ecore_ns}EClass")
+            if not class_elems:
+                # Ecore XMI format: eClassifiers with xsi:type="ecore:EClass"
+                class_elems = [
+                    e for e in root.iter()
+                    if e.get(f'{xsi_ns}type') == 'ecore:EClass'
+                ]
+
+            for elem in class_elems:
                 class_name = elem.get('name')
                 if not class_name:
                     continue
@@ -129,8 +140,15 @@ class MetamodelExtractor:
                     is_abstract=elem.get('abstract', 'false') == 'true'
                 )
                 
-                # Extract attributes
-                for attr_elem in elem.findall(".//{http://www.eclipse.org/emf/2002/Ecore}EAttribute"):
+                # Extract attributes — handle both formats
+                attr_elems = elem.findall(f".//{ecore_ns}EAttribute")
+                if not attr_elems:
+                    attr_elems = [
+                        e for e in elem
+                        if e.tag == 'eStructuralFeatures'
+                        and 'EAttribute' in e.get(f'{xsi_ns}type', '')
+                    ]
+                for attr_elem in attr_elems:
                     attr_name = attr_elem.get('name')
                     attr_type = attr_elem.get('eType', 'String')
                     
@@ -153,8 +171,15 @@ class MetamodelExtractor:
                         )
                         cls.attributes.append(attr)
                 
-                # Extract associations (references)
-                for ref_elem in elem.findall(".//{http://www.eclipse.org/emf/2002/Ecore}EReference"):
+                # Extract associations (references) — handle both formats
+                ref_elems = elem.findall(f".//{ecore_ns}EReference")
+                if not ref_elems:
+                    ref_elems = [
+                        e for e in elem
+                        if e.tag == 'eStructuralFeatures'
+                        and 'EReference' in e.get(f'{xsi_ns}type', '')
+                    ]
+                for ref_elem in ref_elems:
                     ref_name = ref_elem.get('name')
                     target_type = ref_elem.get('eType', '')
                     

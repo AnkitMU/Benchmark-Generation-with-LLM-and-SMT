@@ -3,8 +3,8 @@
     "type": "SAT",
     "model": "IOTsensornetwork",
     "profile": "balanced",
-    "generated_at": "2026-03-17T21:04:11.560903",
-    "constraint_count": 71
+    "generated_at": "2026-04-10T11:56:16.780891",
+    "constraint_count": 66
   },
   "constraints": [
     {
@@ -16,7 +16,7 @@
         "collection": "tickets"
       },
       "confidence": 1.0,
-      "timestamp": "2026-03-17T21:03:33.493480",
+      "timestamp": "2026-04-10T11:55:56.721410",
       "metadata": {
         "category": "collection",
         "complexity": 1,
@@ -30,9 +30,90 @@
         "quantifier_depth": 0,
         "difficulty": "easy",
         "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.4,
+            "vrc": 0,
+            "wno": 1.0,
+            "wnm": 1.0,
+            "total": 3.4
+          },
+          "computational": {
+            "oc": 1.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 1.0
+          },
+          "dependency": {
+            "ruc": 1,
+            "total": 1.0
+          },
+          "tc": 5.4
+        },
         "semantic_cluster": 0,
         "implies": [
           "sortedBy_Device"
+        ]
+      }
+    },
+    {
+      "ocl": "context IoTPlatform\ninv: self.networks->size() <= 1",
+      "pattern_id": "collection_max_size",
+      "pattern_name": "Collection Maximum Size",
+      "context": "IoTPlatform",
+      "parameters": {
+        "collection": "networks",
+        "max_size": 1
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-04-10T11:55:57.215263",
+      "metadata": {
+        "category": "collection",
+        "complexity": 1,
+        "generation_number": 1,
+        "operators_used": [
+          "-",
+          "<",
+          "<=",
+          "=",
+          ">",
+          "size"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 6,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.4,
+            "vrc": 0,
+            "wno": 4.0,
+            "wnm": 1.0,
+            "total": 6.4
+          },
+          "computational": {
+            "oc": 4.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 4.0
+          },
+          "dependency": {
+            "ruc": 2,
+            "total": 2.0
+          },
+          "tc": 12.4
+        },
+        "semantic_cluster": 1,
+        "implies": [
+          "collection_max_size_IoTPlatform"
         ]
       }
     },
@@ -45,7 +126,7 @@
         "collection": "edgeNodes"
       },
       "confidence": 1.0,
-      "timestamp": "2026-03-17T21:03:36.842272",
+      "timestamp": "2026-04-10T11:55:58.087918",
       "metadata": {
         "category": "collection",
         "complexity": 2,
@@ -58,9 +139,84 @@
         ],
         "navigation_depth": 2,
         "quantifier_depth": 0,
-        "difficulty": "easy",
+        "difficulty": "medium",
         "operator_count": 4,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.4,
+            "vrc": 0,
+            "wno": 2.0,
+            "wnm": 2.0,
+            "total": 5.4
+          },
+          "computational": {
+            "oc": 2.0,
+            "tcc": 1.5,
+            "cic": 0.0,
+            "total": 3.5
+          },
+          "dependency": {
+            "ruc": 4,
+            "total": 4.0
+          },
+          "tc": 12.9
+        },
         "semantic_cluster": 0,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context ActuatorNode\ninv: self.actuatorType <> null",
+      "pattern_id": "attribute_not_null_simple",
+      "pattern_name": "Attribute Not Null (Simple)",
+      "context": "ActuatorNode",
+      "parameters": {
+        "attribute": "actuatorType"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-04-10T11:55:58.213988",
+      "metadata": {
+        "category": "basic",
+        "complexity": 1,
+        "generation_number": 3,
+        "operators_used": [
+          "<",
+          "<>",
+          ">"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 1.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.0,
+            "vrc": 0,
+            "wno": 3.0,
+            "wnm": 0.0,
+            "total": 4.0
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 7.0
+        },
+        "semantic_cluster": 2,
         "implies": []
       }
     },
@@ -73,7 +229,7 @@
         "attribute": "severity"
       },
       "confidence": 1.0,
-      "timestamp": "2026-03-17T21:03:37.441331",
+      "timestamp": "2026-04-10T11:55:58.334131",
       "metadata": {
         "category": "basic",
         "complexity": 1,
@@ -87,7 +243,31 @@
         "quantifier_depth": 0,
         "difficulty": "easy",
         "operator_count": 3,
-        "semantic_cluster": 1,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 1.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.0,
+            "vrc": 0,
+            "wno": 3.0,
+            "wnm": 0.0,
+            "total": 4.0
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 7.0
+        },
+        "semantic_cluster": 2,
         "implies": []
       }
     },
@@ -100,7 +280,7 @@
         "attribute": "time"
       },
       "confidence": 1.0,
-      "timestamp": "2026-03-17T21:03:37.718065",
+      "timestamp": "2026-04-10T11:55:58.454160",
       "metadata": {
         "category": "basic",
         "complexity": 1,
@@ -114,95 +294,31 @@
         "quantifier_depth": 0,
         "difficulty": "easy",
         "operator_count": 3,
-        "semantic_cluster": 1,
-        "implies": []
-      }
-    },
-    {
-      "ocl": "context MaintenanceTicket\ninv: self.openedAt <> null and self.status <> null",
-      "pattern_id": "all_attributes_defined",
-      "pattern_name": "All Attributes Defined",
-      "context": "MaintenanceTicket",
-      "parameters": {
-        "first_attribute": "openedAt",
-        "second_attribute": "status"
-      },
-      "confidence": 1.0,
-      "timestamp": "2026-03-17T21:03:38.098416",
-      "metadata": {
-        "category": "advanced",
-        "complexity": 1,
-        "generation_number": 6,
-        "operators_used": [
-          "<",
-          "<>",
-          ">",
-          "and"
-        ],
-        "navigation_depth": 2,
-        "quantifier_depth": 0,
-        "difficulty": "easy",
-        "operator_count": 4,
-        "semantic_cluster": 1,
-        "implies": []
-      }
-    },
-    {
-      "ocl": "context SensorNode\ninv: self.metrics->size() <> 1",
-      "pattern_id": "size_constraint",
-      "pattern_name": "Collection Size Constraint",
-      "context": "SensorNode",
-      "parameters": {
-        "collection": "metrics",
-        "operator": "<>",
-        "value": 1
-      },
-      "confidence": 1.0,
-      "timestamp": "2026-03-17T21:03:38.381218",
-      "metadata": {
-        "category": "basic",
-        "complexity": 1,
-        "generation_number": 7,
-        "operators_used": [
-          "-",
-          "<",
-          "<>",
-          ">",
-          "size"
-        ],
-        "navigation_depth": 2,
-        "quantifier_depth": 0,
-        "difficulty": "medium",
-        "operator_count": 5,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 1.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.0,
+            "vrc": 0,
+            "wno": 3.0,
+            "wnm": 0.0,
+            "total": 4.0
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 7.0
+        },
         "semantic_cluster": 2,
-        "implies": []
-      }
-    },
-    {
-      "ocl": "context ConnectivityModule\ninv: self.links->excludingAll(self.links)->isEmpty()",
-      "pattern_id": "difference_operation",
-      "pattern_name": "Set Difference",
-      "context": "ConnectivityModule",
-      "parameters": {
-        "collection1": "links",
-        "collection2": "links"
-      },
-      "confidence": 1.0,
-      "timestamp": "2026-03-17T21:03:39.105499",
-      "metadata": {
-        "category": "set_operations",
-        "complexity": 2,
-        "generation_number": 8,
-        "operators_used": [
-          "-",
-          ">",
-          "isEmpty"
-        ],
-        "navigation_depth": 2,
-        "quantifier_depth": 0,
-        "difficulty": "easy",
-        "operator_count": 3,
-        "semantic_cluster": 3,
         "implies": []
       }
     },
@@ -215,11 +331,11 @@
         "collection": "alerts"
       },
       "confidence": 1.0,
-      "timestamp": "2026-03-17T21:03:39.348988",
+      "timestamp": "2026-04-10T11:55:59.058882",
       "metadata": {
         "category": "collection",
         "complexity": 1,
-        "generation_number": 9,
+        "generation_number": 8,
         "operators_used": [
           "-",
           ">",
@@ -229,7 +345,31 @@
         "quantifier_depth": 0,
         "difficulty": "easy",
         "operator_count": 3,
-        "semantic_cluster": 4,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.4,
+            "vrc": 0,
+            "wno": 1.0,
+            "wnm": 1.0,
+            "total": 3.4
+          },
+          "computational": {
+            "oc": 1.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 1.0
+          },
+          "dependency": {
+            "ruc": 1,
+            "total": 1.0
+          },
+          "tc": 5.4
+        },
+        "semantic_cluster": 3,
         "implies": []
       }
     },
@@ -242,11 +382,11 @@
         "association": "platform"
       },
       "confidence": 1.0,
-      "timestamp": "2026-03-17T21:03:39.384516",
+      "timestamp": "2026-04-10T11:55:59.076898",
       "metadata": {
         "category": "navigation",
         "complexity": 1,
-        "generation_number": 10,
+        "generation_number": 9,
         "operators_used": [
           "<",
           "<>",
@@ -256,10 +396,32 @@
         "quantifier_depth": 0,
         "difficulty": "easy",
         "operator_count": 3,
-        "semantic_cluster": 1,
-        "implies": [
-          "collection_max_size_Role"
-        ]
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 1.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.0,
+            "vrc": 0,
+            "wno": 3.0,
+            "wnm": 0.0,
+            "total": 4.0
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 7.0
+        },
+        "semantic_cluster": 2,
+        "implies": []
       }
     },
     {
@@ -271,7 +433,58 @@
         "association": "rule"
       },
       "confidence": 1.0,
-      "timestamp": "2026-03-17T21:03:39.451976",
+      "timestamp": "2026-04-10T11:55:59.111602",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 1,
+        "generation_number": 11,
+        "operators_used": [
+          "<",
+          "<>",
+          ">"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 1.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.0,
+            "vrc": 0,
+            "wno": 3.0,
+            "wnm": 0.0,
+            "total": 4.0
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 7.0
+        },
+        "semantic_cluster": 2,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Gateway\ninv: self.cluster <> null",
+      "pattern_id": "association_exists",
+      "pattern_name": "Association Exists",
+      "context": "Gateway",
+      "parameters": {
+        "association": "cluster"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-04-10T11:55:59.128962",
       "metadata": {
         "category": "navigation",
         "complexity": 1,
@@ -285,47 +498,44 @@
         "quantifier_depth": 0,
         "difficulty": "easy",
         "operator_count": 3,
-        "semantic_cluster": 1,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 1.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.0,
+            "vrc": 0,
+            "wno": 3.0,
+            "wnm": 0.0,
+            "total": 4.0
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 7.0
+        },
+        "semantic_cluster": 4,
         "implies": []
       }
     },
     {
-      "ocl": "context Gateway\ninv: self.cluster <> null",
+      "ocl": "context CommunicationLink\ninv: self.stream <> null",
       "pattern_id": "association_exists",
       "pattern_name": "Association Exists",
-      "context": "Gateway",
+      "context": "CommunicationLink",
       "parameters": {
-        "association": "cluster"
+        "association": "stream"
       },
       "confidence": 1.0,
-      "timestamp": "2026-03-17T21:03:39.570845",
-      "metadata": {
-        "category": "navigation",
-        "complexity": 1,
-        "generation_number": 13,
-        "operators_used": [
-          "<",
-          "<>",
-          ">"
-        ],
-        "navigation_depth": 2,
-        "quantifier_depth": 0,
-        "difficulty": "easy",
-        "operator_count": 3,
-        "semantic_cluster": 5,
-        "implies": []
-      }
-    },
-    {
-      "ocl": "context PowerSource\ninv: self.device <> null",
-      "pattern_id": "association_exists",
-      "pattern_name": "Association Exists",
-      "context": "PowerSource",
-      "parameters": {
-        "association": "device"
-      },
-      "confidence": 1.0,
-      "timestamp": "2026-03-17T21:03:39.604356",
+      "timestamp": "2026-04-10T11:55:59.162876",
       "metadata": {
         "category": "navigation",
         "complexity": 1,
@@ -339,7 +549,31 @@
         "quantifier_depth": 0,
         "difficulty": "easy",
         "operator_count": 3,
-        "semantic_cluster": 1,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 1.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.0,
+            "vrc": 0,
+            "wno": 3.0,
+            "wnm": 0.0,
+            "total": 4.0
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 7.0
+        },
+        "semantic_cluster": 2,
         "implies": []
       }
     },
@@ -352,11 +586,11 @@
         "association": "sensor"
       },
       "confidence": 1.0,
-      "timestamp": "2026-03-17T21:03:39.707796",
+      "timestamp": "2026-04-10T11:55:59.198781",
       "metadata": {
         "category": "navigation",
         "complexity": 1,
-        "generation_number": 17,
+        "generation_number": 16,
         "operators_used": [
           "<",
           "<>",
@@ -366,7 +600,31 @@
         "quantifier_depth": 0,
         "difficulty": "easy",
         "operator_count": 3,
-        "semantic_cluster": 1,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 1.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.0,
+            "vrc": 0,
+            "wno": 3.0,
+            "wnm": 0.0,
+            "total": 4.0
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 7.0
+        },
+        "semantic_cluster": 2,
         "implies": []
       }
     },
@@ -379,7 +637,58 @@
         "association": "link"
       },
       "confidence": 1.0,
-      "timestamp": "2026-03-17T21:03:39.778698",
+      "timestamp": "2026-04-10T11:55:59.232877",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 1,
+        "generation_number": 18,
+        "operators_used": [
+          "<",
+          "<>",
+          ">"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 1.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.0,
+            "vrc": 0,
+            "wno": 3.0,
+            "wnm": 0.0,
+            "total": 4.0
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 7.0
+        },
+        "semantic_cluster": 2,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context OTAUpdate\ninv: self.targetDevice <> null",
+      "pattern_id": "association_exists",
+      "pattern_name": "Association Exists",
+      "context": "OTAUpdate",
+      "parameters": {
+        "association": "targetDevice"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-04-10T11:55:59.249346",
       "metadata": {
         "category": "navigation",
         "complexity": 1,
@@ -393,7 +702,82 @@
         "quantifier_depth": 0,
         "difficulty": "easy",
         "operator_count": 3,
-        "semantic_cluster": 1,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 1.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.0,
+            "vrc": 0,
+            "wno": 3.0,
+            "wnm": 0.0,
+            "total": 4.0
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 7.0
+        },
+        "semantic_cluster": 2,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Location\ninv: self.device <> null",
+      "pattern_id": "association_exists",
+      "pattern_name": "Association Exists",
+      "context": "Location",
+      "parameters": {
+        "association": "device"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-04-10T11:55:59.265788",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 1,
+        "generation_number": 20,
+        "operators_used": [
+          "<",
+          "<>",
+          ">"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 1.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.0,
+            "vrc": 0,
+            "wno": 3.0,
+            "wnm": 0.0,
+            "total": 4.0
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 7.0
+        },
+        "semantic_cluster": 2,
         "implies": []
       }
     },
@@ -406,7 +790,7 @@
         "association": "user"
       },
       "confidence": 1.0,
-      "timestamp": "2026-03-17T21:03:39.945823",
+      "timestamp": "2026-04-10T11:55:59.314897",
       "metadata": {
         "category": "navigation",
         "complexity": 1,
@@ -420,34 +804,31 @@
         "quantifier_depth": 0,
         "difficulty": "easy",
         "operator_count": 3,
-        "semantic_cluster": 1,
-        "implies": []
-      }
-    },
-    {
-      "ocl": "context SolarPanel\ninv: self.wattPeak mod 6 = 0",
-      "pattern_id": "numeric_multiple_of",
-      "pattern_name": "Numeric Multiple Of",
-      "context": "SolarPanel",
-      "parameters": {
-        "numeric_attribute": "wattPeak",
-        "divisor": 6
-      },
-      "confidence": 1.0,
-      "timestamp": "2026-03-17T21:03:40.650356",
-      "metadata": {
-        "category": "arithmetic",
-        "complexity": 2,
-        "generation_number": 25,
-        "operators_used": [
-          "=",
-          "mod"
-        ],
-        "navigation_depth": 2,
-        "quantifier_depth": 0,
-        "difficulty": "easy",
-        "operator_count": 2,
-        "semantic_cluster": 6,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 1.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.0,
+            "vrc": 0,
+            "wno": 3.0,
+            "wnm": 0.0,
+            "total": 4.0
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 7.0
+        },
+        "semantic_cluster": 2,
         "implies": []
       }
     },
@@ -460,39 +841,63 @@
         "numeric_attribute": "healthPct"
       },
       "confidence": 1.0,
-      "timestamp": "2026-03-17T21:03:40.960465",
+      "timestamp": "2026-04-10T11:55:59.553246",
       "metadata": {
         "category": "arithmetic",
         "complexity": 2,
-        "generation_number": 27,
+        "generation_number": 25,
         "operators_used": [
           "=",
           "mod"
         ],
         "navigation_depth": 2,
         "quantifier_depth": 0,
-        "difficulty": "easy",
+        "difficulty": "trivial",
         "operator_count": 2,
-        "semantic_cluster": 7,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 1.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.0,
+            "vrc": 0,
+            "wno": 1.0,
+            "wnm": 0.0,
+            "total": 2.0
+          },
+          "computational": {
+            "oc": 1.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 1.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 3.0
+        },
+        "semantic_cluster": 5,
         "implies": []
       }
     },
     {
-      "ocl": "context AccessPolicy\ninv: self.roles->size() >= 1 and self.roles->size() <= 3",
+      "ocl": "context Firmware\ninv: self.devices->size() >= 2 and self.devices->size() <= 2",
       "pattern_id": "collection_size_range",
       "pattern_name": "Collection Size in Range",
-      "context": "AccessPolicy",
+      "context": "Firmware",
       "parameters": {
-        "collection": "roles",
-        "min_size": 1,
-        "max_size": 3
+        "collection": "devices",
+        "min_size": 2,
+        "max_size": 2
       },
       "confidence": 1.0,
-      "timestamp": "2026-03-17T21:03:41.352792",
+      "timestamp": "2026-04-10T11:55:59.652944",
       "metadata": {
         "category": "collection",
         "complexity": 2,
-        "generation_number": 29,
+        "generation_number": 26,
         "operators_used": [
           "-",
           "<",
@@ -505,42 +910,138 @@
         ],
         "navigation_depth": 2,
         "quantifier_depth": 0,
-        "difficulty": "medium",
+        "difficulty": "expert",
         "operator_count": 8,
-        "semantic_cluster": 8,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 1,
+            "wnc": 2.0,
+            "tnc": 2.5,
+            "vrc": 0,
+            "wno": 9.5,
+            "wnm": 2.0,
+            "total": 14.0
+          },
+          "computational": {
+            "oc": 9.5,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 9.5
+          },
+          "dependency": {
+            "ruc": 3,
+            "total": 3.0
+          },
+          "tc": 26.5
+        },
+        "semantic_cluster": 1,
         "implies": [
-          "sortedBy_AccessPolicy",
-          "sortedBy_unsat_AccessPolicy",
-          "collection_last_unsat_AccessPolicy"
+          "collection_not_empty_check_Firmware"
         ]
       }
     },
     {
-      "ocl": "context Device\ninv: self.name.size() >= 20",
-      "pattern_id": "string_min_length",
-      "pattern_name": "String Minimum Length",
-      "context": "Device",
+      "ocl": "context SolarPanel\ninv: self.wattPeak mod 2 = 0",
+      "pattern_id": "numeric_even",
+      "pattern_name": "Numeric Is Even",
+      "context": "SolarPanel",
       "parameters": {
-        "string_attribute": "name",
-        "min_length": 20
+        "numeric_attribute": "wattPeak"
       },
       "confidence": 1.0,
-      "timestamp": "2026-03-17T21:03:42.427523",
+      "timestamp": "2026-04-10T11:55:59.703363",
+      "metadata": {
+        "category": "arithmetic",
+        "complexity": 2,
+        "generation_number": 27,
+        "operators_used": [
+          "=",
+          "mod"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "trivial",
+        "operator_count": 2,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 1.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.0,
+            "vrc": 0,
+            "wno": 1.0,
+            "wnm": 0.0,
+            "total": 2.0
+          },
+          "computational": {
+            "oc": 1.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 1.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 3.0
+        },
+        "semantic_cluster": 5,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context AlertRule\ninv: self.ruleId.size() <= 41",
+      "pattern_id": "string_max_length",
+      "pattern_name": "String Maximum Length",
+      "context": "AlertRule",
+      "parameters": {
+        "string_attribute": "ruleId",
+        "max_length": 41
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-04-10T11:56:00.278463",
       "metadata": {
         "category": "string",
         "complexity": 1,
         "generation_number": 31,
         "operators_used": [
+          "<",
+          "<=",
           "=",
-          ">",
-          ">=",
           "size"
         ],
         "navigation_depth": 3,
         "quantifier_depth": 0,
         "difficulty": "medium",
         "operator_count": 4,
-        "semantic_cluster": 2,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 2,
+            "wnc": 2.0,
+            "tnc": 2.0,
+            "vrc": 0,
+            "wno": 3.0,
+            "wnm": 1.0,
+            "total": 6.0
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 9.0
+        },
+        "semantic_cluster": 6,
         "implies": []
       }
     },
@@ -554,11 +1055,11 @@
         "attribute": "status"
       },
       "confidence": 1.0,
-      "timestamp": "2026-03-17T21:03:42.427954",
+      "timestamp": "2026-04-10T11:56:00.300436",
       "metadata": {
         "category": "collection",
         "complexity": 2,
-        "generation_number": 32,
+        "generation_number": 33,
         "operators_used": [
           "-",
           ">",
@@ -568,8 +1069,93 @@
         "quantifier_depth": 0,
         "difficulty": "easy",
         "operator_count": 3,
-        "semantic_cluster": 9,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 2,
+            "wnc": 3.0,
+            "tnc": 3.1,
+            "vrc": 0,
+            "wno": 1.0,
+            "wnm": 1.0,
+            "total": 5.1
+          },
+          "computational": {
+            "oc": 1.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 1.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 6.1
+        },
+        "semantic_cluster": 7,
         "implies": []
+      }
+    },
+    {
+      "ocl": "context AccessPolicy\ninv: self.roles->notEmpty() implies self.roles->sortedBy(x | x.roleName)->first().roleName <= self.roles->sortedBy(x | x.roleName)->last().roleName",
+      "pattern_id": "sortedBy",
+      "pattern_name": "SortedBy Operation",
+      "context": "AccessPolicy",
+      "parameters": {
+        "collection": "roles",
+        "attribute": "roleName"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-04-10T11:56:00.300995",
+      "metadata": {
+        "category": "collection",
+        "complexity": 2,
+        "generation_number": 35,
+        "operators_used": [
+          "-",
+          "<",
+          "<=",
+          "=",
+          ">",
+          "first",
+          "implies",
+          "last",
+          "notEmpty",
+          "sortedBy"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "expert",
+        "operator_count": 10,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 10.0,
+            "nnc_plus": 7.0,
+            "dn_ca": 3.0,
+            "wnc": 11.0,
+            "tnc": 8.2,
+            "vrc": 1,
+            "wno": 10.0,
+            "wnm": 5.0,
+            "total": 24.2
+          },
+          "computational": {
+            "oc": 10.0,
+            "tcc": 0.0,
+            "cic": 4.0,
+            "total": 14.0
+          },
+          "dependency": {
+            "ruc": 1,
+            "total": 1.0
+          },
+          "tc": 39.2
+        },
+        "semantic_cluster": 8,
+        "implies": [
+          "collection_last_AccessPolicy"
+        ]
       }
     },
     {
@@ -583,11 +1169,11 @@
         "prefix_length": 10
       },
       "confidence": 1.0,
-      "timestamp": "2026-03-17T21:03:42.429371",
+      "timestamp": "2026-04-10T11:56:00.301433",
       "metadata": {
         "category": "string",
         "complexity": 2,
-        "generation_number": 35,
+        "generation_number": 36,
         "operators_used": [
           "=",
           ">",
@@ -598,69 +1184,95 @@
         ],
         "navigation_depth": 3,
         "quantifier_depth": 0,
-        "difficulty": "medium",
+        "difficulty": "hard",
         "operator_count": 6,
-        "semantic_cluster": 2,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 4.0,
+            "dn_ca": 2,
+            "wnc": 4.0,
+            "tnc": 3.4,
+            "vrc": 0,
+            "wno": 6.0,
+            "wnm": 2.0,
+            "total": 11.4
+          },
+          "computational": {
+            "oc": 6.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 6.0
+          },
+          "dependency": {
+            "ruc": 1,
+            "total": 1.0
+          },
+          "tc": 18.4
+        },
+        "semantic_cluster": 9,
         "implies": []
       }
     },
     {
-      "ocl": "context Role\ninv: self.policies->size() <= 3",
-      "pattern_id": "collection_max_size",
-      "pattern_name": "Collection Maximum Size",
-      "context": "Role",
+      "ocl": "context DataStream\ninv: self.alertRules->notEmpty() implies self.alertRules->sortedBy(x | x.condition)->first().condition <= self.alertRules->sortedBy(x | x.condition)->last().condition",
+      "pattern_id": "sortedBy",
+      "pattern_name": "SortedBy Operation",
+      "context": "DataStream",
       "parameters": {
-        "collection": "policies",
-        "max_size": 3
+        "collection": "alertRules",
+        "attribute": "condition"
       },
       "confidence": 1.0,
-      "timestamp": "2026-03-17T21:03:42.430111",
+      "timestamp": "2026-04-10T11:56:00.302357",
       "metadata": {
         "category": "collection",
-        "complexity": 1,
-        "generation_number": 37,
+        "complexity": 2,
+        "generation_number": 39,
         "operators_used": [
           "-",
           "<",
           "<=",
           "=",
           ">",
-          "size"
+          "first",
+          "implies",
+          "last",
+          "notEmpty",
+          "sortedBy"
         ],
         "navigation_depth": 2,
-        "quantifier_depth": 0,
-        "difficulty": "medium",
-        "operator_count": 6,
-        "semantic_cluster": 2,
-        "implies": []
-      }
-    },
-    {
-      "ocl": "context Role\ninv: self.users->isUnique(x | x.name)",
-      "pattern_id": "collection_isUnique_attr",
-      "pattern_name": "Collection Unique Attribute Values",
-      "context": "Role",
-      "parameters": {
-        "collection": "users",
-        "attribute": "name"
-      },
-      "confidence": 1.0,
-      "timestamp": "2026-03-17T21:03:42.430511",
-      "metadata": {
-        "category": "collection",
-        "complexity": 2,
-        "generation_number": 38,
-        "operators_used": [
-          "-",
-          ">",
-          "isUnique"
-        ],
-        "navigation_depth": 2,
-        "quantifier_depth": 0,
-        "difficulty": "easy",
-        "operator_count": 3,
-        "semantic_cluster": 9,
-        "implies": []
+        "quantifier_depth": 1,
+        "difficulty": "expert",
+        "operator_count": 10,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 10.0,
+            "nnc_plus": 7.0,
+            "dn_ca": 3.0,
+            "wnc": 11.0,
+            "tnc": 8.2,
+            "vrc": 1,
+            "wno": 10.0,
+            "wnm": 5.0,
+            "total": 24.2
+          },
+          "computational": {
+            "oc": 10.0,
+            "tcc": 0.0,
+            "cic": 4.0,
+            "total": 14.0
+          },
+          "dependency": {
+            "ruc": 2,
+            "total": 2.0
+          },
+          "tc": 40.2
+        },
+        "semantic_cluster": 8,
+        "implies": [
+          "collection_not_empty_check_DataStream"
+        ]
       }
     },
     {
@@ -672,7 +1284,7 @@
         "attribute": "acknowledged"
       },
       "confidence": 1.0,
-      "timestamp": "2026-03-17T21:03:42.431520",
+      "timestamp": "2026-04-10T11:56:00.302731",
       "metadata": {
         "category": "basic",
         "complexity": 1,
@@ -682,6 +1294,30 @@
         "quantifier_depth": 0,
         "difficulty": "trivial",
         "operator_count": 0,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 1.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.0,
+            "vrc": 0,
+            "wno": 0.0,
+            "wnm": 0.0,
+            "total": 1.0
+          },
+          "computational": {
+            "oc": 0.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 0.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 1.0
+        },
         "semantic_cluster": 10,
         "implies": []
       }
@@ -696,7 +1332,7 @@
         "min_length": 14
       },
       "confidence": 1.0,
-      "timestamp": "2026-03-17T21:03:42.431775",
+      "timestamp": "2026-04-10T11:56:00.302911",
       "metadata": {
         "category": "string",
         "complexity": 1,
@@ -711,7 +1347,31 @@
         "quantifier_depth": 0,
         "difficulty": "medium",
         "operator_count": 4,
-        "semantic_cluster": 2,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 2,
+            "wnc": 2.0,
+            "tnc": 2.0,
+            "vrc": 0,
+            "wno": 3.0,
+            "wnm": 1.0,
+            "total": 6.0
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 1,
+            "total": 1.0
+          },
+          "tc": 10.0
+        },
+        "semantic_cluster": 1,
         "implies": []
       }
     },
@@ -725,7 +1385,7 @@
         "substring": "value"
       },
       "confidence": 1.0,
-      "timestamp": "2026-03-17T21:03:42.432220",
+      "timestamp": "2026-04-10T11:56:00.303176",
       "metadata": {
         "category": "string",
         "complexity": 2,
@@ -740,37 +1400,31 @@
         "quantifier_depth": 0,
         "difficulty": "medium",
         "operator_count": 4,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 2,
+            "wnc": 2.0,
+            "tnc": 2.0,
+            "vrc": 0,
+            "wno": 3.0,
+            "wnm": 1.0,
+            "total": 6.0
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 9.0
+        },
         "semantic_cluster": 11,
-        "implies": []
-      }
-    },
-    {
-      "ocl": "context DataStream\ninv: not(self.streamId <> null and self.topic <> null)",
-      "pattern_id": "not_both_defined",
-      "pattern_name": "Not Both Defined",
-      "context": "DataStream",
-      "parameters": {
-        "first_attribute": "streamId",
-        "second_attribute": "topic"
-      },
-      "confidence": 1.0,
-      "timestamp": "2026-03-17T21:03:42.432803",
-      "metadata": {
-        "category": "advanced",
-        "complexity": 2,
-        "generation_number": 44,
-        "operators_used": [
-          "<",
-          "<>",
-          ">",
-          "and",
-          "not"
-        ],
-        "navigation_depth": 2,
-        "quantifier_depth": 0,
-        "difficulty": "medium",
-        "operator_count": 5,
-        "semantic_cluster": 12,
         "implies": []
       }
     },
@@ -785,11 +1439,11 @@
         "attribute": "cpuCores"
       },
       "confidence": 1.0,
-      "timestamp": "2026-03-17T21:03:42.433205",
+      "timestamp": "2026-04-10T11:56:00.303671",
       "metadata": {
         "category": "collection",
         "complexity": 2,
-        "generation_number": 45,
+        "generation_number": 44,
         "operators_used": [
           "-",
           ">",
@@ -798,96 +1452,33 @@
         ],
         "navigation_depth": 2,
         "quantifier_depth": 1,
-        "difficulty": "medium",
+        "difficulty": "hard",
         "operator_count": 4,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 3.0,
+            "wnc": 5.0,
+            "tnc": 4.0,
+            "vrc": 1,
+            "wno": 4.0,
+            "wnm": 2.0,
+            "total": 11.0
+          },
+          "computational": {
+            "oc": 4.0,
+            "tcc": 0.0,
+            "cic": 2.0,
+            "total": 6.0
+          },
+          "dependency": {
+            "ruc": 4,
+            "total": 4.0
+          },
+          "tc": 21.0
+        },
         "semantic_cluster": 0,
-        "implies": []
-      }
-    },
-    {
-      "ocl": "context Firmware\ninv: self.version <> null implies self.checksum <> null",
-      "pattern_id": "implies_simple",
-      "pattern_name": "Simple Implication",
-      "context": "Firmware",
-      "parameters": {
-        "first_attribute": "version",
-        "second_attribute": "checksum"
-      },
-      "confidence": 1.0,
-      "timestamp": "2026-03-17T21:03:42.433607",
-      "metadata": {
-        "category": "advanced",
-        "complexity": 2,
-        "generation_number": 46,
-        "operators_used": [
-          "<",
-          "<>",
-          ">",
-          "implies"
-        ],
-        "navigation_depth": 2,
-        "quantifier_depth": 0,
-        "difficulty": "easy",
-        "operator_count": 4,
-        "semantic_cluster": 13,
-        "implies": []
-      }
-    },
-    {
-      "ocl": "context Device\ninv: self.deviceId.size() = 37",
-      "pattern_id": "string_exact_length",
-      "pattern_name": "String Exact Length",
-      "context": "Device",
-      "parameters": {
-        "string_attribute": "deviceId",
-        "length": 37
-      },
-      "confidence": 1.0,
-      "timestamp": "2026-03-17T21:03:42.434450",
-      "metadata": {
-        "category": "string",
-        "complexity": 1,
-        "generation_number": 47,
-        "operators_used": [
-          "=",
-          "size"
-        ],
-        "navigation_depth": 3,
-        "quantifier_depth": 0,
-        "difficulty": "easy",
-        "operator_count": 2,
-        "semantic_cluster": 2,
-        "implies": []
-      }
-    },
-    {
-      "ocl": "context IoTPlatform\ninv: (self.name <> null and self.version <> null) or (self.name = null and self.version = null)",
-      "pattern_id": "both_defined_or_both_null",
-      "pattern_name": "Both Defined Or Both Null",
-      "context": "IoTPlatform",
-      "parameters": {
-        "first_attribute": "name",
-        "second_attribute": "version"
-      },
-      "confidence": 1.0,
-      "timestamp": "2026-03-17T21:03:42.435167",
-      "metadata": {
-        "category": "advanced",
-        "complexity": 2,
-        "generation_number": 48,
-        "operators_used": [
-          "<",
-          "<>",
-          "=",
-          ">",
-          "and",
-          "or"
-        ],
-        "navigation_depth": 2,
-        "quantifier_depth": 0,
-        "difficulty": "medium",
-        "operator_count": 6,
-        "semantic_cluster": 13,
         "implies": []
       }
     },
@@ -902,11 +1493,11 @@
         "value": 1
       },
       "confidence": 1.0,
-      "timestamp": "2026-03-17T21:03:42.435744",
+      "timestamp": "2026-04-10T11:56:00.304381",
       "metadata": {
         "category": "basic",
         "complexity": 1,
-        "generation_number": 49,
+        "generation_number": 46,
         "operators_used": [
           "-",
           ">",
@@ -914,9 +1505,33 @@
         ],
         "navigation_depth": 2,
         "quantifier_depth": 0,
-        "difficulty": "easy",
+        "difficulty": "medium",
         "operator_count": 3,
-        "semantic_cluster": 2,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.4,
+            "vrc": 0,
+            "wno": 2.0,
+            "wnm": 1.0,
+            "total": 4.4
+          },
+          "computational": {
+            "oc": 2.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 2.0
+          },
+          "dependency": {
+            "ruc": 2,
+            "total": 2.0
+          },
+          "tc": 8.4
+        },
+        "semantic_cluster": 1,
         "implies": []
       }
     },
@@ -930,11 +1545,11 @@
         "collection2": "edgeNodes"
       },
       "confidence": 1.0,
-      "timestamp": "2026-03-17T21:03:42.436054",
+      "timestamp": "2026-04-10T11:56:00.304577",
       "metadata": {
         "category": "set_operations",
         "complexity": 2,
-        "generation_number": 50,
+        "generation_number": 47,
         "operators_used": [
           "-",
           ">",
@@ -942,8 +1557,32 @@
         ],
         "navigation_depth": 2,
         "quantifier_depth": 0,
-        "difficulty": "easy",
+        "difficulty": "medium",
         "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 1,
+            "wnc": 2.0,
+            "tnc": 2.5,
+            "vrc": 0,
+            "wno": 2.0,
+            "wnm": 2.0,
+            "total": 6.5
+          },
+          "computational": {
+            "oc": 2.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 2.0
+          },
+          "dependency": {
+            "ruc": 4,
+            "total": 4.0
+          },
+          "tc": 12.5
+        },
         "semantic_cluster": 0,
         "implies": []
       }
@@ -958,11 +1597,11 @@
         "max_size": 3
       },
       "confidence": 1.0,
-      "timestamp": "2026-03-17T21:03:42.436486",
+      "timestamp": "2026-04-10T11:56:00.304841",
       "metadata": {
         "category": "collection",
         "complexity": 1,
-        "generation_number": 51,
+        "generation_number": 48,
         "operators_used": [
           "-",
           "<",
@@ -975,46 +1614,89 @@
         "quantifier_depth": 0,
         "difficulty": "medium",
         "operator_count": 6,
-        "semantic_cluster": 2,
-        "implies": []
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.4,
+            "vrc": 0,
+            "wno": 4.0,
+            "wnm": 1.0,
+            "total": 6.4
+          },
+          "computational": {
+            "oc": 4.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 4.0
+          },
+          "dependency": {
+            "ruc": 1,
+            "total": 1.0
+          },
+          "tc": 11.4
+        },
+        "semantic_cluster": 1,
+        "implies": [
+          "collection_max_size_IoTPlatform"
+        ]
       }
     },
     {
-      "ocl": "context Network\ninv: self.links->notEmpty() implies self.links->sortedBy(x | x.linkId)->first().linkId <= self.links->sortedBy(x | x.linkId)->last().linkId",
-      "pattern_id": "sortedBy",
-      "pattern_name": "SortedBy Operation",
-      "context": "Network",
+      "ocl": "context SensorNode\ninv: self.metrics->asSet()->size() <= self.metrics->size()",
+      "pattern_id": "collection_asSet",
+      "pattern_name": "Collection As Set Conversion",
+      "context": "SensorNode",
       "parameters": {
-        "collection": "links",
-        "attribute": "linkId"
+        "collection": "metrics"
       },
       "confidence": 1.0,
-      "timestamp": "2026-03-17T21:03:42.437657",
+      "timestamp": "2026-04-10T11:56:00.305035",
       "metadata": {
         "category": "collection",
         "complexity": 2,
-        "generation_number": 54,
+        "generation_number": 49,
         "operators_used": [
           "-",
           "<",
           "<=",
           "=",
           ">",
-          "first",
-          "implies",
-          "last",
-          "notEmpty",
-          "sortedBy"
+          "asSet",
+          "size"
         ],
         "navigation_depth": 2,
-        "quantifier_depth": 1,
+        "quantifier_depth": 0,
         "difficulty": "hard",
-        "operator_count": 10,
-        "semantic_cluster": 3,
-        "implies": [
-          "sortedBy_Network",
-          "sortedBy_Network"
-        ]
+        "operator_count": 7,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 1,
+            "wnc": 2.0,
+            "tnc": 2.5,
+            "vrc": 0,
+            "wno": 7.5,
+            "wnm": 3.0,
+            "total": 13.0
+          },
+          "computational": {
+            "oc": 7.5,
+            "tcc": 1.5,
+            "cic": 0.0,
+            "total": 9.0
+          },
+          "dependency": {
+            "ruc": 2,
+            "total": 2.0
+          },
+          "tc": 24.0
+        },
+        "semantic_cluster": 1,
+        "implies": []
       }
     },
     {
@@ -1027,11 +1709,11 @@
         "attribute": "ticketId"
       },
       "confidence": 1.0,
-      "timestamp": "2026-03-17T21:03:42.438088",
+      "timestamp": "2026-04-10T11:56:00.305788",
       "metadata": {
         "category": "collection",
         "complexity": 2,
-        "generation_number": 55,
+        "generation_number": 52,
         "operators_used": [
           "-",
           "<",
@@ -1046,41 +1728,36 @@
         ],
         "navigation_depth": 2,
         "quantifier_depth": 1,
-        "difficulty": "hard",
+        "difficulty": "expert",
         "operator_count": 10,
-        "semantic_cluster": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 10.0,
+            "nnc_plus": 7.0,
+            "dn_ca": 3.0,
+            "wnc": 11.0,
+            "tnc": 8.2,
+            "vrc": 1,
+            "wno": 10.0,
+            "wnm": 5.0,
+            "total": 24.2
+          },
+          "computational": {
+            "oc": 10.0,
+            "tcc": 0.0,
+            "cic": 4.0,
+            "total": 14.0
+          },
+          "dependency": {
+            "ruc": 2,
+            "total": 2.0
+          },
+          "tc": 40.2
+        },
+        "semantic_cluster": 7,
         "implies": [
           "collection_not_empty_simple_Device"
         ]
-      }
-    },
-    {
-      "ocl": "context User\ninv: (self.userId <> null) = (self.email <> null)",
-      "pattern_id": "bi_implication",
-      "pattern_name": "Bi-directional Implication",
-      "context": "User",
-      "parameters": {
-        "first_attribute": "userId",
-        "second_attribute": "email"
-      },
-      "confidence": 1.0,
-      "timestamp": "2026-03-17T21:03:42.439296",
-      "metadata": {
-        "category": "advanced",
-        "complexity": 2,
-        "generation_number": 57,
-        "operators_used": [
-          "<",
-          "<>",
-          "=",
-          ">"
-        ],
-        "navigation_depth": 2,
-        "quantifier_depth": 0,
-        "difficulty": "easy",
-        "operator_count": 4,
-        "semantic_cluster": 14,
-        "implies": []
       }
     },
     {
@@ -1094,11 +1771,11 @@
         "attribute": "deviceId"
       },
       "confidence": 1.0,
-      "timestamp": "2026-03-17T21:03:42.440039",
+      "timestamp": "2026-04-10T11:56:00.306763",
       "metadata": {
         "category": "collection",
         "complexity": 3,
-        "generation_number": 59,
+        "generation_number": 55,
         "operators_used": [
           "-",
           "<",
@@ -1113,11 +1790,36 @@
         ],
         "navigation_depth": 2,
         "quantifier_depth": 0,
-        "difficulty": "hard",
+        "difficulty": "expert",
         "operator_count": 10,
-        "semantic_cluster": 15,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 1,
+            "wnc": 2.0,
+            "tnc": 2.5,
+            "vrc": 0,
+            "wno": 11.0,
+            "wnm": 3.0,
+            "total": 16.5
+          },
+          "computational": {
+            "oc": 11.0,
+            "tcc": 1.5,
+            "cic": 0.0,
+            "total": 12.5
+          },
+          "dependency": {
+            "ruc": 3,
+            "total": 3.0
+          },
+          "tc": 32.0
+        },
+        "semantic_cluster": 1,
         "implies": [
-          "collection_size_range_unsat_Firmware"
+          "collection_size_range_Firmware",
+          "collection_not_empty_check_Firmware"
         ]
       }
     },
@@ -1131,11 +1833,11 @@
         "collection2": "dataStreams"
       },
       "confidence": 1.0,
-      "timestamp": "2026-03-17T21:03:42.440392",
+      "timestamp": "2026-04-10T11:56:00.307033",
       "metadata": {
         "category": "collection",
         "complexity": 3,
-        "generation_number": 60,
+        "generation_number": 56,
         "operators_used": [
           "-",
           ">",
@@ -1147,6 +1849,30 @@
         "quantifier_depth": 0,
         "difficulty": "medium",
         "operator_count": 5,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 8.0,
+            "nnc_plus": 4.0,
+            "dn_ca": 1,
+            "wnc": 4.0,
+            "tnc": 4.7,
+            "vrc": 0,
+            "wno": 3.5,
+            "wnm": 2.0,
+            "total": 10.2
+          },
+          "computational": {
+            "oc": 3.5,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.5
+          },
+          "dependency": {
+            "ruc": 1,
+            "total": 1.0
+          },
+          "tc": 14.7
+        },
         "semantic_cluster": 12,
         "implies": []
       }
@@ -1160,11 +1886,11 @@
         "string_attribute": "site"
       },
       "confidence": 1.0,
-      "timestamp": "2026-03-17T21:03:42.440716",
+      "timestamp": "2026-04-10T11:56:00.307297",
       "metadata": {
         "category": "string",
         "complexity": 1,
-        "generation_number": 61,
+        "generation_number": 57,
         "operators_used": [
           "<",
           "<>",
@@ -1176,37 +1902,86 @@
         "quantifier_depth": 0,
         "difficulty": "medium",
         "operator_count": 5,
-        "semantic_cluster": 2,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 3.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 2,
+            "wnc": 3.0,
+            "tnc": 2.7,
+            "vrc": 0,
+            "wno": 5.5,
+            "wnm": 1.0,
+            "total": 9.2
+          },
+          "computational": {
+            "oc": 5.5,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 5.5
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 14.7
+        },
+        "semantic_cluster": 1,
         "implies": []
       }
     },
     {
-      "ocl": "context User\ninv: self.alerts->collect(x | x.alertId)->notEmpty()",
-      "pattern_id": "collect_operation",
-      "pattern_name": "Collect (Map) Operation",
-      "context": "User",
+      "ocl": "context Cluster\ninv: self.edgeNodes->asSet()->size() <= self.edgeNodes->size()",
+      "pattern_id": "collection_asSet",
+      "pattern_name": "Collection As Set Conversion",
+      "context": "Cluster",
       "parameters": {
-        "collection": "alerts",
-        "iterator": "x",
-        "attribute": "alertId"
+        "collection": "edgeNodes"
       },
       "confidence": 1.0,
-      "timestamp": "2026-03-17T21:03:42.441365",
+      "timestamp": "2026-04-10T11:56:00.307594",
       "metadata": {
         "category": "collection",
         "complexity": 2,
-        "generation_number": 63,
+        "generation_number": 58,
         "operators_used": [
           "-",
+          "<",
+          "<=",
+          "=",
           ">",
-          "collect",
-          "notEmpty"
+          "asSet",
+          "size"
         ],
         "navigation_depth": 2,
-        "quantifier_depth": 1,
-        "difficulty": "medium",
-        "operator_count": 4,
-        "semantic_cluster": 4,
+        "quantifier_depth": 0,
+        "difficulty": "expert",
+        "operator_count": 7,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 1,
+            "wnc": 2.0,
+            "tnc": 2.5,
+            "vrc": 0,
+            "wno": 7.5,
+            "wnm": 3.0,
+            "total": 13.0
+          },
+          "computational": {
+            "oc": 7.5,
+            "tcc": 1.5,
+            "cic": 0.0,
+            "total": 9.0
+          },
+          "dependency": {
+            "ruc": 4,
+            "total": 4.0
+          },
+          "tc": 26.0
+        },
+        "semantic_cluster": 13,
         "implies": []
       }
     },
@@ -1219,11 +1994,11 @@
         "collection": "alertRules"
       },
       "confidence": 1.0,
-      "timestamp": "2026-03-17T21:03:42.441833",
+      "timestamp": "2026-04-10T11:56:00.308139",
       "metadata": {
         "category": "collection",
         "complexity": 1,
-        "generation_number": 64,
+        "generation_number": 60,
         "operators_used": [
           "-",
           ">",
@@ -1231,48 +2006,34 @@
         ],
         "navigation_depth": 2,
         "quantifier_depth": 0,
-        "difficulty": "easy",
+        "difficulty": "medium",
         "operator_count": 3,
-        "semantic_cluster": 2,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.4,
+            "vrc": 0,
+            "wno": 2.0,
+            "wnm": 1.0,
+            "total": 4.4
+          },
+          "computational": {
+            "oc": 2.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 2.0
+          },
+          "dependency": {
+            "ruc": 2,
+            "total": 2.0
+          },
+          "tc": 8.4
+        },
+        "semantic_cluster": 1,
         "implies": []
-      }
-    },
-    {
-      "ocl": "context Network\ninv: self.links->notEmpty() implies self.links->sortedBy(x | x.bandwidthKbps)->first().bandwidthKbps <= self.links->sortedBy(x | x.bandwidthKbps)->last().bandwidthKbps",
-      "pattern_id": "sortedBy",
-      "pattern_name": "SortedBy Operation",
-      "context": "Network",
-      "parameters": {
-        "collection": "links",
-        "attribute": "bandwidthKbps"
-      },
-      "confidence": 1.0,
-      "timestamp": "2026-03-17T21:03:42.442123",
-      "metadata": {
-        "category": "collection",
-        "complexity": 2,
-        "generation_number": 65,
-        "operators_used": [
-          "-",
-          "<",
-          "<=",
-          "=",
-          ">",
-          "first",
-          "implies",
-          "last",
-          "notEmpty",
-          "sortedBy"
-        ],
-        "navigation_depth": 2,
-        "quantifier_depth": 1,
-        "difficulty": "hard",
-        "operator_count": 10,
-        "semantic_cluster": 3,
-        "implies": [
-          "sortedBy_Network",
-          "sortedBy_Network"
-        ]
       }
     },
     {
@@ -1287,11 +2048,11 @@
         "attribute": "topic"
       },
       "confidence": 1.0,
-      "timestamp": "2026-03-17T21:03:42.442535",
+      "timestamp": "2026-04-10T11:56:00.308694",
       "metadata": {
         "category": "advanced",
         "complexity": 3,
-        "generation_number": 66,
+        "generation_number": 62,
         "operators_used": [
           "-",
           "<",
@@ -1302,8 +2063,32 @@
         ],
         "navigation_depth": 2,
         "quantifier_depth": 1,
-        "difficulty": "medium",
+        "difficulty": "expert",
         "operator_count": 6,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 6.0,
+            "nnc_plus": 5.0,
+            "dn_ca": 3.0,
+            "wnc": 9.0,
+            "tnc": 6.0,
+            "vrc": 0,
+            "wno": 12.0,
+            "wnm": 1.0,
+            "total": 19.0
+          },
+          "computational": {
+            "oc": 12.0,
+            "tcc": 0.0,
+            "cic": 3.0,
+            "total": 15.0
+          },
+          "dependency": {
+            "ruc": 1,
+            "total": 1.0
+          },
+          "tc": 35.0
+        },
         "semantic_cluster": 12,
         "implies": []
       }
@@ -1318,11 +2103,11 @@
         "collection2": "networks"
       },
       "confidence": 1.0,
-      "timestamp": "2026-03-17T21:03:42.442886",
+      "timestamp": "2026-04-10T11:56:00.308983",
       "metadata": {
         "category": "set_operations",
         "complexity": 2,
-        "generation_number": 67,
+        "generation_number": 63,
         "operators_used": [
           "-",
           ">",
@@ -1330,9 +2115,33 @@
         ],
         "navigation_depth": 2,
         "quantifier_depth": 0,
-        "difficulty": "easy",
+        "difficulty": "medium",
         "operator_count": 3,
-        "semantic_cluster": 13,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 1,
+            "wnc": 2.0,
+            "tnc": 2.5,
+            "vrc": 0,
+            "wno": 2.0,
+            "wnm": 2.0,
+            "total": 6.5
+          },
+          "computational": {
+            "oc": 2.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 2.0
+          },
+          "dependency": {
+            "ruc": 2,
+            "total": 2.0
+          },
+          "tc": 10.5
+        },
+        "semantic_cluster": 14,
         "implies": []
       }
     },
@@ -1345,11 +2154,11 @@
         "collection": "apiKeys"
       },
       "confidence": 1.0,
-      "timestamp": "2026-03-17T21:03:42.443287",
+      "timestamp": "2026-04-10T11:56:00.309435",
       "metadata": {
         "category": "collection",
         "complexity": 1,
-        "generation_number": 68,
+        "generation_number": 64,
         "operators_used": [
           "-",
           ">",
@@ -1359,36 +2168,31 @@
         "quantifier_depth": 0,
         "difficulty": "easy",
         "operator_count": 3,
-        "semantic_cluster": 16,
-        "implies": []
-      }
-    },
-    {
-      "ocl": "context Cluster\ninv: self.gateways->size() = 1",
-      "pattern_id": "collection_has_size",
-      "pattern_name": "Collection Has Specific Size",
-      "context": "Cluster",
-      "parameters": {
-        "collection": "gateways",
-        "size": 1
-      },
-      "confidence": 1.0,
-      "timestamp": "2026-03-17T21:03:42.443595",
-      "metadata": {
-        "category": "collection",
-        "complexity": 1,
-        "generation_number": 69,
-        "operators_used": [
-          "-",
-          "=",
-          ">",
-          "size"
-        ],
-        "navigation_depth": 2,
-        "quantifier_depth": 0,
-        "difficulty": "easy",
-        "operator_count": 4,
-        "semantic_cluster": 17,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.4,
+            "vrc": 0,
+            "wno": 1.0,
+            "wnm": 1.0,
+            "total": 3.4
+          },
+          "computational": {
+            "oc": 1.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 1.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 4.4
+        },
+        "semantic_cluster": 3,
         "implies": []
       }
     },
@@ -1402,11 +2206,11 @@
         "attribute": "networkId"
       },
       "confidence": 1.0,
-      "timestamp": "2026-03-17T21:03:42.444350",
+      "timestamp": "2026-04-10T11:56:00.310007",
       "metadata": {
         "category": "collection",
         "complexity": 2,
-        "generation_number": 71,
+        "generation_number": 66,
         "operators_used": [
           "-",
           "<",
@@ -1418,9 +2222,33 @@
         ],
         "navigation_depth": 2,
         "quantifier_depth": 0,
-        "difficulty": "medium",
+        "difficulty": "hard",
         "operator_count": 7,
-        "semantic_cluster": 13,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 1,
+            "wnc": 2.0,
+            "tnc": 2.5,
+            "vrc": 0,
+            "wno": 7.0,
+            "wnm": 2.0,
+            "total": 11.5
+          },
+          "computational": {
+            "oc": 7.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 7.0
+          },
+          "dependency": {
+            "ruc": 2,
+            "total": 2.0
+          },
+          "tc": 20.5
+        },
+        "semantic_cluster": 14,
         "implies": []
       }
     },
@@ -1434,11 +2262,11 @@
         "min_length": 12
       },
       "confidence": 1.0,
-      "timestamp": "2026-03-17T21:03:42.444689",
+      "timestamp": "2026-04-10T11:56:00.310267",
       "metadata": {
         "category": "string",
         "complexity": 1,
-        "generation_number": 72,
+        "generation_number": 67,
         "operators_used": [
           "=",
           ">",
@@ -1449,7 +2277,31 @@
         "quantifier_depth": 0,
         "difficulty": "medium",
         "operator_count": 4,
-        "semantic_cluster": 2,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 2,
+            "wnc": 2.0,
+            "tnc": 2.0,
+            "vrc": 0,
+            "wno": 3.0,
+            "wnm": 1.0,
+            "total": 6.0
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 9.0
+        },
+        "semantic_cluster": 1,
         "implies": []
       }
     },
@@ -1462,11 +2314,11 @@
         "string_attribute": "value"
       },
       "confidence": 1.0,
-      "timestamp": "2026-03-17T21:03:42.445009",
+      "timestamp": "2026-04-10T11:56:00.310487",
       "metadata": {
         "category": "string",
         "complexity": 1,
-        "generation_number": 73,
+        "generation_number": 68,
         "operators_used": [
           "<",
           "<>",
@@ -1478,7 +2330,31 @@
         "quantifier_depth": 0,
         "difficulty": "medium",
         "operator_count": 5,
-        "semantic_cluster": 2,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 3.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 2,
+            "wnc": 3.0,
+            "tnc": 2.7,
+            "vrc": 0,
+            "wno": 5.5,
+            "wnm": 1.0,
+            "total": 9.2
+          },
+          "computational": {
+            "oc": 5.5,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 5.5
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 14.7
+        },
+        "semantic_cluster": 1,
         "implies": []
       }
     },
@@ -1491,11 +2367,11 @@
         "collection": "accessPolicies"
       },
       "confidence": 1.0,
-      "timestamp": "2026-03-17T21:03:42.445347",
+      "timestamp": "2026-04-10T11:56:00.310736",
       "metadata": {
         "category": "collection",
         "complexity": 1,
-        "generation_number": 74,
+        "generation_number": 69,
         "operators_used": [
           "-",
           ">",
@@ -1505,7 +2381,31 @@
         "quantifier_depth": 0,
         "difficulty": "easy",
         "operator_count": 3,
-        "semantic_cluster": 18,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.4,
+            "vrc": 0,
+            "wno": 1.0,
+            "wnm": 1.0,
+            "total": 3.4
+          },
+          "computational": {
+            "oc": 1.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 1.0
+          },
+          "dependency": {
+            "ruc": 1,
+            "total": 1.0
+          },
+          "tc": 5.4
+        },
+        "semantic_cluster": 15,
         "implies": [
           "collection_max_size_IoTPlatform"
         ]
@@ -1521,11 +2421,11 @@
         "substring": "value"
       },
       "confidence": 1.0,
-      "timestamp": "2026-03-17T21:03:42.445703",
+      "timestamp": "2026-04-10T11:56:00.310985",
       "metadata": {
         "category": "string",
         "complexity": 2,
-        "generation_number": 75,
+        "generation_number": 70,
         "operators_used": [
           "=",
           ">",
@@ -1536,6 +2436,30 @@
         "quantifier_depth": 0,
         "difficulty": "medium",
         "operator_count": 4,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 2,
+            "wnc": 2.0,
+            "tnc": 2.0,
+            "vrc": 0,
+            "wno": 3.0,
+            "wnm": 1.0,
+            "total": 6.0
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 9.0
+        },
         "semantic_cluster": 11,
         "implies": []
       }
@@ -1550,11 +2474,11 @@
         "max_length": 44
       },
       "confidence": 1.0,
-      "timestamp": "2026-03-17T21:03:42.445982",
+      "timestamp": "2026-04-10T11:56:00.311191",
       "metadata": {
         "category": "string",
         "complexity": 1,
-        "generation_number": 76,
+        "generation_number": 71,
         "operators_used": [
           "<",
           "<=",
@@ -1565,34 +2489,31 @@
         "quantifier_depth": 0,
         "difficulty": "medium",
         "operator_count": 4,
-        "semantic_cluster": 19,
-        "implies": []
-      }
-    },
-    {
-      "ocl": "context OTAUpdate\ninv: self.targetDevice <> null",
-      "pattern_id": "association_exists",
-      "pattern_name": "Association Exists",
-      "context": "OTAUpdate",
-      "parameters": {
-        "association": "targetDevice"
-      },
-      "confidence": 1.0,
-      "timestamp": "2026-03-17T21:03:42.446788",
-      "metadata": {
-        "category": "navigation",
-        "complexity": 1,
-        "generation_number": 78,
-        "operators_used": [
-          "<",
-          "<>",
-          ">"
-        ],
-        "navigation_depth": 2,
-        "quantifier_depth": 0,
-        "difficulty": "easy",
-        "operator_count": 3,
-        "semantic_cluster": 1,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 2,
+            "wnc": 2.0,
+            "tnc": 2.0,
+            "vrc": 0,
+            "wno": 3.0,
+            "wnm": 1.0,
+            "total": 6.0
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 9.0
+        },
+        "semantic_cluster": 16,
         "implies": []
       }
     },
@@ -1606,11 +2527,11 @@
         "attribute": "rulesJson"
       },
       "confidence": 1.0,
-      "timestamp": "2026-03-17T21:03:42.447065",
+      "timestamp": "2026-04-10T11:56:00.312040",
       "metadata": {
         "category": "collection",
         "complexity": 2,
-        "generation_number": 79,
+        "generation_number": 74,
         "operators_used": [
           "-",
           "<",
@@ -1625,37 +2546,88 @@
         ],
         "navigation_depth": 2,
         "quantifier_depth": 1,
-        "difficulty": "hard",
+        "difficulty": "expert",
         "operator_count": 10,
-        "semantic_cluster": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 10.0,
+            "nnc_plus": 7.0,
+            "dn_ca": 3.0,
+            "wnc": 11.0,
+            "tnc": 8.2,
+            "vrc": 1,
+            "wno": 10.0,
+            "wnm": 5.0,
+            "total": 24.2
+          },
+          "computational": {
+            "oc": 10.0,
+            "tcc": 0.0,
+            "cic": 4.0,
+            "total": 14.0
+          },
+          "dependency": {
+            "ruc": 2,
+            "total": 2.0
+          },
+          "tc": 40.2
+        },
+        "semantic_cluster": 8,
         "implies": []
       }
     },
     {
-      "ocl": "context Device\ninv: self.eventLogs->excludingAll(self.eventLogs)->isEmpty()",
-      "pattern_id": "difference_operation",
-      "pattern_name": "Set Difference",
+      "ocl": "context Device\ninv: self.eventLogs->asSet()->size() <= self.eventLogs->size()",
+      "pattern_id": "collection_asSet",
+      "pattern_name": "Collection As Set Conversion",
       "context": "Device",
       "parameters": {
-        "collection1": "eventLogs",
-        "collection2": "eventLogs"
+        "collection": "eventLogs"
       },
       "confidence": 1.0,
-      "timestamp": "2026-03-17T21:03:42.447929",
+      "timestamp": "2026-04-10T11:56:00.312451",
       "metadata": {
-        "category": "set_operations",
+        "category": "collection",
         "complexity": 2,
-        "generation_number": 81,
+        "generation_number": 75,
         "operators_used": [
           "-",
+          "<",
+          "<=",
+          "=",
           ">",
-          "isEmpty"
+          "asSet",
+          "size"
         ],
         "navigation_depth": 2,
         "quantifier_depth": 0,
-        "difficulty": "easy",
-        "operator_count": 3,
-        "semantic_cluster": 20,
+        "difficulty": "hard",
+        "operator_count": 7,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 1,
+            "wnc": 2.0,
+            "tnc": 2.5,
+            "vrc": 0,
+            "wno": 7.5,
+            "wnm": 3.0,
+            "total": 13.0
+          },
+          "computational": {
+            "oc": 7.5,
+            "tcc": 1.5,
+            "cic": 0.0,
+            "total": 9.0
+          },
+          "dependency": {
+            "ruc": 3,
+            "total": 3.0
+          },
+          "tc": 25.0
+        },
+        "semantic_cluster": 13,
         "implies": []
       }
     },
@@ -1670,11 +2642,11 @@
         "min_sum": 6
       },
       "confidence": 1.0,
-      "timestamp": "2026-03-17T21:03:42.448228",
+      "timestamp": "2026-04-10T11:56:00.312986",
       "metadata": {
         "category": "collection",
         "complexity": 3,
-        "generation_number": 82,
+        "generation_number": 77,
         "operators_used": [
           "-",
           "=",
@@ -1685,8 +2657,32 @@
         ],
         "navigation_depth": 2,
         "quantifier_depth": 1,
-        "difficulty": "medium",
+        "difficulty": "hard",
         "operator_count": 6,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 3.0,
+            "wnc": 5.0,
+            "tnc": 4.0,
+            "vrc": 1,
+            "wno": 7.0,
+            "wnm": 2.0,
+            "total": 14.0
+          },
+          "computational": {
+            "oc": 7.0,
+            "tcc": 0.0,
+            "cic": 2.0,
+            "total": 9.0
+          },
+          "dependency": {
+            "ruc": 2,
+            "total": 2.0
+          },
+          "tc": 25.0
+        },
         "semantic_cluster": 17,
         "implies": []
       }
@@ -1701,11 +2697,11 @@
         "min_size": 2
       },
       "confidence": 1.0,
-      "timestamp": "2026-03-17T21:03:42.448542",
+      "timestamp": "2026-04-10T11:56:00.313223",
       "metadata": {
         "category": "collection",
         "complexity": 1,
-        "generation_number": 83,
+        "generation_number": 78,
         "operators_used": [
           "-",
           "=",
@@ -1717,10 +2713,34 @@
         "quantifier_depth": 0,
         "difficulty": "medium",
         "operator_count": 5,
-        "semantic_cluster": 2,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.4,
+            "vrc": 0,
+            "wno": 4.0,
+            "wnm": 1.0,
+            "total": 6.4
+          },
+          "computational": {
+            "oc": 4.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 4.0
+          },
+          "dependency": {
+            "ruc": 2,
+            "total": 2.0
+          },
+          "tc": 12.4
+        },
+        "semantic_cluster": 1,
         "implies": [
-          "collection_not_empty_check_DataStream",
-          "sortedBy_unsat_DataStream"
+          "sortedBy_DataStream",
+          "collection_not_empty_check_DataStream"
         ]
       }
     },
@@ -1734,11 +2754,11 @@
         "substring": "value"
       },
       "confidence": 1.0,
-      "timestamp": "2026-03-17T21:03:42.448910",
+      "timestamp": "2026-04-10T11:56:00.313474",
       "metadata": {
         "category": "string",
         "complexity": 2,
-        "generation_number": 84,
+        "generation_number": 79,
         "operators_used": [
           "=",
           ">",
@@ -1749,6 +2769,30 @@
         "quantifier_depth": 0,
         "difficulty": "medium",
         "operator_count": 4,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 2,
+            "wnc": 2.0,
+            "tnc": 2.0,
+            "vrc": 0,
+            "wno": 3.0,
+            "wnm": 1.0,
+            "total": 6.0
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 9.0
+        },
         "semantic_cluster": 11,
         "implies": []
       }
@@ -1762,11 +2806,11 @@
         "collection": "connectedEdges"
       },
       "confidence": 1.0,
-      "timestamp": "2026-03-17T21:03:42.449263",
+      "timestamp": "2026-04-10T11:56:00.313709",
       "metadata": {
         "category": "collection",
         "complexity": 2,
-        "generation_number": 85,
+        "generation_number": 80,
         "operators_used": [
           "-",
           "<",
@@ -1778,77 +2822,33 @@
         ],
         "navigation_depth": 2,
         "quantifier_depth": 0,
-        "difficulty": "medium",
-        "operator_count": 7,
-        "semantic_cluster": 17,
-        "implies": []
-      }
-    },
-    {
-      "ocl": "context AccessPolicy\ninv: self.roles->notEmpty() implies self.roles->sortedBy(x | x.roleName)->first().roleName <= self.roles->sortedBy(x | x.roleName)->last().roleName",
-      "pattern_id": "sortedBy",
-      "pattern_name": "SortedBy Operation",
-      "context": "AccessPolicy",
-      "parameters": {
-        "collection": "roles",
-        "attribute": "roleName"
-      },
-      "confidence": 1.0,
-      "timestamp": "2026-03-17T21:03:42.449740",
-      "metadata": {
-        "category": "collection",
-        "complexity": 2,
-        "generation_number": 86,
-        "operators_used": [
-          "-",
-          "<",
-          "<=",
-          "=",
-          ">",
-          "first",
-          "implies",
-          "last",
-          "notEmpty",
-          "sortedBy"
-        ],
-        "navigation_depth": 2,
-        "quantifier_depth": 1,
         "difficulty": "hard",
-        "operator_count": 10,
-        "semantic_cluster": 3,
-        "implies": [
-          "collection_size_range_AccessPolicy",
-          "sortedBy_unsat_AccessPolicy",
-          "collection_last_unsat_AccessPolicy"
-        ]
-      }
-    },
-    {
-      "ocl": "context Gateway\ninv: self.connectedEdges->isUnique(x | x.memoryMB)",
-      "pattern_id": "uniqueness_constraint",
-      "pattern_name": "Uniqueness Constraint",
-      "context": "Gateway",
-      "parameters": {
-        "collection": "connectedEdges",
-        "iterator": "x",
-        "attribute": "memoryMB"
-      },
-      "confidence": 1.0,
-      "timestamp": "2026-03-17T21:03:42.450246",
-      "metadata": {
-        "category": "basic",
-        "complexity": 1,
-        "generation_number": 87,
-        "operators_used": [
-          "-",
-          ">",
-          "isUnique"
-        ],
-        "navigation_depth": 2,
-        "quantifier_depth": 0,
-        "difficulty": "easy",
-        "operator_count": 3,
-        "semantic_cluster": 17,
+        "operator_count": 7,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 1,
+            "wnc": 2.0,
+            "tnc": 2.5,
+            "vrc": 0,
+            "wno": 7.5,
+            "wnm": 3.0,
+            "total": 13.0
+          },
+          "computational": {
+            "oc": 7.5,
+            "tcc": 1.5,
+            "cic": 0.0,
+            "total": 9.0
+          },
+          "dependency": {
+            "ruc": 2,
+            "total": 2.0
+          },
+          "tc": 24.0
+        },
+        "semantic_cluster": 13,
         "implies": []
       }
     },
@@ -1862,11 +2862,11 @@
         "length": 21
       },
       "confidence": 1.0,
-      "timestamp": "2026-03-17T21:03:42.450533",
+      "timestamp": "2026-04-10T11:56:00.314614",
       "metadata": {
         "category": "string",
         "complexity": 1,
-        "generation_number": 88,
+        "generation_number": 83,
         "operators_used": [
           "=",
           "size"
@@ -1875,8 +2875,90 @@
         "quantifier_depth": 0,
         "difficulty": "easy",
         "operator_count": 2,
-        "semantic_cluster": 21,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 2,
+            "wnc": 2.0,
+            "tnc": 2.0,
+            "vrc": 0,
+            "wno": 1.0,
+            "wnm": 1.0,
+            "total": 4.0
+          },
+          "computational": {
+            "oc": 1.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 1.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 5.0
+        },
+        "semantic_cluster": 6,
         "implies": []
+      }
+    },
+    {
+      "ocl": "context AccessPolicy\ninv: self.roles->notEmpty() implies self.roles->last().roleName <> null",
+      "pattern_id": "collection_last",
+      "pattern_name": "Collection Last Element",
+      "context": "AccessPolicy",
+      "parameters": {
+        "collection": "roles",
+        "attribute": "roleName"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-04-10T11:56:00.314868",
+      "metadata": {
+        "category": "collection",
+        "complexity": 2,
+        "generation_number": 84,
+        "operators_used": [
+          "-",
+          "<",
+          "<>",
+          ">",
+          "implies",
+          "last",
+          "notEmpty"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "hard",
+        "operator_count": 7,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 1,
+            "wnc": 2.0,
+            "tnc": 2.5,
+            "vrc": 0,
+            "wno": 7.0,
+            "wnm": 2.0,
+            "total": 11.5
+          },
+          "computational": {
+            "oc": 7.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 7.0
+          },
+          "dependency": {
+            "ruc": 2,
+            "total": 2.0
+          },
+          "tc": 20.5
+        },
+        "semantic_cluster": 15,
+        "implies": [
+          "sortedBy_AccessPolicy"
+        ]
       }
     },
     {
@@ -1889,11 +2971,11 @@
         "collection2": "roles"
       },
       "confidence": 1.0,
-      "timestamp": "2026-03-17T21:03:42.451911",
+      "timestamp": "2026-04-10T11:56:00.315454",
       "metadata": {
         "category": "set_operations",
         "complexity": 2,
-        "generation_number": 91,
+        "generation_number": 86,
         "operators_used": [
           "-",
           ">",
@@ -1902,9 +2984,33 @@
         ],
         "navigation_depth": 2,
         "quantifier_depth": 0,
-        "difficulty": "easy",
+        "difficulty": "medium",
         "operator_count": 4,
-        "semantic_cluster": 8,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 1,
+            "wnc": 2.0,
+            "tnc": 2.5,
+            "vrc": 0,
+            "wno": 2.0,
+            "wnm": 2.0,
+            "total": 6.5
+          },
+          "computational": {
+            "oc": 2.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 2.0
+          },
+          "dependency": {
+            "ruc": 1,
+            "total": 1.0
+          },
+          "tc": 9.5
+        },
+        "semantic_cluster": 15,
         "implies": []
       }
     },
@@ -1918,11 +3024,11 @@
         "collection2": "roles"
       },
       "confidence": 1.0,
-      "timestamp": "2026-03-17T21:03:42.452545",
+      "timestamp": "2026-04-10T11:56:00.315802",
       "metadata": {
         "category": "set_operations",
         "complexity": 2,
-        "generation_number": 92,
+        "generation_number": 87,
         "operators_used": [
           "-",
           ">",
@@ -1930,9 +3036,33 @@
         ],
         "navigation_depth": 2,
         "quantifier_depth": 0,
-        "difficulty": "easy",
+        "difficulty": "medium",
         "operator_count": 3,
-        "semantic_cluster": 8,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 1,
+            "wnc": 2.0,
+            "tnc": 2.5,
+            "vrc": 0,
+            "wno": 2.0,
+            "wnm": 2.0,
+            "total": 6.5
+          },
+          "computational": {
+            "oc": 2.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 2.0
+          },
+          "dependency": {
+            "ruc": 1,
+            "total": 1.0
+          },
+          "tc": 9.5
+        },
+        "semantic_cluster": 14,
         "implies": []
       }
     },
@@ -1945,11 +3075,11 @@
         "attribute": "status"
       },
       "confidence": 1.0,
-      "timestamp": "2026-03-17T21:03:42.453030",
+      "timestamp": "2026-04-10T11:56:00.316100",
       "metadata": {
         "category": "basic",
         "complexity": 1,
-        "generation_number": 93,
+        "generation_number": 88,
         "operators_used": [
           "="
         ],
@@ -1957,65 +3087,31 @@
         "quantifier_depth": 0,
         "difficulty": "trivial",
         "operator_count": 1,
-        "semantic_cluster": 1,
-        "implies": []
-      }
-    },
-    {
-      "ocl": "context Metric\ninv: self.unit.size() <= 13",
-      "pattern_id": "string_max_length",
-      "pattern_name": "String Maximum Length",
-      "context": "Metric",
-      "parameters": {
-        "string_attribute": "unit",
-        "max_length": 13
-      },
-      "confidence": 1.0,
-      "timestamp": "2026-03-17T21:03:42.453305",
-      "metadata": {
-        "category": "string",
-        "complexity": 1,
-        "generation_number": 94,
-        "operators_used": [
-          "<",
-          "<=",
-          "=",
-          "size"
-        ],
-        "navigation_depth": 3,
-        "quantifier_depth": 0,
-        "difficulty": "medium",
-        "operator_count": 4,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 1.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.0,
+            "vrc": 0,
+            "wno": 1.0,
+            "wnm": 0.0,
+            "total": 2.0
+          },
+          "computational": {
+            "oc": 1.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 1.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 3.0
+        },
         "semantic_cluster": 2,
-        "implies": []
-      }
-    },
-    {
-      "ocl": "context AccessPolicy\ninv: self.description <> null implies self.policyId <> null",
-      "pattern_id": "implies_reverse",
-      "pattern_name": "Reverse Implication",
-      "context": "AccessPolicy",
-      "parameters": {
-        "first_attribute": "policyId",
-        "second_attribute": "description"
-      },
-      "confidence": 1.0,
-      "timestamp": "2026-03-17T21:03:42.453713",
-      "metadata": {
-        "category": "advanced",
-        "complexity": 2,
-        "generation_number": 95,
-        "operators_used": [
-          "<",
-          "<>",
-          ">",
-          "implies"
-        ],
-        "navigation_depth": 2,
-        "quantifier_depth": 0,
-        "difficulty": "easy",
-        "operator_count": 4,
-        "semantic_cluster": 22,
         "implies": []
       }
     },
@@ -2029,11 +3125,11 @@
         "max_length": 21
       },
       "confidence": 1.0,
-      "timestamp": "2026-03-17T21:03:42.454341",
+      "timestamp": "2026-04-10T11:56:00.316768",
       "metadata": {
         "category": "string",
         "complexity": 1,
-        "generation_number": 97,
+        "generation_number": 91,
         "operators_used": [
           "<",
           "<=",
@@ -2044,66 +3140,391 @@
         "quantifier_depth": 0,
         "difficulty": "medium",
         "operator_count": 4,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 2,
+            "wnc": 2.0,
+            "tnc": 2.0,
+            "vrc": 0,
+            "wno": 3.0,
+            "wnm": 1.0,
+            "total": 6.0
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 9.0
+        },
+        "semantic_cluster": 1,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context ConnectivityModule\ninv: self.links->union(self.links)->notEmpty()",
+      "pattern_id": "union_operation",
+      "pattern_name": "Set Union",
+      "context": "ConnectivityModule",
+      "parameters": {
+        "collection1": "links",
+        "collection2": "links"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-04-10T11:56:00.317177",
+      "metadata": {
+        "category": "set_operations",
+        "complexity": 2,
+        "generation_number": 92,
+        "operators_used": [
+          "-",
+          ">",
+          "notEmpty",
+          "union"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 4,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 1,
+            "wnc": 2.0,
+            "tnc": 2.5,
+            "vrc": 0,
+            "wno": 2.0,
+            "wnm": 2.0,
+            "total": 6.5
+          },
+          "computational": {
+            "oc": 2.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 2.0
+          },
+          "dependency": {
+            "ruc": 1,
+            "total": 1.0
+          },
+          "tc": 9.5
+        },
+        "semantic_cluster": 18,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context User\ninv: self.name = null",
+      "pattern_id": "attribute_null_check",
+      "pattern_name": "Attribute Must Be Null",
+      "context": "User",
+      "parameters": {
+        "attribute": "name"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-04-10T11:56:00.317782",
+      "metadata": {
+        "category": "basic",
+        "complexity": 1,
+        "generation_number": 94,
+        "operators_used": [
+          "="
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "trivial",
+        "operator_count": 1,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 1.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.0,
+            "vrc": 0,
+            "wno": 1.0,
+            "wnm": 0.0,
+            "total": 2.0
+          },
+          "computational": {
+            "oc": 1.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 1.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 3.0
+        },
         "semantic_cluster": 2,
         "implies": []
       }
     },
     {
-      "ocl": "context AccessPolicy\ninv: self.rulesJson <> null and self.description <> null",
-      "pattern_id": "all_attributes_defined",
-      "pattern_name": "All Attributes Defined",
-      "context": "AccessPolicy",
+      "ocl": "context PowerSource\ninv: self.capacity > 32",
+      "pattern_id": "numeric_greater_than_value",
+      "pattern_name": "Numeric Greater Than Value",
+      "context": "PowerSource",
       "parameters": {
-        "first_attribute": "rulesJson",
-        "second_attribute": "description"
+        "numeric_attribute": "capacity",
+        "value": 32
       },
       "confidence": 1.0,
-      "timestamp": "2026-03-17T21:03:42.455021",
+      "timestamp": "2026-04-10T11:56:00.318003",
       "metadata": {
-        "category": "advanced",
+        "category": "arithmetic",
         "complexity": 1,
-        "generation_number": 98,
+        "generation_number": 95,
         "operators_used": [
-          "<",
-          "<>",
-          ">",
-          "and"
+          ">"
         ],
         "navigation_depth": 2,
         "quantifier_depth": 0,
-        "difficulty": "easy",
-        "operator_count": 4,
-        "semantic_cluster": 22,
+        "difficulty": "trivial",
+        "operator_count": 1,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 1.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.0,
+            "vrc": 0,
+            "wno": 1.0,
+            "wnm": 0.0,
+            "total": 2.0
+          },
+          "computational": {
+            "oc": 1.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 1.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 3.0
+        },
+        "semantic_cluster": 19,
         "implies": []
       }
     },
     {
-      "ocl": "context Network\ninv: not(self.name <> null and self.networkId <> null)",
-      "pattern_id": "not_both_defined",
-      "pattern_name": "Not Both Defined",
-      "context": "Network",
+      "ocl": "context Firmware\ninv: self.devices->size() > 0",
+      "pattern_id": "collection_not_empty_check",
+      "pattern_name": "Collection Not Empty Check",
+      "context": "Firmware",
       "parameters": {
-        "first_attribute": "name",
-        "second_attribute": "networkId"
+        "collection": "devices"
       },
       "confidence": 1.0,
-      "timestamp": "2026-03-17T21:03:42.455373",
+      "timestamp": "2026-04-10T11:56:00.318190",
       "metadata": {
-        "category": "advanced",
-        "complexity": 2,
-        "generation_number": 99,
+        "category": "collection",
+        "complexity": 1,
+        "generation_number": 96,
         "operators_used": [
-          "<",
-          "<>",
+          "-",
           ">",
-          "and",
-          "not"
+          "size"
         ],
         "navigation_depth": 2,
         "quantifier_depth": 0,
         "difficulty": "medium",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.4,
+            "vrc": 0,
+            "wno": 2.0,
+            "wnm": 1.0,
+            "total": 4.4
+          },
+          "computational": {
+            "oc": 2.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 2.0
+          },
+          "dependency": {
+            "ruc": 3,
+            "total": 3.0
+          },
+          "tc": 9.4
+        },
+        "semantic_cluster": 1,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context DataStream\ninv: self.topic.size() >= 15",
+      "pattern_id": "string_min_length",
+      "pattern_name": "String Minimum Length",
+      "context": "DataStream",
+      "parameters": {
+        "string_attribute": "topic",
+        "min_length": 15
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-04-10T11:56:00.318544",
+      "metadata": {
+        "category": "string",
+        "complexity": 1,
+        "generation_number": 97,
+        "operators_used": [
+          "=",
+          ">",
+          ">=",
+          "size"
+        ],
+        "navigation_depth": 3,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 4,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 2,
+            "wnc": 2.0,
+            "tnc": 2.0,
+            "vrc": 0,
+            "wno": 3.0,
+            "wnm": 1.0,
+            "total": 6.0
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 9.0
+        },
+        "semantic_cluster": 9,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Role\ninv: self.policies->collect(x | x.roles)->flatten()->notEmpty()",
+      "pattern_id": "flatten_operation",
+      "pattern_name": "Flatten Operation",
+      "context": "Role",
+      "parameters": {
+        "collection": "policies",
+        "iterator": "x",
+        "nested_collection": "roles"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-04-10T11:56:00.318803",
+      "metadata": {
+        "category": "set_operations",
+        "complexity": 3,
+        "generation_number": 98,
+        "operators_used": [
+          "-",
+          ">",
+          "collect",
+          "flatten",
+          "notEmpty"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "expert",
         "operator_count": 5,
-        "semantic_cluster": 13,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 3.0,
+            "wnc": 5.0,
+            "tnc": 4.0,
+            "vrc": 1,
+            "wno": 7.0,
+            "wnm": 3.0,
+            "total": 15.0
+          },
+          "computational": {
+            "oc": 7.0,
+            "tcc": 2.0,
+            "cic": 2.0,
+            "total": 11.0
+          },
+          "dependency": {
+            "ruc": 2,
+            "total": 2.0
+          },
+          "tc": 28.0
+        },
+        "semantic_cluster": 15,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context User\ninv: self.userId = null",
+      "pattern_id": "attribute_null_check",
+      "pattern_name": "Attribute Must Be Null",
+      "context": "User",
+      "parameters": {
+        "attribute": "userId"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-04-10T11:56:00.319097",
+      "metadata": {
+        "category": "basic",
+        "complexity": 1,
+        "generation_number": 99,
+        "operators_used": [
+          "="
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "trivial",
+        "operator_count": 1,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 1.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.0,
+            "vrc": 0,
+            "wno": 1.0,
+            "wnm": 0.0,
+            "total": 2.0
+          },
+          "computational": {
+            "oc": 1.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 1.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 3.0
+        },
+        "semantic_cluster": 2,
         "implies": []
       }
     }

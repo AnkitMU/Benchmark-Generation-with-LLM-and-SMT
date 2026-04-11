@@ -32,7 +32,12 @@ class ComplexityConfig:
     Configuration for complexity-based benchmark generation.
 
     Users can specify target Total Complexity (TC) ranges and customise
-    all weights from the paper's metric framework.
+    all weights from the paper's metric framework (Jha, Monahan, Wu - STAF 2025).
+
+    TC = w_s * Structural + w_c * Computational + w_d * Dependency
+
+    Per-dimension configuration allows users to independently enable/disable,
+    weight, and set target ranges for Structural and Computational complexity.
     """
     # Target TC range for generated constraints
     min_tc: float = 0.0
@@ -43,12 +48,28 @@ class ComplexityConfig:
     computational_weight: float = 1.0
     dependency_weight: float = 1.0
 
+    # Per-dimension enable flags (when False, weight is forced to 0.0)
+    structural_enabled: bool = True
+    computational_enabled: bool = True
+
+    # Per-dimension target ranges (optional, for per-dimension steering)
+    # When set, the engine steers generation to keep dimension scores in range
+    structural_target_min: Optional[float] = None
+    structural_target_max: Optional[float] = None
+    computational_target_min: Optional[float] = None
+    computational_target_max: Optional[float] = None
+
     # TNC sub-weights: TNC = alpha*NNR-C + beta*WNC + gamma*DN-CA
     tnc_alpha: float = 0.4
     tnc_beta: float = 0.3
     tnc_gamma: float = 0.3
 
-    # Custom operator weight overrides (merged on top of Table 1 defaults)
+    # Operator weights (Table 1 from paper, verification-driven)
+    # Users can provide full operator weights or just overrides
+    operator_weights: Dict[str, float] = field(default_factory=dict)
+
+    # Legacy: Custom operator weight overrides (merged on top of Table 1 defaults)
+    # Kept for backward compatibility; operator_weights takes precedence
     operator_weight_overrides: Dict[str, float] = field(default_factory=dict)
 
     # TC-based difficulty distribution (percentages, should sum to 100)

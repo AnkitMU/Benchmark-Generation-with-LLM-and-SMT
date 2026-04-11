@@ -1,113 +1,101 @@
 -- Benchmark: IOTsensornetwork / balanced
 -- Type: UNSAT Constraints Only
--- Generated: 2026-03-17T21:04:11.565153
--- Count: 18
+-- Generated: 2026-04-10T11:56:16.784070
+-- Count: 16
 
--- #1 Collection Maximum Size (UNSAT) in IoTPlatform
+-- #1 String Minimum Length (UNSAT) in Device
 -- Difficulty: medium
--- Mutation Strategy: contradictory_bounds
-context IoTPlatform
-inv: (self.networks->size() <= 1) and (self.networks->size() > 1)
-
--- #2 Attribute Not Null (Simple) (UNSAT) in ActuatorNode
--- Difficulty: easy
--- Mutation Strategy: simple_negation
-context ActuatorNode
-inv: not(self.actuatorType <> null)
-
--- #3 Association Exists (UNSAT) in OTAUpdate
--- Difficulty: easy
--- Mutation Strategy: simple_negation
-context OTAUpdate
-inv: not(self.targetDevice <> null)
-
--- #4 Association Exists (UNSAT) in CommunicationLink
--- Difficulty: easy
--- Mutation Strategy: simple_negation
-context CommunicationLink
-inv: not(self.stream <> null)
-
--- #5 Association Exists (UNSAT) in Network
--- Difficulty: easy
--- Mutation Strategy: simple_negation
-context Network
-inv: not(self.platform <> null)
-
--- #6 Collection Size in Range (UNSAT) in Firmware
--- Difficulty: medium
--- Mutation Strategy: contradictory_bounds
-context Firmware
-inv: (self.devices->size() >= 1 and self.devices->size() <= 1) and (self.devices->size() < 1)
-
--- #7 String Maximum Length (UNSAT) in AlertRule
--- Difficulty: medium
--- Mutation Strategy: simple_negation
-context AlertRule
-inv: not(self.ruleId.size() <= 41)
-
--- #8 SortedBy Operation (UNSAT) in AccessPolicy
--- Difficulty: hard
--- Mutation Strategy: empty_collection
-context AccessPolicy
-inv: (self.roles->notEmpty() implies self.roles->sortedBy(x | x.roleName)->first().roleName <= self.roles->sortedBy(x | x.roleName)->last().roleName) and (self.roles->isEmpty())
-
--- #9 Two Attributes Not Equal (UNSAT) in Device
--- Difficulty: easy
--- Mutation Strategy: simple_negation
+-- Mutation Strategy: self_contradiction
 context Device
-inv: not(self.deviceId <> self.name)
+inv: (self.name.size() >= 20) and (not(self.name.size() >= 20))
 
--- #10 SortedBy Operation (UNSAT) in DataStream
--- Difficulty: hard
--- Mutation Strategy: empty_collection
-context DataStream
-inv: (self.alertRules->notEmpty() implies self.alertRules->sortedBy(x | x.condition)->first().condition <= self.alertRules->sortedBy(x | x.condition)->last().condition) and (self.alertRules->isEmpty())
-
--- #11 Collection As Set Conversion (UNSAT) in SensorNode
--- Difficulty: medium
--- Mutation Strategy: simple_negation
-context SensorNode
-inv: not(self.metrics->asSet()->size() <= self.metrics->size())
-
--- #12 IncludesAll/ExcludesAll Check (UNSAT) in DataStream
--- Difficulty: medium
--- Mutation Strategy: simple_negation
-context DataStream
-inv: not(self.records->includesAll(self.records) or self.records->excludesAll(self.records))
-
--- #13 Collection As Set Conversion (UNSAT) in Cluster
--- Difficulty: medium
--- Mutation Strategy: simple_negation
-context Cluster
-inv: not(self.edgeNodes->asSet()->size() <= self.edgeNodes->size())
-
--- #14 Two Attributes Not Equal (UNSAT) in Alert
+-- #2 Association Exists (UNSAT) in OTAUpdate
 -- Difficulty: easy
--- Mutation Strategy: simple_negation
-context Alert
-inv: not(self.alertId <> self.message)
+-- Mutation Strategy: self_contradiction
+context OTAUpdate
+inv: (self.targetDevice <> null) and (not(self.targetDevice <> null))
+
+-- #3 Collect (Map) Operation (UNSAT) in User
+-- Difficulty: hard
+-- Mutation Strategy: self_contradiction
+context User
+inv: (self.alerts->collect(x | x.alertId)->notEmpty()) and (not(self.alerts->collect(x | x.alertId)->notEmpty()))
+
+-- #4 Uniqueness Constraint (UNSAT) in Gateway
+-- Difficulty: medium
+-- Mutation Strategy: self_contradiction
+context Gateway
+inv: (self.connectedEdges->isUnique(x | x.memoryMB)) and (not(self.connectedEdges->isUnique(x | x.memoryMB)))
+
+-- #5 Collection Unique Attribute Values (UNSAT) in Role
+-- Difficulty: easy
+-- Mutation Strategy: self_contradiction
+context Role
+inv: (self.users->isUnique(x | x.name)) and (not(self.users->isUnique(x | x.name)))
+
+-- #6 Set Difference (UNSAT) in ConnectivityModule
+-- Difficulty: medium
+-- Mutation Strategy: self_contradiction
+context ConnectivityModule
+inv: (self.links->excludingAll(self.links)->isEmpty()) and (not(self.links->excludingAll(self.links)->isEmpty()))
+
+-- #7 All Different (UNSAT) in User
+-- Difficulty: expert
+-- Mutation Strategy: self_contradiction
+context User
+inv: (self.roles->forAll(x, y | x <> y implies x.roleName <> y.roleName)) and (not(self.roles->forAll(x, y | x <> y implies x.roleName <> y.roleName)))
+
+-- #8 String Exact Length (UNSAT) in Role
+-- Difficulty: easy
+-- Mutation Strategy: self_contradiction
+context Role
+inv: (self.roleName.size() = 12) and (not(self.roleName.size() = 12))
+
+-- #9 SortedBy Operation (UNSAT) in Network
+-- Difficulty: expert
+-- Mutation Strategy: self_contradiction
+context Network
+inv: (self.links->notEmpty() implies self.links->sortedBy(x | x.bandwidthKbps)->first().bandwidthKbps <= self.links->sortedBy(x | x.bandwidthKbps)->last().bandwidthKbps) and (not(self.links->notEmpty() implies self.links->sortedBy(x | x.bandwidthKbps)->first().bandwidthKbps <= self.links->sortedBy(x | x.bandwidthKbps)->last().bandwidthKbps))
+
+-- #10 Set Difference (UNSAT) in Device
+-- Difficulty: medium
+-- Mutation Strategy: self_contradiction
+context Device
+inv: (self.eventLogs->excludingAll(self.eventLogs)->isEmpty()) and (not(self.eventLogs->excludingAll(self.eventLogs)->isEmpty()))
+
+-- #11 IncludesAll/ExcludesAll Check (UNSAT) in DataStream
+-- Difficulty: medium
+-- Mutation Strategy: self_contradiction
+context DataStream
+inv: (self.records->includesAll(self.records) or self.records->excludesAll(self.records)) and (not(self.records->includesAll(self.records) or self.records->excludesAll(self.records)))
+
+-- #12 Collection Has Specific Size (UNSAT) in Cluster
+-- Difficulty: easy
+-- Mutation Strategy: self_contradiction
+context Cluster
+inv: (self.gateways->size() = 1) and (not(self.gateways->size() = 1))
+
+-- #13 Collection Maximum Size (UNSAT) in Role
+-- Difficulty: medium
+-- Mutation Strategy: contradictory_bounds
+context Role
+inv: (self.policies->size() <= 3) and (self.policies->size() > 3)
+
+-- #14 SortedBy Operation (UNSAT) in Network
+-- Difficulty: expert
+-- Mutation Strategy: self_contradiction
+context Network
+inv: (self.links->notEmpty() implies self.links->sortedBy(x | x.linkId)->first().linkId <= self.links->sortedBy(x | x.linkId)->last().linkId) and (not(self.links->notEmpty() implies self.links->sortedBy(x | x.linkId)->first().linkId <= self.links->sortedBy(x | x.linkId)->last().linkId))
 
 -- #15 String Not Empty (UNSAT) in AccessPolicy
 -- Difficulty: medium
--- Mutation Strategy: simple_negation
+-- Mutation Strategy: self_contradiction
 context AccessPolicy
-inv: not(self.description <> '' and self.description.size() > 0)
+inv: (self.description <> '' and self.description.size() > 0) and (not(self.description <> '' and self.description.size() > 0))
 
--- #16 Collection As Set Conversion (UNSAT) in Device
+-- #16 Collection Size Constraint (UNSAT) in SensorNode
 -- Difficulty: medium
--- Mutation Strategy: simple_negation
-context Device
-inv: not(self.eventLogs->asSet()->size() <= self.eventLogs->size())
-
--- #17 Collection Last Element (UNSAT) in AccessPolicy
--- Difficulty: medium
--- Mutation Strategy: empty_collection
-context AccessPolicy
-inv: (self.roles->notEmpty() implies self.roles->last().roleName <> null) and (self.roles->isEmpty())
-
--- #18 All Different (UNSAT) in User
--- Difficulty: medium
--- Mutation Strategy: simple_negation
-context User
-inv: not(self.roles->forAll(x, y | x <> y implies x.roleName <> y.roleName))
+-- Mutation Strategy: self_contradiction
+context SensorNode
+inv: (self.metrics->size() <> 1) and (not(self.metrics->size() <> 1))
 

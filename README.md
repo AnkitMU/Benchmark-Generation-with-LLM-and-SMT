@@ -13,14 +13,26 @@ Our framework generates OCL benchmarks from UML/Ecore metamodels. It generates f
 ## Quick start
 
 ```bash
+# full verifier stack requires Python 3.10+
+python3.10 -m venv venv
+source venv/bin/activate
+
+# keep installer tooling current so pip can resolve macOS wheels
+python -m pip install --upgrade pip setuptools wheel
+
 # install deps
-pip install -r requirements.txt
+python -m pip install -r requirements.txt
 
 # run example suite
 python generate_benchmark_suite.py --config examples/example_suite.yaml
 ```
 
 Outputs are written to `benchmarks/`.
+
+Notes:
+- The embedded hybrid verifier package targets Python `>=3.10`.
+- `z3-solver` is pinned below `4.14` to prefer wheel-backed macOS installs and avoid local source builds.
+- `numpy` is pinned below `2` to stay compatible with the current `torch` stack used by the verifier and semantic modules.
 
 ## Configuration
 Edit a YAML file like `examples/example_suite.yaml` to control:

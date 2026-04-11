@@ -221,18 +221,55 @@ class EnhancedSuiteController:
             
             self.logger.dedent()
             
+            # LLM Semantic Analysis (pre-generation, runs once per metamodel)
+            semantic_matrix = None
+            sem_cfg = self.suite.semantic
+            if sem_cfg.enable:
+              try:
+                from modules.semantic.llm_semantic_analyzer import LLMSemanticAnalyzer
+                self.logger.step(f"Running LLM semantic analysis ({sem_cfg.model})...")
+                # Ollama generate endpoint: append /api/generate if user provided base URL
+                ollama_gen_url = sem_cfg.ollama_url
+                if not ollama_gen_url.endswith("/api/generate"):
+                    ollama_gen_url = ollama_gen_url.rstrip("/") + "/api/generate"
+                analyzer = LLMSemanticAnalyzer(
+                    model=sem_cfg.model,
+                    ollama_url=ollama_gen_url,
+                    use_cache=sem_cfg.use_cache,
+                )
+                semantic_matrix = analyzer.analyze_metamodel(metamodel, model_name=model_spec.name)
+                n_classes = len(semantic_matrix.class_profiles)
+                if n_classes > 0:
+                    total_comp = sum(len(p.comparable_pairs) for p in semantic_matrix.class_profiles.values())
+                    total_incomp = sum(len(p.incomparable_pairs) for p in semantic_matrix.class_profiles.values())
+                    self.logger.success(
+                        f"Semantic analysis complete: {n_classes} classes, "
+                        f"{total_comp} comparable pairs, {total_incomp} incomparable pairs"
+                    )
+                else:
+                    self.logger.warning("Semantic analysis returned empty matrix — using heuristic fallback")
+              except Exception as e:
+                self.logger.warning(f"LLM semantic analysis failed: {e} — using heuristic fallback")
+            else:
+                self.logger.info("Semantic analysis disabled in config — using heuristic fallback")
+
             # Initialize engine and verifier
             self.logger.step("Initializing generation engine...")
             engine = BenchmarkEngineV2(
                 metamodel,
-                verification_enabled=self.suite.verification.enable
+                verification_enabled=self.suite.verification.enable,
+                semantic_matrix=semantic_matrix,
             )
             self.logger.success("Engine initialized")
             
             verifier = None
             if self.suite.verification.enable:
                 self.logger.step("Initializing constraint verifier...")
-                verifier = FrameworkConstraintVerifier(metamodel, model_spec.xmi)
+                verifier = FrameworkConstraintVerifier(
+                    metamodel, model_spec.xmi,
+                    scope_per_class=self.suite.verification.scope_per_class,
+                    timeout_ms=self.suite.verification.per_constraint_timeout_ms,
+                )
                 self.logger.success("Verifier initialized")
             
             # Process each profile
@@ -350,72 +387,173 @@ class EnhancedSuiteController:
                 self.logger.dedent()
             
             # ============================================================
-            # STEP 3: UNSAT Generation
+            # STEP 3: UNSAT Generation (Z3-verified, retry loop)
             # ============================================================
             if self.enable_research_features:
                 self.logger.step("Generating UNSAT constraints via mutation...")
                 self.logger.indent()
-                
-                # Target UNSAT ratio from profile spec
+
+                import contextlib, io as _io
+
                 target_unsat_ratio = prof_spec.unsat_ratio or 0.4
-                self.logger.debug(f"Target UNSAT ratio: {target_unsat_ratio*100:.1f}%")
-                
-                # Use generate_mixed_sat_unsat_set function
-                all_constraints, unsat_map = unsat_generator.generate_mixed_sat_unsat_set(
-                    constraints, metamodel, unsat_ratio=target_unsat_ratio
+                n_total = len(constraints)
+                target_unsat = int(n_total * target_unsat_ratio)
+                self.logger.debug(
+                    f"Target UNSAT ratio: {target_unsat_ratio*100:.0f}% "
+                    f"({target_unsat} of {n_total})"
                 )
-                
-                unsat_count = len([c for c in all_constraints if c.metadata.get('is_unsat', False)])
-                sat_count = len(all_constraints) - unsat_count
-                
-                # Count mutation strategies used
-                mutation_counts = {}
-                for strategy in unsat_map.values():
-                    mutation_counts[strategy] = mutation_counts.get(strategy, 0) + 1
-                
-                self.logger.success(f"Generated {unsat_count} UNSAT constraints")
-                self.logger.debug(f"  Total: {sat_count} SAT + {unsat_count} UNSAT = {len(all_constraints)}")
+
+                has_z3 = verifier and getattr(verifier, 'framework_available', False)
+
+                # Shuffle candidate indices so we don't always mutate the same ones
+                candidate_indices = list(range(n_total))
+                random.shuffle(candidate_indices)
+
+                confirmed_unsat = []          # verified UNSAT constraints
+                consumed_indices = set()      # SAT indices consumed by confirmed UNSAT
+                mutation_counts = {}          # strategy → count
+
+                for idx in candidate_indices:
+                    if len(confirmed_unsat) >= target_unsat:
+                        break
+
+                    sat_constraint = constraints[idx]
+
+                    # Try each strategy (order: specific → general fallback)
+                    for strategy in unsat_generator.ALL_STRATEGIES:
+                        if not strategy.can_apply(sat_constraint, metamodel):
+                            continue
+
+                        candidate = strategy.apply(sat_constraint, metamodel)
+
+                        # self_contradiction (P ∧ ¬P) is guaranteed UNSAT by
+                        # construction — skip Z3 which may timeout on complex OCL.
+                        is_tautological = candidate.metadata.get('mutation') == 'self_contradiction'
+
+                        if has_z3 and not is_tautological:
+                            with contextlib.redirect_stdout(_io.StringIO()):
+                                is_unsat, msg = unsat_generator.verify_unsat_generation(
+                                    candidate, verifier,
+                                    original_constraint=sat_constraint
+                                )
+                            if not is_unsat:
+                                self.logger.debug(
+                                    f"  Strategy {strategy.get_name()} failed Z3: {msg}"
+                                )
+                                continue  # try next strategy for same constraint
+
+                        # Confirmed (or no Z3 available — trust the mutation)
+                        confirmed_unsat.append(candidate)
+                        consumed_indices.add(idx)
+                        mut_name = candidate.metadata.get('mutation', 'unknown')
+                        mutation_counts[mut_name] = mutation_counts.get(mut_name, 0) + 1
+                        break  # move to next SAT candidate
+
+                # Build final set: keep SAT constraints that weren't consumed + confirmed UNSAT
+                sat_kept = [c for i, c in enumerate(constraints) if i not in consumed_indices]
+                all_constraints = sat_kept + confirmed_unsat
+
+                sat_count = len(sat_kept)
+                unsat_count = len(confirmed_unsat)
+
+                self.logger.success(f"Generated {unsat_count} verified UNSAT constraints")
+                if unsat_count < target_unsat:
+                    self.logger.warning(
+                        f"Could only produce {unsat_count}/{target_unsat} UNSAT "
+                        f"(exhausted {len(candidate_indices)} candidates)"
+                    )
                 if mutation_counts:
                     self.logger.debug(f"  Mutation strategies: {mutation_counts}")
-                
+
                 prof_stats['sat_count_after_mutation'] = sat_count
                 prof_stats['unsat_count_after_mutation'] = unsat_count
                 prof_stats['constraint_count'] = len(all_constraints)
                 prof_stats['research_features_applied'].append('unsat_generation')
-                
-                self.logger.info(f"Total constraints: {len(all_constraints)} ({sat_count} SAT + {unsat_count} UNSAT)")
+
+                self.logger.info(
+                    f"Total constraints: {len(all_constraints)} ({sat_count} SAT + {unsat_count} UNSAT)"
+                )
                 self.logger.dedent()
-                
+
                 constraints = all_constraints
             
             # ============================================================
             # STEP 3.5: Constraint Compatibility Checking (Batch Mode)
             # ============================================================
             # NOTE: Runs silently - uses greedy algorithm to find maximal compatible subset
-            if verifier and len(constraints) > 0:
+            if verifier and getattr(verifier, 'framework_available', False) and len(constraints) > 0:
+                self.logger.step("Checking SAT constraint compatibility...")
+                self.logger.indent()
                 sat_constraints_only = [c for c in constraints if not c.metadata.get('is_unsat', False)]
                 
                 if len(sat_constraints_only) > 0:
                     try:
+                        self.logger.debug(
+                            f"Checking {len(sat_constraints_only)} SAT constraints for global consistency"
+                        )
+
                         # Quick compatibility check (silent)
                         compat_results = verifier.verify_batch(sat_constraints_only, silent=True)
                         is_consistent = any(r.solver_result == 'sat' for r in compat_results)
-                        
-                        if not is_consistent:
+
+                        if is_consistent:
+                            self.logger.success("SAT constraint set is globally consistent")
+                            prof_stats['consistency_verified'] = True
+                        else:
                             # Model UNSAT - find compatible subset using greedy algorithm
                             compatible_sat = self._find_compatible_subset_batch(sat_constraints_only, verifier)
-                            
+
                             if len(compatible_sat) < len(sat_constraints_only):
                                 removed = len(sat_constraints_only) - len(compatible_sat)
-                                
+
                                 # Rebuild constraints list
                                 unsat_constraints_only = [c for c in constraints if c.metadata.get('is_unsat', False)]
                                 constraints = compatible_sat + unsat_constraints_only
                                 prof_stats['constraint_count'] = len(constraints)
                                 prof_stats['conflicts_removed'] = removed
-                    except Exception:
-                        pass
-            
+                                self.logger.warning(
+                                    f"Removed {removed} conflicting SAT constraints before deduplication"
+                                )
+                                self.logger.info(
+                                    f"Post-pruning total: {len(constraints)} "
+                                    f"({len(compatible_sat)} SAT + {len(unsat_constraints_only)} UNSAT)"
+                                )
+
+                                # Re-check consistency after pruning
+                                recheck = verifier.verify_batch(compatible_sat, silent=True)
+                                is_consistent_after = any(r.solver_result == 'sat' for r in recheck)
+                                prof_stats['consistency_verified'] = is_consistent_after
+                                if is_consistent_after:
+                                    self.logger.success("Post-pruning SAT set is globally consistent")
+                                else:
+                                    self.logger.warning(
+                                        "Post-pruning SAT set is STILL inconsistent — "
+                                        "consistency_verified=false will be recorded in output"
+                                    )
+                            else:
+                                prof_stats['consistency_verified'] = False
+                                self.logger.warning(
+                                    "SAT constraint set was inconsistent, but no smaller compatible subset was found"
+                                )
+                    except Exception as e:
+                        prof_stats['consistency_verified'] = False
+                        self.logger.warning(f"SAT compatibility check failed: {e}")
+                else:
+                    self.logger.success("No SAT constraints to check for compatibility")
+                self.logger.dedent()
+
+                # Gate: only proceed if SAT constraints are globally consistent
+                if prof_stats.get('consistency_verified') is False:
+                    self.logger.error(
+                        "Aborting profile — SAT constraints are not globally consistent. "
+                        "Only verified-consistent benchmarks are saved."
+                    )
+                    prof_stats['status'] = 'skipped'
+                    prof_stats['skip_reason'] = 'SAT constraints not globally consistent'
+                    return prof_stats
+            elif verifier and len(constraints) > 0:
+                self.logger.info("Skipping SAT compatibility pruning: framework verifier unavailable")
+
             # ============================================================
             # STEP 4: Structural Similarity (Tree-Edit) & Deduplication
             # ============================================================
@@ -438,10 +576,13 @@ class EnhancedSuiteController:
                 threshold = prof_spec.similarity_threshold or 0.85
                 self.logger.debug(f"Deduplication threshold: {threshold}")
                 
-                # Mark duplicates
+                # Mark duplicates (never remove confirmed UNSAT constraints)
                 to_remove = set()
                 for i, j, sim in similarities:
                     if sim > threshold:
+                        # Protect UNSAT constraints from deduplication
+                        if constraints[j].metadata.get('is_unsat', False):
+                            continue
                         to_remove.add(j)  # Keep first occurrence, remove second
                 
                 dedup_constraints = [c for idx, c in enumerate(constraints) if idx not in to_remove]
@@ -569,7 +710,12 @@ class EnhancedSuiteController:
             # ============================================================
             verif_results = []
             if verifier and self.suite.verification.enable:
-                self.logger.step("Verifying constraints with Z3...")
+                framework_available = getattr(verifier, 'framework_available', False)
+                self.logger.step(
+                    "Verifying constraints with Z3..."
+                    if framework_available
+                    else "Recording fallback verification results..."
+                )
                 self.logger.indent()
                 
                 # IMPORTANT: Only verify SAT constraints for global consistency
@@ -579,7 +725,9 @@ class EnhancedSuiteController:
                 
                 if unsat_constraints_skipped:
                     self.logger.debug(f"Skipping {len(unsat_constraints_skipped)} UNSAT constraints from global consistency check")
-                    self.logger.debug(f"Verifying {len(sat_constraints_for_verification)} SAT constraints for global consistency")
+                    self.logger.debug(
+                        f"Verifying {len(sat_constraints_for_verification)} SAT constraints for global consistency"
+                    )
                 
                 verif_results = verifier.verify_batch(sat_constraints_for_verification, silent=True)
                 
@@ -592,34 +740,115 @@ class EnhancedSuiteController:
                 # IMPORTANT: verification results only include SAT constraints
                 # Add intentionally-UNSAT constraints to unsat_count for final statistics
                 total_unsat_constraints = unsat_count + len(unsat_constraints_skipped)
+                verified_count = len(sat_constraints_for_verification) if framework_available else 0
+                fallback_count = 0 if framework_available else len(sat_constraints_for_verification)
                 
                 prof_stats.update({
                     'valid_count': valid_count,
                     'sat_count': sat_count,
                     'unsat_count': total_unsat_constraints,  # Verified UNSAT + intentionally UNSAT
                     'unknown_count': unknown_count,
-                    'verified_count': len(sat_constraints_for_verification),
+                    'verified_count': verified_count,
+                    'fallback_unknown_count': fallback_count,
                     'skipped_unsat_count': len(unsat_constraints_skipped),
                     'intentional_unsat_count': len(unsat_constraints_skipped)  # For clarity
                 })
                 
                 self.logger.success(f"Verification complete:")
-                self.logger.info(f"  Verified: {len(sat_constraints_for_verification)} SAT constraints")
+                if framework_available:
+                    self.logger.info(f"  Verified: {len(sat_constraints_for_verification)} SAT constraints")
+                else:
+                    self.logger.info(f"  Verified: 0 SAT constraints (framework unavailable)")
+                    self.logger.info(
+                        f"  Fallback: {len(sat_constraints_for_verification)} generated SAT constraints marked Unknown"
+                    )
                 self.logger.info(f"  Skipped: {len(unsat_constraints_skipped)} UNSAT constraints (intentionally contradictory)")
                 self.logger.info(f"  Valid: {valid_count}/{len(sat_constraints_for_verification)} ({valid_count/len(sat_constraints_for_verification)*100:.1f}%)" if len(sat_constraints_for_verification) > 0 else "  Valid: 0/0 (N/A)")
                 self.logger.info(f"  Result: {sat_count} SAT, {total_unsat_constraints} UNSAT, {unknown_count} Unknown")
                 self.logger.dedent()
             
             # ============================================================
+            # STEP 7.5: Exclude UNKNOWN and encoding-error constraints
+            # ============================================================
+            # Only keep constraints with definitive verification results.
+            # - UNKNOWN: solver timed out — no label
+            # - error: encoder couldn't parse the pattern — never verified
+            if verif_results:
+                sat_constraints_for_verification = [
+                    c for c in constraints if not c.metadata.get('is_unsat', False)
+                ]
+                exclude_indices = set()
+                for idx, r in enumerate(verif_results):
+                    if r.solver_result in ('unknown', 'error'):
+                        exclude_indices.add(idx)
+
+                if exclude_indices:
+                    exclude_ocls = {
+                        sat_constraints_for_verification[i].ocl for i in exclude_indices
+                    }
+                    before_count = len(constraints)
+                    constraints = [
+                        c for c in constraints if c.ocl not in exclude_ocls
+                    ]
+                    verif_results = [
+                        r for r in verif_results
+                        if r.solver_result not in ('unknown', 'error')
+                    ]
+                    removed = before_count - len(constraints)
+                    prof_stats['unverified_excluded'] = removed
+                    prof_stats['constraint_count'] = len(constraints)
+                    self.logger.warning(
+                        f"Excluded {removed} unverified constraints from final output "
+                        f"(UNKNOWN or encoding error)"
+                    )
+
+            # ============================================================
+            # STEP 7.75: Adjust SAT/UNSAT ratio to match configuration
+            # ============================================================
+            # Earlier pipeline steps (compatibility pruning, dedup, UNKNOWN
+            # filtering) remove SAT constraints but protect UNSAT, so the
+            # ratio drifts.  Re-balance here to match the configured ratio.
+            if self.enable_research_features and prof_spec.unsat_ratio and prof_spec.unsat_ratio > 0:
+                final_sat = [c for c in constraints if not c.metadata.get('is_unsat', False)]
+                final_unsat = [c for c in constraints if c.metadata.get('is_unsat', False)]
+
+                if final_sat and final_unsat:
+                    # Target: unsat / (sat + unsat) == unsat_ratio
+                    # So: target_unsat_count = round(len(final_sat) * R / (1 - R))
+                    R = prof_spec.unsat_ratio
+                    desired_unsat = int(round(len(final_sat) * R / (1.0 - R)))
+                    desired_unsat = max(desired_unsat, 1)  # keep at least 1
+
+                    if len(final_unsat) > desired_unsat:
+                        # Too many UNSAT — trim randomly
+                        trimmed = random.sample(final_unsat, desired_unsat)
+                        removed = len(final_unsat) - desired_unsat
+                        constraints = final_sat + trimmed
+                        prof_stats['constraint_count'] = len(constraints)
+                        prof_stats['sat_count'] = len(final_sat)
+                        prof_stats['unsat_count'] = desired_unsat
+                        prof_stats['unsat_trimmed_for_ratio'] = removed
+                        self.logger.info(
+                            f"Trimmed {removed} UNSAT constraints to restore "
+                            f"{R*100:.0f}% target ratio "
+                            f"({len(final_sat)} SAT + {desired_unsat} UNSAT)"
+                        )
+                    elif len(final_unsat) < desired_unsat:
+                        self.logger.info(
+                            f"UNSAT count ({len(final_unsat)}) below target "
+                            f"({desired_unsat}) — keeping all confirmed UNSAT"
+                        )
+
+            # ============================================================
             # STEP 8: Save Outputs
             # ============================================================
             self.logger.step("Saving outputs...")
             self.logger.indent()
-            
+
             # Save traditional formats
             self._save_benchmark(
                 output_dir, model_spec, prof_spec, profile,
-                constraints, verif_results
+                constraints, verif_results, prof_stats
             )
             self.logger.success("Saved constraints.json and constraints.ocl")
             
@@ -640,11 +869,44 @@ class EnhancedSuiteController:
             if self.enable_research_features:
                 from pathlib import Path as PathLib
                 manifest_path = output_dir / "manifest.jsonl"
+
+                # Build verification_results dict for manifest generator.
+                # verif_results covers SAT-intended constraints only; UNSAT-by-mutation
+                # constraints are labeled from metadata.
+                manifest_verif = None
+                if verif_results or any(c.metadata.get('is_unsat') for c in constraints):
+                    verif_by_ocl = {}
+                    if verif_results:
+                        sat_only = [c for c in constraints if not c.metadata.get('is_unsat', False)]
+                        for c, r in zip(sat_only, verif_results):
+                            verif_by_ocl[c.ocl] = {
+                                'result': r.solver_result.upper() if r.solver_result else 'UNKNOWN',
+                                'time_ms': int(r.execution_time * 1000),
+                                'error': r.errors[0] if r.errors else None,
+                            }
+                    manifest_verif = {'constraints': []}
+                    for c in constraints:
+                        if c.ocl in verif_by_ocl:
+                            manifest_verif['constraints'].append(verif_by_ocl[c.ocl])
+                        elif c.metadata.get('is_unsat'):
+                            manifest_verif['constraints'].append({
+                                'result': 'UNSAT',
+                                'time_ms': None,
+                                'error': None,
+                            })
+                        else:
+                            manifest_verif['constraints'].append({
+                                'result': 'UNKNOWN',
+                                'time_ms': None,
+                                'error': None,
+                            })
+
                 manifest_generator.generate_manifest(
                     constraints=constraints,
                     model_name=model_spec.name,
                     profile_name=prof_spec.name,
-                    output_path=PathLib(manifest_path)
+                    output_path=PathLib(manifest_path),
+                    verification_results=manifest_verif,
                 )
                 prof_stats['research_features_applied'].append('manifest_generation')
                 self.logger.success(f"Saved manifest.jsonl ({len(constraints)} records)")
@@ -696,20 +958,57 @@ class EnhancedSuiteController:
             complexity.min_tc = diff_profile['tc_range']['min']
             complexity.max_tc = diff_profile['tc_range']['max']
 
-        # Dimension weights
-        if prof_spec.dimension_weights:
-            complexity.structural_weight = prof_spec.dimension_weights.get('structural', 1.0)
-            complexity.computational_weight = prof_spec.dimension_weights.get('computational', 1.0)
-            complexity.dependency_weight = prof_spec.dimension_weights.get('dependency', 1.0)
+        # --- Per-dimension complexity configuration (new, takes precedence) ---
+        if prof_spec.complexity_dimensions:
+            dims = prof_spec.complexity_dimensions
 
-        # TNC sub-weights
-        if prof_spec.tnc_weights:
-            complexity.tnc_alpha = prof_spec.tnc_weights.get('alpha', 0.4)
-            complexity.tnc_beta = prof_spec.tnc_weights.get('beta', 0.3)
-            complexity.tnc_gamma = prof_spec.tnc_weights.get('gamma', 0.3)
+            # Structural dimension
+            if 'structural' in dims:
+                s = dims['structural']
+                complexity.structural_enabled = s.get('enabled', True)
+                if not complexity.structural_enabled:
+                    complexity.structural_weight = 0.0
+                else:
+                    complexity.structural_weight = s.get('weight', 1.0)
+                # Per-dimension target range
+                if 'target_range' in s:
+                    complexity.structural_target_min = s['target_range'].get('min')
+                    complexity.structural_target_max = s['target_range'].get('max')
+                # TNC sub-weights (structural-specific)
+                if 'tnc_weights' in s:
+                    complexity.tnc_alpha = s['tnc_weights'].get('alpha', 0.4)
+                    complexity.tnc_beta = s['tnc_weights'].get('beta', 0.3)
+                    complexity.tnc_gamma = s['tnc_weights'].get('gamma', 0.3)
 
-        # Operator weight overrides
-        if prof_spec.operator_weight_overrides:
+            # Computational dimension
+            if 'computational' in dims:
+                c = dims['computational']
+                complexity.computational_enabled = c.get('enabled', True)
+                if not complexity.computational_enabled:
+                    complexity.computational_weight = 0.0
+                else:
+                    complexity.computational_weight = c.get('weight', 1.0)
+                # Per-dimension target range
+                if 'target_range' in c:
+                    complexity.computational_target_min = c['target_range'].get('min')
+                    complexity.computational_target_max = c['target_range'].get('max')
+
+        else:
+            # Legacy flat keys (backward compatibility)
+            if prof_spec.dimension_weights:
+                complexity.structural_weight = prof_spec.dimension_weights.get('structural', 1.0)
+                complexity.computational_weight = prof_spec.dimension_weights.get('computational', 1.0)
+                complexity.dependency_weight = prof_spec.dimension_weights.get('dependency', 1.0)
+
+            if prof_spec.tnc_weights:
+                complexity.tnc_alpha = prof_spec.tnc_weights.get('alpha', 0.4)
+                complexity.tnc_beta = prof_spec.tnc_weights.get('beta', 0.3)
+                complexity.tnc_gamma = prof_spec.tnc_weights.get('gamma', 0.3)
+
+        # --- Operator weights: new full weights > legacy overrides ---
+        if prof_spec.operator_weights:
+            complexity.operator_weights = prof_spec.operator_weights
+        elif prof_spec.operator_weight_overrides:
             complexity.operator_weight_overrides = prof_spec.operator_weight_overrides
 
         # TC difficulty mix: user override > preset > default
@@ -722,8 +1021,11 @@ class EnhancedSuiteController:
         from modules.generation.benchmark.complexity_calculator import ComplexityWeights, DEFAULT_OPERATOR_WEIGHTS
         from modules.generation.benchmark.metadata_enricher import set_complexity_weights
 
+        # Build effective operator weights: defaults <- overrides <- full weights
         op_weights = dict(DEFAULT_OPERATOR_WEIGHTS)
         op_weights.update(complexity.operator_weight_overrides)
+        if complexity.operator_weights:
+            op_weights.update(complexity.operator_weights)
 
         cw = ComplexityWeights(
             operator_weights=op_weights,
@@ -758,7 +1060,8 @@ class EnhancedSuiteController:
         prof_spec: ProfileSpec,
         profile: BenchmarkProfile,
         constraints: List[OCLConstraint],
-        verif_results: List
+        verif_results: List,
+        prof_stats: Dict = None
     ):
         """Save benchmark outputs."""
         # Save constraints as OCL text
@@ -800,7 +1103,9 @@ class EnhancedSuiteController:
                 'framework_version': self.suite.framework_version,
                 'git_commit': self.suite.git_commit,
                 'constraint_count': len(constraints),
-                'research_features_enabled': self.enable_research_features
+                'research_features_enabled': self.enable_research_features,
+                'consistency_verified': prof_stats.get('consistency_verified') if prof_stats else None,
+                'scope_per_class': self.suite.verification.scope_per_class
             },
             'constraints': [c.to_dict() for c in constraints]
         }
@@ -902,7 +1207,7 @@ class EnhancedSuiteController:
         Returns:
             List of compatible constraints (subset of input)
         """
-        if len(constraints) <= 1:
+        if len(constraints) <= 1 or not getattr(verifier, 'framework_available', False):
             return constraints
         
         # Greedy algorithm: Start with empty set, add constraints one by one

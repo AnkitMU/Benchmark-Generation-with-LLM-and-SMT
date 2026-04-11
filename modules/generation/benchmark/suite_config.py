@@ -5,6 +5,16 @@ from pathlib import Path
 
 
 @dataclass
+class SemanticSpec:
+    """Semantic analysis configuration (LLM-powered, Phi-4 via Ollama)."""
+    enable: bool = True
+    model: str = "phi4-mini"               # 3.8B — lighter, faster
+    # model: str = "phi4"                # 14B — more accurate
+    ollama_url: str = "http://localhost:11434"
+    use_cache: bool = True
+
+
+@dataclass
 class VerificationSpec:
     """Verification configuration for the suite."""
     enable: bool = True
@@ -13,6 +23,7 @@ class VerificationSpec:
     batch_timeout_ms: int = 30000
     check_global_consistency: bool = True
     implication_use_z3: bool = False
+    scope_per_class: int = 2  # Bounded scope: max instances per class for Z3
 
 
 @dataclass
@@ -39,14 +50,20 @@ class ProfileSpec:
     # --- Complexity-based generation (paper metrics) ---
     # Target TC range: only generate constraints within this range
     target_tc_range: Optional[Dict[str, float]] = None  # {"min": 5.0, "max": 25.0}
-    # Dimension weights for TC calculation
+    # Dimension weights for TC calculation (legacy flat keys, kept for backward compat)
     dimension_weights: Optional[Dict[str, float]] = None  # {"structural": 1.0, ...}
-    # TNC sub-weights
+    # TNC sub-weights (legacy flat keys, kept for backward compat)
     tnc_weights: Optional[Dict[str, float]] = None  # {"alpha": 0.4, "beta": 0.3, "gamma": 0.3}
-    # Custom operator weight overrides (merged on top of Table 1 defaults)
+    # Custom operator weight overrides (legacy, kept for backward compat)
     operator_weight_overrides: Optional[Dict[str, float]] = None
     # TC-based 5-bucket difficulty distribution
     tc_difficulty_mix: Optional[Dict[str, int]] = None  # {"trivial":5,"easy":30,...}
+
+    # --- Per-dimension complexity configuration (new, takes precedence over legacy) ---
+    # Each dimension: {enabled: bool, weight: float, target_range: {min, max}, tnc_weights: {alpha, beta, gamma}}
+    complexity_dimensions: Optional[Dict[str, Dict]] = None
+    # Full operator weights (Table 1 from paper, takes precedence over operator_weight_overrides)
+    operator_weights: Optional[Dict[str, float]] = None
 
 
 @dataclass
@@ -68,6 +85,7 @@ class BenchmarkSuite:
     version: str = "1.0"
     models: List[ModelSpec] = field(default_factory=list)
     verification: VerificationSpec = field(default_factory=VerificationSpec)
+    semantic: SemanticSpec = field(default_factory=SemanticSpec)
     output_root: str = "benchmarks/"
     description: Optional[str] = None
     
@@ -89,7 +107,11 @@ class BenchmarkSuite:
         # Parse verification
         verif_data = data.get('verification', {})
         verification = VerificationSpec(**verif_data)
-        
+
+        # Parse semantic analysis config
+        semantic_data = data.get('semantic', {})
+        semantic = SemanticSpec(**semantic_data)
+
         # Parse models
         models = []
         for model_data in data.get('models', []):
@@ -110,6 +132,7 @@ class BenchmarkSuite:
             version=data.get('version', '1.0'),
             models=models,
             verification=verification,
+            semantic=semantic,
             output_root=data.get('output_root', 'benchmarks/'),
             description=data.get('description'),
             git_commit=data.get('git_commit')
@@ -129,26 +152,43 @@ class BenchmarkSuite:
                     'name': m.name,
                     'profiles': [
                         {
-                            'name': p.name,
-                            'seed': p.seed,
-                            'constraints': p.constraints,
-                            'complexity_profile': p.complexity_profile,
-                            'sat_ratio': p.sat_ratio,
-                            'unsat_ratio': p.unsat_ratio,
-                            'include_unknown': p.include_unknown,
-                            'families_pct': p.families_pct,
-                            'difficulty_mix': p.difficulty_mix
+                            k: v for k, v in {
+                                'name': p.name,
+                                'seed': p.seed,
+                                'constraints': p.constraints,
+                                'complexity_profile': p.complexity_profile,
+                                'sat_ratio': p.sat_ratio,
+                                'unsat_ratio': p.unsat_ratio,
+                                'include_unknown': p.include_unknown,
+                                'families_pct': p.families_pct,
+                                'difficulty_mix': p.difficulty_mix,
+                                'target_tc_range': p.target_tc_range,
+                                'tc_difficulty_mix': p.tc_difficulty_mix,
+                                'complexity_dimensions': p.complexity_dimensions,
+                                'operator_weights': p.operator_weights,
+                                'per_class_min': p.per_class_min,
+                                'per_class_max': p.per_class_max,
+                                'similarity_threshold': p.similarity_threshold,
+                                'novelty_boost': p.novelty_boost,
+                            }.items() if v is not None
                         }
                         for p in m.profiles
                     ]
                 }
                 for m in self.models
             ],
+            'semantic': {
+                'enable': self.semantic.enable,
+                'model': self.semantic.model,
+                'ollama_url': self.semantic.ollama_url,
+                'use_cache': self.semantic.use_cache,
+            },
             'verification': {
                 'enable': self.verification.enable,
                 'objective': self.verification.objective,
                 'per_constraint_timeout_ms': self.verification.per_constraint_timeout_ms,
-                'batch_timeout_ms': self.verification.batch_timeout_ms
+                'batch_timeout_ms': self.verification.batch_timeout_ms,
+                'scope_per_class': self.verification.scope_per_class
             },
             'output_root': self.output_root,
             'framework_version': self.framework_version,

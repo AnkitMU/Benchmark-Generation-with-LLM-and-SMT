@@ -4,7 +4,10 @@ import re
 from typing import List, Dict, Any, Optional, Tuple
 from dataclasses import dataclass, field
 
-import numpy as np
+try:
+    import numpy as np
+except ImportError:
+    np = None
 
 from modules.core.models import OCLConstraint
 
@@ -277,6 +280,14 @@ _model = None
 _model_name = 'all-MiniLM-L6-v2'
 
 
+def _require_numpy():
+    if np is None:
+        raise ImportError(
+            "numpy not installed. "
+            "Install with: pip install 'numpy<2'"
+        )
+
+
 def get_sentence_transformer():
     global _model
     if _model is None:
@@ -302,18 +313,21 @@ def normalize_ocl_for_embedding(ocl: str) -> str:
 
 
 def compute_embedding(ocl: str) -> np.ndarray:
+    _require_numpy()
     model = get_sentence_transformer()
     normalized = normalize_ocl_for_embedding(ocl)
     return model.encode(normalized, convert_to_numpy=True)
 
 
 def compute_embeddings_batch(ocl_list: List[str]) -> np.ndarray:
+    _require_numpy()
     model = get_sentence_transformer()
     normalized_list = [normalize_ocl_for_embedding(ocl) for ocl in ocl_list]
     return model.encode(normalized_list, convert_to_numpy=True, show_progress_bar=False)
 
 
 def cosine_similarity(vec1: np.ndarray, vec2: np.ndarray) -> float:
+    _require_numpy()
     norm1 = np.linalg.norm(vec1)
     norm2 = np.linalg.norm(vec2)
     if norm1 == 0 or norm2 == 0:
@@ -330,6 +344,7 @@ def semantic_similarity(c1: OCLConstraint, c2: OCLConstraint) -> float:
 
 
 def semantic_similarity_matrix(constraints: List[OCLConstraint]) -> np.ndarray:
+    _require_numpy()
     if not constraints:
         return np.array([])
     ocl_list = [c.ocl for c in constraints]
@@ -363,6 +378,7 @@ def cluster_by_semantic_similarity(
     constraints: List[OCLConstraint],
     threshold: float = 0.8
 ) -> List[List[int]]:
+    _require_numpy()
     sim_matrix = semantic_similarity_matrix(constraints)
     n = len(constraints)
     clusters = [[i] for i in range(n)]
@@ -402,6 +418,7 @@ def compute_semantic_diversity_score(constraints: List[OCLConstraint]) -> float:
 
 
 def get_semantic_features(constraint: OCLConstraint) -> Dict[str, Any]:
+    _require_numpy()
     embedding = compute_embedding(constraint.ocl)
     return {
         'semantic_embedding': embedding.tolist(),

@@ -70,15 +70,37 @@ class UnsatMutationStrategy:
         """Get strategy name"""
         return self.__class__.__name__
 
-    def _wrap(self, constraint: OCLConstraint, new_ocl: str, mutation: str) -> OCLConstraint:
-        """Create a new UNSAT constraint with consistent metadata."""
+    def _wrap(self, constraint: OCLConstraint, new_ocl: str, mutation: str,
+              contradiction_ocl: str = None,
+              contradiction_pattern_id: str = None) -> OCLConstraint:
+        """Create a new UNSAT constraint with consistent metadata.
+
+        Args:
+            constraint: Original SAT constraint
+            new_ocl: Full mutated OCL text (for output/display)
+            mutation: Name of the mutation strategy used
+            contradiction_ocl: Standalone contradiction as full OCL string.
+                Used during Z3 verification: the original constraint and
+                contradiction are sent as two separate constraints to the
+                pattern-based encoder, which cannot parse the combined
+                mutated OCL.
+            contradiction_pattern_id: Pattern ID for the contradiction
+                constraint (may differ from original, e.g. forAll→exists).
+                If None, uses the original constraint's pattern_id.
+        """
+        meta = {**constraint.metadata, 'is_unsat': True, 'mutation': mutation,
+                'original_pattern_id': constraint.pattern_id}
+        if contradiction_ocl:
+            meta['contradiction_ocl'] = contradiction_ocl
+        if contradiction_pattern_id:
+            meta['contradiction_pattern_id'] = contradiction_pattern_id
         return OCLConstraint(
             ocl=new_ocl,
             pattern_id=f"{constraint.pattern_id}_unsat",
             pattern_name=f"{constraint.pattern_name} (UNSAT)",
             context=constraint.context,
             parameters=constraint.parameters,
-            metadata={**constraint.metadata, 'is_unsat': True, 'mutation': mutation}
+            metadata=meta
         )
 
 
@@ -86,12 +108,12 @@ class ContradictoryBoundsStrategy(UnsatMutationStrategy):
     """
     Create contradictory bounds: x > 10 and x < 5
     """
-    
+
     def can_apply(self, constraint: OCLConstraint, metamodel: Metamodel) -> bool:
         ocl = constraint.ocl
         # Check for numeric comparison
         return bool(re.search(r'[<>=]', ocl) and re.search(r'\d+', ocl))
-    
+
     def apply(self, constraint: OCLConstraint, metamodel: Metamodel) -> OCLConstraint:
         header, inv_token, body = OCLMutationHelper.split_ocl(constraint.ocl)
 
@@ -116,7 +138,9 @@ class ContradictoryBoundsStrategy(UnsatMutationStrategy):
             contradiction = f'{var} <> {val}'
 
         new_ocl = OCLMutationHelper.build_unsat_ocl(header, inv_token, body, contradiction)
-        return self._wrap(constraint, new_ocl, 'contradictory_bounds')
+        contra_ocl = f"context {constraint.context}\ninv: {contradiction}"
+        return self._wrap(constraint, new_ocl, 'contradictory_bounds',
+                          contradiction_ocl=contra_ocl)
 
 
 class EmptyCollectionStrategy(UnsatMutationStrategy):
@@ -139,15 +163,27 @@ class EmptyCollectionStrategy(UnsatMutationStrategy):
             collection = match.group(1)
             contradiction = f'{collection}->isEmpty()'
             new_ocl = OCLMutationHelper.build_unsat_ocl(header, inv_token, body, contradiction)
-            return self._wrap(constraint, new_ocl, 'empty_collection')
+            contra_ocl = f"context {constraint.context}\ninv: {contradiction}"
+            return self._wrap(constraint, new_ocl, 'empty_collection',
+                              contradiction_ocl=contra_ocl)
 
-        size_pattern = r'([\w.]+)->size\(\)\s*(>=|>)\s*0'
+        # Match size() > N or size() >= N (with N > 0)
+        size_pattern = r'([\w.]+)->size\(\)\s*(>=?)\s*(\d+)'
         match = re.search(size_pattern, body)
         if match:
             collection = match.group(1)
-            contradiction = f'{collection}->size() = 0'
+            op = match.group(2)
+            val = int(match.group(3))
+            if op == '>=' and val == 0:
+                return SimpleNegationStrategy().apply(constraint, metamodel)
+            if op == '>':
+                contradiction = f'{collection}->size() <= {val}'
+            else:  # >=
+                contradiction = f'{collection}->size() < {val}'
             new_ocl = OCLMutationHelper.build_unsat_ocl(header, inv_token, body, contradiction)
-            return self._wrap(constraint, new_ocl, 'empty_collection')
+            contra_ocl = f"context {constraint.context}\ninv: {contradiction}"
+            return self._wrap(constraint, new_ocl, 'empty_collection',
+                              contradiction_ocl=contra_ocl)
 
         return SimpleNegationStrategy().apply(constraint, metamodel)
 
@@ -158,8 +194,7 @@ class TypeContradictionStrategy(UnsatMutationStrategy):
     """
     
     def can_apply(self, constraint: OCLConstraint, metamodel: Metamodel) -> bool:
-        ocl = constraint.ocl
-        return 'oclIsTypeOf' in ocl or 'oclIsKindOf' in ocl
+        return 'oclIsTypeOf' in constraint.ocl
     
     def apply(self, constraint: OCLConstraint, metamodel: Metamodel) -> OCLConstraint:
         header, inv_token, body = OCLMutationHelper.split_ocl(constraint.ocl)
@@ -177,44 +212,75 @@ class TypeContradictionStrategy(UnsatMutationStrategy):
         type2 = random.choice(classes)
         contradiction = f'{var}.oclIsTypeOf({type2})'
         new_ocl = OCLMutationHelper.build_unsat_ocl(header, inv_token, body, contradiction)
-        return self._wrap(constraint, new_ocl, 'type_contradiction')
+        contra_ocl = f"context {constraint.context}\ninv: {contradiction}"
+        return self._wrap(constraint, new_ocl, 'type_contradiction',
+                          contradiction_ocl=contra_ocl)
 
 
 class UniversalNegationStrategy(UnsatMutationStrategy):
     """
     Negate universal quantifier: forAll(...) and exists(not(...))
     """
-    
+
     def can_apply(self, constraint: OCLConstraint, metamodel: Metamodel) -> bool:
-        return 'forAll' in constraint.ocl
-    
+        return '->forAll(' in constraint.ocl
+
     def apply(self, constraint: OCLConstraint, metamodel: Metamodel) -> OCLConstraint:
         header, inv_token, body = OCLMutationHelper.split_ocl(constraint.ocl)
 
-        pattern = r'([\w.]+)->forAll\(\s*(\w+)\s*\|\s*(.+)\)'
-        match = re.search(pattern, body)
-        if not match:
+        # Find the collection->forAll( prefix and then balance parentheses
+        # to extract the correct condition, handling nested parens safely.
+        fa_match = re.search(r'([\w.]+)->forAll\(\s*(\w+)\s*\|\s*', body)
+        if not fa_match:
             return SimpleNegationStrategy().apply(constraint, metamodel)
 
-        collection, var, condition = match.groups()
+        collection = fa_match.group(1)
+        var = fa_match.group(2)
+
+        # Balance parentheses from the start of the condition to find its end
+        cond_start = fa_match.end()
+        depth = 1  # we are inside forAll(
+        pos = cond_start
+        while pos < len(body) and depth > 0:
+            if body[pos] == '(':
+                depth += 1
+            elif body[pos] == ')':
+                depth -= 1
+            pos += 1
+
+        if depth != 0:
+            return SimpleNegationStrategy().apply(constraint, metamodel)
+
+        # pos-1 is the closing ')' of forAll; condition is everything before it
+        condition = body[cond_start:pos - 1].strip()
+        if not condition:
+            return SimpleNegationStrategy().apply(constraint, metamodel)
+
         contradiction = f'{collection}->exists({var} | not({condition}))'
         new_ocl = OCLMutationHelper.build_unsat_ocl(header, inv_token, body, contradiction)
-        return self._wrap(constraint, new_ocl, 'universal_negation')
+        contra_ocl = f"context {constraint.context}\ninv: {contradiction}"
+        # Original is forAll → encoder uses forall_nested; contradiction is
+        # exists → encoder needs exists_nested.
+        return self._wrap(constraint, new_ocl, 'universal_negation',
+                          contradiction_ocl=contra_ocl,
+                          contradiction_pattern_id='exists_nested')
 
 
 class SimpleNegationStrategy(UnsatMutationStrategy):
     """
-    Simple negation: wrap constraint in not(...)
-    This is the most reliable UNSAT generator but least interesting
+    Conjoin constraint with its own negation: P and not(P).
+    This is a tautological contradiction — always UNSAT — and serves as the
+    guaranteed fallback when more interesting strategies fail Z3 verification.
     """
-    
+
     def can_apply(self, constraint: OCLConstraint, metamodel: Metamodel) -> bool:
         return True  # Always applicable
-    
+
     def apply(self, constraint: OCLConstraint, metamodel: Metamodel) -> OCLConstraint:
         header, inv_token, body = OCLMutationHelper.split_ocl(constraint.ocl)
-        new_ocl = OCLMutationHelper.build_negated_ocl(header, inv_token, body)
-        return self._wrap(constraint, new_ocl, 'simple_negation')
+        contradiction = f'not({body})'
+        new_ocl = OCLMutationHelper.build_unsat_ocl(header, inv_token, body, contradiction)
+        return self._wrap(constraint, new_ocl, 'self_contradiction')
 
 
 # All available strategies
@@ -303,31 +369,73 @@ def generate_mixed_sat_unsat_set(
 
 
 def verify_unsat_generation(
-    sat_constraint: OCLConstraint,
     unsat_variant: OCLConstraint,
-    metamodel: Metamodel
+    verifier,
+    original_constraint: OCLConstraint = None
 ) -> Tuple[bool, str]:
     """
-    Verify that UNSAT variant is actually unsatisfiable (requires solver).
-    
+    Verify that an UNSAT variant is actually unsatisfiable using Z3.
+
+    The Z3 encoder is pattern-based and parses OCL text with pattern-specific
+    regexes. A combined mutated OCL like ``(P) and (¬P)`` cannot be parsed
+    correctly — the encoder only sees the first match.
+
+    Strategy: send the **original** constraint and the **contradiction** as
+    two separate constraints to the batch verifier.  If the pair is jointly
+    UNSAT, the mutation is valid.
+
     Args:
-        sat_constraint: Original SAT constraint
-        unsat_variant: Generated UNSAT variant
-        metamodel: Metamodel
-        
+        unsat_variant: Generated UNSAT variant to check
+        verifier: An initialized FrameworkConstraintVerifier instance
+        original_constraint: The original SAT constraint (used with
+            contradiction_ocl for two-constraint verification)
+
     Returns:
-        Tuple of (is_correct, message)
+        Tuple of (is_unsat, message)
     """
+    if verifier is None or not getattr(verifier, 'framework_available', False):
+        return True, "Verifier unavailable (assume correct)"
+
     try:
-        from modules.verification.framework_verifier import FrameworkConstraintVerifier
-        
-        # TODO: Implement actual verification
-        # This would require:
-        # 1. Load metamodel into verifier
-        # 2. Check sat_constraint -> should be SAT
-        # 3. Check unsat_variant -> should be UNSAT
-        
-        return True, "Verification not implemented (assume correct)"
+        contradiction_ocl = unsat_variant.metadata.get('contradiction_ocl')
+        orig_pattern_id = unsat_variant.metadata.get('original_pattern_id')
+        contra_pattern_id = unsat_variant.metadata.get('contradiction_pattern_id')
+
+        # Two-constraint approach: send original + contradiction separately
+        if contradiction_ocl and original_constraint is not None:
+            # Use the contradiction-specific pattern ID if the mutation
+            # produces a different pattern type (e.g. forAll→exists).
+            # Fall back to the original constraint's pattern ID when the
+            # contradiction is the same pattern type.
+            contra_constraint = OCLConstraint(
+                ocl=contradiction_ocl,
+                pattern_id=contra_pattern_id or orig_pattern_id or original_constraint.pattern_id,
+                pattern_name=f"{original_constraint.pattern_name}_contradiction",
+                context=unsat_variant.context,
+                parameters=original_constraint.parameters,
+                metadata={}
+            )
+            results = verifier.verify_batch(
+                [original_constraint, contra_constraint], silent=True
+            )
+            # Joint result
+            joint = results[0].solver_result if results else 'unknown'
+            if joint == 'unsat':
+                return True, "Confirmed UNSAT by Z3 (two-constraint)"
+            elif joint == 'sat':
+                return False, "Z3 found SAT — contradiction is compatible with original"
+            else:
+                return False, f"Z3 returned {joint} — cannot confirm UNSAT"
+
+        # Fallback: single-constraint verification (legacy / self_contradiction)
+        result = verifier.verify(unsat_variant)
+
+        if result.solver_result == 'unsat':
+            return True, "Confirmed UNSAT by Z3"
+        elif result.solver_result == 'sat':
+            return False, "Z3 found SAT — mutation did not produce a genuine UNSAT"
+        else:
+            return False, f"Z3 returned {result.solver_result} — cannot confirm UNSAT"
     except Exception as e:
         return False, f"Verification failed: {e}"
 

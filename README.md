@@ -1,6 +1,10 @@
 # Automatic Benchmark Generation Framework for OCL (Object Constraint Language)
 
+<<<<<<< HEAD
 This framework generates **complexity-steered, solver-verified OCL benchmark suites** from
+=======
+This framework generates **complexity-aware, solver-verified OCL benchmark suites** from
+>>>>>>> 8758518f1044d78bf5e0e0efef409d9b44b2e56c
 UML/Ecore metamodels. Given a metamodel and a target *complexity profile*, it produces diverse
 OCL invariants whose **measured** complexity lands inside user-specified ranges, keeps the SAT
 subset **jointly satisfiable**, and confirms every SAT/UNSAT label with the **Z3** SMT solver.
@@ -16,11 +20,15 @@ subset **jointly satisfiable**, and confirms every SAT/UNSAT label with the **Z3
   the other four are derived and reported.
 - **Pattern-library generation** — 113 OCL patterns across families
   (cardinality, arithmetic, navigation, quantified, conditional, string, type-checks).
+<<<<<<< HEAD
 - **Joint consistency** — a per-context consistency gate keeps the SAT subset co-satisfiable. It
   catches boolean-polarity (`x = true` vs `x = false`), collection-emptiness (`isEmpty` vs
   `size() >= 2`), mod-parity (`mod 2 = 1` vs `mod 4 = 0`), numeric-ordering (`a - b >= k` vs
   `a <= b`), and quantifier-body (`exists(p=true)` vs `forAll(p=false)`) contradictions — both at
   generation time and as a post-VGCR backstop.
+=======
+- **Joint consistency** — All constraint in a benchmark suit are compatible to each other.
+>>>>>>> 8758518f1044d78bf5e0e0efef409d9b44b2e56c
 - **VGCR verification & refinement** — each candidate is SMT-checked (individual status, joint
   consistency, non-triviality, redundancy, complexity conformance); rejected candidates are
   regenerated up to `R` times, guided by accumulated failures.
@@ -32,6 +40,7 @@ subset **jointly satisfiable**, and confirms every SAT/UNSAT label with the **Z3
   attribute compatibility and semantic plausibility.
 - **Export** — `.ocl`, `.json`, `manifest.jsonl`, and a per-model deviation `report.json`.
 
+<<<<<<< HEAD
 ## How a run flows
 
 1. **Profile** each applicable `(pattern, class)` pair — measure its reachable complexity footprint.
@@ -44,6 +53,8 @@ subset **jointly satisfiable**, and confirms every SAT/UNSAT label with the **Z3
    and prune jointly-inconsistent ones.
 6. **Inject UNSAT**, **deduplicate**, **verify** (Z3 individual + global consistency under a
    bounded scope), and **export**.
+=======
+>>>>>>> 8758518f1044d78bf5e0e0efef409d9b44b2e56c
 
 ## Quick start
 
@@ -122,6 +133,7 @@ A run writes to `benchmarks/<ModelName>/`:
   actuator usage, feasibility gaps)
 - `<suite>_summary.json` — suite-level statistics
 
+<<<<<<< HEAD
 ## Reproducing the results table
 
 `make_results_table.py` runs all 10 bundled metamodels and emits a LaTeX results table (classes,
@@ -142,6 +154,8 @@ python make_results_table.py --no-semantic --reuse    # faster / build table fro
   individually and for global consistency under a bounded scope (`scope_per_class`).
 
 ---
+=======
+>>>>>>> 8758518f1044d78bf5e0e0efef409d9b44b2e56c
 
 ## GenAI Disclosure & Usage
 

@@ -93,6 +93,11 @@ class GenericGlobalConsistencyChecker:
         else:
             print(f"Timeout: unlimited\n")
         
+        # Reset per-run state so the checker can be reused
+        self.constraint_status = {}
+        self.encoding_errors = []
+        self.constraint_tags = {}
+
         # Create unified solver
         solver = Solver()
         
@@ -234,20 +239,75 @@ class GenericGlobalConsistencyChecker:
                         Bool(f"{source}_{i}_{ref_name}_present") for i in range(n_source)
                     ]
         
+        # Create type discriminator variables for classes in inheritance hierarchies
+        if self.extractor.has_inheritance():
+            # Build a Z3 DatatypeSort with one constructor per concrete class
+            all_concrete = sorted(
+                c for c in self.classes if not self.extractor.is_abstract(c)
+            )
+            if all_concrete:
+                TypeSort = DeclareSort('TypeSort')
+                type_constants = {}
+                for cname in all_concrete:
+                    type_constants[cname] = Const(f"TypeVal_{cname}", TypeSort)
+                # All type constants are distinct
+                if len(type_constants) > 1:
+                    # Store for later use in encoding
+                    shared_vars['__type_sort__'] = TypeSort
+                    shared_vars['__type_constants__'] = type_constants
+
+                # For each inheritance root, create type variables for instance slots
+                for root in self.extractor.get_inheritance_roots():
+                    hierarchy_classes = self.extractor.classes_in_hierarchy(root)
+                    concrete_in_hierarchy = sorted(
+                        c for c in hierarchy_classes if not self.extractor.is_abstract(c)
+                    )
+                    if len(concrete_in_hierarchy) < 2:
+                        continue  # No polymorphism — nothing to discriminate
+
+                    # Assign type variables to every class in the hierarchy
+                    for cls in hierarchy_classes:
+                        n = scope.get(f'n{cls}', 5)
+                        tau_vars = [Const(f"tau_{cls}_{i}", TypeSort) for i in range(n)]
+                        shared_vars[f'{cls}_type'] = tau_vars
+
+                        # Constrain: tau must be this class or one of its concrete subtypes
+                        concrete_options = sorted(self.extractor.get_concrete_subtypes(cls))
+                        for i in range(n):
+                            allowed = [tau_vars[i] == type_constants[cc]
+                                       for cc in concrete_options if cc in type_constants]
+                            if allowed:
+                                shared_vars.setdefault('__type_axioms__', []).append(
+                                    Implies(shared_vars[f'{cls}_presence'][i], Or(allowed))
+                                )
+
+            print(f"    Created type hierarchy variables for {len(self.extractor.supertype_map)} inheritance relations")
+
         print(f"    Created variables for {len(self.classes)} classes")
         print(f"    Created variables for {len(self.attributes)} attributes")
         print(f"    Created variables for {len(self.associations)} associations")
-        
+
         return shared_vars
     
     def _add_domain_constraints(self, solver: Solver, shared_vars: Dict, scope: Dict):
         """Add domain constraints: presence, bounds, referent totality"""
         print("\n🔧 Adding domain constraints (generic)...")
-        
+
         # At least one instance of each class should exist
         for class_name in self.classes:
             presence = shared_vars[f'{class_name}_presence']
             solver.add(Or(presence))
+
+        # Type hierarchy axioms (type discriminator constraints)
+        type_axioms = shared_vars.get('__type_axioms__', [])
+        for axiom in type_axioms:
+            solver.add(axiom)
+        if type_axioms:
+            print(f"    Added {len(type_axioms)} type hierarchy axioms")
+        # Distinctness of type constants
+        type_constants = shared_vars.get('__type_constants__', {})
+        if len(type_constants) > 1:
+            solver.add(Distinct(list(type_constants.values())))
         
         # Attribute bounds (generic heuristics)
         for attr in self.attributes:
@@ -334,6 +394,13 @@ class GenericGlobalConsistencyChecker:
             
             if not attr_vars:
                 continue
+
+            # Rich-instance numeric heuristics only apply to arithmetic sorts.
+            try:
+                if attr_vars[0].sort() == StringSort():
+                    continue
+            except Exception:
+                pass
             
             # Age constraints (0 <= age <= 150)
             if 'age' in attr_name.lower():
@@ -549,15 +616,25 @@ class GenericGlobalConsistencyChecker:
         elif pattern == 'sum_product':
             self._encode_sum_product(solver, shared_vars, scope, context, text)
         
-        # String Operations (28-31)
+        # String Operations (28-31) + new string patterns
         elif pattern == 'string_concat':
+            self._encode_string_concat(solver, shared_vars, scope, context, text)
+        elif pattern == 'string_concat_check':
             self._encode_string_concat(solver, shared_vars, scope, context, text)
         elif pattern == 'string_operations':
             self._encode_string_operations(solver, shared_vars, scope, context, text)
+        elif pattern == 'string_operation':
+            self._encode_string_operations(solver, shared_vars, scope, context, text)
         elif pattern == 'string_comparison':
+            self._encode_string_comparison(solver, shared_vars, scope, context, text)
+        elif pattern == 'string_equality':
             self._encode_string_comparison(solver, shared_vars, scope, context, text)
         elif pattern == 'string_pattern':
             self._encode_string_pattern(solver, shared_vars, scope, context, text)
+        elif pattern == 'string_to_upper_equals':
+            self._encode_string_operations(solver, shared_vars, scope, context, text)
+        elif pattern == 'string_to_lower_equals':
+            self._encode_string_operations(solver, shared_vars, scope, context, text)
         
         # Arithmetic & Logic (32-36)
         elif pattern == 'arithmetic_expression':
@@ -958,20 +1035,29 @@ class GenericGlobalConsistencyChecker:
             attr = str_match.group(1)
             op = str_match.group(2)
             value_str = str_match.group(3)
-            value_int = self._string_to_int(value_str)
-            
+
             n = scope.get(f'n{context}', 5)
             presence = shared_vars[f'{context}_presence']
             attr_vars = shared_vars.get(f'{context}.{attr}')
-            
+
             if not attr_vars:
                 raise ValueError(f"Attribute {context}.{attr} not found")
-            
-            for i in range(n):
-                if op == '=' or op == '==':
-                    solver.add(Implies(presence[i], attr_vars[i] == value_int))
-                elif op == '<>' or op == '!=':
-                    solver.add(Implies(presence[i], attr_vars[i] != value_int))
+
+            # Use Z3 StringVal for string-sort variables, hash for legacy Int
+            if self._is_string_var(shared_vars, context, attr):
+                str_val = StringVal(value_str)
+                for i in range(n):
+                    if op in ('=', '=='):
+                        solver.add(Implies(presence[i], attr_vars[i] == str_val))
+                    elif op in ('<>', '!='):
+                        solver.add(Implies(presence[i], attr_vars[i] != str_val))
+            else:
+                value_int = self._string_to_int(value_str)
+                for i in range(n):
+                    if op in ('=', '=='):
+                        solver.add(Implies(presence[i], attr_vars[i] == value_int))
+                    elif op in ('<>', '!='):
+                        solver.add(Implies(presence[i], attr_vars[i] != value_int))
             return
         
         # Try pattern 1b: self.attr OP constant (including floats and negative numbers)
@@ -1030,44 +1116,45 @@ class GenericGlobalConsistencyChecker:
                     solver.add(Implies(presence[i], vars1[i] == vars2[i]))
             return
         
-        # Try pattern 3: String operations: self.attr.toUpper() = 'VALUE'
-        # Strings are encoded as Ints in this framework, so we use Int-based uninterpreted functions
+        # Try pattern 3: String case operations: self.attr.toUpper() = 'VALUE'
+        # Uses Z3 string theory — InRe with Range for case validation
         string_op_match = re.search(r'self\.(\w+)\.(toUpper|toLower|toUpperCase|toLowerCase)\(\)\s*=\s*[\'"]([^\'"]+)[\'"]', text)
         if string_op_match:
-            from z3 import Function, IntSort
-            
             attr = string_op_match.group(1)
             operation = string_op_match.group(2)
             value_str = string_op_match.group(3)
-            
+
             n = scope.get(f'n{context}', 5)
             presence = shared_vars[f'{context}_presence']
             attr_vars = shared_vars.get(f'{context}.{attr}')
-            
+
             if not attr_vars:
                 raise ValueError(f"Attribute {context}.{attr} not found")
-            
-            # Encode string value as integer (simple hash or just use length as proxy)
-            value_int = self._string_to_int(
-                value_str.upper() if operation in ['toUpper', 'toUpperCase'] else value_str.lower()
-            )
-            
-            # Create uninterpreted function for case conversion (Int -> Int)
-            # This allows Z3 to reason about it symbolically without concrete implementation
-            if operation in ['toUpper', 'toUpperCase']:
-                # Create or reuse ToUpper function
-                if 'ToUpper_func' not in shared_vars:
-                    shared_vars['ToUpper_func'] = Function('ToUpper', IntSort(), IntSort())
-                case_func = shared_vars['ToUpper_func']
-            else:  # toLower, toLowerCase
-                # Create or reuse ToLower function
-                if 'ToLower_func' not in shared_vars:
-                    shared_vars['ToLower_func'] = Function('ToLower', IntSort(), IntSort())
-                case_func = shared_vars['ToLower_func']
-            
-            # Apply uninterpreted function to each instance
-            for i in range(n):
-                solver.add(Implies(presence[i], case_func(attr_vars[i]) == value_int))
+
+            if self._is_string_var(shared_vars, context, attr):
+                # Z3 string theory: InRe for case validation
+                if operation in ['toUpper', 'toUpperCase']:
+                    lit = StringVal(value_str.upper())
+                    case_re = Star(Union(Range('A', 'Z'), Range('0', '9'),
+                                        Re(StringVal(' ')), Re(StringVal('_'))))
+                else:
+                    lit = StringVal(value_str.lower())
+                    case_re = Star(Union(Range('a', 'z'), Range('0', '9'),
+                                        Re(StringVal(' ')), Re(StringVal('_'))))
+                for i in range(n):
+                    solver.add(Implies(presence[i], And(
+                        attr_vars[i] == lit, InRe(attr_vars[i], case_re))))
+            else:
+                # Legacy Int fallback
+                from z3 import Function, IntSort
+                value_int = self._string_to_int(
+                    value_str.upper() if operation in ['toUpper', 'toUpperCase'] else value_str.lower())
+                func_name = 'ToUpper' if operation in ['toUpper', 'toUpperCase'] else 'ToLower'
+                if f'{func_name}_func' not in shared_vars:
+                    shared_vars[f'{func_name}_func'] = Function(func_name, IntSort(), IntSort())
+                case_func = shared_vars[f'{func_name}_func']
+                for i in range(n):
+                    solver.add(Implies(presence[i], case_func(attr_vars[i]) == value_int))
             return
         
         raise ValueError(f"Cannot parse attribute comparison: {text}")
@@ -1380,24 +1467,60 @@ class GenericGlobalConsistencyChecker:
             if not end_vars or not start_vars:
                 raise ValueError(f"Attributes {attr1} or {attr2} not found in {target_class}")
             
-            # For each context, ensure all pairs of elements in collection don't overlap
+            # For each context, ensure all DISTINCT pairs don't overlap.
+            # Use t2 > t1 to avoid checking both (t1,t2) and (t2,t1) —
+            # the non-overlap formula is symmetric, so one check per pair suffices.
             for c in range(n_context):
                 for t1 in range(n_target):
-                    for t2 in range(n_target):
-                        if t1 != t2:
-                            # If both t1 and t2 are in collection c
-                            both_in_coll = And(presence[c], rel_matrix[c][t1], rel_matrix[c][t2])
-                            # Then they must not overlap: r1.end <= r2.start OR r2.end <= r1.start
-                            no_overlap = Or(end_vars[t1] <= start_vars[t2], end_vars[t2] <= start_vars[t1])
-                            solver.add(Implies(both_in_coll, no_overlap))
+                    for t2 in range(t1 + 1, n_target):
+                        both_in_coll = And(presence[c], rel_matrix[c][t1], rel_matrix[c][t2])
+                        no_overlap = Or(end_vars[t1] <= start_vars[t2], end_vars[t2] <= start_vars[t1])
+                        solver.add(Implies(both_in_coll, no_overlap))
             return
         
-        # Pattern 2: Simple pairwise uniqueness
+        # Pattern 2: forAll(x, y | x <> y implies x.attr <> y.attr) — pairwise attribute uniqueness
+        attr_unique_match = re.search(
+            r'self\.(\w+)->forAll\(\w+\s*,\s*\w+\s*\|\s*\w+\s*<>\s*\w+\s+implies\s+\w+\.(\w+)\s*<>\s*\w+\.\2\)',
+            text
+        )
+        if attr_unique_match:
+            collection_name = attr_unique_match.group(1)
+            unique_attr = attr_unique_match.group(2)
+
+            assoc = self.extractor.get_association_by_ref(context, collection_name)
+            if not assoc:
+                raise ValueError(f"Association {context}.{collection_name} not found")
+
+            target_class = assoc.target_class
+            n_context = scope.get(f'n{context}', 5)
+            n_target = scope.get(f'n{target_class}', 5)
+
+            context_presence = shared_vars[f'{context}_presence']
+            target_presence = shared_vars[f'{target_class}_presence']
+            attr_vars = shared_vars.get(f'{target_class}.{unique_attr}')
+            rel_matrix = shared_vars[f'{context}.{collection_name}']
+
+            if not attr_vars:
+                raise ValueError(f"Attribute {target_class}.{unique_attr} not found")
+
+            # For each context, all pairs in its collection must have distinct attr values
+            for c in range(n_context):
+                for t1 in range(n_target):
+                    for t2 in range(t1 + 1, n_target):
+                        both_in = And(
+                            context_presence[c],
+                            target_presence[t1], target_presence[t2],
+                            rel_matrix[c][t1], rel_matrix[c][t2]
+                        )
+                        solver.add(Implies(both_in, attr_vars[t1] != attr_vars[t2]))
+            return
+
+        # Pattern 3: Simple pairwise distinctness: forAll(x, y | x <> y)
         match = re.search(r'self\.(\w+)->forAll\(\w+,\s*\w+\s*\|\s*\w+\s*<>\s*\w+\)', text)
         if not match:
-            # Fallback to uniqueness_constraint
+            # Fallback to uniqueness_constraint (isUnique syntax)
             return self._encode_uniqueness_constraint(solver, shared_vars, scope, context, text)
-        
+
         # In this encoding, collections are sets (boolean membership), so duplicates are not represented.
         # The constraint "forAll(x1, x2 | x1 <> x2)" is therefore already satisfied.
         return
@@ -1428,19 +1551,226 @@ class GenericGlobalConsistencyChecker:
     
     def _encode_global_collection(self, solver: Solver, shared_vars: Dict, scope: Dict,
                                  context: str, text: str):
-        """Pattern 3: Global collection - allInstances() operation"""
+        """Pattern 3: Global collection - allInstances() operation
+
+        Full encoding: enumerates all instance slots of the target class,
+        guarded by their presence variables.  Supports downstream operations:
+          ->size() op N, ->forAll(x | pred), ->exists(x | pred),
+          ->select(x | pred)->size() op N, ->select(x | pred)->notEmpty(),
+          ->notEmpty(), ->isEmpty(), ->isUnique(x | x.attr)
+        """
         import re
+
         match = re.search(r'(\w+)\.allInstances\(\)', text)
         if not match:
             raise ValueError(f"Cannot parse global_collection: {text}")
-        
+
         class_name = match.group(1)
         if class_name not in self.classes:
             raise ValueError(f"Class {class_name} not found in model")
-        
-        # At least one instance must exist
+
+        n = scope.get(f'n{class_name}', 5)
         presence = shared_vars[f'{class_name}_presence']
+
+        # Everything after allInstances()
+        after = text[text.index('allInstances()') + len('allInstances()'):]
+
+        # ── notEmpty / isEmpty (without prior select) ─────────────────
+        if '->notEmpty()' in after and '->select(' not in after:
+            solver.add(Or(presence))
+            return
+        if '->isEmpty()' in after and '->select(' not in after:
+            solver.add(And([Not(p) for p in presence]))
+            return
+
+        # ── size() op N (without prior select) ────────────────────────
+        size_match = re.search(r'->size\(\)\s*([><=]+|<>)\s*(\d+)', after)
+        if size_match and '->select(' not in after and '->collect(' not in after:
+            op, val = size_match.group(1), int(size_match.group(2))
+            count = Sum([If(presence[j], 1, 0) for j in range(n)])
+            self._add_comparison(solver, count, op, val)
+            return
+
+        # ── forAll(x | predicate) ─────────────────────────────────────
+        forall_match = re.search(r'->forAll\((\w+)\s*\|\s*(.+)\)', after)
+        if forall_match:
+            var_name = forall_match.group(1)
+            predicate = forall_match.group(2).strip().rstrip(')')
+            for j in range(n):
+                pred = self._encode_allinstances_predicate(
+                    predicate, var_name, class_name, j, shared_vars, scope)
+                if pred is not None:
+                    solver.add(Implies(presence[j], pred))
+            return
+
+        # ── exists(x | predicate) ─────────────────────────────────────
+        exists_match = re.search(r'->exists\((\w+)\s*\|\s*(.+)\)', after)
+        if exists_match:
+            var_name = exists_match.group(1)
+            predicate = exists_match.group(2).strip().rstrip(')')
+            matches = []
+            for j in range(n):
+                pred = self._encode_allinstances_predicate(
+                    predicate, var_name, class_name, j, shared_vars, scope)
+                if pred is not None:
+                    matches.append(And(presence[j], pred))
+            if matches:
+                solver.add(Or(matches))
+            return
+
+        # ── select(x | pred)->size() op N ─────────────────────────────
+        sel_size = re.search(
+            r'->select\((\w+)\s*\|\s*(.+?)\)->size\(\)\s*([><=]+|<>)\s*(\d+)', after)
+        if sel_size:
+            var_name, predicate = sel_size.group(1), sel_size.group(2).strip()
+            op, val = sel_size.group(3), int(sel_size.group(4))
+            count_terms = []
+            for j in range(n):
+                pred = self._encode_allinstances_predicate(
+                    predicate, var_name, class_name, j, shared_vars, scope)
+                if pred is not None:
+                    count_terms.append(If(And(presence[j], pred), 1, 0))
+            if count_terms:
+                self._add_comparison(solver, Sum(count_terms), op, val)
+            return
+
+        # ── select(x | pred)->notEmpty() ──────────────────────────────
+        sel_ne = re.search(
+            r'->select\((\w+)\s*\|\s*(.+?)\)->notEmpty\(\)', after)
+        if sel_ne:
+            var_name, predicate = sel_ne.group(1), sel_ne.group(2).strip()
+            matches = []
+            for j in range(n):
+                pred = self._encode_allinstances_predicate(
+                    predicate, var_name, class_name, j, shared_vars, scope)
+                if pred is not None:
+                    matches.append(And(presence[j], pred))
+            if matches:
+                solver.add(Or(matches))
+            return
+
+        # ── isUnique(x | x.attr) ─────────────────────────────────────
+        uniq_match = re.search(
+            r'->isUnique\((\w+)\s*\|\s*\1\.(\w+)\)', after)
+        if uniq_match:
+            attr_name = uniq_match.group(2)
+            attr_vars = shared_vars.get(f'{class_name}.{attr_name}')
+            if attr_vars:
+                for i in range(n):
+                    for j2 in range(i + 1, n):
+                        solver.add(Implies(
+                            And(presence[i], presence[j2]),
+                            attr_vars[i] != attr_vars[j2]))
+            return
+
+        # ── Fallback: at least one instance exists ────────────────────
         solver.add(Or(presence))
+
+    # ── allInstances helper: encode a simple predicate for one slot ───
+
+    def _encode_allinstances_predicate(self, predicate: str, var_name: str,
+                                       class_name: str, idx: int,
+                                       shared_vars: Dict, scope: Dict):
+        """Encode a predicate for instance slot *idx* of *class_name*.
+
+        Handles:
+          var.attr op value          (arithmetic / comparison)
+          var.attr op var.attr2      (attribute-to-attribute)
+          var.boolAttr               (boolean attribute)
+          not var.boolAttr           (negated boolean)
+          pred1 and pred2            (conjunction)
+          pred1 or pred2             (disjunction)
+        """
+        import re
+
+        predicate = predicate.strip()
+
+        # ── Conjunction: pred1 and pred2 ──
+        # Split only on top-level 'and' (not inside parentheses)
+        and_parts = re.split(r'\s+and\s+', predicate)
+        if len(and_parts) > 1:
+            sub_preds = []
+            for part in and_parts:
+                p = self._encode_allinstances_predicate(
+                    part.strip(), var_name, class_name, idx, shared_vars, scope)
+                if p is None:
+                    return None
+                sub_preds.append(p)
+            return And(sub_preds)
+
+        # ── Disjunction: pred1 or pred2 ──
+        or_parts = re.split(r'\s+or\s+', predicate)
+        if len(or_parts) > 1:
+            sub_preds = []
+            for part in or_parts:
+                p = self._encode_allinstances_predicate(
+                    part.strip(), var_name, class_name, idx, shared_vars, scope)
+                if p is None:
+                    return None
+                sub_preds.append(p)
+            return Or(sub_preds)
+
+        # ── Comparison: var.attr op value ──
+        comp = re.match(
+            rf'{re.escape(var_name)}\.(\w+)\s*([><=!]+|<>)\s*(.+)$', predicate)
+        if comp:
+            attr_name, op, rhs = comp.group(1), comp.group(2), comp.group(3).strip()
+            attr_vars = shared_vars.get(f'{class_name}.{attr_name}')
+            if not attr_vars:
+                return None
+            lhs = attr_vars[idx]
+
+            # RHS is another attribute?
+            rhs_attr = re.match(rf'{re.escape(var_name)}\.(\w+)$', rhs)
+            if rhs_attr:
+                rhs_vars = shared_vars.get(f'{class_name}.{rhs_attr.group(1)}')
+                if rhs_vars:
+                    rhs_val = rhs_vars[idx]
+                else:
+                    return None
+            else:
+                # Numeric literal
+                try:
+                    rhs_val = int(rhs) if '.' not in rhs else float(rhs)
+                except ValueError:
+                    if rhs.lower() == 'true':
+                        return lhs == True
+                    elif rhs.lower() == 'false':
+                        return lhs == False
+                    else:
+                        return None
+
+            if op == '>':    return lhs > rhs_val
+            elif op == '>=': return lhs >= rhs_val
+            elif op == '<':  return lhs < rhs_val
+            elif op == '<=': return lhs <= rhs_val
+            elif op in ('=', '=='): return lhs == rhs_val
+            elif op in ('<>', '!='): return lhs != rhs_val
+
+        # ── Negated boolean: not var.attr ──
+        neg_bool = re.match(rf'not\s+{re.escape(var_name)}\.(\w+)$', predicate)
+        if neg_bool:
+            attr_vars = shared_vars.get(f'{class_name}.{neg_bool.group(1)}')
+            if attr_vars:
+                return attr_vars[idx] == False
+
+        # ── Bare boolean: var.attr ──
+        bare_bool = re.match(rf'{re.escape(var_name)}\.(\w+)$', predicate)
+        if bare_bool:
+            attr_vars = shared_vars.get(f'{class_name}.{bare_bool.group(1)}')
+            if attr_vars:
+                return attr_vars[idx] == True
+
+        return None
+
+    def _add_comparison(self, solver: Solver, expr, op: str, val: int):
+        """Add a comparison constraint: expr op val."""
+        if op == '>':    solver.add(expr > val)
+        elif op == '>=': solver.add(expr >= val)
+        elif op == '<':  solver.add(expr < val)
+        elif op == '<=': solver.add(expr <= val)
+        elif op in ('=', '=='): solver.add(expr == val)
+        elif op in ('<>', '!='): solver.add(expr != val)
     
     def _encode_set_intersection(self, solver: Solver, shared_vars: Dict, scope: Dict,
                                 context: str, text: str):
@@ -1769,12 +2099,11 @@ class GenericGlobalConsistencyChecker:
             presence = shared_vars[f'{context}_presence']
             rel_matrix = shared_vars[f'{context}.{collection_name}']
             
-            # Basic iterate: ensure collection is non-empty
+            # Basic iterate: ensure collection is non-empty (iterate requires elements)
             for c in range(n_context):
-                # If iterating, collection should have elements
                 has_elements = Or([rel_matrix[c][t] for t in range(n_target)])
-                # Note: Full iterate semantics would need accumulator variable
-                pass
+                # If context instance exists, its collection must have elements
+                solver.add(Implies(presence[c], has_elements))
     
     def _encode_boolean_guard_implies(self, solver: Solver, shared_vars: Dict, scope: Dict,
                                      context: str, text: str):
@@ -2033,8 +2362,22 @@ class GenericGlobalConsistencyChecker:
             except Exception:
                 pass
         
-        # If no 'implies', treat as simple attribute comparison
-        # Delegate to attribute_comparison encoder
+        # If no 'implies', check for bare boolean attribute (e.g., "self.acknowledged")
+        # A bare "self.attr" in an invariant means "self.attr = true"
+        import re as _re
+        bare_bool = _re.search(r'^\s*self\.(\w+)\s*$', text)
+        if bare_bool:
+            attr_name = bare_bool.group(1)
+            n = scope.get(f'n{context}', 5)
+            presence = shared_vars[f'{context}_presence']
+            attr_vars = shared_vars.get(f'{context}.{attr_name}')
+            if attr_vars:
+                for i in range(n):
+                    # Boolean attribute must be true for all present instances
+                    solver.add(Implies(presence[i], attr_vars[i] == True))
+                return
+
+        # Otherwise treat as simple attribute comparison
         return self._encode_attribute_comparison(solver, shared_vars, scope, context, text)
     
     def _encode_safe_navigation(self, solver: Solver, shared_vars: Dict, scope: Dict,
@@ -2045,32 +2388,146 @@ class GenericGlobalConsistencyChecker:
     
     def _encode_type_check_casting(self, solver: Solver, shared_vars: Dict, scope: Dict,
                                    context: str, text: str):
-        """Pattern 16: Type checking and casting - oclIsKindOf/oclIsTypeOf/oclAsType"""
+        """Pattern 16: Type checking and casting - oclIsKindOf/oclIsTypeOf/oclAsType
+
+        Encoding strategy:
+          - oclIsKindOf(T):  tau_x == T  OR  tau_x in subtypes(T)
+          - oclIsTypeOf(T):  tau_x == T  (exact match)
+          - oclAsType(T):    guard with oclIsKindOf(T), then access T's features
+        """
         import re
-        
-        # Pattern: self.oclIsKindOf(ClassName) or self.oclIsTypeOf(ClassName)
-        match = re.search(r'oclIsKindOf\((\w+)\)|oclIsTypeOf\((\w+)\)|oclAsType\((\w+)\)', text)
+
+        type_constants = shared_vars.get('__type_constants__', {})
+
+        # --- Detect which operation and target type ---
+        is_kind_of = re.search(r'oclIsKindOf\((\w+)\)', text)
+        is_type_of = re.search(r'oclIsTypeOf\((\w+)\)', text)
+        as_type    = re.search(r'oclAsType\((\w+)\)', text)
+
+        match = is_kind_of or is_type_of or as_type
         if not match:
             return
-        
-        target_type = match.group(1) or match.group(2) or match.group(3)
-        
-        # Check if target type exists in metamodel
+
+        target_type = match.group(1)
         if target_type not in self.classes:
             return
-        
-        # Simplified encoding: type checks always succeed for valid types
-        # Full implementation would require:
-        # 1. Type hierarchy modeling
-        # 2. Subtype relationships
-        # 3. Type discriminator variables
-        
-        # For now: ensure the type exists in model
-        n = scope.get(f'n{target_type}', 5)
-        presence = shared_vars[f'{target_type}_presence']
-        
-        # At least one instance of target type should exist
-        solver.add(Or(presence))
+
+        # --- Determine the source collection (context class instances or navigated collection) ---
+        # Common pattern: self.collection->select(v | v.oclIsKindOf(T))->...
+        coll_match = re.search(r'self\.(\w+)->(select|collect|exists|forAll|reject)\(\w+\s*\|', text)
+
+        if coll_match and type_constants:
+            coll_name = coll_match.group(1)
+            quantifier = coll_match.group(2)
+
+            assoc = self.extractor.get_association_by_ref(context, coll_name)
+            if not assoc:
+                return
+
+            nav_target_class = assoc.target_class
+            n_context = scope.get(f'n{context}', 5)
+            n_target = scope.get(f'n{nav_target_class}', 5)
+
+            # Get type variables for the navigated target class
+            tau_vars = shared_vars.get(f'{nav_target_class}_type')
+            if not tau_vars:
+                # No type hierarchy for this class — fall back to presence check
+                presence = shared_vars.get(f'{target_type}_presence')
+                if presence:
+                    solver.add(Or(presence))
+                return
+
+            # Build the type-check predicate for each target instance slot
+            concrete_subtypes = self.extractor.get_concrete_subtypes(target_type)
+
+            def type_check_pred(j):
+                """Return Z3 predicate: instance j satisfies the type check."""
+                if is_type_of:
+                    # Exact type match
+                    if target_type in type_constants:
+                        return tau_vars[j] == type_constants[target_type]
+                    return BoolVal(False)
+                else:
+                    # oclIsKindOf or oclAsType: target type + all subtypes
+                    options = [tau_vars[j] == type_constants[c]
+                               for c in concrete_subtypes if c in type_constants]
+                    return Or(options) if options else BoolVal(False)
+
+            rel_matrix = shared_vars.get(f'{context}.{coll_name}')
+            presence_ctx = shared_vars.get(f'{context}_presence')
+            presence_tgt = shared_vars.get(f'{nav_target_class}_presence')
+            if rel_matrix is None or presence_ctx is None or presence_tgt is None:
+                return
+
+            # --- Encode quantifier semantics ---
+            for c in range(n_context):
+                if quantifier in ('exists', 'select'):
+                    # exists / select->notEmpty(): at least one matching instance
+                    if '->notEmpty()' in text or '->size()' in text or quantifier == 'exists':
+                        matches = []
+                        for j in range(n_target):
+                            if isinstance(rel_matrix[c], list):
+                                linked = rel_matrix[c][j]
+                            else:
+                                linked = (rel_matrix[c] == j)
+                            matches.append(And(linked, presence_tgt[j], type_check_pred(j)))
+                        if matches:
+                            solver.add(Implies(presence_ctx[c], Or(matches)))
+
+                elif quantifier == 'forAll':
+                    # forAll: every linked instance must satisfy the type check
+                    for j in range(n_target):
+                        if isinstance(rel_matrix[c], list):
+                            linked = rel_matrix[c][j]
+                        else:
+                            linked = (rel_matrix[c] == j)
+                        solver.add(Implies(
+                            And(presence_ctx[c], linked, presence_tgt[j]),
+                            type_check_pred(j)
+                        ))
+
+                elif quantifier == 'reject':
+                    # reject: at least one that does NOT satisfy the type check
+                    non_matches = []
+                    for j in range(n_target):
+                        if isinstance(rel_matrix[c], list):
+                            linked = rel_matrix[c][j]
+                        else:
+                            linked = (rel_matrix[c] == j)
+                        non_matches.append(And(linked, presence_tgt[j], Not(type_check_pred(j))))
+                    if non_matches:
+                        solver.add(Implies(presence_ctx[c], Or(non_matches)))
+
+        elif type_constants:
+            # Direct type check on context: self.oclIsKindOf(T)
+            tau_vars = shared_vars.get(f'{context}_type')
+            if not tau_vars:
+                # Fallback: ensure target type has at least one instance
+                presence = shared_vars.get(f'{target_type}_presence')
+                if presence:
+                    solver.add(Or(presence))
+                return
+
+            n = scope.get(f'n{context}', 5)
+            presence = shared_vars.get(f'{context}_presence')
+            concrete_subtypes = self.extractor.get_concrete_subtypes(target_type)
+
+            for i in range(n):
+                if is_type_of:
+                    pred = tau_vars[i] == type_constants.get(target_type, BoolVal(False))
+                else:
+                    options = [tau_vars[i] == type_constants[c]
+                               for c in concrete_subtypes if c in type_constants]
+                    pred = Or(options) if options else BoolVal(False)
+
+                if presence:
+                    solver.add(Implies(presence[i], pred))
+
+        else:
+            # No type hierarchy variables available — minimal fallback
+            presence = shared_vars.get(f'{target_type}_presence')
+            if presence:
+                solver.add(Or(presence))
     
     def _encode_subset_disjointness(self, solver: Solver, shared_vars: Dict, scope: Dict,
                                     context: str, text: str):
@@ -2256,27 +2713,30 @@ class GenericGlobalConsistencyChecker:
             if not attr_vars:
                 return
             
-            # Collect creates bag of attribute values from collection
-            # Result contains attr value for each element in collection
-            # Simplified: ensure collection exists
+            # Collect creates bag of attribute values from collection.
+            # At minimum, the source collection must be non-empty for a
+            # meaningful result. Full collect semantics would also need
+            # an auxiliary result variable for the mapped bag.
             presence = shared_vars[f'{context}_presence']
             for c in range(n_context):
                 has_elements = Or([rel_matrix[c][t] for t in range(n_target)])
-                # If using collect result, collection should have elements
-                pass
-        
+                solver.add(Implies(presence[c], has_elements))
+
         # Pattern: self.collection->flatten()
         elif '->flatten()' in text:
             match = re.search(r'self\.(\w+)->flatten\(\)', text)
             if match:
                 collection_name = match.group(1)
-                # Flatten nested collections - ensure collection exists
                 assoc = self.extractor.get_association_by_ref(context, collection_name)
                 if assoc:
                     n_context = scope.get(f'n{context}', 5)
+                    n_target = scope.get(f'n{assoc.target_class}', 5)
                     presence = shared_vars[f'{context}_presence']
-                    # Flattening implies collection structure exists
-                    pass
+                    rel_matrix = shared_vars[f'{context}.{collection_name}']
+                    # Flatten requires the source collection to exist
+                    for c in range(n_context):
+                        has_elements = Or([rel_matrix[c][t] for t in range(n_target)])
+                        solver.add(Implies(presence[c], has_elements))
     
     def _encode_any_operation(self, solver: Solver, shared_vars: Dict, scope: Dict,
                              context: str, text: str):
@@ -2344,46 +2804,54 @@ class GenericGlobalConsistencyChecker:
             return False
         
         # Extract: self.bookings->forAll(b1, b2 | b1 <> b2 implies b1.end <= b2.start or b2.end <= b1.start)
-        pattern = r'self\.(\w+)->forAll\((\w+)\s*,\s*(\w+)\s*\|\s*\1\s*<>\s*\2\s+implies\s+'
-        pattern += r'(\w+)\.(\w+)\s*<=\s*(\w+)\.(\w+)\s+or\s+(\w+)\.(\w+)\s*<=\s*(\w+)\.(\w+)\)'
-        
-        match = re.search(pattern, text)
-        if not match:
+        # We use a simpler, more robust regex to extract the 4 attribute names
+        # from the non-overlap pattern, avoiding backreference pitfalls.
+        coll_match = re.search(r'self\.(\w+)->forAll\((\w+)\s*,\s*(\w+)', text)
+        if not coll_match:
             return False
-        
-        collection_name = match.group(1)
-        var1 = match.group(2)
-        var2 = match.group(3)
-        
+
+        collection_name = coll_match.group(1)
+        var1 = coll_match.group(2)
+        var2 = coll_match.group(3)
+
         # Get association and scope
         assoc = self.extractor.get_association_by_ref(context, collection_name)
         if not assoc:
             return False
-        
+
         target_class = assoc.target_class
         n_context = scope.get(f'n{context}', 5)
         n_target = scope.get(f'n{target_class}', 5)
-        
-        # Get variables
+
         rel_matrix = shared_vars.get(f'{context}.{collection_name}')
         if rel_matrix is None:
             return False
-        
-        # Parse which attributes are start/end dates
-        # (This depends on your specific pattern)
-        # For simplicity, assuming group 4-7 contain the attribute references
-        
-        # Get date variables
-        start_attr = match.group(5)  # Adjust based on your pattern
-        end_attr = match.group(7)    # Adjust based on your pattern
-        
-        start_vars = shared_vars.get(f'{target_class}.{start_attr}')
-        end_vars = shared_vars.get(f'{target_class}.{end_attr}')
-        
-        if start_vars is None or end_vars is None:
+
+        # Extract the 4 attributes from: var1.A <= var2.B or var2.C <= var1.D
+        # Typical form: b1.endDate <= b2.startDate or b2.endDate <= b1.startDate
+        attr_pattern = (
+            rf'{re.escape(var1)}\.(\w+)\s*<=\s*{re.escape(var2)}\.(\w+)'
+            rf'\s+or\s+'
+            rf'{re.escape(var2)}\.(\w+)\s*<=\s*{re.escape(var1)}\.(\w+)'
+        )
+        attr_match = re.search(attr_pattern, text)
+        if not attr_match:
             return False
-        
-        # Encode non-overlap
+
+        # Groups: (1)=b1's LHS attr, (2)=b2's RHS attr, (3)=b2's LHS attr, (4)=b1's RHS attr
+        # From "b1.endDate <= b2.startDate or b2.endDate <= b1.startDate":
+        #   (1)=endDate, (2)=startDate, (3)=endDate, (4)=startDate
+        end_attr = attr_match.group(1)    # endDate (from first part LHS)
+        start_attr = attr_match.group(2)  # startDate (from first part RHS)
+
+        end_vars = shared_vars.get(f'{target_class}.{end_attr}')
+        start_vars = shared_vars.get(f'{target_class}.{start_attr}')
+
+        if end_vars is None or start_vars is None:
+            return False
+
+        # Encode: for any two elements in collection, they must not overlap.
+        # Non-overlap: t1.end <= t2.start OR t2.end <= t1.start
         for c in range(n_context):
             for t1 in range(n_target):
                 for t2 in range(t1 + 1, n_target):
@@ -2721,103 +3189,377 @@ class GenericGlobalConsistencyChecker:
                 # Product would multiply all elements - less common, skip for now
                 pass
     
-    # String Operations (28-31)
+    # ── helpers for Z3 string theory ──────────────────────────────────────
+
+    def _is_string_var(self, shared_vars: Dict, context: str, attr: str) -> bool:
+        """Check whether an attribute's Z3 variables use StringSort."""
+        vars_list = shared_vars.get(f'{context}.{attr}')
+        if vars_list and len(vars_list) > 0:
+            try:
+                return vars_list[0].sort() == StringSort()
+            except Exception:
+                pass
+        return False
+
+    def _extract_string_var(self, shared_vars: Dict, context: str, attr: str):
+        """Return the Z3 String variable list for *attr*, or None."""
+        return shared_vars.get(f'{context}.{attr}')
+
+    @staticmethod
+    def _ocl_regex_to_z3(pattern: str):
+        """Convert an OCL/Java-style regex string to a Z3 regex expression.
+
+        Supports:  [a-z], [A-Z], [0-9], \\d, \\w, ., +, *, ?, literal chars.
+        """
+        import re as _re
+        parts = []
+        i = 0
+        while i < len(pattern):
+            ch = pattern[i]
+            if ch == '[' and i + 4 <= len(pattern):
+                # Character class  [a-z]
+                end = pattern.find(']', i)
+                if end != -1:
+                    inner = pattern[i + 1:end]
+                    m = _re.match(r'(\w)-(\w)', inner)
+                    if m:
+                        parts.append(Range(m.group(1), m.group(2)))
+                    else:
+                        # Union of single chars
+                        char_res = [Re(StringVal(c)) for c in inner if c != '-']
+                        parts.append(Union(*char_res) if len(char_res) > 1 else char_res[0])
+                    i = end + 1
+                    continue
+            elif ch == '\\' and i + 1 < len(pattern):
+                nxt = pattern[i + 1]
+                if nxt == 'd':
+                    parts.append(Range('0', '9'))
+                elif nxt == 'w':
+                    parts.append(Union(Range('a', 'z'), Range('A', 'Z'),
+                                       Range('0', '9'), Re(StringVal('_'))))
+                elif nxt == 's':
+                    parts.append(Union(Re(StringVal(' ')), Re(StringVal('\t'))))
+                else:
+                    parts.append(Re(StringVal(nxt)))
+                i += 2
+                continue
+            elif ch == '.':
+                # Any character
+                parts.append(Union(Range('a', 'z'), Range('A', 'Z'),
+                                   Range('0', '9'), Re(StringVal('_')),
+                                   Re(StringVal(' '))))
+                i += 1
+                continue
+            elif ch in ('+', '*', '?') and parts:
+                prev = parts.pop()
+                if ch == '+':
+                    parts.append(Plus(prev))
+                elif ch == '*':
+                    parts.append(Star(prev))
+                else:  # ?
+                    parts.append(Union(Re(StringVal('')), prev))
+                i += 1
+                continue
+            else:
+                parts.append(Re(StringVal(ch)))
+                i += 1
+                continue
+
+        if not parts:
+            return Star(Range('a', 'z'))
+        result = parts[0]
+        for p in parts[1:]:
+            result = Concat(result, p)
+        return result
+
+    @staticmethod
+    def _case_variant_regex_for_literal(literal: str, target_case: str):
+        """Build a regex for strings whose ASCII case-normalized form matches *literal*."""
+        if target_case not in {"upper", "lower"}:
+            return None
+
+        parts = []
+        for ch in literal:
+            if ch.isalpha():
+                upper = ch.upper()
+                lower = ch.lower()
+                expected = upper if target_case == "upper" else lower
+                if ch != expected:
+                    return None
+                parts.append(Union(Re(StringVal(upper)), Re(StringVal(lower))))
+            else:
+                parts.append(Re(StringVal(ch)))
+
+        if not parts:
+            return Re(StringVal(""))
+
+        result = parts[0]
+        for part in parts[1:]:
+            result = Concat(result, part)
+        return result
+
+    # ── String Operations (28-31) ── Z3 native string theory ──────────
+
     def _encode_string_concat(self, solver: Solver, shared_vars: Dict, scope: Dict,
                              context: str, text: str):
-        """Pattern 28: String concatenation - concat strings"""
+        """Pattern 28: String concatenation using z3.Concat (string)."""
         import re
-        
-        # Pattern: self.attr1.concat(self.attr2) = self.result
+
+        # self.attr1.concat(self.attr2)  OP  self.result   |  'literal'
         match = re.search(r'self\.(\w+)\.concat\(self\.(\w+)\)', text)
-        if match:
-            attr1 = match.group(1)
-            attr2 = match.group(2)
-            
-            # Strings encoded as integers - concatenation approximated
-            # For symbolic execution, we can check string variables exist
-            n = scope.get(f'n{context}', 5)
-            presence = shared_vars[f'{context}_presence']
-            
-            try:
-                str1_vars = shared_vars[f'{context}.{attr1}']
-                str2_vars = shared_vars[f'{context}.{attr2}']
-                
-                # Ensure strings are non-negative (valid encoding)
-                for i in range(n):
-                    solver.add(Implies(presence[i], And(str1_vars[i] >= 0, str2_vars[i] >= 0)))
-            except KeyError:
-                pass
-    
+        if not match:
+            return
+        attr1, attr2 = match.group(1), match.group(2)
+        n = scope.get(f'n{context}', 5)
+        presence = shared_vars[f'{context}_presence']
+        sv1 = self._extract_string_var(shared_vars, context, attr1)
+        sv2 = self._extract_string_var(shared_vars, context, attr2)
+        if not sv1 or not sv2:
+            return
+
+        # Check for  = self.result  or  = 'literal'  or  <> ''
+        eq_attr = re.search(r'concat\(self\.\w+\)\s*([=<>!]+)\s*self\.(\w+)', text)
+        eq_lit  = re.search(r"concat\(self\.\w+\)\s*([=<>!]+)\s*['\"]([^'\"]*)['\"]", text)
+
+        for i in range(n):
+            concat_expr = Concat(sv1[i], sv2[i])
+            if eq_attr:
+                op = eq_attr.group(1)
+                result_vars = self._extract_string_var(shared_vars, context, eq_attr.group(2))
+                if result_vars:
+                    if op in ('=', '=='):
+                        solver.add(Implies(presence[i], result_vars[i] == concat_expr))
+                    elif op in ('<>', '!='):
+                        solver.add(Implies(presence[i], result_vars[i] != concat_expr))
+            elif eq_lit:
+                op, lit = eq_lit.group(1), eq_lit.group(2)
+                if op in ('=', '=='):
+                    solver.add(Implies(presence[i], concat_expr == StringVal(lit)))
+                elif op in ('<>', '!='):
+                    solver.add(Implies(presence[i], concat_expr != StringVal(lit)))
+            else:
+                # No comparison found — just assert concat is non-empty
+                solver.add(Implies(presence[i], Length(concat_expr) > 0))
+
     def _encode_string_operations(self, solver: Solver, shared_vars: Dict, scope: Dict,
                                  context: str, text: str):
-        """Pattern 29: String operations - size, substring, toUpper, toLower"""
+        """Pattern 29: String operations — size, substring, toUpper, toLower.
+
+        Uses Z3 Length, SubString, InRe with Range patterns.
+        """
         import re
-        
-        # Pattern: self.attr.size() OP value
+        n = scope.get(f'n{context}', 5)
+        presence = shared_vars[f'{context}_presence']
+
+        # ── size() ──
         if '.size()' in text:
-            match = re.search(r'self\.(\w+)\.size\(\)\s*([><=]+)\s*(\d+)', text)
+            match = re.search(r'self\.(\w+)\.size\(\)\s*([><=!]+)\s*(\d+)', text)
+            if match:
+                attr, op, value = match.group(1), match.group(2), int(match.group(3))
+                sv = self._extract_string_var(shared_vars, context, attr)
+                if not sv:
+                    return
+                for i in range(n):
+                    slen = Length(sv[i])
+                    if op == '>':
+                        solver.add(Implies(presence[i], slen > value))
+                    elif op == '>=':
+                        solver.add(Implies(presence[i], slen >= value))
+                    elif op == '<':
+                        solver.add(Implies(presence[i], slen < value))
+                    elif op == '<=':
+                        solver.add(Implies(presence[i], slen <= value))
+                    elif op in ('=', '=='):
+                        solver.add(Implies(presence[i], slen == value))
+                    elif op in ('<>', '!='):
+                        solver.add(Implies(presence[i], slen != value))
+            return
+
+        # ── substring(start, end) — OCL is 1-based, Z3 is 0-based ──
+        if '.substring(' in text:
+            match = re.search(r'self\.(\w+)\.substring\((\d+)\s*,\s*(\d+)\)', text)
             if match:
                 attr = match.group(1)
-                op = match.group(2)
-                value = int(match.group(3))
-                
-                n = scope.get(f'n{context}', 5)
-                presence = shared_vars[f'{context}_presence']
-                
-                try:
-                    str_vars = shared_vars[f'{context}.{attr}']
-                    
-                    # String size approximated by value magnitude
-                    for i in range(n):
-                        if op == '>':
-                            solver.add(Implies(presence[i], str_vars[i] > value))
-                        elif op == '>=':
-                            solver.add(Implies(presence[i], str_vars[i] >= value))
-                except KeyError:
-                    pass
-        
-        # Pattern: self.attr.substring(start, end)
-        elif '.substring(' in text:
-            # Substring creates new string - ensure source string exists
-            match = re.search(r'self\.(\w+)\.substring\(', text)
-            if match:
-                attr = match.group(1)
-                # Simplified: just ensure string variable exists
-                pass
-    
+                ocl_start, ocl_end = int(match.group(2)), int(match.group(3))
+                z3_offset = ocl_start - 1          # 1-based → 0-based
+                z3_length = ocl_end - ocl_start + 1  # OCL end index is inclusive
+                sv = self._extract_string_var(shared_vars, context, attr)
+                if not sv:
+                    return
+                # Check for comparison:  .substring(1,3) = 'AB'
+                lit_match = re.search(r"substring\(\d+\s*,\s*\d+\)\s*=\s*['\"]([^'\"]+)['\"]", text)
+                for i in range(n):
+                    sub = SubString(sv[i], z3_offset, z3_length)
+                    if lit_match:
+                        solver.add(Implies(
+                            presence[i],
+                            And(Length(sv[i]) >= ocl_end, sub == StringVal(lit_match.group(1)))
+                        ))
+                    else:
+                        solver.add(Implies(presence[i], Length(sv[i]) >= ocl_end))
+            return
+
+        # ── toUpper() / toLower() ──
+        upper_match = re.search(
+            r"self\.(\w+)\.(toUpper|toUpperCase)\(\)\s*=\s*['\"]([^'\"]+)['\"]", text)
+        if upper_match:
+            attr, _, literal = upper_match.group(1), upper_match.group(2), upper_match.group(3)
+            sv = self._extract_string_var(shared_vars, context, attr)
+            if sv:
+                case_regex = self._case_variant_regex_for_literal(literal, "upper")
+                for i in range(n):
+                    if case_regex is None:
+                        solver.add(Implies(presence[i], False))
+                    else:
+                        solver.add(Implies(presence[i], InRe(sv[i], case_regex)))
+            return
+
+        lower_match = re.search(
+            r"self\.(\w+)\.(toLower|toLowerCase)\(\)\s*=\s*['\"]([^'\"]+)['\"]", text)
+        if lower_match:
+            attr, _, literal = lower_match.group(1), lower_match.group(2), lower_match.group(3)
+            sv = self._extract_string_var(shared_vars, context, attr)
+            if sv:
+                case_regex = self._case_variant_regex_for_literal(literal, "lower")
+                for i in range(n):
+                    if case_regex is None:
+                        solver.add(Implies(presence[i], False))
+                    else:
+                        solver.add(Implies(presence[i], InRe(sv[i], case_regex)))
+            return
+
     def _encode_string_comparison(self, solver: Solver, shared_vars: Dict, scope: Dict,
                                   context: str, text: str):
-        """Pattern 30: String comparisons"""
-        # String attributes encoded as integers - use numeric comparison
-        return self._encode_attribute_comparison(solver, shared_vars, scope, context, text)
-    
+        """Pattern 30: String comparisons — native Z3 string equality / inequality."""
+        import re
+        n = scope.get(f'n{context}', 5)
+        presence = shared_vars[f'{context}_presence']
+
+        # Two-attribute:  self.attr1 OP self.attr2
+        m2 = re.search(r'self\.(\w+)\s*([=<>!]+)\s*self\.(\w+)', text)
+        if m2:
+            attr1, op, attr2 = m2.group(1), m2.group(2), m2.group(3)
+            sv1 = self._extract_string_var(shared_vars, context, attr1)
+            sv2 = self._extract_string_var(shared_vars, context, attr2)
+            if sv1 and sv2:
+                for i in range(n):
+                    if op in ('=', '=='):
+                        solver.add(Implies(presence[i], sv1[i] == sv2[i]))
+                    elif op in ('<>', '!='):
+                        solver.add(Implies(presence[i], sv1[i] != sv2[i]))
+                return
+
+        # Attribute vs literal:  self.attr OP 'literal'
+        m1 = re.search(r"self\.(\w+)\s*([=<>!]+)\s*['\"]([^'\"]*)['\"]", text)
+        if m1:
+            attr, op, lit = m1.group(1), m1.group(2), m1.group(3)
+            sv = self._extract_string_var(shared_vars, context, attr)
+            if sv:
+                for i in range(n):
+                    if op in ('=', '=='):
+                        solver.add(Implies(presence[i], sv[i] == StringVal(lit)))
+                    elif op in ('<>', '!='):
+                        solver.add(Implies(presence[i], sv[i] != StringVal(lit)))
+                return
+
+        # Fallback to generic attribute comparison (handles non-string cases)
+        self._encode_attribute_comparison(solver, shared_vars, scope, context, text)
+
     def _encode_string_pattern(self, solver: Solver, shared_vars: Dict, scope: Dict,
                               context: str, text: str):
-        """Pattern 31: String pattern matching - matches regex"""
+        """Pattern 31: String pattern matching — matches, indexOf, startsWith,
+        endsWith, contains.  Uses Z3 InRe / Contains / PrefixOf / SuffixOf.
+        """
         import re
-        
-        # Pattern: self.attr.matches('regex')
-        match = re.search(r"self\.(\w+)\.matches\(['\"]([^'\"]+)['\"]\)", text)
-        if match:
-            attr = match.group(1)
-            pattern = match.group(2)
-            
-            # Regex matching not directly supported with integer encoding
-            # Simplified: ensure string variable exists and is valid
-            n = scope.get(f'n{context}', 5)
-            presence = shared_vars[f'{context}_presence']
-            
-            try:
-                str_vars = shared_vars[f'{context}.{attr}']
-                
-                # Basic constraint: string should be non-negative
+        n = scope.get(f'n{context}', 5)
+        presence = shared_vars[f'{context}_presence']
+
+        # ── matches('regex') ──
+        regex_match = re.search(r"self\.(\w+)\.matches\(['\"]([^'\"]+)['\"]\)", text)
+        if regex_match:
+            attr, pat = regex_match.group(1), regex_match.group(2)
+            sv = self._extract_string_var(shared_vars, context, attr)
+            if sv:
+                z3_re = self._ocl_regex_to_z3(pat)
                 for i in range(n):
-                    solver.add(Implies(presence[i], str_vars[i] >= 0))
-                
-                # Full regex support would require Z3 string theory
-                # For now, basic validation only
-            except KeyError:
-                pass
+                    solver.add(Implies(presence[i], InRe(sv[i], z3_re)))
+            return
+
+        # ── contains('sub') ──
+        contains_match = re.search(r"self\.(\w+)\.contains\(['\"]([^'\"]+)['\"]\)", text)
+        if contains_match:
+            attr, sub = contains_match.group(1), contains_match.group(2)
+            sv = self._extract_string_var(shared_vars, context, attr)
+            if sv:
+                for i in range(n):
+                    solver.add(Implies(presence[i], Contains(sv[i], StringVal(sub))))
+            return
+
+        # ── startsWith('prefix') ──
+        starts_match = re.search(r"self\.(\w+)\.startsWith\(['\"]([^'\"]+)['\"]\)", text)
+        if starts_match:
+            attr, prefix = starts_match.group(1), starts_match.group(2)
+            sv = self._extract_string_var(shared_vars, context, attr)
+            if sv:
+                for i in range(n):
+                    solver.add(Implies(presence[i], PrefixOf(StringVal(prefix), sv[i])))
+            return
+
+        # ── benchmark starts-with implication: size() >= N implies substring(1, N) = 'prefix' ──
+        implied_prefix_match = re.search(
+            r"self\.(\w+)\.size\(\)\s*>=\s*(\d+)\s*implies\s*self\.\1\.substring\(\s*1\s*,\s*(\d+)\s*\)\s*=\s*['\"]([^'\"]+)['\"]",
+            text
+        )
+        if implied_prefix_match:
+            attr = implied_prefix_match.group(1)
+            size_guard = int(implied_prefix_match.group(2))
+            prefix_len = int(implied_prefix_match.group(3))
+            prefix = implied_prefix_match.group(4)
+            if size_guard != prefix_len:
+                return
+            sv = self._extract_string_var(shared_vars, context, attr)
+            if sv:
+                for i in range(n):
+                    solver.add(Implies(
+                        presence[i],
+                        Implies(Length(sv[i]) >= size_guard, PrefixOf(StringVal(prefix), sv[i]))
+                    ))
+            return
+
+        # ── endsWith('suffix') ──
+        ends_match = re.search(r"self\.(\w+)\.endsWith\(['\"]([^'\"]+)['\"]\)", text)
+        if ends_match:
+            attr, suffix = ends_match.group(1), ends_match.group(2)
+            sv = self._extract_string_var(shared_vars, context, attr)
+            if sv:
+                for i in range(n):
+                    solver.add(Implies(presence[i], SuffixOf(StringVal(suffix), sv[i])))
+            return
+
+        # ── indexOf('sub') OP value ──
+        idx_match = re.search(r"self\.(\w+)\.indexOf\(['\"]([^'\"]+)['\"]\)\s*([><=!]+)\s*(-?\d+)", text)
+        if idx_match:
+            attr = idx_match.group(1)
+            sub = idx_match.group(2)
+            op = idx_match.group(3)
+            val = int(idx_match.group(4))
+            sv = self._extract_string_var(shared_vars, context, attr)
+            if sv:
+                for i in range(n):
+                    idx_expr = IndexOf(sv[i], StringVal(sub), IntVal(0))
+                    if op == '>':
+                        solver.add(Implies(presence[i], idx_expr > val))
+                    elif op == '>=':
+                        solver.add(Implies(presence[i], idx_expr >= val))
+                    elif op == '<':
+                        solver.add(Implies(presence[i], idx_expr < val))
+                    elif op == '<=':
+                        solver.add(Implies(presence[i], idx_expr <= val))
+                    elif op in ('=', '=='):
+                        solver.add(Implies(presence[i], idx_expr == val))
+                    elif op in ('<>', '!='):
+                        solver.add(Implies(presence[i], idx_expr != val))
+            return
     
     # Arithmetic & Logic (32-36)
     def _encode_arithmetic_expression(self, solver: Solver, shared_vars: Dict, scope: Dict,
@@ -3328,7 +4070,10 @@ class GenericGlobalConsistencyChecker:
                     disj.append(attr_vars[idx] == val)
                 else:
                     v_clean = v.strip('\'"')
-                    disj.append(attr_vars[idx] == self._string_to_int(v_clean))
+                    if self._is_string_var(shared_vars, context, attr):
+                        disj.append(attr_vars[idx] == StringVal(v_clean))
+                    else:
+                        disj.append(attr_vars[idx] == self._string_to_int(v_clean))
             return Or(disj) if disj else None
 
         # boolean attribute: self.attr
@@ -3395,7 +4140,11 @@ class GenericGlobalConsistencyChecker:
                 value = float(raw_val) if '.' in raw_val else int(raw_val)
             # string literal
             elif (raw_val.startswith("'") and raw_val.endswith("'")) or (raw_val.startswith('"') and raw_val.endswith('"')):
-                value = self._string_to_int(raw_val.strip('\'"'))
+                clean = raw_val.strip('\'"')
+                if self._is_string_var(shared_vars, context, attr):
+                    value = StringVal(clean)
+                else:
+                    value = self._string_to_int(clean)
             else:
                 return None
 
@@ -3683,14 +4432,40 @@ class GenericGlobalConsistencyChecker:
                 matrix1 = shared_vars[f'{context}.{coll1}']
                 matrix2 = shared_vars[f'{context}.{coll2}']
                 
-                # Union: element in either collection
+                target_presence = shared_vars[f'{assoc1.target_class}_presence']
+
+                # Check what follows union(): isEmpty(), notEmpty(), or size()
+                is_empty = re.search(r'->union\([^)]+\)->isEmpty\(\)', text)
+                is_not_empty = re.search(r'->union\([^)]+\)->notEmpty\(\)', text)
+                size_match = re.search(r'->union\([^)]+\)->size\(\)\s*([><=]+)\s*(\d+)', text)
+
                 for c in range(n_context):
-                    for t in range(n_target):
-                        # If in union, must be in at least one collection
-                        in_union = Or(matrix1[c][t], matrix2[c][t])
-                        # If checking size, count union elements
-                        # For now, just ensure union semantics hold
-                        pass
+                    # Union count: element in at least one collection
+                    union_count = Sum([
+                        If(And(target_presence[t], Or(matrix1[c][t], matrix2[c][t])), 1, 0)
+                        for t in range(n_target)
+                    ])
+
+                    if is_empty:
+                        solver.add(Implies(presence[c], union_count == 0))
+                    elif is_not_empty:
+                        solver.add(Implies(presence[c], union_count > 0))
+                    elif size_match:
+                        op = size_match.group(1)
+                        value = int(size_match.group(2))
+                        if op == '>':
+                            solver.add(Implies(presence[c], union_count > value))
+                        elif op == '>=':
+                            solver.add(Implies(presence[c], union_count >= value))
+                        elif op == '<':
+                            solver.add(Implies(presence[c], union_count < value))
+                        elif op == '<=':
+                            solver.add(Implies(presence[c], union_count <= value))
+                        elif op in ['=', '==']:
+                            solver.add(Implies(presence[c], union_count == value))
+                    else:
+                        # Union used without size/empty check — ensure union is non-empty
+                        solver.add(Implies(presence[c], union_count > 0))
         
         elif '->intersection(' in text:
             return self._encode_set_intersection(solver, shared_vars, scope, context, text)
@@ -3720,13 +4495,42 @@ class GenericGlobalConsistencyChecker:
             matrix1 = shared_vars[f'{context}.{coll1}']
             matrix2 = shared_vars[f'{context}.{coll2}']
             
-            # Symmetric difference: in exactly one collection, not both
+            presence = shared_vars[f'{context}_presence']
+            target_presence = shared_vars[f'{assoc1.target_class}_presence']
+
+            # Check what follows symmetricDifference: isEmpty(), notEmpty(), or size()
+            is_empty = re.search(r'->symmetricDifference\([^)]+\)->isEmpty\(\)', text)
+            is_not_empty = re.search(r'->symmetricDifference\([^)]+\)->notEmpty\(\)', text)
+            size_match = re.search(r'->symmetricDifference\([^)]+\)->size\(\)\s*([><=]+)\s*(\d+)', text)
+
             for c in range(n_context):
-                for t in range(n_target):
-                    in_diff = Xor(matrix1[c][t], matrix2[c][t])
-                    # Element in symmetric difference iff in exactly one collection
-                    # Would need result collection variable to fully encode
-                    pass
+                # Count elements in symmetric difference (in exactly one, not both)
+                diff_count = Sum([
+                    If(And(target_presence[t], Xor(matrix1[c][t], matrix2[c][t])), 1, 0)
+                    for t in range(n_target)
+                ])
+
+                if is_empty:
+                    solver.add(Implies(presence[c], diff_count == 0))
+                elif is_not_empty:
+                    solver.add(Implies(presence[c], diff_count > 0))
+                elif size_match:
+                    op = size_match.group(1)
+                    value = int(size_match.group(2))
+                    if op == '>':
+                        solver.add(Implies(presence[c], diff_count > value))
+                    elif op == '>=':
+                        solver.add(Implies(presence[c], diff_count >= value))
+                    elif op == '<':
+                        solver.add(Implies(presence[c], diff_count < value))
+                    elif op == '<=':
+                        solver.add(Implies(presence[c], diff_count <= value))
+                    elif op in ['=', '==']:
+                        solver.add(Implies(presence[c], diff_count == value))
+                else:
+                    # No specific check — at minimum ensure sets are distinct
+                    # (symmetric difference is non-empty)
+                    solver.add(Implies(presence[c], diff_count > 0))
     
     def _encode_including_excluding(self, solver: Solver, shared_vars: Dict, scope: Dict,
                                     context: str, text: str):
@@ -3757,12 +4561,16 @@ class GenericGlobalConsistencyChecker:
             match = re.search(r'self\.(\w+)->excluding\((.+?)\)', text)
             if match:
                 collection_name = match.group(1)
-                # Excluding removes one element - result size = original size - 1
-                # Would need to identify which element to exclude
                 assoc = self.extractor.get_association_by_ref(context, collection_name)
                 if assoc:
-                    # For now, just ensure collection exists
-                    pass
+                    # Excluding removes one element — original collection must be non-empty
+                    n_context = scope.get(f'n{context}', 5)
+                    n_target = scope.get(f'n{assoc.target_class}', 5)
+                    presence = shared_vars[f'{context}_presence']
+                    rel_matrix = shared_vars[f'{context}.{collection_name}']
+                    for c in range(n_context):
+                        has_elements = Or([rel_matrix[c][t] for t in range(n_target)])
+                        solver.add(Implies(presence[c], has_elements))
     
     def _encode_flatten_operation(self, solver: Solver, shared_vars: Dict, scope: Dict,
                                   context: str, text: str):
@@ -3785,12 +4593,10 @@ class GenericGlobalConsistencyChecker:
             presence = shared_vars[f'{context}_presence']
             rel_matrix = shared_vars[f'{context}.{collection_name}']
             
-            # If flattening, collection should have elements
+            # If flattening, collection must have elements
             for c in range(n_context):
                 has_elements = Or([rel_matrix[c][t] for t in range(n_target)])
-                # Flatten result is non-empty if source is non-empty
-                # Full implementation would need auxiliary variables for result
-                pass
+                solver.add(Implies(presence[c], has_elements))
     
     # Navigation & Property (44-47)
     def _encode_navigation_chain(self, solver: Solver, shared_vars: Dict, scope: Dict,
@@ -3941,7 +4747,7 @@ class GenericGlobalConsistencyChecker:
         elif any(t in ecore_type for t in ['Bool', 'EBoolean']):
             return Bool
         elif any(t in ecore_type for t in ['String', 'EString']):
-            return Int  # Encode strings as integers
+            return String  # Z3 native string theory
         else:
             return Int  # Default to Int
 
@@ -4150,8 +4956,38 @@ class GenericGlobalConsistencyChecker:
     
     def _encode_string_validation(self, solver: Solver, shared_vars: Dict, scope: Dict,
                                    context: str, text: str):
-        """Encode string validation (simplified - strings always valid in SMT)."""
-        pass  # String operations complex in Z3, skip for basic encoding
+        """Encode string validation — non-empty check and min-length using Z3 Length."""
+        import re
+        n = scope.get(f'n{context}', 5)
+        presence = shared_vars[f'{context}_presence']
+
+        # self.attr.size() > 0  /  self.attr <> ''  → non-empty string
+        attr_match = re.search(r'self\.(\w+)', text)
+        if not attr_match:
+            return
+        attr = attr_match.group(1)
+        sv = self._extract_string_var(shared_vars, context, attr)
+        if not sv:
+            return
+
+        # Check for min-length pattern:  self.attr.size() >= N
+        size_match = re.search(r'\.size\(\)\s*([><=!]+)\s*(\d+)', text)
+        if size_match:
+            op, val = size_match.group(1), int(size_match.group(2))
+            for i in range(n):
+                slen = Length(sv[i])
+                if op == '>':
+                    solver.add(Implies(presence[i], slen > val))
+                elif op == '>=':
+                    solver.add(Implies(presence[i], slen >= val))
+                elif op in ('=', '=='):
+                    solver.add(Implies(presence[i], slen == val))
+                elif op in ('<>', '!='):
+                    solver.add(Implies(presence[i], slen != val))
+        else:
+            # Default: non-empty string
+            for i in range(n):
+                solver.add(Implies(presence[i], Length(sv[i]) > 0))
     
     def _encode_association_exists(self, solver: Solver, shared_vars: Dict, scope: Dict,
                                     context: str, text: str):

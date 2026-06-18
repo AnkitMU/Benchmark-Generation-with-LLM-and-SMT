@@ -1,0 +1,325 @@
+-- Benchmark: HospitalSystem / balanced
+-- Type: SAT Constraints Only
+-- Generated: 2026-06-18T17:31:31.024603
+-- Count: 64
+
+-- #1 Navigation Chain in Admission
+-- Difficulty: medium
+context Admission
+inv: self.patient.insurance.provider <> ''
+
+-- #2 Navigation Chain in Nurse
+-- Difficulty: repair
+context Nurse
+inv: self.department.hospital.name <> ''
+
+-- #3 Navigation Chain in Admission
+-- Difficulty: medium
+context Admission
+inv: self.patient.insurance.validUntil <> ''
+
+-- #4 Navigation Chain in Department
+-- Difficulty: easy
+context Department
+inv: self.hospital.name <> ''
+
+-- #5 Collection Navigation in MedicalRecord
+-- Difficulty: difficult
+context MedicalRecord
+inv: self.prescriptions->forAll(x | x.issuedAt <> '')
+
+-- #6 Collection Navigation in Doctor
+-- Difficulty: difficult
+context Doctor
+inv: self.appointments->exists(x | x.appointmentId <> '')
+
+-- #7 Collection Navigation in Hospital
+-- Difficulty: difficult
+context Hospital
+inv: self.wards->forAll(x | x.floor < 10)
+
+-- #8 Association Exists in Admission
+-- Difficulty: medium
+context Admission
+inv: (self.discharge <> null) and (self.bed <> null)
+
+-- #9 Association Exists in Diagnosis
+-- Difficulty: easy
+context Diagnosis
+inv: self.record <> null
+
+-- #10 Association Exists in Doctor
+-- Difficulty: medium
+context Doctor
+inv: (self.department <> null) and (self.department.hospital.address <> '')
+
+-- #11 Association Exists in Appointment
+-- Difficulty: easy
+context Appointment
+inv: self.doctor <> null
+
+-- #12 Association Exists in InsurancePolicy
+-- Difficulty: medium
+context InsurancePolicy
+inv: (self.patient <> null) and (self.provider.size() >= 13)
+
+-- #13 Association Exists in Appointment
+-- Difficulty: medium
+context Appointment
+inv: (self.patient <> null) and (self.patient.isInsured)
+
+-- #14 Association Exists in Discharge
+-- Difficulty: easy
+context Discharge
+inv: self.admission <> null
+
+-- #15 Association Exists in LabResult
+-- Difficulty: medium
+context LabResult
+inv: (self.test <> null) and (self.reportedAt.size() = 29)
+
+-- #16 Association Exists in Bed
+-- Difficulty: easy
+context Bed
+inv: self.room <> null
+
+-- #17 Association Exists in Medication
+-- Difficulty: medium
+context Medication
+inv: (self.prescription <> null) and (self.dose.toUpperCase() = 'TEST')
+
+-- #18 Association Exists in Invoice
+-- Difficulty: medium
+context Invoice
+inv: (self.patient <> null) and (self.issuedAt.size() = 24)
+
+-- #19 Association Exists in LabTest
+-- Difficulty: easy
+context LabTest
+inv: self.result <> null
+
+-- #20 Navigation Chain in InsurancePolicy
+-- Difficulty: medium
+context InsurancePolicy
+inv: self.patient.insurance.policyNo <> ''
+
+-- #21 Navigation Chain in Diagnosis
+-- Difficulty: medium
+context Diagnosis
+inv: self.record.patient.isInsured <> true
+
+-- #22 Navigation Chain in LabResult
+-- Difficulty: medium
+context LabResult
+inv: self.test.record.createdAt <> ''
+
+-- #23 Navigation Chain in LabTest
+-- Difficulty: medium
+context LabTest
+inv: self.record.patient.isInsured <> false
+
+-- #24 Navigation Chain in Medication
+-- Difficulty: medium
+context Medication
+inv: self.prescription.record.recordNo <> ''
+
+-- #25 Navigation Chain in Medication
+-- Difficulty: medium
+context Medication
+inv: self.prescription.record.createdAt <> ''
+
+-- #26 Navigation Chain in Diagnosis
+-- Difficulty: medium
+context Diagnosis
+inv: (self.record.patient.isInsured = false) and (self.diagnosedAt.size() <= 96)
+
+-- #27 Navigation Chain in Payment
+-- Difficulty: medium
+context Payment
+inv: self.invoice.patient.isInsured <> true
+
+-- #28 Navigation Chain in Bed
+-- Difficulty: medium
+context Bed
+inv: (self.room.ward.floor < 1000) and (self.isOccupied <> null)
+
+-- #29 Navigation Chain in Payment
+-- Difficulty: medium
+context Payment
+inv: (self.invoice.patient.isInsured = false) and (self.amount.abs() <= 2)
+
+-- #30 Numeric Absolute Value Bounded in Payment
+-- Difficulty: easy
+context Payment
+inv: self.amount.abs() <= 8
+
+-- #31 Numeric Is Odd in Ward
+-- Difficulty: easy
+context Ward
+inv: self.floor mod 2 = 1
+
+-- #32 Collection Size in Range in Prescription
+-- Difficulty: easy
+context Prescription
+inv: (self.medications->size() <= 1)
+
+-- #33 Collection Size in Range in Hospital
+-- Difficulty: easy
+context Hospital
+inv: (self.departments->size() <= 2)
+
+-- #34 Numeric Absolute Value Bounded in Ward
+-- Difficulty: medium
+context Ward
+inv: self.floor.abs() <= 9
+
+-- #35 Numeric Attribute Bounded in Payment
+-- Difficulty: medium
+context Payment
+inv: self.amount >= 14 and self.amount <= 81
+
+-- #36 Numeric Absolute Value Bounded in Invoice
+-- Difficulty: medium
+context Invoice
+inv: self.totalAmount.abs() <= 8
+
+-- #37 Numeric Absolute Value Bounded in Payment
+-- Difficulty: medium
+context Payment
+inv: self.amount.abs() <= 9
+
+-- #38 Numeric Absolute Value Bounded in Invoice
+-- Difficulty: medium
+context Invoice
+inv: self.totalAmount.abs() <= 3
+
+-- #39 Numeric Greater Than Value in Invoice
+-- Difficulty: easy
+context Invoice
+inv: self.totalAmount > 19
+
+-- #40 Numeric Absolute Value Bounded in Payment
+-- Difficulty: medium
+context Payment
+inv: self.amount.abs() <= 4
+
+-- #41 Numeric Less Than Value in Payment
+-- Difficulty: easy
+context Payment
+inv: self.amount < 27
+
+-- #42 Numeric Multiple Of in Ward
+-- Difficulty: medium
+context Ward
+inv: (self.floor mod 9 = 0) and (self.hospital.address <> '')
+
+-- #43 Any Operation in Doctor
+-- Difficulty: difficult
+context Doctor
+inv: self.appointments->any(x | x.dateTime <> '') <> null
+
+-- #44 One Operation in Hospital
+-- Difficulty: medium
+context Hospital
+inv: self.departments->one(x | x.name <> '')
+
+-- #45 Attribute Not Null (Simple) in Person
+-- Difficulty: medium
+context Person
+inv: (self.dob <> null) and (self.dob.size() <= 90)
+
+-- #46 Attribute Not Null (Simple) in Nurse
+-- Difficulty: medium
+context Nurse
+inv: (self.nurseId <> null) and (self.shift.size() <= 47)
+
+-- #47 Attribute Not Null (Simple) in Person
+-- Difficulty: medium
+context Person
+inv: (self.gender <> null) and (self.dob.size() <= 50)
+
+-- #48 Attribute Not Null (Simple) in Discharge
+-- Difficulty: easy
+context Discharge
+inv: self.dischargeDate <> null
+
+-- #49 Attribute Not Null (Simple) in Person
+-- Difficulty: easy
+context Person
+inv: self.phone <> null
+
+-- #50 Collection Size Constraint in Doctor
+-- Difficulty: easy
+context Doctor
+inv: self.appointments->size() <> 1
+
+-- #51 Attribute Not Null (Simple) in Procedure
+-- Difficulty: easy
+context Procedure
+inv: self.performedAt <> null
+
+-- #52 Collection Has Specific Size in Hospital
+-- Difficulty: easy
+context Hospital
+inv: self.wards->size() = 2
+
+-- #53 Collection Minimum Size in Patient
+-- Difficulty: medium
+context Patient
+inv: self.records->size() >= 3
+
+-- #54 Collection Not Empty Check in Patient
+-- Difficulty: easy
+context Patient
+inv: self.admissions->size() > 0
+
+-- #55 Collection Maximum Size in Doctor
+-- Difficulty: medium
+context Doctor
+inv: self.appointments->size() <= 1
+
+-- #56 Collection Size Constraint in Doctor
+-- Difficulty: easy
+context Doctor
+inv: self.appointments->size() = 1
+
+-- #57 Collection Not Empty (Simple) in Department
+-- Difficulty: easy
+context Department
+inv: self.doctors->notEmpty()
+
+-- #58 Collection Nested Collection Flatten in Ward
+-- Difficulty: difficult
+context Ward
+inv: self.rooms->collect(x | x.beds)->size() >= 1
+
+-- #59 Collection Nested Collection Flatten in Hospital
+-- Difficulty: difficult
+context Hospital
+inv: self.departments->collect(x | x.doctors)->size() >= 3
+
+-- #60 Collection Nested Collection Flatten in Department
+-- Difficulty: difficult
+context Department
+inv: self.doctors->collect(x | x.appointments)->size() >= 3
+
+-- #61 Collection As Sequence Conversion in Hospital
+-- Difficulty: medium
+context Hospital
+inv: self.wards->asSequence()->notEmpty()
+
+-- #62 Collection Must Be Empty in MedicalRecord
+-- Difficulty: easy
+context MedicalRecord
+inv: self.procedures->isEmpty()
+
+-- #63 Collection Maximum Size in Patient
+-- Difficulty: medium
+context Patient
+inv: self.appointments->size() <= 2
+
+-- #64 Collection Nested Collection Flatten in Patient
+-- Difficulty: difficult
+context Patient
+inv: self.records->collect(x | x.diagnoses)->size() >= 1
+

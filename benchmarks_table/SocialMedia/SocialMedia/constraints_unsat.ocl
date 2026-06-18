@@ -1,0 +1,65 @@
+-- Benchmark: SocialMedia / balanced
+-- Type: UNSAT Constraints Only
+-- Generated: 2026-06-18T17:24:29.974871
+-- Count: 10
+
+-- #1 Collection Nested Collection Flatten (UNSAT) in Conversation
+-- Difficulty: difficult
+-- Mutation Strategy: self_contradiction
+context Conversation
+inv: (self.participants->collect(x | x.posts)->size() >= 2) and (not(self.participants->collect(x | x.posts)->size() >= 2))
+
+-- #2 Navigation Chain (UNSAT) in Membership
+-- Difficulty: medium
+-- Mutation Strategy: self_contradiction
+context Membership
+inv: (self.user.profile.fullName <> '') and (not(self.user.profile.fullName <> ''))
+
+-- #3 Attribute Not Null (Simple) (UNSAT) in Notification
+-- Difficulty: medium
+-- Mutation Strategy: self_contradiction
+context Notification
+inv: ((self.type <> null) and (self.message.size() = 36)) and (not((self.type <> null) and (self.message.size() = 36)))
+
+-- #4 Any Operation (UNSAT) in Post
+-- Difficulty: difficult
+-- Mutation Strategy: self_contradiction
+context Post
+inv: (self.media->any(x | x.url <> '') <> null) and (not(self.media->any(x | x.url <> '') <> null))
+
+-- #5 Navigation Chain (UNSAT) in Notification
+-- Difficulty: medium
+-- Mutation Strategy: self_contradiction
+context Notification
+inv: (self.recipient.profile.bio <> '') and (not(self.recipient.profile.bio <> ''))
+
+-- #6 Navigation Chain (UNSAT) in Profile
+-- Difficulty: medium
+-- Mutation Strategy: self_contradiction
+context Profile
+inv: (self.user.profile.fullName <> '') and (not(self.user.profile.fullName <> ''))
+
+-- #7 Association Exists (UNSAT) in Message
+-- Difficulty: easy
+-- Mutation Strategy: self_contradiction
+context Message
+inv: (self.sender <> null) and (not(self.sender <> null))
+
+-- #8 Navigation Chain (UNSAT) in Message
+-- Difficulty: medium
+-- Mutation Strategy: self_contradiction
+context Message
+inv: (self.sender.profile.fullName <> '') and (not(self.sender.profile.fullName <> ''))
+
+-- #9 Collection Not Empty Check (UNSAT) in Conversation
+-- Difficulty: easy
+-- Mutation Strategy: empty_collection
+context Conversation
+inv: (self.messages->size() > 0) and (self.messages->size() <= 0)
+
+-- #10 Any Operation (UNSAT) in Conversation
+-- Difficulty: difficult
+-- Mutation Strategy: self_contradiction
+context Conversation
+inv: (self.participants->any(x | x.createdAt <> '') <> null) and (not(self.participants->any(x | x.createdAt <> '') <> null))
+

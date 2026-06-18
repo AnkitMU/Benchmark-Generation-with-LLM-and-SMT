@@ -242,8 +242,9 @@ def enrich_constraint_metadata(
         weights=_complexity_weights,
     )
 
-    # Difficulty derived from TC
-    difficulty = tc_to_difficulty_label(complexity_result.tc)
+    # Difficulty: prefer the steered complexity-profile label (e.g. easy/medium/
+    # difficult) when present; otherwise derive it from Total Complexity.
+    difficulty = constraint.metadata.get('profile') or tc_to_difficulty_label(complexity_result.tc)
 
     # Update metadata dict (preserve existing metadata)
     constraint.metadata.update({

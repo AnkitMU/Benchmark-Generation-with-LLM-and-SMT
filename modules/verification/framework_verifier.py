@@ -12,8 +12,8 @@ import time
 from modules.core.models import OCLConstraint, Metamodel
 
 
-# Add framework to path
-FRAMEWORK_PATH = Path(__file__).parent.parent.parent.parent / "hybrid-ssr-ocl-full-extended"
+# Add the bundled framework checkout in this repository to the import path.
+FRAMEWORK_PATH = Path(__file__).parent.parent.parent / "hybrid-ssr-ocl-full-extended"
 if FRAMEWORK_PATH.exists():
     sys.path.insert(0, str(FRAMEWORK_PATH / "src"))
 
@@ -71,16 +71,36 @@ _PATTERN_ID_TO_Z3 = {
     'collection_min_size_unsat': 'size_constraint',
     'collection_max_size': 'size_constraint',
     'collection_max_size_unsat': 'size_constraint',
-    # String operations
+    # String operations — size, substring, toUpper, toLower, indexOf
     'string_max_length': 'string_operations',
+    'string_max_length_unsat': 'string_operations',
     'string_min_length': 'string_operations',
     'string_min_length_unsat': 'string_operations',
     'string_exact_length': 'string_operations',
     'string_exact_length_unsat': 'string_operations',
     'string_not_empty': 'string_operations',
+    'string_not_empty_unsat': 'string_operations',
+    'string_to_upper_equals': 'string_operations',
+    'string_to_upper_equals_unsat': 'string_operations',
+    'string_to_lower_equals': 'string_operations',
+    'string_to_lower_equals_unsat': 'string_operations',
+    'string_operation': 'string_operations',
+    'string_operation_unsat': 'string_operations',
+    # String patterns — matches, indexOf, startsWith, contains
     'string_starts_with': 'string_pattern',
+    'string_starts_with_unsat': 'string_pattern',
     'string_contains_substring': 'string_pattern',
     'string_contains_substring_unsat': 'string_pattern',
+    'string_pattern': 'string_pattern',
+    'string_pattern_unsat': 'string_pattern',
+    # String concat
+    'string_concat_check': 'string_concat',
+    'string_concat_check_unsat': 'string_concat',
+    # String comparison / equality
+    'string_comparison': 'string_comparison',
+    'string_comparison_unsat': 'string_comparison',
+    'string_equality': 'string_comparison',
+    'string_equality_unsat': 'string_comparison',
     # Set operations
     'difference_operation': 'symmetric_difference',
     'union_operation': 'union_intersection',
@@ -107,6 +127,8 @@ _PATTERN_ID_TO_Z3 = {
     'numeric_greater_than_value': 'numeric_comparison',
     'numeric_even': 'arithmetic_expression',
     'numeric_odd': 'arithmetic_expression',
+    # Type casting (oclAsType shorthand used in patterns_revised.json)
+    'oclAsType': 'ocl_as_type',
     # Already matching (no mapping needed, but listed for completeness)
     'size_constraint': 'size_constraint',
     'uniqueness_constraint': 'uniqueness_constraint',
@@ -125,8 +147,14 @@ class FrameworkConstraintVerifier:
     - Pattern-based constraint handling
     """
     
-    def __init__(self, metamodel: Metamodel, xmi_path: str,
-                 scope_per_class: int = 2, timeout_ms: int = 15000):
+    def __init__(
+        self,
+        metamodel: Metamodel,
+        xmi_path: str,
+        scope_per_class: int = 2,
+        timeout_ms: int = 15000,
+        batch_timeout_ms: Optional[int] = None,
+    ):
         """
         Initialize verifier with framework.
 
@@ -134,12 +162,14 @@ class FrameworkConstraintVerifier:
             metamodel: Metamodel object (for compatibility)
             xmi_path: Path to XMI file (needed by framework)
             scope_per_class: Bounded scope — max instances per class for Z3
-            timeout_ms: Z3 solver timeout in milliseconds
+            timeout_ms: Z3 solver timeout for single-constraint checks in milliseconds
+            batch_timeout_ms: Z3 solver timeout for batch/global checks in milliseconds
         """
         self.metamodel = metamodel
         self.xmi_path = xmi_path
         self.scope_per_class = scope_per_class
         self.timeout_ms = timeout_ms
+        self.batch_timeout_ms = batch_timeout_ms or timeout_ms
         self.framework_available = False
         self.unavailable_reason: Optional[str] = None
         self.checker = None
@@ -230,8 +260,9 @@ class FrameworkConstraintVerifier:
         try:
             # Prepare constraint for framework with mapped pattern ID
             z3_pattern = _PATTERN_ID_TO_Z3.get(constraint.pattern_id, constraint.pattern_id)
+            unique_name = f"{constraint.pattern_name}__single"
             constraint_dict = {
-                'name': constraint.pattern_name,
+                'name': unique_name,
                 'pattern': z3_pattern,
                 'context': constraint.context,
                 'text': constraint.ocl
@@ -240,26 +271,41 @@ class FrameworkConstraintVerifier:
             # Determine scope (how many instances to check)
             scope = self._get_verification_scope()
             
-            # Verify using framework
-            solver_result, model = self.checker.verify_all_constraints(
+            # Single-constraint checks use the tighter per-constraint timeout.
+            # Always silent — model dumps are not useful in batch pipelines.
+            solver_result, model = self._run_checker(
                 constraints=[constraint_dict],
-                scope=scope
+                scope=scope,
+                silent=True,
+                timeout_ms=self.timeout_ms,
             )
-            
-            result.solver_result = solver_result
-            
-            if solver_result == 'sat':
-                result.is_valid = True
-                result.is_satisfiable = True
-            elif solver_result == 'unsat':
-                result.is_valid = True  # Syntactically valid
-                result.is_satisfiable = False
-                result.warnings.append("Constraint is unsatisfiable")
-            elif solver_result == 'unknown':
+
+            status = self.checker.constraint_status.get(unique_name, 'unknown')
+
+            if status == 'error':
+                result.is_valid = False
+                result.solver_result = 'error'
+                result.errors.append("Encoding error — not verified by Z3")
+            elif status == 'encoded':
+                result.solver_result = solver_result
+
+                if solver_result == 'sat':
+                    result.is_valid = True
+                    result.is_satisfiable = True
+                elif solver_result == 'unsat':
+                    result.is_valid = True  # Syntactically valid
+                    result.is_satisfiable = False
+                    result.warnings.append("Constraint is unsatisfiable")
+                elif solver_result == 'unknown':
+                    result.is_valid = True
+                    result.is_satisfiable = None
+                    result.warnings.append("Verification timeout or unknown")
+            else:
                 result.is_valid = True
                 result.is_satisfiable = None
-                result.warnings.append("Verification timeout or unknown")
-            
+                result.solver_result = 'unknown'
+                result.warnings.append("Constraint not found in encoder status")
+
         except Exception as e:
             result.is_valid = False
             result.errors.append(f"Framework verification error: {str(e)}")
@@ -308,23 +354,13 @@ class FrameworkConstraintVerifier:
             if not silent:
                 print(f"\nVerifying {len(constraints)} constraints for global consistency...")
 
-            # Verify all together - suppress output if silent mode
-            if silent:
-                import sys, io
-                old_stdout = sys.stdout
-                sys.stdout = io.StringIO()
-                try:
-                    solver_result, model = self.checker.verify_all_constraints(
-                        constraints=constraint_dicts,
-                        scope=scope
-                    )
-                finally:
-                    sys.stdout = old_stdout
-            else:
-                solver_result, model = self.checker.verify_all_constraints(
-                    constraints=constraint_dicts,
-                    scope=scope
-                )
+            # Global checks use the configured batch timeout.
+            solver_result, model = self._run_checker(
+                constraints=constraint_dicts,
+                scope=scope,
+                silent=silent,
+                timeout_ms=self.batch_timeout_ms,
+            )
 
             # Create results for each constraint using unique name for status lookup.
             # The global solver_result only applies to constraints that were
@@ -418,9 +454,11 @@ class FrameworkConstraintVerifier:
             
             scope = self._get_verification_scope()
             
-            solver_result, model = self.checker.verify_all_constraints(
+            solver_result, model = self._run_checker(
                 constraints=constraint_dicts,
-                scope=scope
+                scope=scope,
+                silent=False,
+                timeout_ms=self.batch_timeout_ms,
             )
             
             return {
@@ -436,6 +474,37 @@ class FrameworkConstraintVerifier:
                 'verified': False,
                 'error': str(e)
             }
+
+    def _run_checker(
+        self,
+        constraints: List[Dict],
+        scope: Dict,
+        silent: bool,
+        timeout_ms: Optional[int],
+    ):
+        """Run the underlying framework checker with an optional timeout override."""
+        import contextlib
+        import os
+
+        checker_timeout = getattr(self.checker, "timeout_ms", None)
+        if timeout_ms is not None:
+            self.checker.timeout_ms = timeout_ms
+
+        try:
+            if silent:
+                with open(os.devnull, "w") as devnull, contextlib.redirect_stdout(devnull):
+                    return self.checker.verify_all_constraints(
+                        constraints=constraints,
+                        scope=scope,
+                    )
+
+            return self.checker.verify_all_constraints(
+                constraints=constraints,
+                scope=scope,
+            )
+        finally:
+            if timeout_ms is not None:
+                self.checker.timeout_ms = checker_timeout
     
     def _get_verification_scope(self) -> Dict:
         """

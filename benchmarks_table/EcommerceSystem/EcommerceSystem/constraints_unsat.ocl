@@ -1,0 +1,95 @@
+-- Benchmark: EcommerceSystem / balanced
+-- Type: UNSAT Constraints Only
+-- Generated: 2026-06-18T17:27:56.533245
+-- Count: 15
+
+-- #1 Association Exists (UNSAT) in CartItem
+-- Difficulty: easy
+-- Mutation Strategy: self_contradiction
+context CartItem
+inv: (self.variant <> null) and (not(self.variant <> null))
+
+-- #2 Association Exists (UNSAT) in OrderItem
+-- Difficulty: easy
+-- Mutation Strategy: self_contradiction
+context OrderItem
+inv: (self.variant <> null) and (not(self.variant <> null))
+
+-- #3 Numeric Multiple Of (UNSAT) in Review
+-- Difficulty: easy
+-- Mutation Strategy: self_contradiction
+context Review
+inv: (self.rating mod 5 = 0) and (not(self.rating mod 5 = 0))
+
+-- #4 Numeric Attribute Bounded (UNSAT) in Payment
+-- Difficulty: medium
+-- Mutation Strategy: contradictory_bounds
+context Payment
+inv: (self.amount >= 42 and self.amount <= 96) and (self.amount < 42)
+
+-- #5 Collection Has Specific Size (UNSAT) in Customer
+-- Difficulty: easy
+-- Mutation Strategy: self_contradiction
+context Customer
+inv: (self.addresses->size() = 3) and (not(self.addresses->size() = 3))
+
+-- #6 Association Exists (UNSAT) in Payment
+-- Difficulty: medium
+-- Mutation Strategy: self_contradiction
+context Payment
+inv: ((self.order <> null) and (self.paidAt.size() = 22)) and (not((self.order <> null) and (self.paidAt.size() = 22)))
+
+-- #7 Numeric Attribute Non-Negative (UNSAT) in Review
+-- Difficulty: easy
+-- Mutation Strategy: contradictory_bounds
+context Review
+inv: (self.rating >= 0) and (self.rating < 0)
+
+-- #8 Collection Navigation (UNSAT) in Cart
+-- Difficulty: difficult
+-- Mutation Strategy: self_contradiction
+context Cart
+inv: (self.items->exists(x | x.quantity >= 10)) and (not(self.items->exists(x | x.quantity >= 10)))
+
+-- #9 Association Exists (UNSAT) in InventoryItem
+-- Difficulty: easy
+-- Mutation Strategy: self_contradiction
+context InventoryItem
+inv: (self.variant <> null) and (not(self.variant <> null))
+
+-- #10 Collection Navigation (UNSAT) in Store
+-- Difficulty: difficult
+-- Mutation Strategy: self_contradiction
+context Store
+inv: (self.coupons->exists(x | x.code <> '')) and (not(self.coupons->exists(x | x.code <> '')))
+
+-- #11 Numeric Absolute Value Bounded (UNSAT) in ProductVariant
+-- Difficulty: medium
+-- Mutation Strategy: self_contradiction
+context ProductVariant
+inv: (self.priceDelta.abs() <= 6) and (not(self.priceDelta.abs() <= 6))
+
+-- #12 Collection Size Constraint (UNSAT) in Category
+-- Difficulty: medium
+-- Mutation Strategy: self_contradiction
+context Category
+inv: (self.products->size() <> 1) and (not(self.products->size() <> 1))
+
+-- #13 Collection Nested Collection Flatten (UNSAT) in Store
+-- Difficulty: difficult
+-- Mutation Strategy: self_contradiction
+context Store
+inv: (self.products->collect(x | x.variants)->size() >= 1) and (not(self.products->collect(x | x.variants)->size() >= 1))
+
+-- #14 Collection Not Empty (Simple) (UNSAT) in Coupon
+-- Difficulty: easy
+-- Mutation Strategy: empty_collection
+context Coupon
+inv: (self.orders->notEmpty()) and (self.orders->isEmpty())
+
+-- #15 Numeric Greater Than Value (UNSAT) in CartItem
+-- Difficulty: easy
+-- Mutation Strategy: contradictory_bounds
+context CartItem
+inv: (self.quantity > 68) and (self.quantity < 63)
+

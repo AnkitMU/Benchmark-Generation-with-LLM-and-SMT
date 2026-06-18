@@ -1,0 +1,77 @@
+-- Benchmark: Social Media / balanced
+-- Type: UNSAT Constraints Only
+-- Generated: 2026-06-18T19:20:13.957670
+-- Count: 12
+
+-- #1 Navigation Chain (UNSAT) in Comment
+-- Difficulty: medium
+-- Mutation Strategy: self_contradiction
+context Comment
+inv: (self.post.author.username <> '') and (not(self.post.author.username <> ''))
+
+-- #2 Collection Navigation (UNSAT) in Post
+-- Difficulty: difficult
+-- Mutation Strategy: self_contradiction
+context Post
+inv: (self.reactions->forAll(x | x.createdAt <> '')) and (not(self.reactions->forAll(x | x.createdAt <> '')))
+
+-- #3 Navigation Chain (UNSAT) in Media
+-- Difficulty: medium
+-- Mutation Strategy: self_contradiction
+context Media
+inv: (self.post.author.email <> '') and (not(self.post.author.email <> ''))
+
+-- #4 Collection Size in Range (UNSAT) in Conversation
+-- Difficulty: medium
+-- Mutation Strategy: contradictory_bounds
+context Conversation
+inv: ((self.messages->size() <= 3)) and (self.messages->size() > 3)
+
+-- #5 Collection Maximum Size (UNSAT) in Tag
+-- Difficulty: medium
+-- Mutation Strategy: contradictory_bounds
+context Tag
+inv: (self.posts->size() <= 1) and (self.posts->size() > 1)
+
+-- #6 Collection Not Empty Check (UNSAT) in Group
+-- Difficulty: easy
+-- Mutation Strategy: empty_collection
+context Group
+inv: (self.memberships->size() > 0) and (self.memberships->size() <= 0)
+
+-- #7 Collection Size in Range (UNSAT) in Tag
+-- Difficulty: medium
+-- Mutation Strategy: contradictory_bounds
+context Tag
+inv: ((self.posts->size() <= 1)) and (self.posts->size() > 1)
+
+-- #8 Navigation Chain (UNSAT) in Notification
+-- Difficulty: medium
+-- Mutation Strategy: self_contradiction
+context Notification
+inv: (self.recipient.profile.fullName <> '') and (not(self.recipient.profile.fullName <> ''))
+
+-- #9 Association Exists (UNSAT) in Message
+-- Difficulty: medium
+-- Mutation Strategy: self_contradiction
+context Message
+inv: ((self.sender <> null) and (self.isRead = true)) and (not((self.sender <> null) and (self.isRead = true)))
+
+-- #10 Navigation Chain (UNSAT) in Follow
+-- Difficulty: medium
+-- Mutation Strategy: self_contradiction
+context Follow
+inv: (self.follower.profile.fullName <> '') and (not(self.follower.profile.fullName <> ''))
+
+-- #11 Collection Size in Range (UNSAT) in Group
+-- Difficulty: medium
+-- Mutation Strategy: contradictory_bounds
+context Group
+inv: ((self.memberships->size() <= 2)) and (self.memberships->size() > 2)
+
+-- #12 Collection Nested Collection Flatten (UNSAT) in Tag
+-- Difficulty: difficult
+-- Mutation Strategy: self_contradiction
+context Tag
+inv: (self.posts->collect(x | x.comments)->size() >= 3) and (not(self.posts->collect(x | x.comments)->size() >= 3))
+

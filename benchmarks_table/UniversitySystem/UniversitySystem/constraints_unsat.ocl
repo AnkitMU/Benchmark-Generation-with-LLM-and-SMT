@@ -1,0 +1,101 @@
+-- Benchmark: UniversitySystem / balanced
+-- Type: UNSAT Constraints Only
+-- Generated: 2026-06-18T17:29:06.652839
+-- Count: 16
+
+-- #1 Navigation Chain (UNSAT) in Course
+-- Difficulty: medium
+-- Mutation Strategy: self_contradiction
+context Course
+inv: (self.department.faculty.name <> '') and (not(self.department.faculty.name <> ''))
+
+-- #2 Numeric Absolute Value Bounded (UNSAT) in Program
+-- Difficulty: medium
+-- Mutation Strategy: self_contradiction
+context Program
+inv: (self.durationYears.abs() <= 8) and (not(self.durationYears.abs() <= 8))
+
+-- #3 Collection Navigation (UNSAT) in Student
+-- Difficulty: difficult
+-- Mutation Strategy: self_contradiction
+context Student
+inv: (self.scholarships->forAll(x | x.startYear > 5)) and (not(self.scholarships->forAll(x | x.startYear > 5)))
+
+-- #4 Collection Sum (UNSAT) in CourseOffering
+-- Difficulty: difficult
+-- Mutation Strategy: self_contradiction
+context CourseOffering
+inv: (self.exams->collect(x | x.maxMarks)->sum() >= 4) and (not(self.exams->collect(x | x.maxMarks)->sum() >= 4))
+
+-- #5 Association Exists (UNSAT) in Exam
+-- Difficulty: medium
+-- Mutation Strategy: self_contradiction
+context Exam
+inv: ((self.offering <> null) and (self.attempts->size() > 1)) and (not((self.offering <> null) and (self.attempts->size() > 1)))
+
+-- #6 Numeric Sum Constraint (UNSAT) in Scholarship
+-- Difficulty: easy
+-- Mutation Strategy: self_contradiction
+context Scholarship
+inv: (self.endYear + self.startYear > 45) and (not(self.endYear + self.startYear > 45))
+
+-- #7 Association Exists (UNSAT) in GradeRecord
+-- Difficulty: medium
+-- Mutation Strategy: self_contradiction
+context GradeRecord
+inv: ((self.enrollment <> null) and (self.letterGrade.toLowerCase() = 'test')) and (not((self.enrollment <> null) and (self.letterGrade.toLowerCase() = 'test')))
+
+-- #8 Collection Navigation (UNSAT) in Course
+-- Difficulty: difficult
+-- Mutation Strategy: self_contradiction
+context Course
+inv: (self.offerings->forAll(x | x.capacity >= 0)) and (not(self.offerings->forAll(x | x.capacity >= 0)))
+
+-- #9 Collection Not Empty Check (UNSAT) in Department
+-- Difficulty: easy
+-- Mutation Strategy: empty_collection
+context Department
+inv: (self.instructors->size() > 0) and (self.instructors->size() <= 0)
+
+-- #10 Existential Quantification (exists) (UNSAT) in Instructor
+-- Difficulty: difficult
+-- Mutation Strategy: self_contradiction
+context Instructor
+inv: (self.offerings->exists(x | x.capacity > 10)) and (not(self.offerings->exists(x | x.capacity > 10)))
+
+-- #11 Existential Quantification (exists) (UNSAT) in Semester
+-- Difficulty: difficult
+-- Mutation Strategy: self_contradiction
+context Semester
+inv: (self.offerings->exists(x | x.capacity <= 100)) and (not(self.offerings->exists(x | x.capacity <= 100)))
+
+-- #12 Numeric Absolute Value Bounded (UNSAT) in ExamAttempt
+-- Difficulty: medium
+-- Mutation Strategy: self_contradiction
+context ExamAttempt
+inv: (self.marks.abs() <= 1) and (not(self.marks.abs() <= 1))
+
+-- #13 Numeric Sum Constraint (UNSAT) in Scholarship
+-- Difficulty: easy
+-- Mutation Strategy: self_contradiction
+context Scholarship
+inv: (self.startYear + self.endYear > 9) and (not(self.startYear + self.endYear > 9))
+
+-- #14 Maximum Of Two Attributes (UNSAT) in Scholarship
+-- Difficulty: medium
+-- Mutation Strategy: self_contradiction
+context Scholarship
+inv: ((if self.endYear > self.startYear then self.endYear else self.startYear endif > 75) and (self.endYear mod 8 = 0)) and (not((if self.endYear > self.startYear then self.endYear else self.startYear endif > 75) and (self.endYear mod 8 = 0)))
+
+-- #15 Association Exists (UNSAT) in Enrollment
+-- Difficulty: medium
+-- Mutation Strategy: self_contradiction
+context Enrollment
+inv: ((self.student <> null) and (self.enrolledAt.size() <= 28)) and (not((self.student <> null) and (self.enrolledAt.size() <= 28)))
+
+-- #16 Collection Sum (UNSAT) in Program
+-- Difficulty: difficult
+-- Mutation Strategy: self_contradiction
+context Program
+inv: (self.students->collect(x | x.yearOfStudy)->sum() >= 1) and (not(self.students->collect(x | x.yearOfStudy)->sum() >= 1))
+

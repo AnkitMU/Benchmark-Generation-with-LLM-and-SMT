@@ -1,0 +1,4331 @@
+{
+  "metadata": {
+    "suite": "OCL-Steered-FiveKnob",
+    "model": "CarRental",
+    "profile": "balanced",
+    "generated_at": "2026-06-18T17:11:29.890888",
+    "seed": 42,
+    "complexity": "standard",
+    "framework_version": "2.0",
+    "git_commit": "f5167bb85a81f70f696ae7e50213435cbca49baf",
+    "constraint_count": 73,
+    "research_features_enabled": true,
+    "consistency_verified": true,
+    "scope_per_class": 6
+  },
+  "constraints": [
+    {
+      "ocl": "context Customer\ninv: self.license <> null",
+      "pattern_id": "association_exists",
+      "pattern_name": "Association Exists",
+      "context": "Customer",
+      "parameters": {
+        "association": "license"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T17:10:50.308669",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 1,
+        "generation_number": 3298,
+        "profile": "easy",
+        "operators_used": [
+          "<",
+          "<>",
+          ">"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 1.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.0,
+            "vrc": 0,
+            "wno": 3.0,
+            "wnm": 0.0,
+            "total": 4.0
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 7.0
+        },
+        "semantic_cluster": 0,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Payment\ninv: (self.rental <> null) and (if self.amount > self.tax then self.amount else self.tax endif > 46)",
+      "pattern_id": "association_exists",
+      "pattern_name": "Association Exists",
+      "context": "Payment",
+      "parameters": {
+        "association": "rental"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T17:10:50.310746",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 1,
+        "generation_number": 3305,
+        "profile": "medium",
+        "operators_used": [
+          "<",
+          "<>",
+          ">",
+          "and",
+          "else",
+          "endif",
+          "if",
+          "then"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 8,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 5.0,
+            "nnc_plus": 5.0,
+            "dn_ca": 1,
+            "wnc": 5.0,
+            "tnc": 3.8,
+            "vrc": 0,
+            "wno": 6.5,
+            "wnm": 0.0,
+            "total": 10.3
+          },
+          "computational": {
+            "oc": 6.5,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 6.5
+          },
+          "dependency": {
+            "ruc": 6,
+            "total": 6.0
+          },
+          "tc": 22.8
+        },
+        "semantic_cluster": 0,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Rental\ninv: self.vehicle <> null",
+      "pattern_id": "association_exists",
+      "pattern_name": "Association Exists",
+      "context": "Rental",
+      "parameters": {
+        "association": "vehicle"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T17:10:50.312978",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 1,
+        "generation_number": 3313,
+        "profile": "easy",
+        "operators_used": [
+          "<",
+          "<>",
+          ">"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 1.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.0,
+            "vrc": 0,
+            "wno": 3.0,
+            "wnm": 0.0,
+            "total": 4.0
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 7.0
+        },
+        "semantic_cluster": 0,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Reservation\ninv: (self.customer <> null) and (self.vehicle <> null)",
+      "pattern_id": "association_exists",
+      "pattern_name": "Association Exists",
+      "context": "Reservation",
+      "parameters": {
+        "association": "customer"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T17:10:50.316081",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 1,
+        "generation_number": 3322,
+        "profile": "medium",
+        "operators_used": [
+          "<",
+          "<>",
+          ">",
+          "and"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 4,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 1,
+            "wnc": 2.0,
+            "tnc": 1.7,
+            "vrc": 0,
+            "wno": 7.5,
+            "wnm": 0.0,
+            "total": 9.2
+          },
+          "computational": {
+            "oc": 7.5,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 7.5
+          },
+          "dependency": {
+            "ruc": 1,
+            "total": 1.0
+          },
+          "tc": 17.7
+        },
+        "semantic_cluster": 0,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Reservation\ninv: self.branch <> null",
+      "pattern_id": "association_exists",
+      "pattern_name": "Association Exists",
+      "context": "Reservation",
+      "parameters": {
+        "association": "branch"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T17:10:50.318197",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 1,
+        "generation_number": 3334,
+        "profile": "easy",
+        "operators_used": [
+          "<",
+          "<>",
+          ">"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 1.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.0,
+            "vrc": 0,
+            "wno": 3.0,
+            "wnm": 0.0,
+            "total": 4.0
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 7.0
+        },
+        "semantic_cluster": 1,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context License\ninv: self.customer <> null",
+      "pattern_id": "association_exists",
+      "pattern_name": "Association Exists",
+      "context": "License",
+      "parameters": {
+        "association": "customer"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T17:10:50.321411",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 1,
+        "generation_number": 3353,
+        "profile": "easy",
+        "operators_used": [
+          "<",
+          "<>",
+          ">"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 1.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.0,
+            "vrc": 0,
+            "wno": 3.0,
+            "wnm": 0.0,
+            "total": 4.0
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 7.0
+        },
+        "semantic_cluster": 0,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Rental\ninv: (self.payment <> null) and (self.branch.isOpen)",
+      "pattern_id": "association_exists",
+      "pattern_name": "Association Exists",
+      "context": "Rental",
+      "parameters": {
+        "association": "payment"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T17:10:50.326376",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 1,
+        "generation_number": 3377,
+        "profile": "medium",
+        "operators_used": [
+          "<",
+          "<>",
+          ">",
+          "and"
+        ],
+        "navigation_depth": 3,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 4,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 3.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 2,
+            "wnc": 3.0,
+            "tnc": 2.7,
+            "vrc": 0,
+            "wno": 4.5,
+            "wnm": 0.0,
+            "total": 7.2
+          },
+          "computational": {
+            "oc": 4.5,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 4.5
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 11.7
+        },
+        "semantic_cluster": 1,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Vehicle\ninv: (self.branch <> null) and (self.reservations->isEmpty())",
+      "pattern_id": "association_exists",
+      "pattern_name": "Association Exists",
+      "context": "Vehicle",
+      "parameters": {
+        "association": "branch"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T17:10:50.328560",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 1,
+        "generation_number": 3385,
+        "profile": "medium",
+        "operators_used": [
+          "-",
+          "<",
+          "<>",
+          ">",
+          "and",
+          "isEmpty"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 6,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 3.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 1,
+            "wnc": 2.0,
+            "tnc": 2.1,
+            "vrc": 0,
+            "wno": 5.5,
+            "wnm": 1.0,
+            "total": 8.6
+          },
+          "computational": {
+            "oc": 5.5,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 5.5
+          },
+          "dependency": {
+            "ruc": 2,
+            "total": 2.0
+          },
+          "tc": 16.1
+        },
+        "semantic_cluster": 1,
+        "implies": [
+          "size_constraint_Vehicle",
+          "collection_empty_check_Vehicle"
+        ]
+      }
+    },
+    {
+      "ocl": "context Customer\ninv: self.license.customer.depositAmount <= 100",
+      "pattern_id": "navigation_chain",
+      "pattern_name": "Navigation Chain",
+      "context": "Customer",
+      "parameters": {
+        "navigation_path": "self.license.customer.depositAmount <= 100"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T17:10:53.758202",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 2,
+        "generation_number": 3889,
+        "operators_used": [
+          "<",
+          "<=",
+          "="
+        ],
+        "navigation_depth": 4,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 3.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 3,
+            "wnc": 3.0,
+            "tnc": 3.0,
+            "vrc": 0,
+            "wno": 3.0,
+            "wnm": 0.0,
+            "total": 6.0
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 9.0
+        },
+        "semantic_cluster": 2,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Branch\ninv: self.company.isActive = false",
+      "pattern_id": "navigation_chain",
+      "pattern_name": "Navigation Chain",
+      "context": "Branch",
+      "parameters": {
+        "navigation_path": "self.company.isActive = false"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T17:10:50.358157",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 2,
+        "generation_number": 3556,
+        "profile": "easy",
+        "operators_used": [
+          "="
+        ],
+        "navigation_depth": 3,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 1,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 2,
+            "wnc": 2.0,
+            "tnc": 2.0,
+            "vrc": 0,
+            "wno": 1.0,
+            "wnm": 0.0,
+            "total": 3.0
+          },
+          "computational": {
+            "oc": 1.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 1.0
+          },
+          "dependency": {
+            "ruc": 1,
+            "total": 1.0
+          },
+          "tc": 5.0
+        },
+        "semantic_cluster": 3,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context License\ninv: self.customer.license.isValid = true",
+      "pattern_id": "navigation_chain",
+      "pattern_name": "Navigation Chain",
+      "context": "License",
+      "parameters": {
+        "navigation_path": "self.customer.license.isValid = true"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T17:10:54.695243",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 2,
+        "generation_number": 3891,
+        "operators_used": [
+          "="
+        ],
+        "navigation_depth": 4,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 1,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 3.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 3,
+            "wnc": 3.0,
+            "tnc": 3.0,
+            "vrc": 0,
+            "wno": 1.0,
+            "wnm": 0.0,
+            "total": 4.0
+          },
+          "computational": {
+            "oc": 1.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 1.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 5.0
+        },
+        "semantic_cluster": 0,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Branch\ninv: self.company.isActive <> true",
+      "pattern_id": "navigation_chain",
+      "pattern_name": "Navigation Chain",
+      "context": "Branch",
+      "parameters": {
+        "navigation_path": "self.company.isActive <> true"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T17:10:50.359900",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 2,
+        "generation_number": 3568,
+        "profile": "easy",
+        "operators_used": [
+          "<",
+          "<>",
+          ">"
+        ],
+        "navigation_depth": 3,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 2,
+            "wnc": 2.0,
+            "tnc": 2.0,
+            "vrc": 0,
+            "wno": 3.0,
+            "wnm": 0.0,
+            "total": 5.0
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 1,
+            "total": 1.0
+          },
+          "tc": 9.0
+        },
+        "semantic_cluster": 3,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Vehicle\ninv: self.branch.company.isActive <> false",
+      "pattern_id": "navigation_chain",
+      "pattern_name": "Navigation Chain",
+      "context": "Vehicle",
+      "parameters": {
+        "navigation_path": "self.branch.company.isActive <> false"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T17:10:55.251661",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 2,
+        "generation_number": 3892,
+        "operators_used": [
+          "<",
+          "<>",
+          ">"
+        ],
+        "navigation_depth": 4,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 3.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 3,
+            "wnc": 3.0,
+            "tnc": 3.0,
+            "vrc": 0,
+            "wno": 3.0,
+            "wnm": 0.0,
+            "total": 6.0
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 9.0
+        },
+        "semantic_cluster": 1,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Branch\ninv: self.vehicles->exists(x | x.horsepower <= 10)",
+      "pattern_id": "collection_navigation",
+      "pattern_name": "Collection Navigation",
+      "context": "Branch",
+      "parameters": {
+        "collection": "vehicles",
+        "operation": "exists",
+        "iterator": "x",
+        "nested": "horsepower <= 10"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T17:10:50.368213",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 3,
+        "generation_number": 3679,
+        "profile": "difficult",
+        "operators_used": [
+          "-",
+          "<",
+          "<=",
+          "=",
+          ">",
+          "exists"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "difficult",
+        "operator_count": 6,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 3.0,
+            "wnc": 5.0,
+            "tnc": 4.0,
+            "vrc": 1,
+            "wno": 7.0,
+            "wnm": 1.0,
+            "total": 13.0
+          },
+          "computational": {
+            "oc": 7.0,
+            "tcc": 0.0,
+            "cic": 3.0,
+            "total": 10.0
+          },
+          "dependency": {
+            "ruc": 5,
+            "total": 5.0
+          },
+          "tc": 28.0
+        },
+        "semantic_cluster": 4,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Vehicle\ninv: self.rentals->forAll(x | x.lateFee >= 1)",
+      "pattern_id": "collection_navigation",
+      "pattern_name": "Collection Navigation",
+      "context": "Vehicle",
+      "parameters": {
+        "collection": "rentals",
+        "operation": "forAll",
+        "iterator": "x",
+        "nested": "lateFee >= 1"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T17:10:50.368622",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 3,
+        "generation_number": 3680,
+        "profile": "difficult",
+        "operators_used": [
+          "-",
+          "=",
+          ">",
+          ">=",
+          "forAll"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "difficult",
+        "operator_count": 5,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 3.0,
+            "wnc": 5.0,
+            "tnc": 4.0,
+            "vrc": 1,
+            "wno": 7.0,
+            "wnm": 1.0,
+            "total": 13.0
+          },
+          "computational": {
+            "oc": 7.0,
+            "tcc": 0.0,
+            "cic": 3.0,
+            "total": 10.0
+          },
+          "dependency": {
+            "ruc": 4,
+            "total": 4.0
+          },
+          "tc": 27.0
+        },
+        "semantic_cluster": 5,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Customer\ninv: self.license.customer.age < 100",
+      "pattern_id": "navigation_chain",
+      "pattern_name": "Navigation Chain",
+      "context": "Customer",
+      "parameters": {
+        "navigation_path": "self.license.customer.age < 100"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T17:10:56.358565",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 2,
+        "generation_number": 3894,
+        "operators_used": [
+          "<"
+        ],
+        "navigation_depth": 4,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 1,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 3.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 3,
+            "wnc": 3.0,
+            "tnc": 3.0,
+            "vrc": 0,
+            "wno": 1.0,
+            "wnm": 0.0,
+            "total": 4.0
+          },
+          "computational": {
+            "oc": 1.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 1.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 5.0
+        },
+        "semantic_cluster": 2,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Company\ninv: self.branches->exists(x | x.staffCount >= 5)",
+      "pattern_id": "collection_navigation",
+      "pattern_name": "Collection Navigation",
+      "context": "Company",
+      "parameters": {
+        "collection": "branches",
+        "operation": "exists",
+        "iterator": "x",
+        "nested": "staffCount >= 5"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T17:10:50.370991",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 3,
+        "generation_number": 3685,
+        "profile": "difficult",
+        "operators_used": [
+          "-",
+          "=",
+          ">",
+          ">=",
+          "exists"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "difficult",
+        "operator_count": 5,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 3.0,
+            "wnc": 5.0,
+            "tnc": 4.0,
+            "vrc": 1,
+            "wno": 7.0,
+            "wnm": 1.0,
+            "total": 13.0
+          },
+          "computational": {
+            "oc": 7.0,
+            "tcc": 0.0,
+            "cic": 3.0,
+            "total": 10.0
+          },
+          "dependency": {
+            "ruc": 7,
+            "total": 7.0
+          },
+          "tc": 30.0
+        },
+        "semantic_cluster": 1,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Payment\ninv: self.rental.branch.capacity <= 50",
+      "pattern_id": "navigation_chain",
+      "pattern_name": "Navigation Chain",
+      "context": "Payment",
+      "parameters": {
+        "navigation_path": "self.rental.branch.capacity <= 50"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T17:10:50.371366",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 2,
+        "generation_number": 3686,
+        "profile": "medium",
+        "operators_used": [
+          "<",
+          "<=",
+          "="
+        ],
+        "navigation_depth": 4,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 3.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 3,
+            "wnc": 3.0,
+            "tnc": 3.0,
+            "vrc": 0,
+            "wno": 3.0,
+            "wnm": 0.0,
+            "total": 6.0
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 9.0
+        },
+        "semantic_cluster": 5,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Rental\ninv: ((self.vehicle.isAvailable) and (self.branch.oclIsTypeOf(Branch))) and (self.mileageStart < 7)",
+      "pattern_id": "simple_navigation",
+      "pattern_name": "Simple Navigation",
+      "context": "Rental",
+      "parameters": {
+        "association": "vehicle",
+        "attribute": "isAvailable"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T17:10:50.382562",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 1,
+        "generation_number": 3793,
+        "profile": "medium",
+        "operators_used": [
+          "<",
+          "and",
+          "oclIsTypeOf"
+        ],
+        "navigation_depth": 3,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 5.0,
+            "nnc_plus": 5.0,
+            "dn_ca": 2,
+            "wnc": 5.0,
+            "tnc": 4.1,
+            "vrc": 0,
+            "wno": 4.0,
+            "wnm": 1.0,
+            "total": 9.1
+          },
+          "computational": {
+            "oc": 4.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 4.0
+          },
+          "dependency": {
+            "ruc": 1,
+            "total": 1.0
+          },
+          "tc": 14.1
+        },
+        "semantic_cluster": 4,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Company\ninv: self.branches->select(x | x.capacity > 0)->size() >= 1",
+      "pattern_id": "select_operation",
+      "pattern_name": "Select (Filter) Operation",
+      "context": "Company",
+      "parameters": {
+        "collection": "branches",
+        "iterator": "x",
+        "condition": "x.capacity > 0",
+        "result_operation": "->size() >= 1"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T17:10:50.385230",
+      "metadata": {
+        "category": "collection",
+        "complexity": 2,
+        "generation_number": 3804,
+        "profile": "difficult",
+        "operators_used": [
+          "-",
+          "=",
+          ">",
+          ">=",
+          "select",
+          "size"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "difficult",
+        "operator_count": 6,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 3.0,
+            "wnc": 5.0,
+            "tnc": 4.0,
+            "vrc": 1,
+            "wno": 8.0,
+            "wnm": 2.0,
+            "total": 15.0
+          },
+          "computational": {
+            "oc": 8.0,
+            "tcc": 0.0,
+            "cic": 2.0,
+            "total": 10.0
+          },
+          "dependency": {
+            "ruc": 7,
+            "total": 7.0
+          },
+          "tc": 32.0
+        },
+        "semantic_cluster": 1,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Customer\ninv: self.rentals->any(x | x.daysRented <= 1000) <> null",
+      "pattern_id": "any_operation",
+      "pattern_name": "Any Operation",
+      "context": "Customer",
+      "parameters": {
+        "collection": "rentals",
+        "iterator": "x",
+        "condition": "x.daysRented <= 1000"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T17:10:50.386317",
+      "metadata": {
+        "category": "collection",
+        "complexity": 2,
+        "generation_number": 3807,
+        "profile": "difficult",
+        "operators_used": [
+          "-",
+          "<",
+          "<=",
+          "<>",
+          "=",
+          ">",
+          "any"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "difficult",
+        "operator_count": 7,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 3.0,
+            "wnc": 5.0,
+            "tnc": 4.0,
+            "vrc": 1,
+            "wno": 7.0,
+            "wnm": 1.0,
+            "total": 13.0
+          },
+          "computational": {
+            "oc": 7.0,
+            "tcc": 0.0,
+            "cic": 2.0,
+            "total": 9.0
+          },
+          "dependency": {
+            "ruc": 5,
+            "total": 5.0
+          },
+          "tc": 27.0
+        },
+        "semantic_cluster": 5,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Branch\ninv: self.reservations->forAll(x | x.estimatedCost < 1000)",
+      "pattern_id": "forall_nested",
+      "pattern_name": "Universal Quantification (forAll)",
+      "context": "Branch",
+      "parameters": {
+        "collection": "reservations",
+        "iterator": "x",
+        "condition": "x.estimatedCost < 1000"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T17:10:58.753509",
+      "metadata": {
+        "category": "collection",
+        "complexity": 2,
+        "generation_number": 3895,
+        "operators_used": [
+          "-",
+          "<",
+          ">",
+          "forAll"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "difficult",
+        "operator_count": 4,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 3.0,
+            "wnc": 5.0,
+            "tnc": 4.0,
+            "vrc": 1,
+            "wno": 5.0,
+            "wnm": 1.0,
+            "total": 11.0
+          },
+          "computational": {
+            "oc": 5.0,
+            "tcc": 0.0,
+            "cic": 3.0,
+            "total": 8.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 19.0
+        },
+        "semantic_cluster": 6,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Customer\ninv: if self.balance > self.depositAmount then self.balance else self.depositAmount endif > 6",
+      "pattern_id": "numeric_max_of_two",
+      "pattern_name": "Maximum Of Two Attributes",
+      "context": "Customer",
+      "parameters": {
+        "first_numeric": "balance",
+        "second_numeric": "depositAmount",
+        "threshold": 6
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T17:10:59.042528",
+      "metadata": {
+        "category": "arithmetic",
+        "complexity": 2,
+        "generation_number": 3896,
+        "operators_used": [
+          ">",
+          "else",
+          "endif",
+          "if",
+          "then"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 5,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 4.0,
+            "dn_ca": 1,
+            "wnc": 4.0,
+            "tnc": 3.1,
+            "vrc": 0,
+            "wno": 2.0,
+            "wnm": 0.0,
+            "total": 5.1
+          },
+          "computational": {
+            "oc": 2.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 2.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 7.1
+        },
+        "semantic_cluster": 7,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Customer\ninv: self.balance > 0",
+      "pattern_id": "numeric_positive",
+      "pattern_name": "Numeric Attribute Positive",
+      "context": "Customer",
+      "parameters": {
+        "numeric_attribute": "balance"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T17:10:59.229957",
+      "metadata": {
+        "category": "arithmetic",
+        "complexity": 1,
+        "generation_number": 3897,
+        "operators_used": [
+          ">"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 1,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 1.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.0,
+            "vrc": 0,
+            "wno": 1.0,
+            "wnm": 0.0,
+            "total": 2.0
+          },
+          "computational": {
+            "oc": 1.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 1.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 3.0
+        },
+        "semantic_cluster": 7,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Branch\ninv: (self.staffCount < 10) and (self.vehicles->forAll(v | v.weightKg > 5))",
+      "pattern_id": "three_way_comparison",
+      "pattern_name": "Three Way Comparison",
+      "context": "Branch",
+      "parameters": {
+        "first_numeric": "staffCount",
+        "second_numeric": "capacity",
+        "third_numeric": "vehicleCount"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T17:10:50.391545",
+      "metadata": {
+        "category": "arithmetic",
+        "complexity": 3,
+        "generation_number": 3811,
+        "profile": "difficult",
+        "operators_used": [
+          "-",
+          "<",
+          ">",
+          "and",
+          "forAll"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "difficult",
+        "operator_count": 5,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 5.0,
+            "nnc_plus": 4.0,
+            "dn_ca": 3.0,
+            "wnc": 6.0,
+            "tnc": 4.7,
+            "vrc": 1,
+            "wno": 7.5,
+            "wnm": 1.0,
+            "total": 14.2
+          },
+          "computational": {
+            "oc": 7.5,
+            "tcc": 0.0,
+            "cic": 3.0,
+            "total": 10.5
+          },
+          "dependency": {
+            "ruc": 10,
+            "total": 10.0
+          },
+          "tc": 34.7
+        },
+        "semantic_cluster": 4,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Customer\ninv: self.age > 85",
+      "pattern_id": "numeric_greater_than_value",
+      "pattern_name": "Numeric Greater Than Value",
+      "context": "Customer",
+      "parameters": {
+        "numeric_attribute": "age",
+        "value": 85
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T17:10:59.791983",
+      "metadata": {
+        "category": "arithmetic",
+        "complexity": 1,
+        "generation_number": 3898,
+        "operators_used": [
+          ">"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 1,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 1.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.0,
+            "vrc": 0,
+            "wno": 1.0,
+            "wnm": 0.0,
+            "total": 2.0
+          },
+          "computational": {
+            "oc": 1.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 1.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 3.0
+        },
+        "semantic_cluster": 8,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Vehicle\ninv: self.year mod 7 = 0",
+      "pattern_id": "numeric_multiple_of",
+      "pattern_name": "Numeric Multiple Of",
+      "context": "Vehicle",
+      "parameters": {
+        "numeric_attribute": "year",
+        "divisor": 7
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T17:11:00.653687",
+      "metadata": {
+        "category": "arithmetic",
+        "complexity": 2,
+        "generation_number": 3900,
+        "operators_used": [
+          "=",
+          "mod"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 2,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 1.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.0,
+            "vrc": 0,
+            "wno": 2.0,
+            "wnm": 0.0,
+            "total": 3.0
+          },
+          "computational": {
+            "oc": 1.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 1.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 4.0
+        },
+        "semantic_cluster": 9,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Customer\ninv: self.rentals->collect(x | x.mileageEnd)->sum() >= 8",
+      "pattern_id": "collection_sum",
+      "pattern_name": "Collection Sum",
+      "context": "Customer",
+      "parameters": {
+        "collection": "rentals",
+        "numeric_attribute": "mileageEnd",
+        "min_sum": 8
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T17:10:50.395832",
+      "metadata": {
+        "category": "collection",
+        "complexity": 3,
+        "generation_number": 3814,
+        "profile": "difficult",
+        "operators_used": [
+          "-",
+          "=",
+          ">",
+          ">=",
+          "collect",
+          "sum"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "difficult",
+        "operator_count": 6,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 3.0,
+            "wnc": 5.0,
+            "tnc": 4.0,
+            "vrc": 1,
+            "wno": 7.0,
+            "wnm": 2.0,
+            "total": 14.0
+          },
+          "computational": {
+            "oc": 7.0,
+            "tcc": 0.0,
+            "cic": 2.0,
+            "total": 9.0
+          },
+          "dependency": {
+            "ruc": 5,
+            "total": 5.0
+          },
+          "tc": 28.0
+        },
+        "semantic_cluster": 4,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Company\ninv: self.branches->collect(x | x.reservations)->size() >= 3",
+      "pattern_id": "collection_collectNested",
+      "pattern_name": "Collection Nested Collection Flatten",
+      "context": "Company",
+      "parameters": {
+        "collection": "branches",
+        "nested_collection": "reservations",
+        "min_size": 3
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T17:10:50.396714",
+      "metadata": {
+        "category": "collection",
+        "complexity": 4,
+        "generation_number": 3815,
+        "profile": "difficult",
+        "operators_used": [
+          "-",
+          "=",
+          ">",
+          ">=",
+          "collect",
+          "size"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "difficult",
+        "operator_count": 6,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 3.0,
+            "wnc": 5.0,
+            "tnc": 4.0,
+            "vrc": 1,
+            "wno": 7.0,
+            "wnm": 2.0,
+            "total": 14.0
+          },
+          "computational": {
+            "oc": 7.0,
+            "tcc": 0.0,
+            "cic": 2.0,
+            "total": 9.0
+          },
+          "dependency": {
+            "ruc": 7,
+            "total": 7.0
+          },
+          "tc": 30.0
+        },
+        "semantic_cluster": 1,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Branch\ninv: self.reservations->excluding(self.reservations->any(true))->size() < self.reservations->size()",
+      "pattern_id": "collection_excluding",
+      "pattern_name": "Collection Excluding Element",
+      "context": "Branch",
+      "parameters": {
+        "collection": "reservations",
+        "element": "vehicles"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T17:11:01.806828",
+      "metadata": {
+        "category": "collection",
+        "complexity": 3,
+        "generation_number": 3901,
+        "operators_used": [
+          "-",
+          "<",
+          ">",
+          "any",
+          "excluding",
+          "size"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "difficult",
+        "operator_count": 6,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 6.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 1,
+            "wnc": 3.0,
+            "tnc": 3.6,
+            "vrc": 0,
+            "wno": 5.0,
+            "wnm": 4.0,
+            "total": 12.6
+          },
+          "computational": {
+            "oc": 5.0,
+            "tcc": 0.0,
+            "cic": 2.0,
+            "total": 7.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 19.6
+        },
+        "semantic_cluster": 6,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Company\ninv: self.branches->excluding(self.branches->any(true))->size() < self.branches->size()",
+      "pattern_id": "collection_excluding",
+      "pattern_name": "Collection Excluding Element",
+      "context": "Company",
+      "parameters": {
+        "collection": "branches",
+        "element": "branches"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T17:11:02.197251",
+      "metadata": {
+        "category": "collection",
+        "complexity": 3,
+        "generation_number": 3902,
+        "operators_used": [
+          "-",
+          "<",
+          ">",
+          "any",
+          "excluding",
+          "size"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "difficult",
+        "operator_count": 6,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 6.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 1,
+            "wnc": 3.0,
+            "tnc": 3.6,
+            "vrc": 0,
+            "wno": 5.0,
+            "wnm": 4.0,
+            "total": 12.6
+          },
+          "computational": {
+            "oc": 5.0,
+            "tcc": 0.0,
+            "cic": 2.0,
+            "total": 7.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 19.6
+        },
+        "semantic_cluster": 1,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Branch\ninv: self.vehicles->collect(x | x.reservations)->size() >= 3",
+      "pattern_id": "collection_collectNested",
+      "pattern_name": "Collection Nested Collection Flatten",
+      "context": "Branch",
+      "parameters": {
+        "collection": "vehicles",
+        "nested_collection": "reservations",
+        "min_size": 3
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T17:10:50.402831",
+      "metadata": {
+        "category": "collection",
+        "complexity": 4,
+        "generation_number": 3826,
+        "profile": "difficult",
+        "operators_used": [
+          "-",
+          "=",
+          ">",
+          ">=",
+          "collect",
+          "size"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "difficult",
+        "operator_count": 6,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 3.0,
+            "wnc": 5.0,
+            "tnc": 4.0,
+            "vrc": 1,
+            "wno": 7.0,
+            "wnm": 2.0,
+            "total": 14.0
+          },
+          "computational": {
+            "oc": 7.0,
+            "tcc": 0.0,
+            "cic": 2.0,
+            "total": 9.0
+          },
+          "dependency": {
+            "ruc": 5,
+            "total": 5.0
+          },
+          "tc": 28.0
+        },
+        "semantic_cluster": 4,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Branch\ninv: self.rentals->asSequence()->notEmpty()",
+      "pattern_id": "collection_asSequence",
+      "pattern_name": "Collection As Sequence Conversion",
+      "context": "Branch",
+      "parameters": {
+        "collection": "rentals"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T17:11:02.973330",
+      "metadata": {
+        "category": "collection",
+        "complexity": 2,
+        "generation_number": 3903,
+        "operators_used": [
+          "-",
+          ">",
+          "asSequence",
+          "notEmpty"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 4,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.4,
+            "vrc": 0,
+            "wno": 2.0,
+            "wnm": 2.0,
+            "total": 5.4
+          },
+          "computational": {
+            "oc": 2.0,
+            "tcc": 1.5,
+            "cic": 0.0,
+            "total": 3.5
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 8.9
+        },
+        "semantic_cluster": 5,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Customer\ninv: self.balance + self.depositAmount > 15",
+      "pattern_id": "numeric_sum_constraint",
+      "pattern_name": "Numeric Sum Constraint",
+      "context": "Customer",
+      "parameters": {
+        "first_numeric": "balance",
+        "second_numeric": "depositAmount",
+        "threshold": 15
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T17:10:50.406695",
+      "metadata": {
+        "category": "arithmetic",
+        "complexity": 2,
+        "generation_number": 3830,
+        "profile": "easy",
+        "operators_used": [
+          "+",
+          ">"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 2,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 1,
+            "wnc": 2.0,
+            "tnc": 1.7,
+            "vrc": 0,
+            "wno": 2.0,
+            "wnm": 0.0,
+            "total": 3.7
+          },
+          "computational": {
+            "oc": 1.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 1.0
+          },
+          "dependency": {
+            "ruc": 4,
+            "total": 4.0
+          },
+          "tc": 8.7
+        },
+        "semantic_cluster": 7,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Branch\ninv: self.capacity < self.vehicleCount",
+      "pattern_id": "numeric_comparison",
+      "pattern_name": "Numeric Comparison",
+      "context": "Branch",
+      "parameters": {
+        "attr1": "capacity",
+        "operator": "<",
+        "attr2": "vehicleCount"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T17:10:50.407851",
+      "metadata": {
+        "category": "basic",
+        "complexity": 1,
+        "generation_number": 3831,
+        "profile": "easy",
+        "operators_used": [
+          "<"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 1,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 1,
+            "wnc": 2.0,
+            "tnc": 1.7,
+            "vrc": 0,
+            "wno": 1.0,
+            "wnm": 0.0,
+            "total": 2.7
+          },
+          "computational": {
+            "oc": 1.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 1.0
+          },
+          "dependency": {
+            "ruc": 6,
+            "total": 6.0
+          },
+          "tc": 9.7
+        },
+        "semantic_cluster": 4,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Vehicle\ninv: self.seats + self.doors > 27",
+      "pattern_id": "numeric_sum_constraint",
+      "pattern_name": "Numeric Sum Constraint",
+      "context": "Vehicle",
+      "parameters": {
+        "first_numeric": "seats",
+        "second_numeric": "doors",
+        "threshold": 27
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T17:10:50.408984",
+      "metadata": {
+        "category": "arithmetic",
+        "complexity": 2,
+        "generation_number": 3832,
+        "profile": "easy",
+        "operators_used": [
+          "+",
+          ">"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 2,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 1,
+            "wnc": 2.0,
+            "tnc": 1.7,
+            "vrc": 0,
+            "wno": 2.0,
+            "wnm": 0.0,
+            "total": 3.7
+          },
+          "computational": {
+            "oc": 1.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 1.0
+          },
+          "dependency": {
+            "ruc": 1,
+            "total": 1.0
+          },
+          "tc": 5.7
+        },
+        "semantic_cluster": 10,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Branch\ninv: self.capacity - self.staffCount >= 6",
+      "pattern_id": "numeric_difference_constraint",
+      "pattern_name": "Numeric Difference Constraint",
+      "context": "Branch",
+      "parameters": {
+        "first_numeric": "capacity",
+        "second_numeric": "staffCount",
+        "min_diff": 6
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T17:10:50.410113",
+      "metadata": {
+        "category": "arithmetic",
+        "complexity": 2,
+        "generation_number": 3833,
+        "profile": "easy",
+        "operators_used": [
+          "-",
+          "=",
+          ">",
+          ">="
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 4,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 1,
+            "wnc": 2.0,
+            "tnc": 1.7,
+            "vrc": 0,
+            "wno": 3.0,
+            "wnm": 0.0,
+            "total": 4.7
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 8,
+            "total": 8.0
+          },
+          "tc": 15.7
+        },
+        "semantic_cluster": 11,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Branch\ninv: self.capacity >= self.staffCount",
+      "pattern_id": "numeric_comparison",
+      "pattern_name": "Numeric Comparison",
+      "context": "Branch",
+      "parameters": {
+        "attr1": "capacity",
+        "operator": ">=",
+        "attr2": "staffCount"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T17:10:50.411261",
+      "metadata": {
+        "category": "basic",
+        "complexity": 1,
+        "generation_number": 3834,
+        "profile": "easy",
+        "operators_used": [
+          "=",
+          ">",
+          ">="
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 1,
+            "wnc": 2.0,
+            "tnc": 1.7,
+            "vrc": 0,
+            "wno": 3.0,
+            "wnm": 0.0,
+            "total": 4.7
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 8,
+            "total": 8.0
+          },
+          "tc": 15.7
+        },
+        "semantic_cluster": 11,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Payment\ninv: self.discount - self.tax >= 10",
+      "pattern_id": "numeric_difference_constraint",
+      "pattern_name": "Numeric Difference Constraint",
+      "context": "Payment",
+      "parameters": {
+        "first_numeric": "discount",
+        "second_numeric": "tax",
+        "min_diff": 10
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T17:10:50.413514",
+      "metadata": {
+        "category": "arithmetic",
+        "complexity": 2,
+        "generation_number": 3836,
+        "profile": "easy",
+        "operators_used": [
+          "-",
+          "=",
+          ">",
+          ">="
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 4,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 1,
+            "wnc": 2.0,
+            "tnc": 1.7,
+            "vrc": 0,
+            "wno": 3.0,
+            "wnm": 0.0,
+            "total": 4.7
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 6,
+            "total": 6.0
+          },
+          "tc": 13.7
+        },
+        "semantic_cluster": 12,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Branch\ninv: self.capacity mod 2 = 1",
+      "pattern_id": "numeric_odd",
+      "pattern_name": "Numeric Is Odd",
+      "context": "Branch",
+      "parameters": {
+        "numeric_attribute": "capacity"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T17:10:50.414626",
+      "metadata": {
+        "category": "arithmetic",
+        "complexity": 2,
+        "generation_number": 3837,
+        "profile": "easy",
+        "operators_used": [
+          "=",
+          "mod"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 2,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 1.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.0,
+            "vrc": 0,
+            "wno": 2.0,
+            "wnm": 0.0,
+            "total": 3.0
+          },
+          "computational": {
+            "oc": 1.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 1.0
+          },
+          "dependency": {
+            "ruc": 5,
+            "total": 5.0
+          },
+          "tc": 9.0
+        },
+        "semantic_cluster": 11,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Vehicle\ninv: self.seats mod 2 = 0",
+      "pattern_id": "numeric_even",
+      "pattern_name": "Numeric Is Even",
+      "context": "Vehicle",
+      "parameters": {
+        "numeric_attribute": "seats"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T17:10:50.415726",
+      "metadata": {
+        "category": "arithmetic",
+        "complexity": 2,
+        "generation_number": 3838,
+        "profile": "easy",
+        "operators_used": [
+          "=",
+          "mod"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 2,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 1.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.0,
+            "vrc": 0,
+            "wno": 2.0,
+            "wnm": 0.0,
+            "total": 3.0
+          },
+          "computational": {
+            "oc": 1.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 1.0
+          },
+          "dependency": {
+            "ruc": 1,
+            "total": 1.0
+          },
+          "tc": 5.0
+        },
+        "semantic_cluster": 10,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Branch\ninv: self.staffCount mod 5 = 0",
+      "pattern_id": "numeric_multiple_of",
+      "pattern_name": "Numeric Multiple Of",
+      "context": "Branch",
+      "parameters": {
+        "numeric_attribute": "staffCount",
+        "divisor": 5
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T17:10:50.416990",
+      "metadata": {
+        "category": "arithmetic",
+        "complexity": 2,
+        "generation_number": 3840,
+        "profile": "easy",
+        "operators_used": [
+          "=",
+          "mod"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 2,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 1.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.0,
+            "vrc": 0,
+            "wno": 2.0,
+            "wnm": 0.0,
+            "total": 3.0
+          },
+          "computational": {
+            "oc": 1.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 1.0
+          },
+          "dependency": {
+            "ruc": 5,
+            "total": 5.0
+          },
+          "tc": 9.0
+        },
+        "semantic_cluster": 11,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Customer\ninv: self.reservations->size() = 1",
+      "pattern_id": "size_constraint",
+      "pattern_name": "Collection Size Constraint",
+      "context": "Customer",
+      "parameters": {
+        "collection": "reservations",
+        "operator": "=",
+        "value": 1
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T17:10:50.420287",
+      "metadata": {
+        "category": "basic",
+        "complexity": 1,
+        "generation_number": 3844,
+        "profile": "easy",
+        "operators_used": [
+          "-",
+          "=",
+          ">",
+          "size"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 4,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.4,
+            "vrc": 0,
+            "wno": 2.0,
+            "wnm": 1.0,
+            "total": 4.4
+          },
+          "computational": {
+            "oc": 2.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 2.0
+          },
+          "dependency": {
+            "ruc": 3,
+            "total": 3.0
+          },
+          "tc": 9.4
+        },
+        "semantic_cluster": 6,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Branch\ninv: self.rentals->size() > 0",
+      "pattern_id": "collection_not_empty_check",
+      "pattern_name": "Collection Not Empty Check",
+      "context": "Branch",
+      "parameters": {
+        "collection": "rentals"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T17:10:50.422083",
+      "metadata": {
+        "category": "collection",
+        "complexity": 1,
+        "generation_number": 3846,
+        "profile": "easy",
+        "operators_used": [
+          "-",
+          ">",
+          "size"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.4,
+            "vrc": 0,
+            "wno": 2.0,
+            "wnm": 1.0,
+            "total": 4.4
+          },
+          "computational": {
+            "oc": 2.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 2.0
+          },
+          "dependency": {
+            "ruc": 4,
+            "total": 4.0
+          },
+          "tc": 10.4
+        },
+        "semantic_cluster": 5,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Vehicle\ninv: self.reservations->size() <= 1",
+      "pattern_id": "size_constraint",
+      "pattern_name": "Collection Size Constraint",
+      "context": "Vehicle",
+      "parameters": {
+        "collection": "reservations",
+        "operator": "<=",
+        "value": 1
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T17:10:50.422980",
+      "metadata": {
+        "category": "basic",
+        "complexity": 1,
+        "generation_number": 3847,
+        "profile": "easy",
+        "operators_used": [
+          "-",
+          "<",
+          "<=",
+          "=",
+          ">",
+          "size"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 6,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.4,
+            "vrc": 0,
+            "wno": 4.0,
+            "wnm": 1.0,
+            "total": 6.4
+          },
+          "computational": {
+            "oc": 4.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 4.0
+          },
+          "dependency": {
+            "ruc": 2,
+            "total": 2.0
+          },
+          "tc": 12.4
+        },
+        "semantic_cluster": 6,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Branch\ninv: self.reservations->size() > 0",
+      "pattern_id": "collection_not_empty_check",
+      "pattern_name": "Collection Not Empty Check",
+      "context": "Branch",
+      "parameters": {
+        "collection": "reservations"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T17:10:50.428250",
+      "metadata": {
+        "category": "collection",
+        "complexity": 1,
+        "generation_number": 3850,
+        "profile": "easy",
+        "operators_used": [
+          "-",
+          ">",
+          "size"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.4,
+            "vrc": 0,
+            "wno": 2.0,
+            "wnm": 1.0,
+            "total": 4.4
+          },
+          "computational": {
+            "oc": 2.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 2.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 6.4
+        },
+        "semantic_cluster": 6,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Vehicle\ninv: self.reservations->isEmpty()",
+      "pattern_id": "collection_empty_check",
+      "pattern_name": "Collection Must Be Empty",
+      "context": "Vehicle",
+      "parameters": {
+        "collection": "reservations"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T17:10:50.432400",
+      "metadata": {
+        "category": "collection",
+        "complexity": 1,
+        "generation_number": 3869,
+        "profile": "easy",
+        "operators_used": [
+          "-",
+          ">",
+          "isEmpty"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.4,
+            "vrc": 0,
+            "wno": 1.0,
+            "wnm": 1.0,
+            "total": 3.4
+          },
+          "computational": {
+            "oc": 1.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 1.0
+          },
+          "dependency": {
+            "ruc": 2,
+            "total": 2.0
+          },
+          "tc": 6.4
+        },
+        "semantic_cluster": 6,
+        "implies": [
+          "association_exists_Vehicle",
+          "size_constraint_Vehicle"
+        ]
+      }
+    },
+    {
+      "ocl": "context Branch\ninv: self.longitude.abs() <= 4",
+      "pattern_id": "numeric_abs_bounded",
+      "pattern_name": "Numeric Absolute Value Bounded",
+      "context": "Branch",
+      "parameters": {
+        "numeric_attribute": "longitude",
+        "max_abs": 4
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T17:10:50.434582",
+      "metadata": {
+        "category": "arithmetic",
+        "complexity": 2,
+        "generation_number": 3871,
+        "profile": "medium",
+        "operators_used": [
+          "<",
+          "<=",
+          "=",
+          "abs"
+        ],
+        "navigation_depth": 3,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 4,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 2,
+            "wnc": 2.0,
+            "tnc": 2.0,
+            "vrc": 0,
+            "wno": 4.0,
+            "wnm": 1.0,
+            "total": 7.0
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 1,
+            "total": 1.0
+          },
+          "tc": 11.0
+        },
+        "semantic_cluster": 13,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Payment\ninv: self.discount.abs() <= 10",
+      "pattern_id": "numeric_abs_bounded",
+      "pattern_name": "Numeric Absolute Value Bounded",
+      "context": "Payment",
+      "parameters": {
+        "numeric_attribute": "discount",
+        "max_abs": 10
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T17:10:50.436725",
+      "metadata": {
+        "category": "arithmetic",
+        "complexity": 2,
+        "generation_number": 3873,
+        "profile": "medium",
+        "operators_used": [
+          "<",
+          "<=",
+          "=",
+          "abs"
+        ],
+        "navigation_depth": 3,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 4,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 2,
+            "wnc": 2.0,
+            "tnc": 2.0,
+            "vrc": 0,
+            "wno": 4.0,
+            "wnm": 1.0,
+            "total": 7.0
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 10.0
+        },
+        "semantic_cluster": 12,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Branch\ninv: self.longitude.abs() <= 1",
+      "pattern_id": "numeric_abs_bounded",
+      "pattern_name": "Numeric Absolute Value Bounded",
+      "context": "Branch",
+      "parameters": {
+        "numeric_attribute": "longitude",
+        "max_abs": 1
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T17:10:50.441696",
+      "metadata": {
+        "category": "arithmetic",
+        "complexity": 2,
+        "generation_number": 3878,
+        "profile": "medium",
+        "operators_used": [
+          "<",
+          "<=",
+          "=",
+          "abs"
+        ],
+        "navigation_depth": 3,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 4,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 2,
+            "wnc": 2.0,
+            "tnc": 2.0,
+            "vrc": 0,
+            "wno": 4.0,
+            "wnm": 1.0,
+            "total": 7.0
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 1,
+            "total": 1.0
+          },
+          "tc": 11.0
+        },
+        "semantic_cluster": 13,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Company\ninv: self.branches->size() >= 1",
+      "pattern_id": "collection_min_size",
+      "pattern_name": "Collection Minimum Size",
+      "context": "Company",
+      "parameters": {
+        "collection": "branches",
+        "min_size": 1
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T17:10:50.442601",
+      "metadata": {
+        "category": "collection",
+        "complexity": 1,
+        "generation_number": 3879,
+        "profile": "medium",
+        "operators_used": [
+          "-",
+          "=",
+          ">",
+          ">=",
+          "size"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 5,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.4,
+            "vrc": 0,
+            "wno": 4.0,
+            "wnm": 1.0,
+            "total": 6.4
+          },
+          "computational": {
+            "oc": 4.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 4.0
+          },
+          "dependency": {
+            "ruc": 7,
+            "total": 7.0
+          },
+          "tc": 17.4
+        },
+        "semantic_cluster": 1,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Branch\ninv: self.vehicles->size() = 1",
+      "pattern_id": "collection_has_size",
+      "pattern_name": "Collection Has Specific Size",
+      "context": "Branch",
+      "parameters": {
+        "collection": "vehicles",
+        "size": 1
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T17:11:13.161200",
+      "metadata": {
+        "category": "collection",
+        "complexity": 1,
+        "generation_number": 3906,
+        "operators_used": [
+          "-",
+          "=",
+          ">",
+          "size"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 4,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.4,
+            "vrc": 0,
+            "wno": 2.0,
+            "wnm": 1.0,
+            "total": 4.4
+          },
+          "computational": {
+            "oc": 2.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 2.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 6.4
+        },
+        "semantic_cluster": 4,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Payment\ninv: self.tax <> null and self.discount <> null",
+      "pattern_id": "all_attributes_defined",
+      "pattern_name": "All Attributes Defined",
+      "context": "Payment",
+      "parameters": {
+        "first_attribute": "tax",
+        "second_attribute": "discount"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T17:10:50.448908",
+      "metadata": {
+        "category": "advanced",
+        "complexity": 1,
+        "generation_number": 3882,
+        "profile": "medium",
+        "operators_used": [
+          "<",
+          "<>",
+          ">",
+          "and"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 4,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 1,
+            "wnc": 2.0,
+            "tnc": 1.7,
+            "vrc": 0,
+            "wno": 7.5,
+            "wnm": 0.0,
+            "total": 9.2
+          },
+          "computational": {
+            "oc": 7.5,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 7.5
+          },
+          "dependency": {
+            "ruc": 6,
+            "total": 6.0
+          },
+          "tc": 22.7
+        },
+        "semantic_cluster": 0,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Customer\ninv: self.rentals->size() >= 1",
+      "pattern_id": "collection_min_size",
+      "pattern_name": "Collection Minimum Size",
+      "context": "Customer",
+      "parameters": {
+        "collection": "rentals",
+        "min_size": 1
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T17:10:50.454382",
+      "metadata": {
+        "category": "collection",
+        "complexity": 1,
+        "generation_number": 3884,
+        "profile": "medium",
+        "operators_used": [
+          "-",
+          "=",
+          ">",
+          ">=",
+          "size"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 5,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.4,
+            "vrc": 0,
+            "wno": 4.0,
+            "wnm": 1.0,
+            "total": 6.4
+          },
+          "computational": {
+            "oc": 4.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 4.0
+          },
+          "dependency": {
+            "ruc": 5,
+            "total": 5.0
+          },
+          "tc": 15.4
+        },
+        "semantic_cluster": 5,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Payment\ninv: self.amount <> null implies self.tax <> null",
+      "pattern_id": "implies_simple",
+      "pattern_name": "Simple Implication",
+      "context": "Payment",
+      "parameters": {
+        "first_attribute": "amount",
+        "second_attribute": "tax"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T17:10:50.455338",
+      "metadata": {
+        "category": "advanced",
+        "complexity": 2,
+        "generation_number": 3885,
+        "profile": "medium",
+        "operators_used": [
+          "<",
+          "<>",
+          ">",
+          "implies"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 4,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 1,
+            "wnc": 2.0,
+            "tnc": 1.7,
+            "vrc": 0,
+            "wno": 8.0,
+            "wnm": 0.0,
+            "total": 9.7
+          },
+          "computational": {
+            "oc": 8.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 8.0
+          },
+          "dependency": {
+            "ruc": 6,
+            "total": 6.0
+          },
+          "tc": 23.7
+        },
+        "semantic_cluster": 0,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Vehicle\ninv: self.rentals->size() <= 2",
+      "pattern_id": "collection_max_size",
+      "pattern_name": "Collection Maximum Size",
+      "context": "Vehicle",
+      "parameters": {
+        "collection": "rentals",
+        "max_size": 2
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T17:10:50.456324",
+      "metadata": {
+        "category": "collection",
+        "complexity": 1,
+        "generation_number": 3886,
+        "profile": "medium",
+        "operators_used": [
+          "-",
+          "<",
+          "<=",
+          "=",
+          ">",
+          "size"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 6,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.4,
+            "vrc": 0,
+            "wno": 4.0,
+            "wnm": 1.0,
+            "total": 6.4
+          },
+          "computational": {
+            "oc": 4.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 4.0
+          },
+          "dependency": {
+            "ruc": 4,
+            "total": 4.0
+          },
+          "tc": 14.4
+        },
+        "semantic_cluster": 5,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Branch\ninv: (self.vehicleCount <> null) = (self.staffCount <> null)",
+      "pattern_id": "bi_implication",
+      "pattern_name": "Bi-directional Implication",
+      "context": "Branch",
+      "parameters": {
+        "first_attribute": "vehicleCount",
+        "second_attribute": "staffCount"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T17:10:50.457310",
+      "metadata": {
+        "category": "advanced",
+        "complexity": 2,
+        "generation_number": 3887,
+        "profile": "medium",
+        "operators_used": [
+          "<",
+          "<>",
+          "=",
+          ">"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 4,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 1,
+            "wnc": 2.0,
+            "tnc": 1.7,
+            "vrc": 0,
+            "wno": 7.0,
+            "wnm": 0.0,
+            "total": 8.7
+          },
+          "computational": {
+            "oc": 7.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 7.0
+          },
+          "dependency": {
+            "ruc": 7,
+            "total": 7.0
+          },
+          "tc": 22.7
+        },
+        "semantic_cluster": 0,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Payment\ninv: self.discount <> null and self.tax <> null",
+      "pattern_id": "all_attributes_defined",
+      "pattern_name": "All Attributes Defined",
+      "context": "Payment",
+      "parameters": {
+        "first_attribute": "discount",
+        "second_attribute": "tax"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T17:10:50.458364",
+      "metadata": {
+        "category": "advanced",
+        "complexity": 1,
+        "generation_number": 3888,
+        "profile": "medium",
+        "operators_used": [
+          "<",
+          "<>",
+          ">",
+          "and"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 4,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 1,
+            "wnc": 2.0,
+            "tnc": 1.7,
+            "vrc": 0,
+            "wno": 7.5,
+            "wnm": 0.0,
+            "total": 9.2
+          },
+          "computational": {
+            "oc": 7.5,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 7.5
+          },
+          "dependency": {
+            "ruc": 6,
+            "total": 6.0
+          },
+          "tc": 22.7
+        },
+        "semantic_cluster": 0,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Payment\ninv: (self.rental.branch.staffCount > 10) and (not(self.rental.branch.staffCount > 10))",
+      "pattern_id": "navigation_chain_unsat",
+      "pattern_name": "Navigation Chain (UNSAT)",
+      "context": "Payment",
+      "parameters": {
+        "navigation_path": "self.rental.branch.staffCount > 10"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T17:11:16.116886",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 2,
+        "generation_number": 3890,
+        "operators_used": [
+          ">"
+        ],
+        "navigation_depth": 4,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 1,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 3.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 3,
+            "wnc": 3.0,
+            "tnc": 3.0,
+            "vrc": 0,
+            "wno": 1.0,
+            "wnm": 0.0,
+            "total": 4.0
+          },
+          "computational": {
+            "oc": 1.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 1.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 5.0
+        },
+        "is_unsat": true,
+        "mutation": "self_contradiction",
+        "original_pattern_id": "navigation_chain",
+        "semantic_cluster": 5,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Reservation\ninv: (((self.customer.isPremium) and (self.estimatedCost < 90)) and (self.dateTo < self.dateFrom)) and (not(((self.customer.isPremium) and (self.estimatedCost < 90)) and (self.dateTo < self.dateFrom)))",
+      "pattern_id": "simple_navigation_unsat",
+      "pattern_name": "Simple Navigation (UNSAT)",
+      "context": "Reservation",
+      "parameters": {
+        "association": "customer",
+        "attribute": "isPremium"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T17:11:16.021607",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 1,
+        "generation_number": 3725,
+        "profile": "medium",
+        "operators_used": [
+          "<",
+          "and"
+        ],
+        "navigation_depth": 3,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 2,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 5.0,
+            "nnc_plus": 5.0,
+            "dn_ca": 2,
+            "wnc": 5.0,
+            "tnc": 4.1,
+            "vrc": 0,
+            "wno": 5.0,
+            "wnm": 0.0,
+            "total": 9.1
+          },
+          "computational": {
+            "oc": 5.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 5.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 14.1
+        },
+        "is_unsat": true,
+        "mutation": "self_contradiction",
+        "original_pattern_id": "simple_navigation",
+        "semantic_cluster": 14,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Reservation\ninv: (self.vehicle <> null) and (not(self.vehicle <> null))",
+      "pattern_id": "association_exists_unsat",
+      "pattern_name": "Association Exists (UNSAT)",
+      "context": "Reservation",
+      "parameters": {
+        "association": "vehicle"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T17:11:15.929209",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 1,
+        "generation_number": 3360,
+        "profile": "easy",
+        "operators_used": [
+          "<",
+          "<>",
+          ">"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 1.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.0,
+            "vrc": 0,
+            "wno": 3.0,
+            "wnm": 0.0,
+            "total": 4.0
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 1,
+            "total": 1.0
+          },
+          "tc": 8.0
+        },
+        "is_unsat": true,
+        "mutation": "self_contradiction",
+        "original_pattern_id": "association_exists",
+        "semantic_cluster": 0,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Branch\ninv: (self.rentals->size() = 3) and (not(self.rentals->size() = 3))",
+      "pattern_id": "collection_has_size_unsat",
+      "pattern_name": "Collection Has Specific Size (UNSAT)",
+      "context": "Branch",
+      "parameters": {
+        "collection": "rentals",
+        "size": 3
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T17:11:16.312844",
+      "metadata": {
+        "category": "collection",
+        "complexity": 1,
+        "generation_number": 3868,
+        "profile": "easy",
+        "operators_used": [
+          "-",
+          "=",
+          ">",
+          "size"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 4,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.4,
+            "vrc": 0,
+            "wno": 2.0,
+            "wnm": 1.0,
+            "total": 4.4
+          },
+          "computational": {
+            "oc": 2.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 2.0
+          },
+          "dependency": {
+            "ruc": 4,
+            "total": 4.0
+          },
+          "tc": 10.4
+        },
+        "is_unsat": true,
+        "mutation": "self_contradiction",
+        "original_pattern_id": "collection_has_size",
+        "semantic_cluster": 4,
+        "implies": [
+          "collection_not_empty_check_Branch"
+        ]
+      }
+    },
+    {
+      "ocl": "context Customer\ninv: (self.depositAmount.abs() <= 8) and (not(self.depositAmount.abs() <= 8))",
+      "pattern_id": "numeric_abs_bounded_unsat",
+      "pattern_name": "Numeric Absolute Value Bounded (UNSAT)",
+      "context": "Customer",
+      "parameters": {
+        "numeric_attribute": "depositAmount",
+        "max_abs": 8
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T17:11:16.587873",
+      "metadata": {
+        "category": "arithmetic",
+        "complexity": 2,
+        "generation_number": 3841,
+        "profile": "easy",
+        "operators_used": [
+          "<",
+          "<=",
+          "=",
+          "abs"
+        ],
+        "navigation_depth": 3,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 4,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 2,
+            "wnc": 2.0,
+            "tnc": 2.0,
+            "vrc": 0,
+            "wno": 4.0,
+            "wnm": 1.0,
+            "total": 7.0
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 10.0
+        },
+        "is_unsat": true,
+        "mutation": "self_contradiction",
+        "original_pattern_id": "numeric_abs_bounded",
+        "semantic_cluster": 7,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Payment\ninv: (self.tax <> null implies self.discount <> null) and (not(self.tax <> null implies self.discount <> null))",
+      "pattern_id": "implies_reverse_unsat",
+      "pattern_name": "Reverse Implication (UNSAT)",
+      "context": "Payment",
+      "parameters": {
+        "first_attribute": "discount",
+        "second_attribute": "tax"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T17:11:16.312859",
+      "metadata": {
+        "category": "advanced",
+        "complexity": 2,
+        "generation_number": 3883,
+        "profile": "medium",
+        "operators_used": [
+          "<",
+          "<>",
+          ">",
+          "implies"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 4,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 1,
+            "wnc": 2.0,
+            "tnc": 1.7,
+            "vrc": 0,
+            "wno": 8.0,
+            "wnm": 0.0,
+            "total": 9.7
+          },
+          "computational": {
+            "oc": 8.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 8.0
+          },
+          "dependency": {
+            "ruc": 6,
+            "total": 6.0
+          },
+          "tc": 23.7
+        },
+        "is_unsat": true,
+        "mutation": "self_contradiction",
+        "original_pattern_id": "implies_reverse",
+        "semantic_cluster": 0,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Customer\ninv: (self.depositAmount <> self.balance) and (not(self.depositAmount <> self.balance))",
+      "pattern_id": "two_attributes_not_equal_unsat",
+      "pattern_name": "Two Attributes Not Equal (UNSAT)",
+      "context": "Customer",
+      "parameters": {
+        "first_attribute": "depositAmount",
+        "second_attribute": "balance"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T17:11:16.587881",
+      "metadata": {
+        "category": "basic",
+        "complexity": 1,
+        "generation_number": 3904,
+        "operators_used": [
+          "<",
+          "<>",
+          ">"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 1,
+            "wnc": 2.0,
+            "tnc": 1.7,
+            "vrc": 0,
+            "wno": 3.0,
+            "wnm": 0.0,
+            "total": 4.7
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 7.7
+        },
+        "is_unsat": true,
+        "mutation": "self_contradiction",
+        "original_pattern_id": "two_attributes_not_equal",
+        "semantic_cluster": 7,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Customer\ninv: (self.balance <= self.depositAmount) and (not(self.balance <= self.depositAmount))",
+      "pattern_id": "numeric_comparison_unsat",
+      "pattern_name": "Numeric Comparison (UNSAT)",
+      "context": "Customer",
+      "parameters": {
+        "attr1": "balance",
+        "operator": "<=",
+        "attr2": "depositAmount"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T17:11:15.744418",
+      "metadata": {
+        "category": "basic",
+        "complexity": 1,
+        "generation_number": 3842,
+        "profile": "easy",
+        "operators_used": [
+          "<",
+          "<=",
+          "="
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 1,
+            "wnc": 2.0,
+            "tnc": 1.7,
+            "vrc": 0,
+            "wno": 3.0,
+            "wnm": 0.0,
+            "total": 4.7
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 4,
+            "total": 4.0
+          },
+          "tc": 11.7
+        },
+        "is_unsat": true,
+        "mutation": "self_contradiction",
+        "original_pattern_id": "numeric_comparison",
+        "semantic_cluster": 7,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Payment\ninv: ((self.rental.branch.vehicleCount > 5) and (self.tax < 11)) and (not((self.rental.branch.vehicleCount > 5) and (self.tax < 11)))",
+      "pattern_id": "navigation_chain_unsat",
+      "pattern_name": "Navigation Chain (UNSAT)",
+      "context": "Payment",
+      "parameters": {
+        "navigation_path": "self.rental.branch.vehicleCount > 5"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T17:11:16.404551",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 2,
+        "generation_number": 3734,
+        "profile": "medium",
+        "operators_used": [
+          "<",
+          ">",
+          "and"
+        ],
+        "navigation_depth": 4,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 4.0,
+            "dn_ca": 3,
+            "wnc": 4.0,
+            "tnc": 3.7,
+            "vrc": 0,
+            "wno": 3.5,
+            "wnm": 0.0,
+            "total": 7.2
+          },
+          "computational": {
+            "oc": 3.5,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.5
+          },
+          "dependency": {
+            "ruc": 6,
+            "total": 6.0
+          },
+          "tc": 16.7
+        },
+        "is_unsat": true,
+        "mutation": "self_contradiction",
+        "original_pattern_id": "navigation_chain",
+        "semantic_cluster": 4,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Rental\ninv: ((self.fuelCharge <> null) = (self.totalAmount <> null)) and (not((self.fuelCharge <> null) = (self.totalAmount <> null)))",
+      "pattern_id": "bi_implication_unsat",
+      "pattern_name": "Bi-directional Implication (UNSAT)",
+      "context": "Rental",
+      "parameters": {
+        "first_attribute": "fuelCharge",
+        "second_attribute": "totalAmount"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T17:11:15.929201",
+      "metadata": {
+        "category": "advanced",
+        "complexity": 2,
+        "generation_number": 3881,
+        "profile": "medium",
+        "operators_used": [
+          "<",
+          "<>",
+          "=",
+          ">"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 4,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 1,
+            "wnc": 2.0,
+            "tnc": 1.7,
+            "vrc": 0,
+            "wno": 7.0,
+            "wnm": 0.0,
+            "total": 8.7
+          },
+          "computational": {
+            "oc": 7.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 7.0
+          },
+          "dependency": {
+            "ruc": 2,
+            "total": 2.0
+          },
+          "tc": 17.7
+        },
+        "is_unsat": true,
+        "mutation": "self_contradiction",
+        "original_pattern_id": "bi_implication",
+        "semantic_cluster": 0,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Rental\ninv: (self.mileageEnd + self.mileageStart > 70) and (not(self.mileageEnd + self.mileageStart > 70))",
+      "pattern_id": "numeric_sum_constraint_unsat",
+      "pattern_name": "Numeric Sum Constraint (UNSAT)",
+      "context": "Rental",
+      "parameters": {
+        "first_numeric": "mileageEnd",
+        "second_numeric": "mileageStart",
+        "threshold": 70
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T17:11:16.587841",
+      "metadata": {
+        "category": "arithmetic",
+        "complexity": 2,
+        "generation_number": 3835,
+        "profile": "easy",
+        "operators_used": [
+          "+",
+          ">"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 2,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 1,
+            "wnc": 2.0,
+            "tnc": 1.7,
+            "vrc": 0,
+            "wno": 2.0,
+            "wnm": 0.0,
+            "total": 3.7
+          },
+          "computational": {
+            "oc": 1.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 1.0
+          },
+          "dependency": {
+            "ruc": 1,
+            "total": 1.0
+          },
+          "tc": 5.7
+        },
+        "is_unsat": true,
+        "mutation": "self_contradiction",
+        "original_pattern_id": "numeric_sum_constraint",
+        "semantic_cluster": 4,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context License\ninv: ((self.customer.license.isValid = false) and (self.expiry.size() <= 20)) and (not((self.customer.license.isValid = false) and (self.expiry.size() <= 20)))",
+      "pattern_id": "navigation_chain_unsat",
+      "pattern_name": "Navigation Chain (UNSAT)",
+      "context": "License",
+      "parameters": {
+        "navigation_path": "self.customer.license.isValid = false"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T17:11:15.744396",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 2,
+        "generation_number": 3705,
+        "profile": "medium",
+        "operators_used": [
+          "<",
+          "<=",
+          "=",
+          "and",
+          "size"
+        ],
+        "navigation_depth": 4,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 5,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 5.0,
+            "nnc_plus": 5.0,
+            "dn_ca": 3,
+            "wnc": 5.0,
+            "tnc": 4.4,
+            "vrc": 0,
+            "wno": 5.5,
+            "wnm": 1.0,
+            "total": 10.9
+          },
+          "computational": {
+            "oc": 5.5,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 5.5
+          },
+          "dependency": {
+            "ruc": 1,
+            "total": 1.0
+          },
+          "tc": 17.4
+        },
+        "is_unsat": true,
+        "mutation": "self_contradiction",
+        "original_pattern_id": "navigation_chain",
+        "semantic_cluster": 14,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Company\ninv: (self.branches->exists(x | x.vehicleCount >= 0)) and (not(self.branches->exists(x | x.vehicleCount >= 0)))",
+      "pattern_id": "collection_navigation_unsat",
+      "pattern_name": "Collection Navigation (UNSAT)",
+      "context": "Company",
+      "parameters": {
+        "collection": "branches",
+        "operation": "exists",
+        "iterator": "x",
+        "nested": "vehicleCount >= 0"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T17:11:15.837650",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 3,
+        "generation_number": 3684,
+        "profile": "difficult",
+        "operators_used": [
+          "-",
+          "=",
+          ">",
+          ">=",
+          "exists"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "difficult",
+        "operator_count": 5,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 3.0,
+            "wnc": 5.0,
+            "tnc": 4.0,
+            "vrc": 1,
+            "wno": 7.0,
+            "wnm": 1.0,
+            "total": 13.0
+          },
+          "computational": {
+            "oc": 7.0,
+            "tcc": 0.0,
+            "cic": 3.0,
+            "total": 10.0
+          },
+          "dependency": {
+            "ruc": 7,
+            "total": 7.0
+          },
+          "tc": 30.0
+        },
+        "is_unsat": true,
+        "mutation": "self_contradiction",
+        "original_pattern_id": "collection_navigation",
+        "semantic_cluster": 1,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Rental\ninv: (self.depositPaid <> self.lateFee) and (not(self.depositPaid <> self.lateFee))",
+      "pattern_id": "two_attributes_not_equal_unsat",
+      "pattern_name": "Two Attributes Not Equal (UNSAT)",
+      "context": "Rental",
+      "parameters": {
+        "first_attribute": "depositPaid",
+        "second_attribute": "lateFee"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T17:11:16.587888",
+      "metadata": {
+        "category": "basic",
+        "complexity": 1,
+        "generation_number": 3848,
+        "profile": "easy",
+        "operators_used": [
+          "<",
+          "<>",
+          ">"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 1,
+            "wnc": 2.0,
+            "tnc": 1.7,
+            "vrc": 0,
+            "wno": 3.0,
+            "wnm": 0.0,
+            "total": 4.7
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 1,
+            "total": 1.0
+          },
+          "tc": 8.7
+        },
+        "is_unsat": true,
+        "mutation": "self_contradiction",
+        "original_pattern_id": "two_attributes_not_equal",
+        "semantic_cluster": 7,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Vehicle\ninv: (self.rentals->notEmpty()) and (self.rentals->isEmpty())",
+      "pattern_id": "collection_not_empty_simple_unsat",
+      "pattern_name": "Collection Not Empty (Simple) (UNSAT)",
+      "context": "Vehicle",
+      "parameters": {
+        "collection": "rentals"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T17:11:16.116975",
+      "metadata": {
+        "category": "collection",
+        "complexity": 1,
+        "generation_number": 3849,
+        "profile": "easy",
+        "operators_used": [
+          "-",
+          ">",
+          "notEmpty"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.4,
+            "vrc": 0,
+            "wno": 1.0,
+            "wnm": 1.0,
+            "total": 3.4
+          },
+          "computational": {
+            "oc": 1.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 1.0
+          },
+          "dependency": {
+            "ruc": 4,
+            "total": 4.0
+          },
+          "tc": 8.4
+        },
+        "is_unsat": true,
+        "mutation": "empty_collection",
+        "original_pattern_id": "collection_not_empty_simple",
+        "contradiction_ocl": "context Vehicle\ninv: self.rentals->isEmpty()",
+        "semantic_cluster": 5,
+        "implies": []
+      }
+    }
+  ],
+  "verification": {
+    "enabled": true,
+    "results": [
+      {
+        "constraint_id": "association_exists_Customer",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.0024574501761074723
+      },
+      {
+        "constraint_id": "association_exists_Payment",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.0024574501761074723
+      },
+      {
+        "constraint_id": "association_exists_Rental",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.0024574501761074723
+      },
+      {
+        "constraint_id": "association_exists_Reservation",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.0024574501761074723
+      },
+      {
+        "constraint_id": "association_exists_Reservation",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.0024574501761074723
+      },
+      {
+        "constraint_id": "association_exists_License",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.0024574501761074723
+      },
+      {
+        "constraint_id": "association_exists_Rental",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.0024574501761074723
+      },
+      {
+        "constraint_id": "association_exists_Vehicle",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.0024574501761074723
+      },
+      {
+        "constraint_id": "navigation_chain_Customer",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.0024574501761074723
+      },
+      {
+        "constraint_id": "navigation_chain_Branch",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.0024574501761074723
+      },
+      {
+        "constraint_id": "navigation_chain_License",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.0024574501761074723
+      },
+      {
+        "constraint_id": "navigation_chain_Branch",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.0024574501761074723
+      },
+      {
+        "constraint_id": "navigation_chain_Vehicle",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.0024574501761074723
+      },
+      {
+        "constraint_id": "collection_navigation_Branch",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.0024574501761074723
+      },
+      {
+        "constraint_id": "collection_navigation_Vehicle",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.0024574501761074723
+      },
+      {
+        "constraint_id": "navigation_chain_Customer",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.0024574501761074723
+      },
+      {
+        "constraint_id": "collection_navigation_Company",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.0024574501761074723
+      },
+      {
+        "constraint_id": "navigation_chain_Payment",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.0024574501761074723
+      },
+      {
+        "constraint_id": "simple_navigation_Rental",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.0024574501761074723
+      },
+      {
+        "constraint_id": "select_operation_Company",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.0024574501761074723
+      },
+      {
+        "constraint_id": "any_operation_Customer",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.0024574501761074723
+      },
+      {
+        "constraint_id": "forall_nested_Branch",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.0024574501761074723
+      },
+      {
+        "constraint_id": "numeric_max_of_two_Customer",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.0024574501761074723
+      },
+      {
+        "constraint_id": "numeric_positive_Customer",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.0024574501761074723
+      },
+      {
+        "constraint_id": "three_way_comparison_Branch",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.0024574501761074723
+      },
+      {
+        "constraint_id": "numeric_greater_than_value_Customer",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.0024574501761074723
+      },
+      {
+        "constraint_id": "numeric_multiple_of_Vehicle",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.0024574501761074723
+      },
+      {
+        "constraint_id": "collection_sum_Customer",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.0024574501761074723
+      },
+      {
+        "constraint_id": "collection_collectNested_Company",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.0024574501761074723
+      },
+      {
+        "constraint_id": "collection_excluding_Branch",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.0024574501761074723
+      },
+      {
+        "constraint_id": "collection_excluding_Company",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.0024574501761074723
+      },
+      {
+        "constraint_id": "collection_collectNested_Branch",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.0024574501761074723
+      },
+      {
+        "constraint_id": "collection_asSequence_Branch",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.0024574501761074723
+      },
+      {
+        "constraint_id": "numeric_sum_constraint_Customer",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.0024574501761074723
+      },
+      {
+        "constraint_id": "numeric_comparison_Branch",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.0024574501761074723
+      },
+      {
+        "constraint_id": "numeric_sum_constraint_Vehicle",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.0024574501761074723
+      },
+      {
+        "constraint_id": "numeric_difference_constraint_Branch",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.0024574501761074723
+      },
+      {
+        "constraint_id": "numeric_comparison_Branch",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.0024574501761074723
+      },
+      {
+        "constraint_id": "numeric_difference_constraint_Payment",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.0024574501761074723
+      },
+      {
+        "constraint_id": "numeric_odd_Branch",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.0024574501761074723
+      },
+      {
+        "constraint_id": "numeric_even_Vehicle",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.0024574501761074723
+      },
+      {
+        "constraint_id": "numeric_multiple_of_Branch",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.0024574501761074723
+      },
+      {
+        "constraint_id": "size_constraint_Customer",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.0024574501761074723
+      },
+      {
+        "constraint_id": "collection_not_empty_check_Branch",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.0024574501761074723
+      },
+      {
+        "constraint_id": "size_constraint_Vehicle",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.0024574501761074723
+      },
+      {
+        "constraint_id": "collection_not_empty_check_Branch",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.0024574501761074723
+      },
+      {
+        "constraint_id": "collection_empty_check_Vehicle",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.0024574501761074723
+      },
+      {
+        "constraint_id": "numeric_abs_bounded_Branch",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.0024574501761074723
+      },
+      {
+        "constraint_id": "numeric_abs_bounded_Payment",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.0024574501761074723
+      },
+      {
+        "constraint_id": "numeric_abs_bounded_Branch",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.0024574501761074723
+      },
+      {
+        "constraint_id": "collection_min_size_Company",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.0024574501761074723
+      },
+      {
+        "constraint_id": "collection_has_size_Branch",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.0024574501761074723
+      },
+      {
+        "constraint_id": "all_attributes_defined_Payment",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.0024574501761074723
+      },
+      {
+        "constraint_id": "collection_min_size_Customer",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.0024574501761074723
+      },
+      {
+        "constraint_id": "implies_simple_Payment",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.0024574501761074723
+      },
+      {
+        "constraint_id": "collection_max_size_Vehicle",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.0024574501761074723
+      },
+      {
+        "constraint_id": "bi_implication_Branch",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.0024574501761074723
+      },
+      {
+        "constraint_id": "all_attributes_defined_Payment",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.0024574501761074723
+      }
+    ]
+  }
+}

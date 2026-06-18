@@ -6,6 +6,7 @@ import random
 import logging
 from typing import Dict, List, Set, Tuple, Optional
 from collections import defaultdict
+from dataclasses import dataclass
 
 # Configure logging
 logger = logging.getLogger(__name__)
@@ -18,7 +19,31 @@ from modules.generation.composer.ocl_generator import OCLGenerator
 from .bench_config import BenchmarkProfile, FAMILY_KEYS, OPERATORS, TYPES, TC_DIFFICULTY_LEVELS
 from .coverage_tracker import compute_coverage, count_operators, nav_hops, quantifier_depth
 from .metadata_enricher import similarity, difficulty_score, get_complexity_weights
-from .complexity_calculator import compute_total_complexity, tc_to_difficulty_label, ComplexityWeights
+from .complexity_calculator import compute_total_complexity, tc_to_difficulty_label, ComplexityWeights, compute_ruc
+
+
+# Tier ordering used by the construct-and-select mechanism (matches
+# tc_to_difficulty_label thresholds: trivial<=3, easy<=8, medium<=16,
+# hard<=25, expert>25).
+TIER_ORDER = ["trivial", "easy", "medium", "hard", "expert"]
+
+# Supported generation mechanisms (see BenchmarkEngineV2.generation_mode).
+VALID_GENERATION_MODES = ("construct_select", "steered", "legacy")
+
+
+@dataclass
+class _PooledConstraint:
+    """A constructed candidate with its MEASURED complexity.
+
+    Used only by the construct-and-select path.  Structural/Computational
+    are measured exactly by the complexity calculator (dependency deferred
+    to the final suite); ``tier`` is derived from the measured TC.
+    """
+    constraint: 'OCLConstraint'
+    structural: float
+    computational: float
+    tc: float
+    tier: str
 
 
 def classify_family(pattern_id: str, category: str) -> str:
@@ -28,6 +53,12 @@ def classify_family(pattern_id: str, category: str) -> str:
     
     if cat == "string" or pid.startswith("string_") or "regex" in pid:
         return "string"
+    # Conditional (if-then-else) expressions get their own family instead of
+    # falling through to the "cardinality" catch-all (or, for the arithmetic-
+    # categorised if_then_else_expression, into arithmetic). The numeric min/max
+    # idioms stay arithmetic — their ids carry no 'conditional'/'if_then_else'.
+    if "conditional" in pid or "if_then_else" in pid:
+        return "conditional"
     if cat == "arithmetic" or any(k in pid for k in ["numeric", "range", "division", "abs_min_max"]):
         return "arithmetic"
     if any(k in pid for k in ["forall", "exists", "select_operation", "collect_operation", "one_operation", "any_operation"]):
@@ -47,6 +78,36 @@ def classify_family(pattern_id: str, category: str) -> str:
     if cat == "ocl_library":
         return "type_checks"
     return "cardinality"
+
+
+# Quantified collection patterns iterate a collection association and synthesise a
+# body over its target class. The value maps each pattern to the attribute KIND its
+# target must expose so the synthesised body is both valid OCL and encodable:
+#   'numeric' — the live forAll/select handlers accept only `var.attr OP <number>`;
+#   'usable'  — exists/any/one drop the predicate but still need a parseable body,
+#               so any numeric/boolean/string attr works (`_attr_predicate`);
+#   'any'     — collect(x|x.attr)->notEmpty() is Boolean for an attr of any type.
+# The same map gates applicability AND restricts the chosen 'collection' to a viable
+# one, so applicable == instantiable on every metamodel (not just car_rental).
+_QUANT_COLLECTION_KIND = {
+    'forall_nested': 'numeric',
+    'select_operation': 'numeric',
+    'exists_constraint': 'usable',
+    'any_operation': 'usable',
+    'one_operation': 'usable',
+    'collect_operation': 'any',
+}
+
+# Operator / bound pools for diversified synthesised predicates. Without this the
+# generator emitted a uniform `attr >= 0` everywhere, which made quantifier bodies a
+# monotone cliche and produced byte-identical constraints across classes. Restricted
+# to integer RHS and the four magnitude comparisons so the SMT forAll/select handlers
+# (which parse only `var.attr OP <int>`) still encode the body. Lower bounds pair with
+# >/>= and upper bounds with </<= so the predicate stays plausible (not `cost < 0`).
+_PRED_NUM_OPS = (">=", ">", "<=", "<")
+_PRED_LOWER_BOUNDS = (0, 1, 2, 5, 10)
+_PRED_UPPER_BOUNDS = (10, 50, 100, 1000)
+_PRED_BOOL = ("= true", "= false", "<> true", "<> false")
 
 
 class CoverageState:
@@ -229,41 +290,56 @@ class CoverageState:
 class BenchmarkEngineV2:
     """Advanced benchmark generator with full coverage and diversity."""
     
-    # C: CENTRALIZED BLACKLIST - Single source of truth for all phases
-    BLACKLIST = {
+    # C: CENTRALIZED EXCLUDE LIST - Single source of truth for all phases
+    EXCLUDE_LIST = {
         # Tautologies (always true/false)
         'isEmpty_notEmpty',                 # Always true: isEmpty() or notEmpty()
         'self_not_null',                    # Always true in OCL
-        
+
         # Not a constraint (expression without assertion)
         'set_difference',                   # Just returns a set
         'closure_operation',                # Just returns a closure
         'product_operation',                # Just returns a product
-        'string_concat',                    # Just concatenates
         'abs_min_max',                      # Expression without comparison
-        
+
+        # Degenerate + unverifiable null assertion
+        'attribute_null_check',             # 'self.attr = null' forces an attribute
+                                            # always-null (degenerate invariant); the
+                                            # encoder cannot model '= null', so it is
+                                            # unverifiable AND silently contradicts
+                                            # 'attribute_not_null' on the same attr.
+
+        # Semantically degenerate arithmetic
+        'numeric_product_constraint',       # 'self.a * self.b > N' — a product of two
+                                            # model attributes is almost never a real
+                                            # invariant (mileageEnd*mileageStart,
+                                            # seats*doors); meaningful only across
+                                            # specific differing roles (count x price)
+                                            # that don't occur as clean pairs here.
+
+        # Malformed / tautological templates
+        'string_operation',                 # 'self.attr.{op}({params})' where the op
+                                            # options already carry '()' (toLower()),
+                                            # so it renders 'attr.toLower()(value)' —
+                                            # non-parseable, non-boolean, value leak.
+        'collection_asSet',                 # 'asSet()->size() <= size()' is ALWAYS true
+                                            # (asSet never increases cardinality).
+
         # Not implemented in encoder
-        'collection_indexOf',               # Not supported
         'oclAsType',                        # Causes type errors
         'oclAsType_cast',                   # Causes type errors
-        
+
         # Type check issues
         'oclIsTypeOf_check',                # Often wrong types
         'oclIsKindOf_check',                # Often wrong types
         'allInstances_check',               # Encoder errors
-        
+
         # Patterns that commonly generate tautologies
         'two_attributes_equal',             # Often picks same attribute twice
-        'string_comparison',                # Often picks same attribute twice
-        
-        # String operations not supported by Z3
-        'string_to_upper_equals',           # toUpper() not encodable
-        'string_to_lower_equals',           # toLower() not encodable
-        'string_operation',                 # Generates syntax errors like size()(value)
-        
+
         # Collection operations with encoding issues
         'collection_sortedBy',              # sortedBy() causes type errors with booleans
-        
+
         # Broken pattern templates
         'at_least_one_defined',             # Generates malformed OCL
         'null_check',                       # Uses oclIsUndefined() - low value
@@ -361,32 +437,37 @@ class BenchmarkEngineV2:
                 return result
             # If pair not in matrix, fall through to heuristics
 
-        # 2. Fallback: keyword-based heuristics
+        # 2. Domain-family heuristic (richer than the ad-hoc keyword blocks below):
+        #    two measurable attributes are only comparable if they share a domain
+        #    family, so e.g. longitude (geo) vs staffCount (count) or totalAmount
+        #    (money) vs mileageStart (distance) are rejected.
+        try:
+            from modules.semantic.llm_semantic_analyzer import (
+                _classify_attr_domain, _domain_family, _NEVER_CROSS_FAMILIES,
+            )
+            fa = _domain_family(_classify_attr_domain(first_attr))
+            fb = _domain_family(_classify_attr_domain(second_attr))
+            if fa and fb and fa != fb:
+                return False                              # two known, different families
+            if (fa in _NEVER_CROSS_FAMILIES and fb != fa) or \
+               (fb in _NEVER_CROSS_FAMILIES and fa != fb):
+                return False                              # never-cross family vs anything else
+        except Exception:
+            pass
+
+        # 3. Fallback: boolean-naming heuristic only. The money/distance/date keyword
+        # blocks are superseded by the domain-family check above (which recognises
+        # 'balance' as money and avoids substring traps like 'rate' matching 'at').
         first_lower = first_attr.lower()
         second_lower = second_attr.lower()
 
-        # Boolean-like naming conventions
-        is_first_bool = any(x in first_lower for x in ['is', 'has', 'can', 'should'])
-        is_second_bool = any(x in second_lower for x in ['is', 'has', 'can', 'should'])
+        # Boolean-like naming conventions: don't compare a flag with a quantity.
+        # Use PREFIX matching (isActive, hasLicense) — a substring test wrongly flags
+        # 'discount' ('dIScount'), 'this', 'list', etc.
+        _bool_pref = ('is', 'has', 'can', 'should', 'are', 'was', 'will')
+        is_first_bool = first_lower.startswith(_bool_pref)
+        is_second_bool = second_lower.startswith(_bool_pref)
         if is_first_bool != is_second_bool:
-            return False
-
-        # Date/time naming conventions
-        is_first_date = any(x in first_lower for x in ['date', 'time', 'at', 'when'])
-        is_second_date = any(x in second_lower for x in ['date', 'time', 'at', 'when'])
-        if is_first_date != is_second_date:
-            return False
-
-        # Money/price naming conventions
-        is_first_money = any(x in first_lower for x in ['amount', 'price', 'cost', 'fee', 'rate', 'payment'])
-        is_second_money = any(x in second_lower for x in ['amount', 'price', 'cost', 'fee', 'rate', 'payment'])
-        if is_first_money != is_second_money:
-            return False
-
-        # Distance/mileage naming conventions
-        is_first_distance = any(x in first_lower for x in ['mileage', 'distance', 'kilometer', 'mile', 'odometer'])
-        is_second_distance = any(x in second_lower for x in ['mileage', 'distance', 'kilometer', 'mile', 'odometer'])
-        if is_first_distance != is_second_distance:
             return False
 
         return True
@@ -397,18 +478,273 @@ class BenchmarkEngineV2:
 
     def _get_association(self, context: str, ref_name: str):
         return next((a for a in self.metamodel.get_associations_for(context) if a.ref_name == ref_name), None)
+
+    def _has_usable_attr(self, cls: str) -> bool:
+        """True if `cls` exposes a numeric/boolean/string attribute that
+        `_attr_predicate` can turn into a self-contained boolean tail. Pure
+        (no RNG) so it is safe to call from applicability checks."""
+        return any(
+            self._normalize_type(a.type) in ('numeric', 'boolean', 'string')
+            for a in self.metamodel.get_attributes_for(cls)
+        )
+
+    def _can_navigate(self, context: str) -> bool:
+        """Pure feasibility oracle for `_synth_navigation_path`: True iff some
+        single-valued association (one or two hops) reaches a class with a usable
+        attribute."""
+        for a in self.metamodel.get_single_associations(context):
+            if self._has_usable_attr(a.target_class):
+                return True
+            for b in self.metamodel.get_single_associations(a.target_class):
+                if self._has_usable_attr(b.target_class):
+                    return True
+        return False
+
+    def _has_numeric_attr(self, cls: str) -> bool:
+        """True if `cls` exposes a numeric attribute (pure, no RNG)."""
+        return any(
+            self._normalize_type(a.type) == 'numeric'
+            for a in self.metamodel.get_attributes_for(cls)
+        )
+
+    def _viable_collections(self, context: str, kind: str) -> List[str]:
+        """Ref-names of the context's collection associations whose target class can
+        support a synthesised body of the given `kind` ('numeric' | 'usable' | 'any').
+        Restricting the chosen collection to this set keeps applicable == instantiable
+        regardless of metamodel (some collections may reach attribute-poor classes)."""
+        out = []
+        for a in self.metamodel.get_collection_associations(context):
+            if kind == 'numeric' and self._has_numeric_attr(a.target_class):
+                out.append(a.ref_name)
+            elif kind == 'usable' and self._has_usable_attr(a.target_class):
+                out.append(a.ref_name)
+            elif kind == 'any' and self.metamodel.get_attributes_for(a.target_class):
+                out.append(a.ref_name)
+        return out
+
+    def _attr_predicate(self, cls: str, var: Optional[str] = None,
+                        numeric_only: bool = False) -> Optional[str]:
+        """Pick an attribute of `cls` and return a self-contained boolean predicate,
+        e.g. 'price >= 0', 'active = true', "name <> ''". With `var` set the tail is
+        iterator-prefixed ('x.price >= 0') for quantifier bodies; without it there is
+        no prefix ('price >= 0') for navigation heads / template-supplied prefixes.
+
+        The RHS never references the LHS, so the tail stays valid under any prefix.
+        The operator and constant are varied (not a fixed `>= 0`) for structural and
+        value diversity; `numeric_only` keeps the form to a numeric comparison the
+        live forAll/select SMT handlers can parse (`var.attr OP <int>`).
+        Returns None when `cls` exposes no suitable attribute."""
+        attrs = self.metamodel.get_attributes_for(cls)
+        prefix = f"{var}." if var else ""
+        numeric = [a for a in attrs if self._normalize_type(a.type) == 'numeric']
+        if numeric:
+            op = random.choice(_PRED_NUM_OPS)
+            bound = random.choice(_PRED_LOWER_BOUNDS if op in (">=", ">") else _PRED_UPPER_BOUNDS)
+            return f"{prefix}{random.choice(numeric).name} {op} {bound}"
+        if numeric_only:
+            return None
+        booleans = [a for a in attrs if self._normalize_type(a.type) == 'boolean']
+        if booleans:
+            return f"{prefix}{random.choice(booleans).name} {random.choice(_PRED_BOOL)}"
+        strings = [a for a in attrs if self._normalize_type(a.type) == 'string']
+        if strings:
+            return f"{prefix}{random.choice(strings).name} <> ''"
+        return None
+
+    def _synth_navigation_path(self, context: str) -> Optional[str]:
+        """Synthesise a boolean navigation expression from single-valued
+        associations. Prefers a two-hop chain ('self.a.b.attr >= 0') for genuine
+        navigation depth, falling back to one hop ('self.a.attr >= 0'). Returns
+        None if no single-valued association reaches a class with a usable
+        attribute."""
+        singles = self.metamodel.get_single_associations(context)
+        for a in singles:
+            for b in self.metamodel.get_single_associations(a.target_class):
+                pred = self._attr_predicate(b.target_class)
+                if pred:
+                    return f"self.{a.ref_name}.{b.ref_name}.{pred}"
+        for a in singles:
+            pred = self._attr_predicate(a.target_class)
+            if pred:
+                return f"self.{a.ref_name}.{pred}"
+        return None
+
+    def _synth_nested_predicate(self, context: str, params: Dict) -> Optional[str]:
+        """Synthesise the body of a collection iteration over the target class of
+        the chosen 'collection' association, e.g. 'price >= 0'. The pattern
+        template prepends '{iterator}.', so the predicate carries no prefix."""
+        assoc = self._get_association(context, params.get('collection'))
+        if not assoc:
+            return None
+        return self._attr_predicate(assoc.target_class)
+
+    # ── Cross-class semantic helpers ──────────────────────────────────────
+
+    def _resolve_cross_attr_type(self, context: str, attr_name: str,
+                                  params: Dict) -> Optional[str]:
+        """
+        Find the declared type of an attribute that belongs to an associated
+        class rather than the context class itself.
+
+        Resolution priority:
+          1. 'collection' param hint  → narrows to one class, always unambiguous
+          2. Single match across all direct associations → unambiguous
+          3. Multiple matches, same type → safe to return
+          4. Multiple matches, different types → fail closed (return None, log warning)
+        """
+        # Priority 1: use 'collection' param as a class hint
+        collection_name = params.get('collection')
+        if collection_name:
+            assoc = self._get_association(context, collection_name)
+            if assoc:
+                for a in self.metamodel.get_attributes_for(assoc.target_class):
+                    if a.name == attr_name:
+                        return a.type
+
+        # Priority 2: search all directly associated classes
+        matches = []
+        for assoc in self.metamodel.get_associations_for(context):
+            for a in self.metamodel.get_attributes_for(assoc.target_class):
+                if a.name == attr_name:
+                    matches.append((assoc.target_class, a.type))
+
+        if not matches:
+            return None
+
+        if len(matches) == 1:
+            return matches[0][1]
+
+        # Multiple matches: safe if all share the same type
+        unique_types = {t for _, t in matches}
+        if len(unique_types) == 1:
+            return unique_types.pop()
+
+        # Conflicting types across classes — fail closed
+        logger.warning(
+            "[ambiguous resolution] Attribute '%s' found in multiple "
+            "associated classes of '%s' with conflicting types: %s. "
+            "Cannot resolve — cross-class type validation skipped.",
+            attr_name, context, matches
+        )
+        return None
+
+    def _resolve_navigation_path(self, context: str,
+                                  path_parts: List[str]) -> Optional[str]:
+        """
+        Walk a list of association names from context and return the final
+        class name.  Returns None if any step cannot be resolved.
+        e.g. context='Customer', path_parts=['rental','vehicle'] -> 'Vehicle'
+        """
+        current = context
+        for part in path_parts:
+            assoc = self._get_association(current, part)
+            if not assoc:
+                return None
+            current = assoc.target_class
+        return current
+
+    def _resolve_cross_attr_type_multihop(self, context: str,
+                                           attr_name: str,
+                                           params: Dict) -> Optional[str]:
+        """
+        Extended resolver that first tries single-hop lookup, then uses
+        'collection' + 'nested_collection' params to attempt a two-hop
+        resolution (Fix 3).
+        """
+        # Single-hop first
+        result = self._resolve_cross_attr_type(context, attr_name, params)
+        if result is not None:
+            return result
+
+        # Two-hop: collection → nested_collection → attr
+        collection_name = params.get('collection')
+        nested_name = params.get('nested_collection')
+        if collection_name and nested_name:
+            final_class = self._resolve_navigation_path(
+                context, [collection_name, nested_name]
+            )
+            if final_class:
+                for a in self.metamodel.get_attributes_for(final_class):
+                    if a.name == attr_name:
+                        return a.type
+
+        return None
+
+    def _cross_class_semantics_compatible(self, attr1: str, attr2: str) -> bool:
+        """
+        Stronger domain-family check for cross-class attribute pairs.
+        Uses _DOMAIN_PATTERNS / _domain_family from llm_semantic_analyzer
+        (the same classifier used in post-processing) rather than the simpler
+        keyword heuristic in _attribute_names_compatible().
+
+        Logic:
+          - Never-cross domain on either side → reject (unless both same family)
+          - Both in different *known* families → reject
+          - Both in same approved family → accept
+          - Either domain unknown → admit conservatively (True)
+        """
+        try:
+            from modules.semantic.llm_semantic_analyzer import (
+                _classify_attr_domain, _domain_family, _NEVER_CROSS_FAMILIES,
+            )
+            fa = _domain_family(_classify_attr_domain(attr1))
+            fb = _domain_family(_classify_attr_domain(attr2))
+
+            # Hard reject: never-cross family
+            if fa in _NEVER_CROSS_FAMILIES or fb in _NEVER_CROSS_FAMILIES:
+                return fa == fb
+
+            # Both known, different families → reject
+            if fa and fb and fa != fb:
+                return False
+
+            # Both known, same family → accept
+            # One or both unknown → admit by default
+            return True
+        except ImportError:
+            # Fallback to the engine's own keyword heuristic
+            return self._attribute_names_compatible(attr1, attr2)
+
+    def _association_names_compatible(self, assoc1: str, assoc2: str) -> bool:
+        """
+        Conservative guard for two-hop collection chains (Fix 2).
+        Only rejects when one association name clearly falls into a
+        never-cross domain (identifiers, labels, units, versions).
+        Most association names are neutral nouns and will pass through.
+        This is NOT a full semantic filter — it is a narrow sanity check.
+        """
+        try:
+            from modules.semantic.llm_semantic_analyzer import (
+                _classify_attr_domain, _domain_family, _NEVER_CROSS_FAMILIES,
+            )
+            fa = _domain_family(_classify_attr_domain(assoc1))
+            fb = _domain_family(_classify_attr_domain(assoc2))
+            if fa in _NEVER_CROSS_FAMILIES or fb in _NEVER_CROSS_FAMILIES:
+                return fa == fb   # allow only if both are in the same never-cross family
+        except ImportError:
+            pass
+        return True  # conservative default: admit
     
     def __init__(self, metamodel: Metamodel, enable_semantic_validation: bool = True,
-                 verification_enabled: bool = False, semantic_matrix=None):
+                 verification_enabled: bool = False, semantic_matrix=None,
+                 generation_mode: str = "construct_select"):
         logger.info("="*80)
         logger.info("Initializing BenchmarkEngineV2")
         logger.info(f"Metamodel: {len(metamodel.classes)} classes")
         logger.info(f"Semantic validation: {'ENABLED' if enable_semantic_validation else 'DISABLED'}")
         logger.info(f"LLM semantic matrix: {'LOADED' if semantic_matrix else 'NOT AVAILABLE (using heuristics)'}")
+        logger.info(f"Generation mode: {generation_mode}")
 
         self.metamodel = metamodel
         self.verification_enabled = verification_enabled
         self.semantic_matrix = semantic_matrix  # LLM-based compatibility matrix (or None)
+        # Generation mechanism:
+        #   "construct_select" (default) — over-generate a candidate pool from the
+        #        pattern library, MEASURE exact (Structural, Computational) per
+        #        candidate, then select to fill each difficulty tier's quota
+        #        exactly; feasibility gaps are reported, never padded.
+        #   "legacy" — the older TC-steering path (kept for comparison/fallback).
+        self.generation_mode = self._normalize_generation_mode(generation_mode)
         self.registry = PatternRegistry()
         self.generator = OCLGenerator(pattern_registry=self.registry, metamodel=metamodel)
         logger.debug(f"Pattern registry loaded: {len(self.registry.get_all_patterns())} patterns")
@@ -485,7 +821,18 @@ class BenchmarkEngineV2:
         # RNG seeding is handled by the suite controller using the profile seed
         # Reset per-run string constraint tracking
         self._string_constrained_attrs = defaultdict(set)
-        
+        # Populated by _generate_steered; written to report.json by the controller.
+        self.steered_report = None
+
+        # Dispatch: construct-and-select is the default mechanism.  It replaces
+        # the TC-steering heuristics below with an over-generate -> measure ->
+        # stratified-select pipeline (exact tier histogram by construction;
+        # honest feasibility gaps).  The legacy path is preserved for fallback.
+        if self.generation_mode == "construct_select":
+            return self._generate_construct_select(profile, progress_callback)
+        if self.generation_mode == "steered":
+            return self._generate_steered(profile, progress_callback)
+
         coverage = CoverageState(self.metamodel, profile,
                                   complexity_weights=get_complexity_weights())
         self._coverage = coverage  # Store reference for complexity steering
@@ -494,7 +841,7 @@ class BenchmarkEngineV2:
         logger.info(f"Target: {total} invariants")
         logger.info(f"Classes: {len(self.metamodel.get_class_names())}")
         logger.info(f"Enabled patterns: {len(profile.library.enabled) if profile.library.enabled else len(self.all_patterns)}")
-        logger.info(f"Blacklist size: {len(self.BLACKLIST)} patterns")
+        logger.info(f"Exclude-list size: {len(self.EXCLUDE_LIST)} patterns")
         
         print(f"\n=== BENCHMARK GENERATION START ===")
         print(f"Target: {total} invariants")
@@ -522,120 +869,125 @@ class BenchmarkEngineV2:
             
             logger.info(f"Generating {count} constraints for family '{family}' ({len(patterns)} patterns available)")
             print(f"\n  Generating {count} constraints for family '{family}' ({len(patterns)} patterns available)")
-            
-            for i in range(count):
-                if len(constraints) >= total:
-                    break
-                
+
+            # Phase 1 uses a retry-until-quota loop (proposed algorithm):
+            # keeps attempting until the family quota is filled or K_f attempts exhausted,
+            # rather than a fixed for-loop that wastes slots on rejections.
+            accepted_f = 0
+            attempts_f = 0
+            K_f = count * 3  # allow up to 3x attempts to fill the family quota
+
+            while accepted_f < count and attempts_f < K_f and len(constraints) < total:
+                attempts_f += 1
+
                 # Select context with room (enhanced with complexity weighting)
-                logger.debug(f"  Attempt {i+1}/{count}: Selecting context...")
+                logger.debug(f"  Attempt {attempts_f}/{K_f}: Selecting context...")
                 context = self._select_context(class_quota, profile, coverage)
                 if not context:
-                    logger.debug(f"  Attempt {i+1}/{count}: No context available (quota exhausted)")
-                    logger.debug(f"Attempt {i+1}/{count}: No context available (quota exhausted)")
-                    continue
-                
-                logger.debug(f"  Attempt {i+1}/{count}: Selected context '{context}' (quota: {class_quota[context]})")
-                
+                    logger.debug(f"  Attempt {attempts_f}/{K_f}: No context available (quota exhausted)")
+                    break
+
+                logger.debug(f"  Attempt {attempts_f}/{K_f}: Selected context '{context}' (quota: {class_quota[context]})")
+
                 # Sample pattern with weights (enhanced with semantic suggestions)
-                logger.debug(f"  Attempt {i+1}/{count}: Sampling pattern from {len(patterns)} options...")
+                logger.debug(f"  Attempt {attempts_f}/{K_f}: Sampling pattern from {len(patterns)} options...")
                 pattern = self._weighted_sample(patterns, profile, context=context)
-                logger.debug(f"  Attempt {i+1}/{count}: Selected pattern '{pattern.id}'")
-                
+                logger.debug(f"  Attempt {attempts_f}/{K_f}: Selected pattern '{pattern.id}'")
+
                 # Check if pattern is applicable to this context before trying
                 if not self._is_pattern_applicable(pattern, context):
-                    logger.debug(f"  Attempt {i+1}/{count}: Pattern '{pattern.id}' not applicable to '{context}' - skipping")
-                    # Skip silently - pattern not compatible with this class structure
+                    logger.debug(f"  Attempt {attempts_f}/{K_f}: Pattern '{pattern.id}' not applicable to '{context}' - skipping")
                     continue
-                
-                logger.debug(f"  Attempt {i+1}/{count}: Pattern '{pattern.id}' is applicable to '{context}'")
-                
+
+                logger.debug(f"  Attempt {attempts_f}/{K_f}: Pattern '{pattern.id}' is applicable to '{context}'")
+
                 # Generate
                 try:
-                    logger.debug(f"  Attempt {i+1}/{count}: Generating parameters...")
+                    logger.debug(f"  Attempt {attempts_f}/{K_f}: Generating parameters...")
                     params = self._gen_params(pattern, context)
-                    logger.debug(f"  Attempt {i+1}/{count}: Parameters: {params}")
-                    
-                    logger.debug(f"  Attempt {i+1}/{count}: Generating constraint...")
+                    logger.debug(f"  Attempt {attempts_f}/{K_f}: Parameters: {params}")
+
+                    logger.debug(f"  Attempt {attempts_f}/{K_f}: Generating constraint...")
                     c = self.generator.generate(pattern.id, context, params)
-                    logger.debug(f"  Attempt {i+1}/{count}: Generated: {c.ocl}")
-                    
-                    # A: Track successful generation
+                    logger.debug(f"  Attempt {attempts_f}/{K_f}: Generated: {c.ocl}")
+
+                    # Track successful generation
                     self.pattern_success_counts[(pattern.id, context)] += 1
-                    logger.debug(f"  Attempt {i+1}/{count}: Pattern succeeded")
-                    
+                    logger.debug(f"  Attempt {attempts_f}/{K_f}: Pattern succeeded")
+
                     # Check diversity (AST similarity)
-                    logger.debug(f"  Attempt {i+1}/{count}: Checking diversity...")
+                    logger.debug(f"  Attempt {attempts_f}/{K_f}: Checking diversity...")
                     if not self._is_diverse(c, constraints, profile):
-                        logger.debug(f"  Attempt {i+1}/{count}: Failed diversity check - too similar to existing")
+                        logger.debug(f"  Attempt {attempts_f}/{K_f}: Failed diversity check - too similar to existing")
                         continue
-                    
-                    logger.debug(f"  Attempt {i+1}/{count}: Diversity check passed")
-                    
-                    # E: Context-aware semantic validation (avoid adding invalid constraints)
+
+                    logger.debug(f"  Attempt {attempts_f}/{K_f}: Diversity check passed")
+
+                    # Context-aware semantic validation
                     if self.semantic_validator:
-                        logger.debug(f"  Attempt {i+1}/{count}: Running semantic validation...")
+                        logger.debug(f"  Attempt {attempts_f}/{K_f}: Running semantic validation...")
                         is_valid, reason = self.semantic_validator.validate_parameters(
                             pattern.id, context, params
                         )
                         if not is_valid:
-                            logger.debug(f"  Attempt {i+1}/{count}: Semantic validation failed: {reason}")
-                            # Semantically dubious constraint - skip silently
+                            logger.debug(f"  Attempt {attempts_f}/{K_f}: Semantic validation failed: {reason}")
                             continue
-                        logger.debug(f"  Attempt {i+1}/{count}: Semantic validation passed")
-                    
-                    # Pattern repetition check DISABLED for maximum generation
-                    # This allows the same pattern to be used multiple times per class
-                    # pattern_context_key = f"{pattern.id}_{context}"
-                    # pattern_usage_count = sum(1 for existing in constraints 
-                    #                          if f"{existing.pattern_id}_{existing.context}" == pattern_context_key)
-                    # if pattern_usage_count >= 2:
-                    #     continue
-                    
+                        logger.debug(f"  Attempt {attempts_f}/{K_f}: Semantic validation passed")
+
                     constraints.append(c)
                     self._track_string_constraints(pattern, params, context)
                     coverage.add_constraint(c)
                     class_quota[context] += 1
-                    logger.debug(f"  Attempt {i+1}/{count}: CONSTRAINT ADDED - Total: {len(constraints)}/{total}")
+                    accepted_f += 1
+                    logger.debug(f"  Attempt {attempts_f}/{K_f}: CONSTRAINT ADDED - Accepted: {accepted_f}/{count}, Total: {len(constraints)}/{total}")
                     logger.debug(f"    Pattern: {pattern.id}")
                     logger.debug(f"    Context: {context}")
                     logger.debug(f"    Expression: {c.ocl}")
                     if progress_callback:
                         progress_callback(len(constraints), total, coverage.score())
                 except Exception as e:
-                    # A: Track pattern failure
+                    # Track pattern failure — continue, do not consume a quota slot
                     self.pattern_fail_counts[(pattern.id, context)] += 1
-                    logger.debug(f"  Attempt {i+1}/{count}: GENERATION FAILED")
+                    logger.debug(f"  Attempt {attempts_f}/{K_f}: GENERATION FAILED")
                     logger.debug(f"    Pattern: {pattern.id}")
                     logger.debug(f"    Context: {context}")
                     logger.debug(f"    Error: {type(e).__name__}: {e}")
-                    logger.debug(f"Attempt {i+1}/{count}: Failed to generate - {type(e).__name__}: {e}")
+
+            if accepted_f < count:
+                logger.warning(f"  Family '{family}': generated {accepted_f}/{count} after {attempts_f} attempts (K_f={K_f})")
+                print(f"  Family '{family}': generated {accepted_f}/{count} constraints in {attempts_f} attempts")
         
         # Phase 2: Coverage-driven backfill
+        # Uses a stall counter (K_STALL) instead of breaking on first error —
+        # transient failures increment the counter; a successful add resets it.
+        # Hard breaks are kept only for structural impossibilities (no deficits,
+        # no pattern for deficit type, no context available).
         print(f"\n--- Phase 2: Coverage-driven backfill (target: {total - len(constraints)} more constraints) ---")
         phase2_attempts = 0
         phase2_generated = 0
-        
-        while len(constraints) < total:
+        K_STALL = 20   # max consecutive failures before giving up
+        stall = 0
+
+        while len(constraints) < total and stall < K_STALL:
             phase2_attempts += 1
-            
+
             deficits = coverage.deficits()
             if not deficits:
                 print(f"  Phase 2 stopped: No coverage deficits found (generated {phase2_generated} in {phase2_attempts} attempts)")
                 break
-            
-            # Pick deficit and find pattern to address it
+
+            # Pick first deficit and find a pattern to address it
             target_name, _, _ = deficits[0]
             pattern = self._pattern_for_deficit(target_name, profile)
             if not pattern:
-                print(f"  Phase 2 stopped: No pattern found for deficit '{target_name}' (generated {phase2_generated} in {phase2_attempts} attempts)")
+                print(f"  Phase 2 stopped: No pattern found for deficit '{target_name}'")
                 break
-            
+
             context = self._select_context(class_quota, profile, coverage)
             if not context:
-                print(f"  Phase 2 stopped: No context available - all classes at quota (generated {phase2_generated} in {phase2_attempts} attempts)")
+                print(f"  Phase 2 stopped: No context available - all classes at quota")
                 break
-            
+
             try:
                 params = self._gen_params(pattern, context)
                 c = self.generator.generate(pattern.id, context, params)
@@ -645,18 +997,24 @@ class BenchmarkEngineV2:
                     coverage.add_constraint(c)
                     class_quota[context] += 1
                     phase2_generated += 1
-                    
+                    stall = 0  # reset stall counter on successful add
+
                     if phase2_generated % 10 == 0:
                         print(f"  Phase 2: Generated {phase2_generated} constraints (total: {len(constraints)}/{total})")
-                    
+
                     if progress_callback:
                         progress_callback(len(constraints), total, coverage.score())
+                else:
+                    stall += 1  # diversity check failed
+                    logger.debug(f"  Phase 2: diversity failed (stall {stall}/{K_STALL})")
             except Exception as e:
-                # A: Track pattern failure
+                # Track failure, increment stall — do not break on first error
                 self.pattern_fail_counts[(pattern.id, context)] += 1
-                print(f"  Phase 2 stopped: Generation error - {type(e).__name__}: {str(e)[:60]} (generated {phase2_generated} in {phase2_attempts} attempts)")
-                break
-        
+                stall += 1
+                logger.debug(f"  Phase 2: generation error (stall {stall}/{K_STALL}) - {type(e).__name__}: {str(e)[:60]}")
+
+        if stall >= K_STALL:
+            print(f"  Phase 2 stopped: stall limit reached ({K_STALL} consecutive failures, {phase2_generated} generated)")
         if phase2_generated > 0:
             print(f"  Phase 2 complete: Generated {phase2_generated} additional constraints")
         
@@ -670,8 +1028,8 @@ class BenchmarkEngineV2:
                 if len(constraints) >= total:
                     break
                 
-                # C: Use centralized blacklist
-                pattern = random.choice([p for p in self.all_patterns if p.id not in self.BLACKLIST])
+                # C: Use centralized exclude-list
+                pattern = random.choice([p for p in self.all_patterns if p.id not in self.EXCLUDE_LIST])
                 
                 # Pick random context
                 context = self._select_context(class_quota, profile, coverage)
@@ -712,9 +1070,553 @@ class BenchmarkEngineV2:
         
         # A: Print failure statistics
         self._print_failure_stats()
-        
+
         return constraints
-    
+
+    # ------------------------------------------------------------------
+    # Construct-and-select mechanism (default)
+    # ------------------------------------------------------------------
+
+    @staticmethod
+    def _normalize_generation_mode(mode: Optional[str]) -> str:
+        """Validate/normalize a generation-mode string.
+
+        Unknown or empty values fall back to the default ('construct_select')
+        with a warning, so a config typo can never silently disable generation.
+        """
+        if mode in VALID_GENERATION_MODES:
+            return mode
+        if mode:
+            logger.warning(
+                "Unknown generation_mode '%s' — falling back to "
+                "'construct_select'. Valid modes: %s",
+                mode, VALID_GENERATION_MODES,
+            )
+        return "construct_select"
+
+    def _generate_steered(self, profile: BenchmarkProfile,
+                          progress_callback=None) -> List[OCLConstraint]:
+        """Profile-guided complexity steering with component-wise measured feedback.
+
+        Builds a ``SteeringSpec`` from the profile (suite size, family quota,
+        per-class bounds, and per-component complexity profile boxes), runs the
+        steered generator, and returns the flat ``List[OCLConstraint]`` contract
+        (polarity/UNSAT and verification are applied downstream, unchanged).
+        Complexity profiles come from ``profile.complexity.complexity_profiles``;
+        if absent, a single box-free profile is used (family/class distribution
+        only).
+        """
+        # Lazy import: steered_generation imports this module.
+        from .steered_generation import (
+            SteeredGenerator, SteeringSpec, Box, validate_complexity_profiles,
+        )
+
+        q = profile.quantities
+        cx = profile.complexity
+        raw_profiles = getattr(cx, "complexity_profiles", None)
+        # Reject non-settable (engine-reported) components and malformed ranges
+        # before any box is built, so the user gets a clear, early error.
+        validate_complexity_profiles(raw_profiles)
+        boxes = []
+        if raw_profiles:
+            for i, pr in enumerate(raw_profiles):
+                ranges = {k: (float(v[0]), float(v[1]))
+                          for k, v in (pr.get("ranges") or {}).items()}
+                boxes.append((Box(ranges, pr.get("label", f"p{i}")),
+                              float(pr.get("pct", 0))))
+        if not boxes:
+            boxes = [(Box({}, "any"), 100.0)]
+
+        spec = SteeringSpec(
+            n=q.invariants,
+            sat_ratio=1.0,  # polarity/UNSAT handled downstream by the controller
+            family_quota=dict(q.families_pct or {}),
+            per_class=(q.per_class_min or 0, q.per_class_max or 10 ** 6),
+            profiles=boxes,
+            weights=get_complexity_weights(),
+            policy=getattr(cx, "on_infeasible", "report") or "report",
+        )
+
+        print(f"\n=== STEERED GENERATION START ===")
+        print(f"Target: {spec.n} invariants | families={spec.family_quota} | "
+              f"profiles={[(b.label, pct) for b, pct in boxes]}")
+
+        gen = SteeredGenerator(self, spec)
+        gen.profile()
+        suite, report = gen.run()
+        constraints = []
+        for t in suite:
+            c = t[0]
+            # Tag each constraint with the complexity profile it was generated
+            # for (e.g. easy/medium/difficult), stripping any "+actuator"
+            # provenance suffix so downstream difficulty reflects the user tiers.
+            label = str(t[5] or "").split("+")[0]
+            if label and label not in ("skip", "any"):
+                try:
+                    c.metadata["profile"] = label
+                except Exception:
+                    pass
+            constraints.append(c)
+
+        # honest summary
+        from collections import Counter
+        fam_ct = Counter(t[1] for t in suite)
+        box_ct = Counter(t[5] for t in suite)
+        gaps = [r for r in report if r and r[0] in
+                ("unreached", "unfilled", "below_min", "support_infeasible")]
+        print(f"Filled {len(constraints)}/{spec.n}  families={dict(fam_ct)}  "
+              f"profiles={dict(box_ct)}")
+        if gaps:
+            print(f"Feasibility gaps reported (not padded): {len(gaps)}")
+            for g in gaps[:8]:
+                print(f"   - {g}")
+        print(f"=== STEERED GENERATION COMPLETE ===\n")
+
+        self.steered_report = self._build_steered_report(spec, suite, report)
+        if progress_callback:
+            progress_callback(len(constraints), spec.n, 1.0)
+        return constraints
+
+    def _build_steered_report(self, spec, suite, report) -> dict:
+        """Assemble a JSON-serialisable deviation report for the steered run:
+        realised distributions, reachable envelope, derived components, actuator
+        usage, and feasibility gaps."""
+        from collections import Counter
+
+        def safe(x):
+            if isinstance(x, (str, int, float, bool)) or x is None:
+                return x
+            if isinstance(x, (list, tuple, set)):
+                return [safe(i) for i in x]
+            if isinstance(x, dict):
+                return {str(k): safe(v) for k, v in x.items()}
+            return str(x)
+
+        envelope, derived = {}, {}
+        unreachable, gaps = [], []
+        actuators = Counter()
+        for r in report:
+            if not r:
+                continue
+            kind = r[0]
+            if kind == "reachable_envelope":
+                envelope = {k: [round(v[0], 3), round(v[1], 3)] for k, v in r[1].items()}
+            elif kind == "reported_derived_components":
+                derived = {k: [round(v[0], 3), round(v[1], 3)] for k, v in r[1].items()}
+            elif kind == "box_unreachable":
+                unreachable.append({"box": r[1], "blocking": list(r[2]),
+                                    "reason": r[3] if len(r) > 3 else None})
+            elif kind == "actuator":
+                actuators[r[1]] += 1
+            else:
+                gaps.append({"type": kind, "info": safe(list(r[1:]))})
+        total = len(suite)
+        n_sat = sum(1 for t in suite if t[2] == "sat")
+        return {
+            "target_size": spec.n,
+            "generated": total,
+            "requested_sat_ratio": spec.sat_ratio,
+            "realised_sat_ratio": round(n_sat / total, 3) if total else 0.0,
+            "family_distribution": dict(Counter(t[1] for t in suite)),
+            "profile_distribution": dict(Counter(str(t[5]).split("+")[0] for t in suite)),
+            "actuator_fires": dict(actuators),
+            "reachable_envelope": envelope,
+            "reported_derived_components": derived,
+            "unreachable_boxes": unreachable,
+            "feasibility_gaps": gaps,
+        }
+
+    def _generate_construct_select(self, profile: BenchmarkProfile,
+                                   progress_callback=None) -> List[OCLConstraint]:
+        """Construct-and-select benchmark generation (default mechanism).
+
+        Phases
+        ------
+        1-3  CONSTRUCT a candidate pool from the pattern library (the
+             building-block vocabulary) with NO complexity steering, reusing
+             the engine's parameter generation, semantic validation, and
+             diversity filtering.
+        --   MEASURE each candidate's exact (Structural, Computational) with
+             the complexity calculator and tier on the measured TC.  The
+             dependency dimension is deferred to the final suite — RUC is
+             emergent and never a per-constraint target.
+        4    STRATIFIED SELECT: fill each difficulty tier's quota exactly,
+             spreading picks across the measured complexity range for
+             diversity.  A tier the pool cannot satisfy is reported as a
+             feasibility shortfall — never padded with off-target constraints.
+        5    SUITE DEPENDENCY: report RUC measured on the FINAL selection.
+
+        Returns a flat ``List[OCLConstraint]`` (same contract as the legacy
+        path), so downstream enrichment/verification is unaffected.
+        """
+        weights = get_complexity_weights()
+        total = profile.quantities.invariants
+
+        print(f"\n=== CONSTRUCT-AND-SELECT GENERATION START ===")
+        print(f"Target: {total} invariants")
+        print(f"Difficulty mix: {profile.complexity.tc_difficulty_mix}")
+
+        # Phases 1-3: construct + measure the candidate pool
+        pool = self._construct_pool(profile, weights, progress_callback)
+        buckets: Dict[str, List[_PooledConstraint]] = defaultdict(list)
+        for pc in pool:
+            buckets[pc.tier].append(pc)
+
+        hist = {t: len(buckets.get(t, [])) for t in TIER_ORDER}
+        print(f"\nPhase 1-3  constructed & MEASURED pool: {len(pool)} unique candidates")
+        print(f"           pool tier histogram: " +
+              "  ".join(f"{t}={hist[t]}" for t in TIER_ORDER))
+
+        # Phase 4: stratified selection against per-tier quotas
+        quotas = self._tier_quotas(profile.complexity.tc_difficulty_mix, total)
+        selected, shortfall = self._stratified_select(buckets, quotas)
+
+        sel_by_tier: Dict[str, int] = defaultdict(int)
+        for pc in selected:
+            sel_by_tier[pc.tier] += 1
+
+        print(f"\nPhase 4    stratified selection (fill exact per-tier quotas)")
+        print(f"   {'tier':<9}{'target':>7}{'pool':>6}{'selected':>10}{'shortfall':>11}")
+        total_short = 0
+        for t in TIER_ORDER:
+            want = quotas.get(t, 0)
+            got = sel_by_tier.get(t, 0)
+            short = shortfall.get(t, 0)
+            total_short += short
+            print(f"   {t:<9}{want:>7}{hist[t]:>6}{got:>10}{short:>11}")
+        print(f"   {'TOTAL':<9}{sum(quotas.values()):>7}{len(pool):>6}"
+              f"{len(selected):>10}{total_short:>11}")
+        if total_short == 0:
+            print(f"\n   ==> EXACT MATCH: every per-tier quota met by construction + selection.")
+        else:
+            print(f"\n   ==> FEASIBILITY GAP: {total_short} slot(s) unfilled "
+                  f"(pool cannot supply them) — reported honestly, NOT padded.")
+
+        final = [pc.constraint for pc in selected]
+
+        # Phase 5: suite-level dependency (RUC) measured on the FINAL selection
+        self._report_suite_dependency(final)
+
+        if progress_callback:
+            progress_callback(len(final), total, 1.0)
+
+        print(f"\n=== GENERATION COMPLETE ===")
+        print(f"Total generated: {len(final)} / {total} requested")
+        self._print_failure_stats()
+        return final
+
+    def _construct_pool(self, profile: BenchmarkProfile, weights: 'ComplexityWeights',
+                        progress_callback=None) -> List['_PooledConstraint']:
+        """Over-generate a diverse candidate pool and measure each candidate.
+
+        The pattern library is the building-block vocabulary.  For every
+        applicable (pattern, context) pair we synthesise up to ``K`` distinct
+        candidates using the engine's normal parameter generation + semantic
+        validation, deduplicate by OCL text, reject near-duplicates (AST
+        similarity), and record the MEASURED (Structural, Computational, TC,
+        tier).  No TC steering is applied — complexity is observed, not chased.
+        """
+        K = 3                       # distinct candidates to keep per (pattern, context)
+        per_combo_tries = K * 4     # extra tries to absorb dedup/diversity rejects
+        max_total_attempts = max(8000, 60 * profile.quantities.invariants)
+
+        patterns = [p for p in self.all_patterns if p.id not in self.EXCLUDE_LIST]
+        if profile.library.enabled:
+            patterns = [p for p in patterns if p.id in profile.library.enabled]
+
+        contexts = list(self.metamodel.get_class_names())
+
+        # Applicable (context, pattern) combos, shuffled so the pool is not
+        # biased toward early classes/patterns.
+        combos = [(ctx, p) for ctx in contexts for p in patterns
+                  if self._is_pattern_applicable(p, ctx)]
+        random.shuffle(combos)
+
+        pool: List[_PooledConstraint] = []
+        pool_constraints: List[OCLConstraint] = []
+        seen_ocl: Set[str] = set()
+        attempts = 0
+
+        for ctx, pattern in combos:
+            if attempts >= max_total_attempts:
+                break
+            produced = 0
+            tries = 0
+            while (produced < K and tries < per_combo_tries
+                   and attempts < max_total_attempts):
+                tries += 1
+                attempts += 1
+                try:
+                    params = self._gen_params(pattern, ctx)
+                    c = self.generator.generate(pattern.id, ctx, params)
+                except Exception:
+                    self.pattern_fail_counts[(pattern.id, ctx)] += 1
+                    continue
+                if c is None or not getattr(c, 'ocl', None):
+                    continue
+                if c.ocl in seen_ocl:
+                    continue
+                if not self._is_diverse(c, pool_constraints, profile):
+                    continue
+                # accept + MEASURE (dependency deferred -> all_constraints=None)
+                seen_ocl.add(c.ocl)
+                pool_constraints.append(c)
+                self.pattern_success_counts[(pattern.id, ctx)] += 1
+                res = compute_total_complexity(
+                    c.ocl, metamodel=self.metamodel, context_class=ctx,
+                    all_constraints=None, weights=weights,
+                )
+                pool.append(_PooledConstraint(
+                    constraint=c,
+                    structural=res.structural_total,
+                    computational=res.computational_total,
+                    tc=res.tc,
+                    tier=tc_to_difficulty_label(res.tc),
+                ))
+                produced += 1
+                if progress_callback and len(pool) % 25 == 0:
+                    progress_callback(min(len(pool), profile.quantities.invariants),
+                                      profile.quantities.invariants, 0.5)
+
+        return pool
+
+    def _tier_quotas(self, mix: Dict[str, int], total: int) -> Dict[str, int]:
+        """Translate a difficulty mix (tier -> percentage) into exact integer
+        per-tier quotas summing to ``total``.  Robust to percentages that do
+        not sum to exactly 100; rounding drift is absorbed by the largest-share
+        tier."""
+        shares = {t: max(0, mix.get(t, 0)) for t in TIER_ORDER}
+        denom = sum(shares.values()) or 1
+        q = {t: int(round(total * shares[t] / denom)) for t in TIER_ORDER}
+        drift = total - sum(q.values())
+        if drift != 0:
+            top = max(TIER_ORDER, key=lambda t: shares[t])
+            q[top] = max(0, q[top] + drift)
+        return q
+
+    def _pick_spread(self, bucket: List['_PooledConstraint'], k: int) -> List['_PooledConstraint']:
+        """Pick ``k`` candidates spread across a bucket's measured complexity
+        range (sorted by TC, then Structural, then Computational) so a tier is
+        not filled with near-identical constraints."""
+        if k <= 0 or not bucket:
+            return []
+        if k >= len(bucket):
+            return list(bucket)
+        ordered = sorted(bucket, key=lambda pc: (pc.tc, pc.structural, pc.computational))
+        if k == 1:
+            return [ordered[len(ordered) // 2]]
+        picked: List[_PooledConstraint] = []
+        used: Set[int] = set()
+        for i in range(k):
+            idx = round(i * (len(ordered) - 1) / (k - 1))
+            while idx in used and idx < len(ordered) - 1:
+                idx += 1
+            while idx in used and idx > 0:
+                idx -= 1
+            used.add(idx)
+            picked.append(ordered[idx])
+        return picked
+
+    def _stratified_select(self, buckets: Dict[str, List['_PooledConstraint']],
+                           quotas: Dict[str, int]
+                           ) -> Tuple[List['_PooledConstraint'], Dict[str, int]]:
+        """Fill each tier's quota from its bucket via spread-picking; return the
+        selected candidates and the per-tier shortfall (0 where fully filled)."""
+        selected: List[_PooledConstraint] = []
+        shortfall: Dict[str, int] = {}
+        for tier in TIER_ORDER:
+            want = quotas.get(tier, 0)
+            have = buckets.get(tier, [])
+            take = self._pick_spread(have, min(want, len(have)))
+            selected.extend(take)
+            shortfall[tier] = max(0, want - len(take))
+        return selected, shortfall
+
+    def _report_suite_dependency(self, final: List[OCLConstraint]) -> None:
+        """Measure RUC (Reused Constraint Count) on the FINAL selected suite.
+
+        Dependency is emergent and suite-level: measured against the
+        constraints actually shipped, never steered per-constraint or measured
+        against the throwaway pool.  Reporting only — it does not alter the
+        selection.
+        """
+        if not final:
+            return
+        total_reuse = 0
+        sharing = 0
+        for c in final:
+            ruc = compute_ruc(c.ocl, c.context, final)
+            if ruc > 0:
+                sharing += 1
+                total_reuse += ruc
+        print(f"\nPhase 5    suite-level dependency (RUC) on the {len(final)} "
+              f"selected constraints:")
+        print(f"           total reuse links={total_reuse}, "
+              f"sharing navigations={sharing}/{len(final)}")
+
+    # ------------------------------------------------------------------
+    # VGCR refinement hook
+    # ------------------------------------------------------------------
+
+    def generate_refined(
+        self,
+        failed_constraint: 'OCLConstraint',
+        generator_state: 'GeneratorState',
+    ) -> Optional['OCLConstraint']:
+        """
+        Generate a refined candidate after a VGCR property-check failure.
+
+        Called by the VGCR loop when a candidate fails q1–q5.  Instead of
+        asking the LLM for a new constraint, this method re-samples from
+        the existing pattern library while respecting the blacklists and
+        weight adjustments recorded in *generator_state*.
+
+        Strategy:
+          1. Try a different pattern for the same context class.
+          2. If no alternative pattern works, try the same pattern on a
+             different context class.
+          3. If nothing works, return None (slot unfilled).
+
+        Args:
+            failed_constraint: The candidate that failed property checks.
+            generator_state: Current blacklists and weight adjustments
+                             from previous failures.
+
+        Returns:
+            A new OCLConstraint, or None if no alternative can be found.
+        """
+        context = failed_constraint.context
+        failed_pid = failed_constraint.pattern_id
+        max_attempts = 15  # cap to avoid infinite loops
+
+        for attempt in range(max_attempts):
+            # Pick a pattern, applying weight modifiers from generator state
+            try:
+                pattern = self._vgcr_weighted_sample(
+                    context, failed_pid, generator_state
+                )
+            except Exception:
+                pattern = None
+
+            if pattern is None:
+                # No suitable pattern found for this context — try another class
+                alt_context = self._pick_alternative_context(
+                    context, generator_state
+                )
+                if alt_context is None:
+                    return None
+                context = alt_context
+                continue
+
+            # Check blacklist before generating
+            if generator_state.is_blacklisted(pattern.id, context):
+                continue
+
+            # Check applicability
+            if not self._is_pattern_applicable(pattern, context):
+                continue
+
+            # Generate the constraint
+            try:
+                params = self._gen_params(pattern, context)
+
+                # Check binding-level blacklist
+                if generator_state.is_blacklisted(
+                    pattern.id, context, params
+                ):
+                    continue
+
+                c = self.generator.generate(pattern.id, context, params)
+
+                # Basic diversity check against recent constraints
+                # (We can't check against the full suite here — the VGCR
+                # loop handles that via property checks.)
+                if c is not None:
+                    logger.debug(
+                        f"  generate_refined: produced "
+                        f"'{pattern.id}@{context}' on attempt {attempt}"
+                    )
+                    return c
+            except Exception as e:
+                logger.debug(
+                    f"  generate_refined: attempt {attempt} failed — "
+                    f"{type(e).__name__}: {str(e)[:60]}"
+                )
+                continue
+
+        return None
+
+    def _vgcr_weighted_sample(
+        self,
+        context: str,
+        avoid_pattern_id: str,
+        generator_state: 'GeneratorState',
+    ):
+        """
+        Sample a pattern for VGCR refinement, respecting generator state.
+
+        Avoids the failed pattern, applies weight modifiers, and skips
+        blacklisted (pattern, context) pairs. The replacement is kept in the
+        SAME family as the failed constraint so refinement does not drift the
+        requested family distribution (and cannot inject a zero-quota family
+        such as 'conditional' as a substitute for, e.g., a cardinality slot).
+        """
+        def _fam(p):
+            return classify_family(p.id, getattr(p.category, "value", str(p.category)))
+
+        failed_pat = next((p for p in self.all_patterns if p.id == avoid_pattern_id), None)
+        failed_family = _fam(failed_pat) if failed_pat is not None else None
+
+        candidates = [
+            p for p in self.all_patterns
+            if p.id not in self.EXCLUDE_LIST
+            and p.id != avoid_pattern_id
+            and not generator_state.is_blacklisted(p.id, context)
+            and (failed_family is None or _fam(p) == failed_family)
+        ]
+
+        if not candidates:
+            return None
+
+        # Build weights incorporating generator state modifiers
+        weights = []
+        for p in candidates:
+            base_w = 1.0
+            # Apply generator state weight modifier
+            mod = generator_state.get_weight_modifier(p.id)
+            weights.append(base_w * mod)
+
+        total_w = sum(weights)
+        if total_w <= 0:
+            return None
+
+        # Weighted random selection
+        import random
+        r = random.random() * total_w
+        cumulative = 0.0
+        for p, w in zip(candidates, weights):
+            cumulative += w
+            if r <= cumulative:
+                return p
+
+        return candidates[-1]  # fallback
+
+    def _pick_alternative_context(
+        self,
+        avoid_context: str,
+        generator_state: 'GeneratorState',
+    ) -> Optional[str]:
+        """Pick a different context class for refinement."""
+        import random
+        all_classes = [
+            c for c in self.metamodel.get_class_names()
+            if c != avoid_context
+        ]
+        if not all_classes:
+            return None
+        random.shuffle(all_classes)
+        return all_classes[0]
+
     def _plan_families(self, profile: BenchmarkProfile) -> Dict[str, int]:
         """Convert family percentages to counts."""
         total = profile.quantities.invariants
@@ -752,12 +1654,45 @@ class BenchmarkEngineV2:
             # Require at least one single-valued association
             if not self.metamodel.get_single_associations(context):
                 return False
+        # Navigation patterns resolve their target from a single/collection
+        # association at instantiation, so the generic empty-options gate (which
+        # probes with no dependency values) cannot see it. Decide here instead.
+        if pattern.id == 'simple_navigation':
+            # Template 'self.assoc.attr' is a boolean invariant only when attr is
+            # boolean, so require a single assoc reaching a boolean attribute.
+            return any(
+                any(self._normalize_type(at.type) == 'boolean'
+                    for at in self.metamodel.get_attributes_for(a.target_class))
+                for a in self.metamodel.get_single_associations(context)
+            )
+        if pattern.id == 'navigation_chain':
+            # Boolean path synthesised over single-valued associations (1-2 hops).
+            return self._can_navigate(context)
+        if pattern.id == 'collection_navigation':
+            # Quantified predicate synthesised over a collection's target class.
+            return any(
+                self._has_usable_attr(a.target_class)
+                for a in self.metamodel.get_collection_associations(context)
+            )
+        if pattern.id in _QUANT_COLLECTION_KIND:
+            # forAll/exists/any/one/select/collect over a collection association: the
+            # condition/attribute is synthesised at instantiation. Applicable iff at
+            # least one collection reaches a target that can support the body — the
+            # SAME viable set _gen_params draws the collection from, so a pass here
+            # guarantees a successful instantiation (no false positives).
+            return bool(self._viable_collections(context, _QUANT_COLLECTION_KIND[pattern.id]))
         if pattern.id == 'collection_collectNested':
-            # Require a collection association whose target has a collection association
+            # Require a collection association whose target has a collection association,
+            # AND both association names must pass the conservative domain guard (Fix 2).
+            found_valid_two_hop = False
             for assoc in self.metamodel.get_collection_associations(context):
-                if self.metamodel.get_collection_associations(assoc.target_class):
+                nested = self.metamodel.get_collection_associations(assoc.target_class)
+                if nested and self._association_names_compatible(
+                    assoc.ref_name, nested[0].ref_name
+                ):
+                    found_valid_two_hop = True
                     break
-            else:
+            if not found_valid_two_hop:
                 return False
 
         for param in pattern.parameters:
@@ -771,8 +1706,8 @@ class BenchmarkEngineV2:
     def _weighted_sample(self, patterns, profile: BenchmarkProfile, context: str = None):
         """Sample pattern with weights using: base * universal * solver * relevance * history."""
         logger.debug(f"      _weighted_sample() - Input: {len(patterns)} patterns")
-        # C: Use centralized blacklist
-        logger.debug(f"      Applying blacklist ({len(self.BLACKLIST)} patterns)...")
+        # C: Use centralized exclude-list
+        logger.debug(f"      Applying exclude-list ({len(self.EXCLUDE_LIST)} patterns)...")
         
         # Universal patterns that work with ANY model (71 total)
         UNIVERSAL_PATTERNS = {
@@ -808,14 +1743,14 @@ class BenchmarkEngineV2:
             'collection_asSet', 'collection_asSequence', 'collection_at_index', 'collection_indexOf'
         }
         
-        # Filter out blacklisted patterns
-        filtered_patterns = [p for p in patterns if p.id not in self.BLACKLIST]
-        blacklisted_count = len(patterns) - len(filtered_patterns)
-        if blacklisted_count > 0:
-            logger.debug(f"      Filtered out {blacklisted_count} blacklisted patterns")
-            blacklisted_in_input = [p.id for p in patterns if p.id in self.BLACKLIST]
-            logger.debug(f"      Blacklisted patterns in input: {blacklisted_in_input}")
-        logger.debug(f"      After blacklist: {len(filtered_patterns)} patterns remaining")
+        # Filter out excluded patterns
+        filtered_patterns = [p for p in patterns if p.id not in self.EXCLUDE_LIST]
+        excluded_count = len(patterns) - len(filtered_patterns)
+        if excluded_count > 0:
+            logger.debug(f"      Filtered out {excluded_count} blacklisted patterns")
+            excluded_in_input = [p.id for p in patterns if p.id in self.EXCLUDE_LIST]
+            logger.debug(f"      Excluded patterns in input: {excluded_in_input}")
+        logger.debug(f"      After exclude-list: {len(filtered_patterns)} patterns remaining")
         
         # Filter out patterns with invalid templates (if validator available)
         if self.pattern_template_validator:
@@ -1039,6 +1974,8 @@ class BenchmarkEngineV2:
                 return random.randint(start_val + 1, start_val + 10)
             if name in ['prefix_length', 'suffix_length']:
                 return random.randint(2, 10)
+            if name == 'divisor':
+                return random.randint(2, 9)   # >= 2: 'mod 1 = 0' is a tautology
             if name == 'size' or 'size' in name.lower():
                 return random.randint(1, 3)
             if name in ['threshold', 'value', 'min_value', 'max_value']:
@@ -1105,9 +2042,11 @@ class BenchmarkEngineV2:
                 assoc_name = params.get('collection1')
                 assoc = self._get_association(context, assoc_name) if assoc_name else None
                 if assoc:
+                    # A set op against the SAME collection is a no-op (X - X = empty,
+                    # X u X = X): require a DISTINCT collection of the same target type.
                     options = [
                         a.ref_name for a in self.metamodel.get_collection_associations(context)
-                        if a.target_class == assoc.target_class
+                        if a.target_class == assoc.target_class and a.ref_name != assoc_name
                     ]
                 else:
                     options = []
@@ -1116,9 +2055,10 @@ class BenchmarkEngineV2:
                 assoc_name = params.get('collection1')
                 assoc = self._get_association(context, assoc_name) if assoc_name else None
                 if assoc:
+                    # Distinct collection of the same target type — self-ops are no-ops.
                     options = [
                         a.ref_name for a in self.metamodel.get_collection_associations(context)
-                        if a.target_class == assoc.target_class
+                        if a.target_class == assoc.target_class and a.ref_name != assoc_name
                     ]
                 else:
                     options = []
@@ -1150,6 +2090,26 @@ class BenchmarkEngineV2:
                     if self._is_integer_type(a.type)
                 ]
 
+            # 'mod' is an Integer-only OCL op — never apply it to EDouble/Real
+            # attributes (fixes estimatedCost/lateFee/discount mod ...).
+            if pattern.id in ['numeric_even', 'numeric_odd', 'numeric_multiple_of'] \
+                    and param.name == 'numeric_attribute':
+                options = [
+                    a.name for a in self.metamodel.get_attributes_for(context)
+                    if self._is_integer_type(a.type)
+                ]
+
+            # String character ops (toLowerCase/toUpperCase) are meaningless on
+            # date-role attributes (timestamp, expiry, ...); restrict to plain text.
+            if pattern.id in ['string_to_lower_equals', 'string_to_upper_equals'] \
+                    and param.name == 'string_attribute':
+                options = [
+                    a.name for a in self.metamodel.get_attributes_for(context)
+                    if self._normalize_type(a.type) == 'string'
+                    and not any(k in a.name.lower() for k in
+                                ('date', 'time', 'expiry', 'expire', 'created', 'updated', 'at'))
+                ]
+
             if pattern.id in ['sortedBy', 'collection_sortedBy'] and param.name == 'attribute':
                 assoc_name = params.get('collection')
                 assoc = self._get_association(context, assoc_name) if assoc_name else None
@@ -1160,7 +2120,56 @@ class BenchmarkEngineV2:
                     ]
                 else:
                     options = []
-            
+
+            # 'self.assoc.attr' is a valid boolean invariant only for a boolean
+            # target attribute, so restrict the resolved options accordingly.
+            if pattern.id == 'simple_navigation' and param.name == 'attribute':
+                assoc = self._get_association(context, params.get('association'))
+                options = [
+                    a.name for a in self.metamodel.get_attributes_for(assoc.target_class)
+                    if self._normalize_type(a.type) == 'boolean'
+                ] if assoc else []
+
+            # Navigation patterns: synthesise free-form expression parameters from
+            # the metamodel. These params carry no option list and no default, so
+            # without this they would fail the generic "required" check below.
+            if pattern.id == 'navigation_chain' and param.name == 'navigation_path':
+                expr = self._synth_navigation_path(context)
+                if expr is None:
+                    raise ValueError("Parameter validation failed: Navigation Path is required")
+                params[param.name] = expr
+                continue
+            if pattern.id == 'collection_navigation' and param.name == 'operation':
+                # Restrict to quantifiers so the synthesised body stays a boolean
+                # constraint (select/collect would yield a non-boolean expression).
+                options = ['forAll', 'exists']
+            if pattern.id == 'collection_navigation' and param.name == 'nested':
+                pred = self._synth_nested_predicate(context, params)
+                if pred is None:
+                    raise ValueError("Parameter validation failed: Nested Expression is required")
+                params[param.name] = pred
+                continue
+
+            # Quantified collection patterns (forAll/exists/any/one/select/collect):
+            # restrict the collection to one whose target can support the synthesised
+            # body, then synthesise the iteration condition from that target. The
+            # collection filter is what makes applicable == instantiable everywhere.
+            if pattern.id in _QUANT_COLLECTION_KIND and param.name == 'collection':
+                options = self._viable_collections(context, _QUANT_COLLECTION_KIND[pattern.id])
+            if pattern.id in ('forall_nested', 'exists_constraint', 'any_operation',
+                              'one_operation', 'select_operation') and param.name == 'condition':
+                assoc = self._get_association(context, params.get('collection'))
+                # forAll/select are encoded only for numeric `var.attr OP <number>`.
+                numeric_only = pattern.id in ('forall_nested', 'select_operation')
+                cond = self._attr_predicate(
+                    assoc.target_class, var=params.get('iterator', 'x'),
+                    numeric_only=numeric_only,
+                ) if assoc else None
+                if cond is None:
+                    raise ValueError("Parameter validation failed: Condition is required")
+                params[param.name] = cond
+                continue
+
             # FILTER: Date filter DISABLED to maximize constraint generation
             # Dates are typed as EString and have separate encoder support
             # if options and param.options == 'string_attributes':
@@ -1186,9 +2195,9 @@ class BenchmarkEngineV2:
                             )
                 # Special handling for patterns that compare two things
                 # Ensure they're different to avoid tautologies (e.g., self.x = self.x)
-                if param.name in ['second_attribute', 'second_string', 'second_numeric', 'second_attr', 'attribute2', 'third_attribute', 'third_numeric']:
-                    # Get the "first" parameter name
-                    first_param_name = param.name.replace('second_', 'first_').replace('third_', 'first_').replace('attribute2', 'attribute1').replace('_attr', '')
+                if param.name in ['second_attribute', 'second_string', 'second_numeric', 'second_attr', 'attribute2', 'attr2', 'third_attribute', 'third_numeric']:
+                    # Get the "first" parameter name (attr2 -> attr1 covers numeric_comparison)
+                    first_param_name = param.name.replace('second_', 'first_').replace('third_', 'first_').replace('attribute2', 'attribute1').replace('attr2', 'attr1').replace('_attr', '')
                     if 'attribute' in first_param_name and first_param_name not in params:
                         first_param_name = 'attribute'  # Fallback
                     
@@ -1250,7 +2259,9 @@ class BenchmarkEngineV2:
                 elif t == "boolean":
                     params[param.name] = random.choice(["true", "false"])
                 elif t == "text":
-                    params[param.name] = "value"
+                    # Honour the declared default (e.g. select_operation's
+                    # result_operation '->size() >= 1'); only fall back otherwise.
+                    params[param.name] = param.default if param.default is not None else "value"
                 else:
                     # Use default if available, otherwise fail for missing metamodel-dependent params
                     if param.default is not None:
@@ -1342,6 +2353,11 @@ class BenchmarkEngineV2:
     def _validate_attribute_pairs(self, context: str, pattern_id: str, params: Dict):
         """Ensure attribute pairs are type- and name-compatible.
 
+        Handles three cases:
+          (a) Both attributes in the context class  → full LLM + type check
+          (b) One attribute cross-class, one in ctx → cross-class type + keyword check
+          (c) Both attributes cross-class           → logged and skipped (path unknown)
+
         Raises:
             ValueError: If attribute pairs are incompatible
         """
@@ -1363,17 +2379,60 @@ class BenchmarkEngineV2:
                 continue
             left = params[left_key]
             right = params[right_key]
-            if left not in attr_names or right not in attr_names:
-                continue
-            left_type = self._get_attribute_type(context, left)
-            right_type = self._get_attribute_type(context, right)
-            if left_type and right_type and not self._types_compatible(left_type, right_type):
-                raise ValueError(
-                    f"Parameter validation failed: {left_key} and {right_key} must be type-compatible"
+
+            left_in_ctx  = left  in attr_names
+            right_in_ctx = right in attr_names
+
+            # ── Case (c): both cross-class — cannot validate without path info ──
+            if not left_in_ctx and not right_in_ctx:
+                logger.warning(
+                    "[cross-class skip] Both '%s' and '%s' are outside context "
+                    "'%s' in pattern '%s' — semantic validation bypassed. "
+                    "Path resolution not yet implemented for this case.",
+                    left, right, context, pattern_id
                 )
-            if not self._attribute_names_compatible(left, right, context=context):
+                continue
+
+            # ── Case (a): both within context class — original validation ────
+            if left_in_ctx and right_in_ctx:
+                left_type  = self._get_attribute_type(context, left)
+                right_type = self._get_attribute_type(context, right)
+                if left_type and right_type and not self._types_compatible(left_type, right_type):
+                    raise ValueError(
+                        f"Parameter validation failed: {left_key} and {right_key} "
+                        f"must be type-compatible"
+                    )
+                if not self._attribute_names_compatible(left, right, context=context):
+                    raise ValueError(
+                        f"Parameter validation failed: {left_key} and {right_key} "
+                        f"must be semantically compatible"
+                    )
+                continue
+
+            # ── Case (b): one cross-class, one in context ─────────────────────
+            ctx_attr   = left  if left_in_ctx  else right
+            cross_attr = right if left_in_ctx  else left
+
+            ctx_type   = self._get_attribute_type(context, ctx_attr)
+            cross_type = self._resolve_cross_attr_type_multihop(context, cross_attr, params)
+
+            # Type check (skip if type cannot be resolved — conservative admission)
+            if ctx_type and cross_type and not self._types_compatible(ctx_type, cross_type):
                 raise ValueError(
-                    f"Parameter validation failed: {left_key} and {right_key} must be semantically compatible"
+                    f"Parameter validation failed: cross-class attributes "
+                    f"'{ctx_attr}' ({ctx_type}) and '{cross_attr}' ({cross_type}) "
+                    f"are type-incompatible"
+                )
+
+            # Semantic check — use domain-family classifier so that
+            # same-family cross-class pairs (e.g. money vs money) are admitted
+            # and only genuinely incompatible pairs (e.g. money vs temporal)
+            # are rejected.  _cross_class_semantics_compatible() falls back to
+            # the keyword heuristic when the import is unavailable.
+            if not self._cross_class_semantics_compatible(ctx_attr, cross_attr):
+                raise ValueError(
+                    f"Parameter validation failed: cross-class attributes "
+                    f"'{ctx_attr}' and '{cross_attr}' are semantically incompatible"
                 )
     
     def _validate_pattern_params(self, pattern_id: str, params: Dict):
@@ -1437,10 +2496,10 @@ class BenchmarkEngineV2:
                 if params['min_size'] > params['max_size']:
                     raise ValueError(f"min_size ({params['min_size']}) must not exceed max_size ({params['max_size']})")
         
-        # Modulo/divisor patterns - ensure divisor > 0
+        # Modulo/divisor patterns - divisor must be >= 2 ('x mod 1 = 0' is always true)
         if pattern_id in ['numeric_even', 'numeric_odd', 'numeric_multiple_of', 'division_modulo']:
-            if 'divisor' in params and params['divisor'] <= 0:
-                raise ValueError(f"divisor must be positive, got {params['divisor']}")
+            if 'divisor' in params and params['divisor'] < 2:
+                raise ValueError(f"divisor must be >= 2, got {params['divisor']}")
     
     def _is_diverse(self, candidate: OCLConstraint, existing: List[OCLConstraint], profile: BenchmarkProfile) -> bool:
         """Check if candidate is diverse enough."""
@@ -1490,8 +2549,8 @@ class BenchmarkEngineV2:
     
     def _pattern_for_deficit(self, target_name: str, profile: BenchmarkProfile):
         """Find pattern that addresses a coverage deficit."""
-        # C: Use centralized blacklist
-        available_patterns = [p for p in self.all_patterns if p.id not in self.BLACKLIST]
+        # C: Use centralized exclude-list
+        available_patterns = [p for p in self.all_patterns if p.id not in self.EXCLUDE_LIST]
         if not available_patterns:
             available_patterns = self.all_patterns  # Fallback
         
@@ -1504,12 +2563,12 @@ class BenchmarkEngineV2:
                     return p
         elif target_name.startswith("hops:"):
             # Prefer navigation patterns
-            nav_patterns = [p for p in self.patterns_by_family.get("navigation", []) if p.id not in self.BLACKLIST]
+            nav_patterns = [p for p in self.patterns_by_family.get("navigation", []) if p.id not in self.EXCLUDE_LIST]
             if nav_patterns:
                 return random.choice(nav_patterns)
         elif target_name.startswith("depth:"):
             # Prefer quantified patterns
-            quant_patterns = [p for p in self.patterns_by_family.get("quantified", []) if p.id not in self.BLACKLIST]
+            quant_patterns = [p for p in self.patterns_by_family.get("quantified", []) if p.id not in self.EXCLUDE_LIST]
             if quant_patterns:
                 return random.choice(quant_patterns)
         
@@ -1580,7 +2639,7 @@ class BenchmarkEngineV2:
             
             # Generate base SAT constraint using SAT-likely pattern
             sat_patterns = [p for p in self.all_patterns 
-                          if p.id in self.SAT_LIKELY_PATTERNS and p.id not in self.BLACKLIST]
+                          if p.id in self.SAT_LIKELY_PATTERNS and p.id not in self.EXCLUDE_LIST]
             
             if not sat_patterns:
                 continue
@@ -1594,7 +2653,7 @@ class BenchmarkEngineV2:
                 # Try to generate conflicting UNSAT constraint
                 # Use UNSAT-likely patterns or add conflicting bounds
                 unsat_patterns = [p for p in self.all_patterns 
-                                if p.id in self.UNSAT_LIKELY_PATTERNS and p.id not in self.BLACKLIST]
+                                if p.id in self.UNSAT_LIKELY_PATTERNS and p.id not in self.EXCLUDE_LIST]
                 
                 if unsat_patterns:
                     unsat_pattern = random.choice(unsat_patterns)

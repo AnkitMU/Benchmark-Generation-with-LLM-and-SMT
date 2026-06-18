@@ -483,54 +483,352 @@ class UnifiedSMTEncoder:
         return solver, model_vars
 
     # ===== STRING OPERATIONS (28-31) =====
+    #
+    # Z3 String Theory Reference:
+    #   str.len       → Length(s)
+    #   str.++        → Concat(s1, s2, ...)
+    #   str.contains  → Contains(s, sub)
+    #   str.prefixof  → PrefixOf(pre, s)
+    #   str.suffixof  → SuffixOf(suf, s)
+    #   str.indexof   → IndexOf(s, sub, start)
+    #   str.substr    → SubString(s, offset, length)
+    #   str.replace   → Replace(s, old, new)
+    #   str.in.re     → InRe(s, regex)
+    #   re.range      → Range(lo, hi)
+    #   re.*          → Star(r)
+    #   re.+          → Plus(r)
+    #   re.union      → Union(r1, r2)
+    #   re.++         → Concat(r1, r2)  (regex concat)
+
+    def _extract_string_attr(self, text: str) -> str:
+        """Extract attribute name from OCL text like self.firstName.size()."""
+        m = re.search(r'self\.(\w+)', text)
+        return m.group(1) if m else "string_var"
 
     def encode_string_concat(self, text: str, context: Dict) -> Tuple[Solver, Dict]:
+        """Encode: self.a.concat(self.b).size() >= N"""
         solver = Solver(); model_vars = {}
-        s1 = String("str1"); s2 = String("str2")
-        model_vars["str1"] = s1; model_vars["str2"] = s2
-        if "concat" in text:
-            res = Concat(s1, s2); model_vars["concat_result"] = res
-            if "size()" in text and ">" in text:
-                m = re.search(r"size\(\)\s*>\s*(\d+)", text)
-                if m:
-                    solver.add(Not(Length(res) > IntVal(int(m.group(1)))))
+
+        # Extract attribute names
+        attrs = re.findall(r'self\.(\w+)', text)
+        s1_name = attrs[0] if len(attrs) > 0 else "str1"
+        s2_name = attrs[1] if len(attrs) > 1 else "str2"
+
+        s1 = String(s1_name); s2 = String(s2_name)
+        model_vars[s1_name] = s1; model_vars[s2_name] = s2
+
+        # Ensure non-trivial strings
+        solver.add(Length(s1) > 0, Length(s2) > 0)
+
+        res = Concat(s1, s2)
+        model_vars["concat_result"] = res
+
+        # Parse size constraint: size() >= N, size() > N, size() <= N
+        m = re.search(r'size\(\)\s*(>=|>|<=|<|=)\s*(\d+)', text)
+        if m:
+            op, val = m.group(1), int(m.group(2))
+            if op == '>=': solver.add(Not(Length(res) >= IntVal(val)))
+            elif op == '>': solver.add(Not(Length(res) > IntVal(val)))
+            elif op == '<=': solver.add(Not(Length(res) <= IntVal(val)))
+            elif op == '<': solver.add(Not(Length(res) < IntVal(val)))
+            elif op == '=': solver.add(Not(Length(res) == IntVal(val)))
+        else:
+            # Default: concat result is non-empty
+            solver.add(Not(Length(res) > 0))
+
         return solver, model_vars
 
     def encode_string_operations(self, text: str, context: Dict) -> Tuple[Solver, Dict]:
+        """
+        Encode string operations: size(), substring(), toUpper(), toLower(),
+        indexOf(), contains, startsWith, endsWith.
+        """
         solver = Solver(); model_vars = {}
-        sv = String("string_var"); model_vars["string_var"] = sv
+        attr = self._extract_string_attr(text)
+        sv = String(attr); model_vars[attr] = sv
+
+        # Ensure non-trivial string
+        solver.add(Length(sv) >= 1)
+
         if "substring" in text:
-            start = Int("start"); end = Int("end")
-            model_vars["start"] = start; model_vars["end"] = end
-            solver.add(start >= 0, end >= start)
-            sub = SubString(sv, start, end - start); model_vars["substring_result"] = sub
-            if "size()" in text and ">" in text:
+            # self.attr.substring(start, end)
+            m = re.search(r'substring\s*\(\s*(\d+)\s*,\s*(\d+)\s*\)', text)
+            if m:
+                start, end = int(m.group(1)), int(m.group(2))
+                # OCL substring is 1-based; Z3 SubString is 0-based
+                sub = SubString(sv, start - 1, end - start + 1)
+                model_vars["substring_result"] = sub
+                solver.add(Length(sv) >= end)  # string must be long enough
+
+                # Check if there's a comparison: = 'value'
+                eq_m = re.search(r"=\s*'([^']*)'", text)
+                if eq_m:
+                    solver.add(Not(sub == StringVal(eq_m.group(1))))
+                else:
+                    solver.add(Not(Length(sub) > 0))
+            else:
+                # substring with variable bounds
+                start_v = Int("start"); end_v = Int("end")
+                model_vars["start"] = start_v; model_vars["end"] = end_v
+                solver.add(start_v >= 0, end_v >= start_v)
+                sub = SubString(sv, start_v, end_v - start_v)
+                model_vars["substring_result"] = sub
                 solver.add(Not(Length(sub) > 0))
-        elif "toUpper" in text or "toLower" in text:
-            # model as length-preserving transformation
-            res = String("case_result"); model_vars["case_result"] = res
-            solver.add(Length(res) == Length(sv))
+
+        elif "toUpper" in text:
+            # self.attr.toUpper() = 'VALUE' → attr must equal lowercase of value
+            # OR self.attr.toUpper() = self.attr → attr is all uppercase
+            eq_m = re.search(r"toUpper\(\)\s*=\s*'([^']*)'", text)
+            if eq_m:
+                val = eq_m.group(1)
+                # The string, when uppercased, must equal val
+                # Encode as: string must be all-uppercase AND equal to val
+                solver.add(Not(And(
+                    sv == StringVal(val.lower()),
+                    InRe(sv, Star(Union(Range('a', 'z'), Range('A', 'Z'))))
+                )))
+            elif "toUpper()" in text and "self." in text.split("toUpper")[1:][0] if "toUpper" in text else False:
+                # self.attr.toUpper() = self.attr → attr is all uppercase
+                upper_re = Star(Range('A', 'Z'))
+                solver.add(Not(InRe(sv, upper_re)))
+            else:
+                # Default: string is all uppercase
+                upper_re = Star(Range('A', 'Z'))
+                solver.add(Not(InRe(sv, upper_re)))
+
+        elif "toLower" in text:
+            # self.attr.toLower() = 'value' → attr is all lowercase and equals value
+            eq_m = re.search(r"toLower\(\)\s*=\s*'([^']*)'", text)
+            if eq_m:
+                val = eq_m.group(1)
+                solver.add(Not(And(
+                    sv == StringVal(val.upper()),
+                    InRe(sv, Star(Union(Range('a', 'z'), Range('A', 'Z'))))
+                )))
+            else:
+                # Default: string is all lowercase
+                lower_re = Star(Range('a', 'z'))
+                solver.add(Not(InRe(sv, lower_re)))
+
+        elif "indexOf" in text:
+            # self.attr.indexOf('sub') >= 0  → Contains
+            m = re.search(r"indexOf\s*\(\s*'([^']*)'\s*\)", text)
+            sub_str = m.group(1) if m else "x"
+            # Parse comparison operator
+            cmp_m = re.search(r'indexOf\s*\([^)]*\)\s*(>=|>|=|<|<=)\s*(-?\d+)', text)
+            if cmp_m:
+                op, val = cmp_m.group(1), int(cmp_m.group(2))
+                idx = IndexOf(sv, StringVal(sub_str), IntVal(0))
+                if op == '>=' and val == 0:
+                    solver.add(Not(Contains(sv, StringVal(sub_str))))
+                elif op == '>' and val >= 0:
+                    solver.add(Not(IndexOf(sv, StringVal(sub_str), IntVal(0)) > IntVal(val)))
+                elif op == '=' and val >= 0:
+                    solver.add(Not(idx == IntVal(val)))
+                else:
+                    solver.add(Not(Contains(sv, StringVal(sub_str))))
+            else:
+                solver.add(Not(Contains(sv, StringVal(sub_str))))
+
+        else:
+            # Default: size() constraints
+            m = re.search(r'size\(\)\s*(>=|>|<=|<|=|<>)\s*(\d+)', text)
+            if m:
+                op, val = m.group(1), int(m.group(2))
+                length = Length(sv)
+                if op == '>=': solver.add(Not(length >= IntVal(val)))
+                elif op == '>': solver.add(Not(length > IntVal(val)))
+                elif op == '<=': solver.add(Not(length <= IntVal(val)))
+                elif op == '<': solver.add(Not(length < IntVal(val)))
+                elif op == '=': solver.add(Not(length == IntVal(val)))
+                elif op == '<>': solver.add(Not(length != IntVal(val)))
+            elif "<> ''" in text or "notEmpty" in text:
+                # string is non-empty
+                solver.add(Not(Length(sv) > 0))
+            else:
+                solver.add(Not(Length(sv) >= 0))
+
         return solver, model_vars
 
     def encode_string_comparison(self, text: str, context: Dict) -> Tuple[Solver, Dict]:
+        """Encode string equality/inequality: self.attr = 'value', self.a <> self.b"""
         solver = Solver(); model_vars = {}
-        st = String("status"); model_vars["status"] = st
-        if "=" in text:
-            lits = re.findall(r"['\"]([^'\"]+)['\"]", text)
+
+        # Extract attribute names
+        attrs = re.findall(r'self\.(\w+)', text)
+        if len(attrs) >= 2:
+            # Two-attribute comparison: self.a = self.b or self.a <> self.b
+            s1 = String(attrs[0]); s2 = String(attrs[1])
+            model_vars[attrs[0]] = s1; model_vars[attrs[1]] = s2
+            solver.add(Length(s1) > 0, Length(s2) > 0)
+            if '<>' in text or '!=' in text:
+                solver.add(Not(s1 != s2))
+            else:
+                solver.add(Not(s1 == s2))
+        elif len(attrs) >= 1:
+            # Attribute vs literal: self.attr = 'value'
+            st = String(attrs[0]); model_vars[attrs[0]] = st
+            lits = re.findall(r"'([^']*)'", text)
+            if lits:
+                if '<>' in text or '!=' in text:
+                    # self.attr <> 'value'
+                    solver.add(Not(st != StringVal(lits[0])))
+                else:
+                    opts = [st == StringVal(l) for l in lits]
+                    solver.add(Not(Or(*opts)))
+            else:
+                solver.add(Not(Length(st) > 0))
+        else:
+            st = String("status"); model_vars["status"] = st
+            lits = re.findall(r"'([^']*)'", text)
             if lits:
                 opts = [st == StringVal(l) for l in lits]
                 solver.add(Not(Or(*opts)))
+
         return solver, model_vars
 
     def encode_string_pattern(self, text: str, context: Dict) -> Tuple[Solver, Dict]:
+        """
+        Encode string pattern matching and prefix/suffix checks:
+          - self.attr.matches(pattern)
+          - self.attr.startsWith('prefix')  (via substring)
+          - self.attr.endsWith('suffix')
+          - Contains, PrefixOf, SuffixOf
+        """
         solver = Solver(); model_vars = {}
-        s = String("string_var"); model_vars["string_var"] = s
+        attr = self._extract_string_attr(text)
+        s = String(attr); model_vars[attr] = s
+        solver.add(Length(s) >= 1)
+
         if "matches" in text:
-            lower = Range('a', 'z'); plus = lambda r: Plus(r)
-            at = Re("@"); dot = Re(r"\.")
-            simple_email = Concat(plus(lower), at, plus(lower), dot, plus(lower))
-            solver.add(Not(InRe(s, simple_email)))
+            # Extract regex pattern from OCL matches('...')
+            m = re.search(r"matches\s*\(\s*'([^']*)'\s*\)", text)
+            if m:
+                pat = m.group(1)
+                z3_re = self._ocl_regex_to_z3(pat)
+                if z3_re is not None:
+                    solver.add(Not(InRe(s, z3_re)))
+                else:
+                    # Fallback: simple alphanumeric pattern
+                    alpha = Star(Union(Range('a', 'z'), Range('A', 'Z'), Range('0', '9')))
+                    solver.add(Not(InRe(s, alpha)))
+            else:
+                # Default email-like pattern
+                lower = Range('a', 'z')
+                at = Re("@"); dot = Re("\\.")
+                email_re = Concat(Plus(lower), at, Plus(lower), dot, Plus(lower))
+                solver.add(Not(InRe(s, email_re)))
+
+        elif "indexOf" in text:
+            # self.attr.indexOf('sub') >= 0  (contains check)
+            m = re.search(r"indexOf\s*\(\s*'([^']*)'\s*\)", text)
+            sub_str = m.group(1) if m else "x"
+            cmp_m = re.search(r'indexOf\s*\([^)]*\)\s*(>=|>|=)\s*(-?\d+)', text)
+            if cmp_m and cmp_m.group(1) == '>=' and int(cmp_m.group(2)) == 0:
+                solver.add(Not(Contains(s, StringVal(sub_str))))
+            elif cmp_m and cmp_m.group(1) == '>' and int(cmp_m.group(2)) == -1:
+                solver.add(Not(Contains(s, StringVal(sub_str))))
+            else:
+                solver.add(Not(Contains(s, StringVal(sub_str))))
+
+        elif "substring" in text and "implies" in text:
+            # startsWith pattern: self.attr.size() >= N implies self.attr.substring(1,N) = 'prefix'
+            m = re.search(r"substring\s*\(\s*1\s*,\s*(\d+)\s*\)\s*=\s*'([^']*)'", text)
+            if m:
+                prefix_len = int(m.group(1))
+                prefix_val = m.group(2)
+                solver.add(Length(s) >= prefix_len)
+                solver.add(Not(PrefixOf(StringVal(prefix_val), s)))
+            else:
+                solver.add(Not(Length(s) > 0))
+
+        elif "endsWith" in text or "suffixof" in text.lower():
+            m = re.search(r"'([^']*)'", text)
+            if m:
+                solver.add(Not(SuffixOf(StringVal(m.group(1)), s)))
+            else:
+                solver.add(Not(Length(s) > 0))
+
+        elif "startsWith" in text or "prefixof" in text.lower():
+            m = re.search(r"'([^']*)'", text)
+            if m:
+                solver.add(Not(PrefixOf(StringVal(m.group(1)), s)))
+            else:
+                solver.add(Not(Length(s) > 0))
+
+        elif "contains" in text.lower():
+            m = re.search(r"'([^']*)'", text)
+            if m:
+                solver.add(Not(Contains(s, StringVal(m.group(1)))))
+            else:
+                solver.add(Not(Length(s) > 0))
+
+        else:
+            # Fallback: non-empty string
+            solver.add(Not(Length(s) > 0))
+
         return solver, model_vars
+
+    def _ocl_regex_to_z3(self, pattern: str):
+        """
+        Convert common OCL/Java regex patterns to Z3 regex.
+        Handles: [a-z], [A-Z], [0-9], ., +, *, \\d, \\w, basic alternation.
+        Returns None for patterns too complex to convert.
+        """
+        try:
+            parts = []
+            i = 0
+            while i < len(pattern):
+                c = pattern[i]
+                if c == '[':
+                    # Character class [a-z], [A-Za-z0-9], etc.
+                    end = pattern.index(']', i)
+                    cls_str = pattern[i+1:end]
+                    ranges = re.findall(r'(\w)-(\w)', cls_str)
+                    if ranges:
+                        z3_ranges = [Range(lo, hi) for lo, hi in ranges]
+                        if len(z3_ranges) == 1:
+                            parts.append(z3_ranges[0])
+                        else:
+                            parts.append(Union(*z3_ranges))
+                    else:
+                        return None
+                    i = end + 1
+                elif c == '\\' and i + 1 < len(pattern):
+                    nc = pattern[i+1]
+                    if nc == 'd':
+                        parts.append(Range('0', '9'))
+                    elif nc == 'w':
+                        parts.append(Union(Range('a', 'z'), Range('A', 'Z'), Range('0', '9')))
+                    elif nc == '.':
+                        parts.append(Re("\\."))
+                    elif nc == '@':
+                        parts.append(Re("@"))
+                    else:
+                        parts.append(Re(nc))
+                    i += 2
+                elif c == '.':
+                    # Any character — approximate with printable ASCII
+                    parts.append(Range(' ', '~'))
+                elif c == '+' and parts:
+                    parts[-1] = Plus(parts[-1])
+                    i += 1
+                    continue
+                elif c == '*' and parts:
+                    parts[-1] = Star(parts[-1])
+                    i += 1
+                    continue
+                else:
+                    parts.append(Re(c))
+                i += 1
+
+            if not parts:
+                return None
+            if len(parts) == 1:
+                return parts[0]
+            return Concat(*parts)
+        except Exception:
+            return None
 
     # ===== ARITHMETIC & LOGIC (32-36) =====
 

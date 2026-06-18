@@ -12,7 +12,7 @@ import json
 
 FAMILY_KEYS = [
     "cardinality", "uniqueness", "navigation", "quantified",
-    "arithmetic", "string", "enum", "type_checks"
+    "arithmetic", "string", "enum", "type_checks", "conditional"
 ]
 
 OPERATORS = [
@@ -81,6 +81,13 @@ class ComplexityConfig:
         "expert": 5,
     })
 
+    # Per-component complexity profiles for the `steered` generation mode.
+    # Each entry: {"pct": <share>, "label": <name>, "ranges": {component: [lo, hi]}}
+    # where component in {nnr_c, wnc, dn_ca, vrc, wno, wnm, oc, tcc, cic}.
+    complexity_profiles: Optional[List[Dict]] = None
+    # Infeasibility policy for the steered mode: report | relax | skip.
+    on_infeasible: str = "report"
+
 
 @dataclass
 class RedundancyConfig:
@@ -139,6 +146,7 @@ class QuantitiesConfig:
         "string": 10,
         "enum": 5,
         "type_checks": 0,
+        "conditional": 0,   # if-then-else patterns: opt-in (0 => not generated)
     })
 
 

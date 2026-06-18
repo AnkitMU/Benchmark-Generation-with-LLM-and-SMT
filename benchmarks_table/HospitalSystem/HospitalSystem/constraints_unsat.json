@@ -1,0 +1,897 @@
+{
+  "metadata": {
+    "type": "UNSAT",
+    "model": "HospitalSystem",
+    "profile": "balanced",
+    "generated_at": "2026-06-18T17:31:31.027517",
+    "constraint_count": 16
+  },
+  "constraints": [
+    {
+      "ocl": "context Procedure\ninv: (self.record.patient.isInsured = true) and (not(self.record.patient.isInsured = true))",
+      "pattern_id": "navigation_chain_unsat",
+      "pattern_name": "Navigation Chain (UNSAT)",
+      "context": "Procedure",
+      "parameters": {
+        "navigation_path": "self.record.patient.isInsured = true"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T17:31:13.280328",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 2,
+        "generation_number": 5548,
+        "profile": "repair",
+        "operators_used": [
+          "="
+        ],
+        "navigation_depth": 4,
+        "quantifier_depth": 0,
+        "difficulty": "repair",
+        "operator_count": 1,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 3.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 3,
+            "wnc": 3.0,
+            "tnc": 3.0,
+            "vrc": 0,
+            "wno": 1.0,
+            "wnm": 0.0,
+            "total": 4.0
+          },
+          "computational": {
+            "oc": 1.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 1.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 5.0
+        },
+        "is_unsat": true,
+        "mutation": "self_contradiction",
+        "original_pattern_id": "navigation_chain",
+        "semantic_cluster": 0,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Invoice\ninv: (self.payment <> null) and (not(self.payment <> null))",
+      "pattern_id": "association_exists_unsat",
+      "pattern_name": "Association Exists (UNSAT)",
+      "context": "Invoice",
+      "parameters": {
+        "association": "payment"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T17:31:13.280344",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 1,
+        "generation_number": 5246,
+        "profile": "easy",
+        "operators_used": [
+          "<",
+          "<>",
+          ">"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 1.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.0,
+            "vrc": 0,
+            "wno": 3.0,
+            "wnm": 0.0,
+            "total": 4.0
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 1,
+            "total": 1.0
+          },
+          "tc": 8.0
+        },
+        "is_unsat": true,
+        "mutation": "self_contradiction",
+        "original_pattern_id": "association_exists",
+        "semantic_cluster": 4,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Department\ninv: (self.doctors->collect(x | x.appointments)->size() >= 1) and (not(self.doctors->collect(x | x.appointments)->size() >= 1))",
+      "pattern_id": "collection_collectNested_unsat",
+      "pattern_name": "Collection Nested Collection Flatten (UNSAT)",
+      "context": "Department",
+      "parameters": {
+        "collection": "doctors",
+        "nested_collection": "appointments",
+        "min_size": 1
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T17:31:13.280456",
+      "metadata": {
+        "category": "collection",
+        "complexity": 4,
+        "generation_number": 5523,
+        "profile": "difficult",
+        "operators_used": [
+          "-",
+          "=",
+          ">",
+          ">=",
+          "collect",
+          "size"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "difficult",
+        "operator_count": 6,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 3.0,
+            "wnc": 5.0,
+            "tnc": 4.0,
+            "vrc": 1,
+            "wno": 7.0,
+            "wnm": 2.0,
+            "total": 14.0
+          },
+          "computational": {
+            "oc": 7.0,
+            "tcc": 0.0,
+            "cic": 2.0,
+            "total": 9.0
+          },
+          "dependency": {
+            "ruc": 4,
+            "total": 4.0
+          },
+          "tc": 27.0
+        },
+        "is_unsat": true,
+        "mutation": "self_contradiction",
+        "original_pattern_id": "collection_collectNested",
+        "semantic_cluster": 2,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Patient\ninv: (self.insurance.patient.isInsured <> true) and (not(self.insurance.patient.isInsured <> true))",
+      "pattern_id": "navigation_chain_unsat",
+      "pattern_name": "Navigation Chain (UNSAT)",
+      "context": "Patient",
+      "parameters": {
+        "navigation_path": "self.insurance.patient.isInsured <> true"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T17:31:13.280466",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 2,
+        "generation_number": 5338,
+        "profile": "medium",
+        "operators_used": [
+          "<",
+          "<>",
+          ">"
+        ],
+        "navigation_depth": 4,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 3.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 3,
+            "wnc": 3.0,
+            "tnc": 3.0,
+            "vrc": 0,
+            "wno": 3.0,
+            "wnm": 0.0,
+            "total": 6.0
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 9.0
+        },
+        "is_unsat": true,
+        "mutation": "self_contradiction",
+        "original_pattern_id": "navigation_chain",
+        "semantic_cluster": 0,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Department\ninv: (self.hospital.address <> '') and (not(self.hospital.address <> ''))",
+      "pattern_id": "navigation_chain_unsat",
+      "pattern_name": "Navigation Chain (UNSAT)",
+      "context": "Department",
+      "parameters": {
+        "navigation_path": "self.hospital.address <> ''"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T17:31:13.280473",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 2,
+        "generation_number": 5059,
+        "profile": "easy",
+        "operators_used": [
+          "<",
+          "<>",
+          ">"
+        ],
+        "navigation_depth": 3,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 2,
+            "wnc": 2.0,
+            "tnc": 2.0,
+            "vrc": 0,
+            "wno": 3.0,
+            "wnm": 0.0,
+            "total": 5.0
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 8.0
+        },
+        "is_unsat": true,
+        "mutation": "self_contradiction",
+        "original_pattern_id": "navigation_chain",
+        "semantic_cluster": 0,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Hospital\ninv: (self.departments->notEmpty()) and (self.departments->isEmpty())",
+      "pattern_id": "collection_not_empty_simple_unsat",
+      "pattern_name": "Collection Not Empty (Simple) (UNSAT)",
+      "context": "Hospital",
+      "parameters": {
+        "collection": "departments"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T17:31:13.280513",
+      "metadata": {
+        "category": "collection",
+        "complexity": 1,
+        "generation_number": 5565,
+        "operators_used": [
+          "-",
+          ">",
+          "notEmpty"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.4,
+            "vrc": 0,
+            "wno": 1.0,
+            "wnm": 1.0,
+            "total": 3.4
+          },
+          "computational": {
+            "oc": 1.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 1.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 4.4
+        },
+        "is_unsat": true,
+        "mutation": "empty_collection",
+        "original_pattern_id": "collection_not_empty_simple",
+        "contradiction_ocl": "context Hospital\ninv: self.departments->isEmpty()",
+        "semantic_cluster": 11,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context LabResult\ninv: (self.test.record.recordNo <> '') and (not(self.test.record.recordNo <> ''))",
+      "pattern_id": "navigation_chain_unsat",
+      "pattern_name": "Navigation Chain (UNSAT)",
+      "context": "LabResult",
+      "parameters": {
+        "navigation_path": "self.test.record.recordNo <> ''"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T17:31:13.420382",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 2,
+        "generation_number": 5310,
+        "profile": "medium",
+        "operators_used": [
+          "<",
+          "<>",
+          ">"
+        ],
+        "navigation_depth": 4,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 3.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 3,
+            "wnc": 3.0,
+            "tnc": 3.0,
+            "vrc": 0,
+            "wno": 3.0,
+            "wnm": 0.0,
+            "total": 6.0
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 9.0
+        },
+        "is_unsat": true,
+        "mutation": "self_contradiction",
+        "original_pattern_id": "navigation_chain",
+        "semantic_cluster": 6,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Patient\ninv: (self.isInsured = false) and (not(self.isInsured = false))",
+      "pattern_id": "boolean_is_false_unsat",
+      "pattern_name": "Boolean Is False (UNSAT)",
+      "context": "Patient",
+      "parameters": {
+        "boolean_attribute": "isInsured"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T17:31:13.420397",
+      "metadata": {
+        "category": "basic",
+        "complexity": 1,
+        "generation_number": 5560,
+        "operators_used": [
+          "="
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 1,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 1.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.0,
+            "vrc": 0,
+            "wno": 1.0,
+            "wnm": 0.0,
+            "total": 2.0
+          },
+          "computational": {
+            "oc": 1.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 1.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 3.0
+        },
+        "is_unsat": true,
+        "mutation": "self_contradiction",
+        "original_pattern_id": "boolean_is_false",
+        "semantic_cluster": 0,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context InsurancePolicy\ninv: (self.patient.insurance.validUntil <> '') and (not(self.patient.insurance.validUntil <> ''))",
+      "pattern_id": "navigation_chain_unsat",
+      "pattern_name": "Navigation Chain (UNSAT)",
+      "context": "InsurancePolicy",
+      "parameters": {
+        "navigation_path": "self.patient.insurance.validUntil <> ''"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T17:31:13.420407",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 2,
+        "generation_number": 5551,
+        "operators_used": [
+          "<",
+          "<>",
+          ">"
+        ],
+        "navigation_depth": 4,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 3.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 3,
+            "wnc": 3.0,
+            "tnc": 3.0,
+            "vrc": 0,
+            "wno": 3.0,
+            "wnm": 0.0,
+            "total": 6.0
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 9.0
+        },
+        "is_unsat": true,
+        "mutation": "self_contradiction",
+        "original_pattern_id": "navigation_chain",
+        "semantic_cluster": 0,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Discharge\ninv: (self.summary <> null) and (not(self.summary <> null))",
+      "pattern_id": "attribute_not_null_simple_unsat",
+      "pattern_name": "Attribute Not Null (Simple) (UNSAT)",
+      "context": "Discharge",
+      "parameters": {
+        "attribute": "summary"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T17:31:13.420415",
+      "metadata": {
+        "category": "basic",
+        "complexity": 1,
+        "generation_number": 5407,
+        "profile": "easy",
+        "operators_used": [
+          "<",
+          "<>",
+          ">"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 1.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.0,
+            "vrc": 0,
+            "wno": 3.0,
+            "wnm": 0.0,
+            "total": 4.0
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 7.0
+        },
+        "is_unsat": true,
+        "mutation": "self_contradiction",
+        "original_pattern_id": "attribute_not_null_simple",
+        "semantic_cluster": 4,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context LabTest\ninv: (self.record <> null) and (not(self.record <> null))",
+      "pattern_id": "association_exists_unsat",
+      "pattern_name": "Association Exists (UNSAT)",
+      "context": "LabTest",
+      "parameters": {
+        "association": "record"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T17:31:13.420422",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 1,
+        "generation_number": 5209,
+        "profile": "easy",
+        "operators_used": [
+          "<",
+          "<>",
+          ">"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 1.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.0,
+            "vrc": 0,
+            "wno": 3.0,
+            "wnm": 0.0,
+            "total": 4.0
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 7.0
+        },
+        "is_unsat": true,
+        "mutation": "self_contradiction",
+        "original_pattern_id": "association_exists",
+        "semantic_cluster": 4,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Bed\ninv: ((self.isOccupied = true) and (self.bedNo.toUpperCase() = 'TEST')) and (not((self.isOccupied = true) and (self.bedNo.toUpperCase() = 'TEST')))",
+      "pattern_id": "boolean_is_true_unsat",
+      "pattern_name": "Boolean Is True (UNSAT)",
+      "context": "Bed",
+      "parameters": {
+        "boolean_attribute": "isOccupied"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T17:31:13.420429",
+      "metadata": {
+        "category": "basic",
+        "complexity": 1,
+        "generation_number": 5399,
+        "profile": "medium",
+        "operators_used": [
+          "=",
+          "and"
+        ],
+        "navigation_depth": 3,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 2,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 3.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 2,
+            "wnc": 3.0,
+            "tnc": 2.7,
+            "vrc": 0,
+            "wno": 3.5,
+            "wnm": 1.0,
+            "total": 7.2
+          },
+          "computational": {
+            "oc": 3.5,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.5
+          },
+          "dependency": {
+            "ruc": 1,
+            "total": 1.0
+          },
+          "tc": 11.7
+        },
+        "is_unsat": true,
+        "mutation": "self_contradiction",
+        "original_pattern_id": "boolean_is_true",
+        "semantic_cluster": 16,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Room\ninv: ((self.beds->size() <= 1)) and (self.beds->size() > 1)",
+      "pattern_id": "collection_size_range_unsat",
+      "pattern_name": "Collection Size in Range (UNSAT)",
+      "context": "Room",
+      "parameters": {
+        "collection": "beds",
+        "min_size": 1,
+        "max_size": 1
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T17:31:13.420442",
+      "metadata": {
+        "category": "collection",
+        "complexity": 2,
+        "generation_number": 5357,
+        "profile": "easy",
+        "operators_used": [
+          "-",
+          "<",
+          "<=",
+          "=",
+          ">",
+          "size"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 6,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.4,
+            "vrc": 0,
+            "wno": 4.0,
+            "wnm": 1.0,
+            "total": 6.4
+          },
+          "computational": {
+            "oc": 4.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 4.0
+          },
+          "dependency": {
+            "ruc": 2,
+            "total": 2.0
+          },
+          "tc": 12.4
+        },
+        "is_unsat": true,
+        "mutation": "contradictory_bounds",
+        "original_pattern_id": "collection_size_range",
+        "contradiction_ocl": "context Room\ninv: self.beds->size() > 1",
+        "semantic_cluster": 14,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Procedure\ninv: (self.name <> null) and (not(self.name <> null))",
+      "pattern_id": "attribute_not_null_simple_unsat",
+      "pattern_name": "Attribute Not Null (Simple) (UNSAT)",
+      "context": "Procedure",
+      "parameters": {
+        "attribute": "name"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T17:31:13.556120",
+      "metadata": {
+        "category": "basic",
+        "complexity": 1,
+        "generation_number": 5392,
+        "profile": "easy",
+        "operators_used": [
+          "<",
+          "<>",
+          ">"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 1.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.0,
+            "vrc": 0,
+            "wno": 3.0,
+            "wnm": 0.0,
+            "total": 4.0
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 7.0
+        },
+        "is_unsat": true,
+        "mutation": "self_contradiction",
+        "original_pattern_id": "attribute_not_null_simple",
+        "semantic_cluster": 4,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Department\ninv: (self.nurses->asSequence()->notEmpty()) and (not(self.nurses->asSequence()->notEmpty()))",
+      "pattern_id": "collection_asSequence_unsat",
+      "pattern_name": "Collection As Sequence Conversion (UNSAT)",
+      "context": "Department",
+      "parameters": {
+        "collection": "nurses"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T17:31:13.556139",
+      "metadata": {
+        "category": "collection",
+        "complexity": 2,
+        "generation_number": 5559,
+        "operators_used": [
+          "-",
+          ">",
+          "asSequence",
+          "notEmpty"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 4,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.4,
+            "vrc": 0,
+            "wno": 2.0,
+            "wnm": 2.0,
+            "total": 5.4
+          },
+          "computational": {
+            "oc": 2.0,
+            "tcc": 1.5,
+            "cic": 0.0,
+            "total": 3.5
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 8.9
+        },
+        "is_unsat": true,
+        "mutation": "self_contradiction",
+        "original_pattern_id": "collection_asSequence",
+        "semantic_cluster": 13,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Nurse\ninv: ((self.shift <> null) and (self.department.oclIsTypeOf(Department))) and (not((self.shift <> null) and (self.department.oclIsTypeOf(Department))))",
+      "pattern_id": "attribute_not_null_simple_unsat",
+      "pattern_name": "Attribute Not Null (Simple) (UNSAT)",
+      "context": "Nurse",
+      "parameters": {
+        "attribute": "shift"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T17:31:13.690005",
+      "metadata": {
+        "category": "basic",
+        "complexity": 1,
+        "generation_number": 5410,
+        "profile": "medium",
+        "operators_used": [
+          "<",
+          "<>",
+          ">",
+          "and",
+          "oclIsTypeOf"
+        ],
+        "navigation_depth": 3,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 5,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 3.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 2,
+            "wnc": 3.0,
+            "tnc": 2.7,
+            "vrc": 0,
+            "wno": 4.5,
+            "wnm": 1.0,
+            "total": 8.2
+          },
+          "computational": {
+            "oc": 4.5,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 4.5
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 12.7
+        },
+        "is_unsat": true,
+        "mutation": "self_contradiction",
+        "original_pattern_id": "attribute_not_null_simple",
+        "semantic_cluster": 11,
+        "implies": []
+      }
+    }
+  ]
+}

@@ -1,0 +1,487 @@
+-- Benchmark: IoTSensorNetwork / balanced
+-- Generated: 2026-06-18T17:32:59.819457
+-- Seed: 42
+-- Complexity: standard
+-- Count: 80
+-- Advanced Features: ENABLED
+
+-- #1 Navigation Chain in EventLog
+-- Difficulty: repair
+-- Type: SAT
+context EventLog
+inv: self.device.firmware.version <> ''
+
+-- #2 Navigation Chain in EdgeNode
+-- Difficulty: medium
+-- Type: SAT
+context EdgeNode
+inv: self.cluster.network.networkId <> ''
+
+-- #3 Navigation Chain in Metric
+-- Difficulty: easy
+-- Type: SAT
+context Metric
+inv: self.sensor.sampleRateHz > 10
+
+-- #4 Navigation Chain in Role
+-- Difficulty: easy
+-- Type: SAT
+context Role
+inv: self.platform.version <> ''
+
+-- #5 Navigation Chain in Metric
+-- Difficulty: easy
+-- Type: SAT
+context Metric
+inv: self.sensor.sampleRateHz >= 10
+
+-- #6 Navigation Chain in TelemetryRecord
+-- Difficulty: repair
+-- Type: SAT
+context TelemetryRecord
+inv: self.stream.device.name <> ''
+
+-- #7 Navigation Chain in Role
+-- Difficulty: easy
+-- Type: SAT
+context Role
+inv: self.platform.name <> ''
+
+-- #8 Numeric Is Odd in SensorNode
+-- Difficulty: easy
+-- Type: SAT
+context SensorNode
+inv: self.sampleRateHz mod 2 = 1
+
+-- #9 Association Exists in CommunicationLink
+-- Difficulty: easy
+-- Type: SAT
+context CommunicationLink
+inv: self.network <> null
+
+-- #10 Association Exists in AlertRule
+-- Difficulty: easy
+-- Type: SAT
+context AlertRule
+inv: self.stream <> null
+
+-- #11 Association Exists in Alert
+-- Difficulty: medium
+-- Type: SAT
+context Alert
+inv: (self.rule <> null) and (self.acknowledged = false)
+
+-- #12 Association Exists in CommunicationLink
+-- Difficulty: medium
+-- Type: SAT
+context CommunicationLink
+inv: (self.module <> null) and (self.linkId.size() <= 92)
+
+-- #13 Association Exists in ConfigurationProfile
+-- Difficulty: medium
+-- Type: SAT
+context ConfigurationProfile
+inv: (self.device <> null) and (self.profileId.size() = 44)
+
+-- #14 Association Exists in Alert
+-- Difficulty: medium
+-- Type: SAT
+context Alert
+inv: (self.assignedTo <> null) and (self.alertId.size() <= 42)
+
+-- #15 Association Exists in APIKey
+-- Difficulty: medium
+-- Type: SAT
+context APIKey
+inv: (self.user <> null) and (self.value.size() >= 18)
+
+-- #16 Association Exists in ConnectivityModule
+-- Difficulty: easy
+-- Type: SAT
+context ConnectivityModule
+inv: self.device <> null
+
+-- #17 Association Exists in Device
+-- Difficulty: easy
+-- Type: SAT
+context Device
+inv: self.firmware <> null
+
+-- #18 Navigation Chain in Alert
+-- Difficulty: medium
+-- Type: SAT
+context Alert
+inv: self.rule.stream.topic <> ''
+
+-- #19 Navigation Chain in APIKey
+-- Difficulty: medium
+-- Type: SAT
+context APIKey
+inv: self.user.platform.name <> ''
+
+-- #20 Collection Navigation in AlertRule
+-- Difficulty: difficult
+-- Type: SAT
+context AlertRule
+inv: self.alerts->exists(x | x.acknowledged <> true)
+
+-- #21 Collection Navigation in Firmware
+-- Difficulty: difficult
+-- Type: SAT
+context Firmware
+inv: self.devices->forAll(x | x.deviceId <> '')
+
+-- #22 Collection Navigation in IoTPlatform
+-- Difficulty: difficult
+-- Type: SAT
+context IoTPlatform
+inv: self.accessPolicies->exists(x | x.policyId <> '')
+
+-- #23 Select (Filter) Operation in ConnectivityModule
+-- Difficulty: difficult
+-- Type: SAT
+context ConnectivityModule
+inv: self.links->select(x | x.bandwidthKbps > 10)->size() >= 1
+
+-- #24 Any Operation in Network
+-- Difficulty: difficult
+-- Type: SAT
+context Network
+inv: self.links->any(x | x.bandwidthKbps >= 10) <> null
+
+-- #25 Existential Quantification (exists) in SensorNode
+-- Difficulty: difficult
+-- Type: SAT
+context SensorNode
+inv: self.metrics->exists(x | x.lastValue <= 50)
+
+-- #26 Existential Quantification (exists) in Gateway
+-- Difficulty: difficult
+-- Type: SAT
+context Gateway
+inv: self.connectedEdges->exists(x | x.memoryMB < 50)
+
+-- #27 One Operation in Gateway
+-- Difficulty: medium
+-- Type: SAT
+context Gateway
+inv: self.connectedEdges->one(x | x.memoryMB > 2)
+
+-- #28 Numeric Is Odd in EdgeNode
+-- Difficulty: easy
+-- Type: SAT
+context EdgeNode
+inv: self.cpuCores mod 2 = 1
+
+-- #29 Numeric Absolute Value Bounded in ActuatorNode
+-- Difficulty: medium
+-- Type: SAT
+context ActuatorNode
+inv: self.maxLoad.abs() <= 5
+
+-- #30 Numeric Multiple Of in Battery
+-- Difficulty: easy
+-- Type: SAT
+context Battery
+inv: self.healthPct mod 9 = 0
+
+-- #31 Numeric Attribute Positive in Location
+-- Difficulty: easy
+-- Type: SAT
+context Location
+inv: self.longitude > 0
+
+-- #32 Numeric Attribute Non-Negative in EdgeNode
+-- Difficulty: easy
+-- Type: SAT
+context EdgeNode
+inv: self.cpuCores >= 0
+
+-- #33 Numeric Greater Than Value in PowerSource
+-- Difficulty: easy
+-- Type: SAT
+context PowerSource
+inv: self.capacity > 64
+
+-- #34 Numeric Attribute Bounded in SolarPanel
+-- Difficulty: medium
+-- Type: SAT
+context SolarPanel
+inv: self.wattPeak >= 58 and self.wattPeak <= 96
+
+-- #35 Numeric Absolute Value Bounded in Battery
+-- Difficulty: medium
+-- Type: SAT
+context Battery
+inv: self.healthPct.abs() <= 8
+
+-- #36 Numeric Less Than Value in ActuatorNode
+-- Difficulty: easy
+-- Type: SAT
+context ActuatorNode
+inv: self.maxLoad < 75
+
+-- #37 Numeric Attribute Bounded in ActuatorNode
+-- Difficulty: medium
+-- Type: SAT
+context ActuatorNode
+inv: self.maxLoad >= 64 and self.maxLoad <= 78
+
+-- #38 Numeric Absolute Value Bounded in Location
+-- Difficulty: medium
+-- Type: SAT
+context Location
+inv: self.longitude.abs() <= 5
+
+-- #39 Numeric Absolute Value Bounded in PowerSource
+-- Difficulty: medium
+-- Type: SAT
+context PowerSource
+inv: self.capacity.abs() <= 2
+
+-- #40 Numeric Attribute Bounded in PowerSource
+-- Difficulty: easy
+-- Type: SAT
+context PowerSource
+inv: (self.capacity <= 76)
+
+-- #41 Collection Size in Range in OTAUpdate
+-- Difficulty: medium
+-- Type: SAT
+context OTAUpdate
+inv: (self.tickets->size() <= 1)
+
+-- #42 Collection Minimum Size in IoTPlatform
+-- Difficulty: medium
+-- Type: SAT
+context IoTPlatform
+inv: self.networks->size() >= 3
+
+-- #43 Collection Size Constraint in Firmware
+-- Difficulty: medium
+-- Type: SAT
+context Firmware
+inv: self.devices->size() <= 1
+
+-- #44 Collection Not Empty Check in IoTPlatform
+-- Difficulty: easy
+-- Type: SAT
+context IoTPlatform
+inv: self.accessPolicies->size() > 0
+
+-- #45 Collection Has Specific Size in Gateway
+-- Difficulty: easy
+-- Type: SAT
+context Gateway
+inv: self.connectedEdges->size() = 1
+
+-- #46 Attribute Not Null (Simple) in ConfigurationProfile
+-- Difficulty: medium
+-- Type: SAT
+context ConfigurationProfile
+inv: (self.profileId <> null) and (self.device.oclIsTypeOf(Device))
+
+-- #47 Collection Minimum Size in OTAUpdate
+-- Difficulty: medium
+-- Type: SAT
+context OTAUpdate
+inv: self.tickets->size() >= 1
+
+-- #48 Attribute Not Null (Simple) in TelemetryRecord
+-- Difficulty: easy
+-- Type: SAT
+context TelemetryRecord
+inv: self.timestamp <> null
+
+-- #49 Attribute Not Null (Simple) in MaintenanceTicket
+-- Difficulty: easy
+-- Type: SAT
+context MaintenanceTicket
+inv: self.status <> null
+
+-- #50 Attribute Not Null (Simple) in EventLog
+-- Difficulty: easy
+-- Type: SAT
+context EventLog
+inv: self.time <> null
+
+-- #51 Attribute Not Null (Simple) in MaintenanceTicket
+-- Difficulty: easy
+-- Type: SAT
+context MaintenanceTicket
+inv: self.openedAt <> null
+
+-- #52 Attribute Not Null (Simple) in EventLog
+-- Difficulty: medium
+-- Type: SAT
+context EventLog
+inv: (self.message <> null) and (self.message.size() <= 30)
+
+-- #53 Attribute Not Null (Simple) in ConfigurationProfile
+-- Difficulty: easy
+-- Type: SAT
+context ConfigurationProfile
+inv: self.updatedAt <> null
+
+-- #54 Collection Maximum Size in AccessPolicy
+-- Difficulty: medium
+-- Type: SAT
+context AccessPolicy
+inv: self.roles->size() <= 1
+
+-- #55 Collection Maximum Size in ConnectivityModule
+-- Difficulty: medium
+-- Type: SAT
+context ConnectivityModule
+inv: self.links->size() <= 3
+
+-- #56 Collection Not Empty (Simple) in AlertRule
+-- Difficulty: easy
+-- Type: SAT
+context AlertRule
+inv: self.alerts->notEmpty()
+
+-- #57 Collection Has Specific Size in ConnectivityModule
+-- Difficulty: easy
+-- Type: SAT
+context ConnectivityModule
+inv: self.links->size() = 3
+
+-- #58 Collection Has Specific Size in AlertRule
+-- Difficulty: easy
+-- Type: SAT
+context AlertRule
+inv: self.alerts->size() = 2
+
+-- #59 Collection Must Be Empty in DataStream
+-- Difficulty: easy
+-- Type: SAT
+context DataStream
+inv: self.alertRules->isEmpty()
+
+-- #60 Collection As Sequence Conversion in AlertRule
+-- Difficulty: medium
+-- Type: SAT
+context AlertRule
+inv: self.alerts->asSequence()->notEmpty()
+
+-- #61 Collection Minimum Size in Cluster
+-- Difficulty: medium
+-- Type: SAT
+context Cluster
+inv: self.gateways->size() >= 1
+
+-- #62 Collection Nested Collection Flatten in Cluster
+-- Difficulty: difficult
+-- Type: SAT
+context Cluster
+inv: self.gateways->collect(x | x.connectedEdges)->size() >= 3
+
+-- #63 Collection Nested Collection Flatten in Device
+-- Difficulty: difficult
+-- Type: SAT
+context Device
+inv: self.dataStreams->collect(x | x.alertRules)->size() >= 3
+
+-- #64 Collection Sum in SensorNode
+-- Difficulty: difficult
+-- Type: SAT
+context SensorNode
+inv: self.metrics->collect(x | x.lastValue)->sum() >= 8
+
+-- #65 Numeric Absolute Value Bounded (UNSAT) in Battery
+-- Difficulty: medium
+-- Type: UNSAT
+context Battery
+inv: (self.healthPct.abs() <= 7) and (not(self.healthPct.abs() <= 7))
+
+-- #66 Numeric Absolute Value Bounded (UNSAT) in SolarPanel
+-- Difficulty: medium
+-- Type: UNSAT
+context SolarPanel
+inv: (self.wattPeak.abs() <= 8) and (not(self.wattPeak.abs() <= 8))
+
+-- #67 Collection Navigation (UNSAT) in Firmware
+-- Difficulty: difficult
+-- Type: UNSAT
+context Firmware
+inv: (self.devices->exists(x | x.deviceId <> '')) and (not(self.devices->exists(x | x.deviceId <> '')))
+
+-- #68 Association Exists (UNSAT) in DataStream
+-- Difficulty: medium
+-- Type: UNSAT
+context DataStream
+inv: ((self.link <> null) and (self.records->notEmpty())) and (not((self.link <> null) and (self.records->notEmpty())))
+
+-- #69 Navigation Chain (UNSAT) in Metric
+-- Difficulty: easy
+-- Type: UNSAT
+context Metric
+inv: (self.sensor.sampleRateHz > 0) and (not(self.sensor.sampleRateHz > 0))
+
+-- #70 Collection Navigation (UNSAT) in ConnectivityModule
+-- Difficulty: difficult
+-- Type: UNSAT
+context ConnectivityModule
+inv: (self.links->forAll(x | x.bandwidthKbps <= 10)) and (not(self.links->forAll(x | x.bandwidthKbps <= 10)))
+
+-- #71 Collection Has Specific Size (UNSAT) in OTAUpdate
+-- Difficulty: easy
+-- Type: UNSAT
+context OTAUpdate
+inv: (self.tickets->size() = 1) and (not(self.tickets->size() = 1))
+
+-- #72 Numeric Attribute Bounded (UNSAT) in Location
+-- Difficulty: medium
+-- Type: UNSAT
+context Location
+inv: (self.longitude >= 26 and self.longitude <= 76) and (self.longitude < 26)
+
+-- #73 Navigation Chain (UNSAT) in AccessPolicy
+-- Difficulty: easy
+-- Type: UNSAT
+context AccessPolicy
+inv: (self.platform.version <> '') and (not(self.platform.version <> ''))
+
+-- #74 Collection Nested Collection Flatten (UNSAT) in Cluster
+-- Difficulty: difficult
+-- Type: UNSAT
+context Cluster
+inv: (self.gateways->collect(x | x.connectedEdges)->size() >= 2) and (not(self.gateways->collect(x | x.connectedEdges)->size() >= 2))
+
+-- #75 Existential Quantification (exists) (UNSAT) in Role
+-- Difficulty: difficult
+-- Type: UNSAT
+context Role
+inv: (self.users->exists(x | x.userId <> '')) and (not(self.users->exists(x | x.userId <> '')))
+
+-- #76 Navigation Chain (UNSAT) in APIKey
+-- Difficulty: medium
+-- Type: UNSAT
+context APIKey
+inv: (self.user.platform.version <> '') and (not(self.user.platform.version <> ''))
+
+-- #77 Numeric Less Than Value (UNSAT) in SolarPanel
+-- Difficulty: easy
+-- Type: UNSAT
+context SolarPanel
+inv: (self.wattPeak < 73) and (self.wattPeak > 78)
+
+-- #78 Collection Excluding Element (UNSAT) in DataStream
+-- Difficulty: difficult
+-- Type: UNSAT
+context DataStream
+inv: (self.alertRules->excluding(self.alertRules->any(true))->size() < self.alertRules->size()) and (not(self.alertRules->excluding(self.alertRules->any(true))->size() < self.alertRules->size()))
+
+-- #79 Existential Quantification (exists) (UNSAT) in Cluster
+-- Difficulty: difficult
+-- Type: UNSAT
+context Cluster
+inv: (self.edgeNodes->exists(x | x.cpuCores < 1000)) and (not(self.edgeNodes->exists(x | x.cpuCores < 1000)))
+
+-- #80 Attribute Not Null (Simple) (UNSAT) in TelemetryRecord
+-- Difficulty: easy
+-- Type: UNSAT
+context TelemetryRecord
+inv: (self.payload <> null) and (not(self.payload <> null))
+

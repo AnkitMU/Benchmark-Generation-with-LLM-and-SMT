@@ -1,0 +1,83 @@
+-- Benchmark: FlightBooking / balanced
+-- Type: UNSAT Constraints Only
+-- Generated: 2026-06-18T17:23:41.823018
+-- Count: 13
+
+-- #1 Association Exists (UNSAT) in Booking
+-- Difficulty: easy
+-- Mutation Strategy: self_contradiction
+context Booking
+inv: (self.payment <> null) and (not(self.payment <> null))
+
+-- #2 Collection Nested Collection Flatten (UNSAT) in Airport
+-- Difficulty: difficult
+-- Mutation Strategy: self_contradiction
+context Airport
+inv: (self.arrivingFlights->collect(x | x.bookings)->size() >= 3) and (not(self.arrivingFlights->collect(x | x.bookings)->size() >= 3))
+
+-- #3 Collection Nested Collection Flatten (UNSAT) in Flight
+-- Difficulty: difficult
+-- Mutation Strategy: self_contradiction
+context Flight
+inv: (self.bookings->collect(x | x.baggages)->size() >= 2) and (not(self.bookings->collect(x | x.baggages)->size() >= 2))
+
+-- #4 Numeric Attribute Positive (UNSAT) in Payment
+-- Difficulty: easy
+-- Mutation Strategy: contradictory_bounds
+context Payment
+inv: (self.amount > 0) and (self.amount < -5)
+
+-- #5 Numeric Absolute Value Bounded (UNSAT) in Baggage
+-- Difficulty: medium
+-- Mutation Strategy: self_contradiction
+context Baggage
+inv: (self.weightKg.abs() <= 2) and (not(self.weightKg.abs() <= 2))
+
+-- #6 Collection As Sequence Conversion (UNSAT) in Airport
+-- Difficulty: medium
+-- Mutation Strategy: self_contradiction
+context Airport
+inv: (self.departingFlights->asSequence()->notEmpty()) and (not(self.departingFlights->asSequence()->notEmpty()))
+
+-- #7 Collection Navigation (UNSAT) in Booking
+-- Difficulty: difficult
+-- Mutation Strategy: self_contradiction
+context Booking
+inv: (self.baggages->forAll(x | x.weightKg >= 1)) and (not(self.baggages->forAll(x | x.weightKg >= 1)))
+
+-- #8 Existential Quantification (exists) (UNSAT) in Aircraft
+-- Difficulty: difficult
+-- Mutation Strategy: self_contradiction
+context Aircraft
+inv: (self.seats->exists(x | x.seatNo <> '')) and (not(self.seats->exists(x | x.seatNo <> '')))
+
+-- #9 Numeric Absolute Value Bounded (UNSAT) in Payment
+-- Difficulty: medium
+-- Mutation Strategy: self_contradiction
+context Payment
+inv: (self.amount.abs() <= 1) and (not(self.amount.abs() <= 1))
+
+-- #10 Navigation Chain (UNSAT) in CheckIn
+-- Difficulty: medium
+-- Mutation Strategy: self_contradiction
+context CheckIn
+inv: (self.booking.flight.departureTime <> '') and (not(self.booking.flight.departureTime <> ''))
+
+-- #11 Collection Navigation (UNSAT) in Airport
+-- Difficulty: difficult
+-- Mutation Strategy: self_contradiction
+context Airport
+inv: (self.departingFlights->exists(x | x.flightNo <> '')) and (not(self.departingFlights->exists(x | x.flightNo <> '')))
+
+-- #12 Numeric Absolute Value Bounded (UNSAT) in Baggage
+-- Difficulty: medium
+-- Mutation Strategy: self_contradiction
+context Baggage
+inv: (self.weightKg.abs() <= 1) and (not(self.weightKg.abs() <= 1))
+
+-- #13 Navigation Chain (UNSAT) in BoardingPass
+-- Difficulty: medium
+-- Mutation Strategy: self_contradiction
+context BoardingPass
+inv: (self.checkIn.booking.bookingRef <> '') and (not(self.checkIn.booking.bookingRef <> ''))
+

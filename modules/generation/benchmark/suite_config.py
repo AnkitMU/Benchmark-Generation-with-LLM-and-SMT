@@ -20,10 +20,10 @@ class VerificationSpec:
     enable: bool = True
     objective: str = "both"  # sat | unsat | both
     per_constraint_timeout_ms: int = 8000
-    batch_timeout_ms: int = 30000
+    batch_timeout_ms: int = 60000
     check_global_consistency: bool = True
     implication_use_z3: bool = False
-    scope_per_class: int = 2  # Bounded scope: max instances per class for Z3
+    scope_per_class: int = 4  # Bounded scope: max instances per class for Z3
 
 
 @dataclass
@@ -65,6 +65,45 @@ class ProfileSpec:
     # Full operator weights (Table 1 from paper, takes precedence over operator_weight_overrides)
     operator_weights: Optional[Dict[str, float]] = None
 
+    # --- Generation mechanism (per-profile override) ---
+    # "construct_select" (default) — over-generate a pool, measure exact
+    #     complexity, then stratified-select to fill each tier's quota exactly.
+    # "legacy" — older TC-steering path.
+    # When None, inherits the suite-level BenchmarkSuite.generation_mode.
+    generation_mode: Optional[str] = None
+
+    # --- Steered mode: per-component complexity profiles ---
+    # List of {"pct": share, "label": name, "ranges": {component: [lo, hi]}}.
+    # Only consumed by generation_mode == "steered".
+    complexity_profiles: Optional[List[Dict]] = None
+    # Infeasibility policy for steered mode: report | relax | skip.
+    on_infeasible: Optional[str] = None
+
+    def __post_init__(self):
+        # Fail fast with a clear message on a malformed numeric field (e.g. a YAML
+        # typo like 'constraints: 100clear'), instead of a cryptic 'str / int' error
+        # surfacing minutes into the run after semantic analysis.
+        for fld, val in (('constraints', self.constraints), ('seed', self.seed),
+                         ('per_class_min', self.per_class_min),
+                         ('per_class_max', self.per_class_max)):
+            if val is None:
+                continue
+            try:
+                setattr(self, fld, int(val))
+            except (TypeError, ValueError):
+                raise ValueError(
+                    f"Profile '{self.name}': field '{fld}' must be an integer, "
+                    f"got {val!r}. Check the YAML for a typo."
+                )
+        for fld, val in (('sat_ratio', self.sat_ratio), ('unsat_ratio', self.unsat_ratio)):
+            try:
+                setattr(self, fld, float(val))
+            except (TypeError, ValueError):
+                raise ValueError(
+                    f"Profile '{self.name}': field '{fld}' must be a number, "
+                    f"got {val!r}. Check the YAML for a typo."
+                )
+
 
 @dataclass
 class ModelSpec:
@@ -79,6 +118,17 @@ class ModelSpec:
 
 
 @dataclass
+class VGCRSpec:
+    """VGCR (Verification-Guided Constraint Refinement) configuration."""
+    enable: bool = True
+    max_retries: int = 3
+    enable_independence_check: bool = True
+    independence_threshold: int = 5  # min suite size before q3 activates
+    # TC conformance bounds — if None, uses the profile's target_tc_range
+    tc_range_override: Optional[Dict[str, float]] = None  # {"min": 3.0, "max": 25.0}
+
+
+@dataclass
 class BenchmarkSuite:
     """Complete benchmark suite specification."""
     suite_name: str
@@ -86,9 +136,16 @@ class BenchmarkSuite:
     models: List[ModelSpec] = field(default_factory=list)
     verification: VerificationSpec = field(default_factory=VerificationSpec)
     semantic: SemanticSpec = field(default_factory=SemanticSpec)
+    vgcr: VGCRSpec = field(default_factory=VGCRSpec)
     output_root: str = "benchmarks/"
     description: Optional[str] = None
-    
+
+    # Generation mechanism for the whole suite (individual profiles may override
+    # via ProfileSpec.generation_mode):
+    #   "construct_select" (default) — over-generate, measure, stratified-select
+    #   "legacy" — older TC-steering path
+    generation_mode: str = "construct_select"
+
     # Reproducibility
     framework_version: str = "2.0"
     git_commit: Optional[str] = None
@@ -127,14 +184,20 @@ class BenchmarkSuite:
             )
             models.append(model)
         
+        # Parse VGCR config
+        vgcr_data = data.get('vgcr', {})
+        vgcr = VGCRSpec(**vgcr_data)
+
         suite = cls(
             suite_name=data['suite_name'],
             version=data.get('version', '1.0'),
             models=models,
             verification=verification,
             semantic=semantic,
+            vgcr=vgcr,
             output_root=data.get('output_root', 'benchmarks/'),
             description=data.get('description'),
+            generation_mode=data.get('generation_mode', 'construct_select'),
             git_commit=data.get('git_commit')
         )
         
@@ -170,6 +233,7 @@ class BenchmarkSuite:
                                 'per_class_max': p.per_class_max,
                                 'similarity_threshold': p.similarity_threshold,
                                 'novelty_boost': p.novelty_boost,
+                                'generation_mode': p.generation_mode,
                             }.items() if v is not None
                         }
                         for p in m.profiles
@@ -191,10 +255,11 @@ class BenchmarkSuite:
                 'scope_per_class': self.verification.scope_per_class
             },
             'output_root': self.output_root,
+            'generation_mode': self.generation_mode,
             'framework_version': self.framework_version,
             'git_commit': self.git_commit
         }
-        
+
         with open(yaml_path, 'w') as f:
             yaml.dump(data, f, default_flow_style=False, sort_keys=False)
 

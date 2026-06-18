@@ -2,15 +2,32 @@ suite_name: "OCL-Benchmark-Balanced"
 version: "2.0"
 description: "Balanced OCL constraint benchmark suite with complexity-aware generation"
 
+# ===== GENERATION MECHANISM (suite-wide default) =====
+#
+#   construct_select  (default) — over-generate a candidate pool from the
+#       pattern library, MEASURE each candidate's exact (Structural,
+#       Computational) complexity, then stratified-select to fill every
+#       difficulty tier's quota EXACTLY. Feasibility gaps are reported, never
+#       padded. Complexity is observed, not chased — no TC steering.
+#   legacy            — older TC-steering path (weighted sampling nudged toward
+#       a target TC range; soft proportion matching).
+#
+# Individual profiles may override this via `generation_mode:` (see below).
+generation_mode: construct_select
+
 models:
 
-  - xmi: "models/iotsensornetwork.xmi"
-    name: "IOTsensornetwork"
+  - xmi: "models/car_rental.xmi"
+    name: "CarRental"
     profiles:
 
       - name: "balanced"
         seed: 42
         constraints: 100
+
+        # Per-profile generation-mechanism override (optional).
+        # Omit to inherit the suite-level `generation_mode` above.
+        # generation_mode: legacy
 
         # SAT/UNSAT Distribution (must sum to 1.0)
         sat_ratio: 0.8
@@ -139,14 +156,34 @@ semantic:
   ollama_url: "http://localhost:11434"   # Ollama endpoint
   use_cache: true                        # Cache results to avoid re-analysis
 
+# ===== VGCR (Verification-Guided Constraint Refinement) =====
+#
+# Inline quality assurance loop inspired by CEGAR. Each candidate constraint
+# is checked against five formal properties (q1–q5) using the SMT solver.
+# Failures drive deterministic generator-state refinement (blacklisting,
+# reweighting) so the next candidate avoids the same defect.
+#
+# Properties checked:
+#   q1: not tautology          (Φ_M ∧ ¬c is SAT)
+#   q2: not contradiction      (Φ_M ∧ c is SAT)
+#   q3: independence from suite (Φ_M ∧ B ∧ ¬c is SAT)
+#   q4: consistency with suite  (Φ_M ∧ B ∧ c is SAT)
+#   q5: TC conformance          (analytical, no SMT)
+vgcr:
+  enable: true
+  max_retries: 3                    # Max refinement retries per constraint slot
+  enable_independence_check: true   # q3 independence (slower but stronger guarantees)
+  independence_threshold: 5         # Min suite size before q3 kicks in
+
 verification:
   enable: true
   implication_use_z3: true
   objective: "both"
   per_constraint_timeout_ms: 15000
-  batch_timeout_ms: 30000
+  batch_timeout_ms: 60000
   check_global_consistency: true
+  scope_per_class: 6   # bounded scope for Z3: max instances per class
 
 output_root: "benchmarks/"
-framework_version: "2.0"
+framework_version: "3.0"
 git_commit: null

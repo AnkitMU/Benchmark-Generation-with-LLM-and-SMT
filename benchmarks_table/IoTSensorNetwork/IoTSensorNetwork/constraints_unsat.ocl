@@ -1,0 +1,101 @@
+-- Benchmark: IoTSensorNetwork / balanced
+-- Type: UNSAT Constraints Only
+-- Generated: 2026-06-18T17:32:59.827804
+-- Count: 16
+
+-- #1 Numeric Absolute Value Bounded (UNSAT) in Battery
+-- Difficulty: medium
+-- Mutation Strategy: self_contradiction
+context Battery
+inv: (self.healthPct.abs() <= 7) and (not(self.healthPct.abs() <= 7))
+
+-- #2 Numeric Absolute Value Bounded (UNSAT) in SolarPanel
+-- Difficulty: medium
+-- Mutation Strategy: self_contradiction
+context SolarPanel
+inv: (self.wattPeak.abs() <= 8) and (not(self.wattPeak.abs() <= 8))
+
+-- #3 Collection Navigation (UNSAT) in Firmware
+-- Difficulty: difficult
+-- Mutation Strategy: self_contradiction
+context Firmware
+inv: (self.devices->exists(x | x.deviceId <> '')) and (not(self.devices->exists(x | x.deviceId <> '')))
+
+-- #4 Association Exists (UNSAT) in DataStream
+-- Difficulty: medium
+-- Mutation Strategy: self_contradiction
+context DataStream
+inv: ((self.link <> null) and (self.records->notEmpty())) and (not((self.link <> null) and (self.records->notEmpty())))
+
+-- #5 Navigation Chain (UNSAT) in Metric
+-- Difficulty: easy
+-- Mutation Strategy: self_contradiction
+context Metric
+inv: (self.sensor.sampleRateHz > 0) and (not(self.sensor.sampleRateHz > 0))
+
+-- #6 Collection Navigation (UNSAT) in ConnectivityModule
+-- Difficulty: difficult
+-- Mutation Strategy: self_contradiction
+context ConnectivityModule
+inv: (self.links->forAll(x | x.bandwidthKbps <= 10)) and (not(self.links->forAll(x | x.bandwidthKbps <= 10)))
+
+-- #7 Collection Has Specific Size (UNSAT) in OTAUpdate
+-- Difficulty: easy
+-- Mutation Strategy: self_contradiction
+context OTAUpdate
+inv: (self.tickets->size() = 1) and (not(self.tickets->size() = 1))
+
+-- #8 Numeric Attribute Bounded (UNSAT) in Location
+-- Difficulty: medium
+-- Mutation Strategy: contradictory_bounds
+context Location
+inv: (self.longitude >= 26 and self.longitude <= 76) and (self.longitude < 26)
+
+-- #9 Navigation Chain (UNSAT) in AccessPolicy
+-- Difficulty: easy
+-- Mutation Strategy: self_contradiction
+context AccessPolicy
+inv: (self.platform.version <> '') and (not(self.platform.version <> ''))
+
+-- #10 Collection Nested Collection Flatten (UNSAT) in Cluster
+-- Difficulty: difficult
+-- Mutation Strategy: self_contradiction
+context Cluster
+inv: (self.gateways->collect(x | x.connectedEdges)->size() >= 2) and (not(self.gateways->collect(x | x.connectedEdges)->size() >= 2))
+
+-- #11 Existential Quantification (exists) (UNSAT) in Role
+-- Difficulty: difficult
+-- Mutation Strategy: self_contradiction
+context Role
+inv: (self.users->exists(x | x.userId <> '')) and (not(self.users->exists(x | x.userId <> '')))
+
+-- #12 Navigation Chain (UNSAT) in APIKey
+-- Difficulty: medium
+-- Mutation Strategy: self_contradiction
+context APIKey
+inv: (self.user.platform.version <> '') and (not(self.user.platform.version <> ''))
+
+-- #13 Numeric Less Than Value (UNSAT) in SolarPanel
+-- Difficulty: easy
+-- Mutation Strategy: contradictory_bounds
+context SolarPanel
+inv: (self.wattPeak < 73) and (self.wattPeak > 78)
+
+-- #14 Collection Excluding Element (UNSAT) in DataStream
+-- Difficulty: difficult
+-- Mutation Strategy: self_contradiction
+context DataStream
+inv: (self.alertRules->excluding(self.alertRules->any(true))->size() < self.alertRules->size()) and (not(self.alertRules->excluding(self.alertRules->any(true))->size() < self.alertRules->size()))
+
+-- #15 Existential Quantification (exists) (UNSAT) in Cluster
+-- Difficulty: difficult
+-- Mutation Strategy: self_contradiction
+context Cluster
+inv: (self.edgeNodes->exists(x | x.cpuCores < 1000)) and (not(self.edgeNodes->exists(x | x.cpuCores < 1000)))
+
+-- #16 Attribute Not Null (Simple) (UNSAT) in TelemetryRecord
+-- Difficulty: easy
+-- Mutation Strategy: self_contradiction
+context TelemetryRecord
+inv: (self.payload <> null) and (not(self.payload <> null))
+

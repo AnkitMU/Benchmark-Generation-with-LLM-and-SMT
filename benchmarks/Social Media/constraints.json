@@ -1,0 +1,3607 @@
+{
+  "metadata": {
+    "suite": "OCL-Steered-FiveKnob",
+    "model": "Social Media",
+    "profile": "balanced",
+    "generated_at": "2026-06-18T19:20:13.951494",
+    "seed": 42,
+    "complexity": "standard",
+    "framework_version": "2.0",
+    "git_commit": "f5167bb85a81f70f696ae7e50213435cbca49baf",
+    "constraint_count": 60,
+    "research_features_enabled": true,
+    "consistency_verified": true,
+    "scope_per_class": 6
+  },
+  "constraints": [
+    {
+      "ocl": "context Media\ninv: self.post.author.email <> ''",
+      "pattern_id": "navigation_chain",
+      "pattern_name": "Navigation Chain",
+      "context": "Media",
+      "parameters": {
+        "navigation_path": "self.post.author.email <> ''"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T19:19:25.713221",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 2,
+        "generation_number": 3412,
+        "operators_used": [
+          "<",
+          "<>",
+          ">"
+        ],
+        "navigation_depth": 4,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 3.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 3,
+            "wnc": 3.0,
+            "tnc": 3.0,
+            "vrc": 0,
+            "wno": 3.0,
+            "wnm": 0.0,
+            "total": 6.0
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 9.0
+        },
+        "semantic_cluster": 0,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Comment\ninv: self.post.author.createdAt <> ''",
+      "pattern_id": "navigation_chain",
+      "pattern_name": "Navigation Chain",
+      "context": "Comment",
+      "parameters": {
+        "navigation_path": "self.post.author.createdAt <> ''"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T19:19:26.029411",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 2,
+        "generation_number": 3414,
+        "operators_used": [
+          "<",
+          "<>",
+          ">"
+        ],
+        "navigation_depth": 4,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 3.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 3,
+            "wnc": 3.0,
+            "tnc": 3.0,
+            "vrc": 0,
+            "wno": 3.0,
+            "wnm": 0.0,
+            "total": 6.0
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 9.0
+        },
+        "semantic_cluster": 0,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Conversation\ninv: (self.participants->size() <= 2)",
+      "pattern_id": "collection_size_range",
+      "pattern_name": "Collection Size in Range",
+      "context": "Conversation",
+      "parameters": {
+        "collection": "participants",
+        "min_size": 2,
+        "max_size": 2
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T19:19:25.318435",
+      "metadata": {
+        "category": "collection",
+        "complexity": 2,
+        "generation_number": 3096,
+        "profile": "medium",
+        "operators_used": [
+          "-",
+          "<",
+          "<=",
+          "=",
+          ">",
+          "size"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 6,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.4,
+            "vrc": 0,
+            "wno": 4.0,
+            "wnm": 1.0,
+            "total": 6.4
+          },
+          "computational": {
+            "oc": 4.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 4.0
+          },
+          "dependency": {
+            "ruc": 9,
+            "total": 9.0
+          },
+          "tc": 19.4
+        },
+        "semantic_cluster": 1,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Group\ninv: (self.memberships->size() <= 3)",
+      "pattern_id": "collection_size_range",
+      "pattern_name": "Collection Size in Range",
+      "context": "Group",
+      "parameters": {
+        "collection": "memberships",
+        "min_size": 3,
+        "max_size": 3
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T19:19:25.318866",
+      "metadata": {
+        "category": "collection",
+        "complexity": 2,
+        "generation_number": 3097,
+        "profile": "easy",
+        "operators_used": [
+          "-",
+          "<",
+          "<=",
+          "=",
+          ">",
+          "size"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 6,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.4,
+            "vrc": 0,
+            "wno": 4.0,
+            "wnm": 1.0,
+            "total": 6.4
+          },
+          "computational": {
+            "oc": 4.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 4.0
+          },
+          "dependency": {
+            "ruc": 8,
+            "total": 8.0
+          },
+          "tc": 18.4
+        },
+        "semantic_cluster": 1,
+        "implies": [
+          "collection_size_range_Group",
+          "collection_max_size_Group",
+          "collection_size_range_unsat_Group"
+        ]
+      }
+    },
+    {
+      "ocl": "context Tag\ninv: (self.posts->size() <= 3)",
+      "pattern_id": "collection_size_range",
+      "pattern_name": "Collection Size in Range",
+      "context": "Tag",
+      "parameters": {
+        "collection": "posts",
+        "min_size": 1,
+        "max_size": 3
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T19:19:25.319799",
+      "metadata": {
+        "category": "collection",
+        "complexity": 2,
+        "generation_number": 3099,
+        "profile": "medium",
+        "operators_used": [
+          "-",
+          "<",
+          "<=",
+          "=",
+          ">",
+          "size"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 6,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.4,
+            "vrc": 0,
+            "wno": 4.0,
+            "wnm": 1.0,
+            "total": 6.4
+          },
+          "computational": {
+            "oc": 4.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 4.0
+          },
+          "dependency": {
+            "ruc": 12,
+            "total": 12.0
+          },
+          "tc": 22.4
+        },
+        "semantic_cluster": 1,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Group\ninv: (self.memberships->size() <= 1)",
+      "pattern_id": "collection_size_range",
+      "pattern_name": "Collection Size in Range",
+      "context": "Group",
+      "parameters": {
+        "collection": "memberships",
+        "min_size": 1,
+        "max_size": 1
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T19:19:25.322633",
+      "metadata": {
+        "category": "collection",
+        "complexity": 2,
+        "generation_number": 3110,
+        "profile": "easy",
+        "operators_used": [
+          "-",
+          "<",
+          "<=",
+          "=",
+          ">",
+          "size"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 6,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.4,
+            "vrc": 0,
+            "wno": 4.0,
+            "wnm": 1.0,
+            "total": 6.4
+          },
+          "computational": {
+            "oc": 4.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 4.0
+          },
+          "dependency": {
+            "ruc": 8,
+            "total": 8.0
+          },
+          "tc": 18.4
+        },
+        "semantic_cluster": 1,
+        "implies": [
+          "collection_size_range_Group",
+          "collection_max_size_Group",
+          "collection_size_range_unsat_Group"
+        ]
+      }
+    },
+    {
+      "ocl": "context Tag\ninv: self.posts->forAll(x | x.isPublic <> true)",
+      "pattern_id": "collection_navigation",
+      "pattern_name": "Collection Navigation",
+      "context": "Tag",
+      "parameters": {
+        "collection": "posts",
+        "operation": "forAll",
+        "iterator": "x",
+        "nested": "isPublic <> true"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T19:19:25.328930",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 3,
+        "generation_number": 3154,
+        "profile": "difficult",
+        "operators_used": [
+          "-",
+          "<",
+          "<>",
+          ">",
+          "forAll"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "difficult",
+        "operator_count": 5,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 3.0,
+            "wnc": 5.0,
+            "tnc": 4.0,
+            "vrc": 1,
+            "wno": 7.0,
+            "wnm": 1.0,
+            "total": 13.0
+          },
+          "computational": {
+            "oc": 7.0,
+            "tcc": 0.0,
+            "cic": 3.0,
+            "total": 10.0
+          },
+          "dependency": {
+            "ruc": 12,
+            "total": 12.0
+          },
+          "tc": 35.0
+        },
+        "semantic_cluster": 2,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Conversation\ninv: self.participants->exists(x | x.createdAt <> '')",
+      "pattern_id": "collection_navigation",
+      "pattern_name": "Collection Navigation",
+      "context": "Conversation",
+      "parameters": {
+        "collection": "participants",
+        "operation": "exists",
+        "iterator": "x",
+        "nested": "createdAt <> ''"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T19:19:25.330506",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 3,
+        "generation_number": 3158,
+        "profile": "difficult",
+        "operators_used": [
+          "-",
+          "<",
+          "<>",
+          ">",
+          "exists"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "difficult",
+        "operator_count": 5,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 3.0,
+            "wnc": 5.0,
+            "tnc": 4.0,
+            "vrc": 1,
+            "wno": 7.0,
+            "wnm": 1.0,
+            "total": 13.0
+          },
+          "computational": {
+            "oc": 7.0,
+            "tcc": 0.0,
+            "cic": 3.0,
+            "total": 10.0
+          },
+          "dependency": {
+            "ruc": 9,
+            "total": 9.0
+          },
+          "tc": 32.0
+        },
+        "semantic_cluster": 3,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Comment\ninv: self.author <> null",
+      "pattern_id": "association_exists",
+      "pattern_name": "Association Exists",
+      "context": "Comment",
+      "parameters": {
+        "association": "author"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T19:19:25.330936",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 1,
+        "generation_number": 3159,
+        "profile": "easy",
+        "operators_used": [
+          "<",
+          "<>",
+          ">"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 1.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.0,
+            "vrc": 0,
+            "wno": 3.0,
+            "wnm": 0.0,
+            "total": 4.0
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 7.0
+        },
+        "semantic_cluster": 0,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Follow\ninv: (self.followee <> null) and (self.follower.profile.bio <> '')",
+      "pattern_id": "association_exists",
+      "pattern_name": "Association Exists",
+      "context": "Follow",
+      "parameters": {
+        "association": "followee"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T19:19:25.331361",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 1,
+        "generation_number": 3160,
+        "profile": "medium",
+        "operators_used": [
+          "<",
+          "<>",
+          ">",
+          "and"
+        ],
+        "navigation_depth": 4,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 4,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 4.0,
+            "dn_ca": 3,
+            "wnc": 4.0,
+            "tnc": 3.7,
+            "vrc": 0,
+            "wno": 7.5,
+            "wnm": 0.0,
+            "total": 11.2
+          },
+          "computational": {
+            "oc": 7.5,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 7.5
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 18.7
+        },
+        "semantic_cluster": 0,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Media\ninv: self.post <> null",
+      "pattern_id": "association_exists",
+      "pattern_name": "Association Exists",
+      "context": "Media",
+      "parameters": {
+        "association": "post"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T19:19:25.332212",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 1,
+        "generation_number": 3162,
+        "profile": "easy",
+        "operators_used": [
+          "<",
+          "<>",
+          ">"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 1.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.0,
+            "vrc": 0,
+            "wno": 3.0,
+            "wnm": 0.0,
+            "total": 4.0
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 7.0
+        },
+        "semantic_cluster": 0,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Membership\ninv: (self.group <> null) and (self.role <> null)",
+      "pattern_id": "association_exists",
+      "pattern_name": "Association Exists",
+      "context": "Membership",
+      "parameters": {
+        "association": "group"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T19:19:25.333871",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 1,
+        "generation_number": 3167,
+        "profile": "medium",
+        "operators_used": [
+          "<",
+          "<>",
+          ">",
+          "and"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 4,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 1,
+            "wnc": 2.0,
+            "tnc": 1.7,
+            "vrc": 0,
+            "wno": 7.5,
+            "wnm": 0.0,
+            "total": 9.2
+          },
+          "computational": {
+            "oc": 7.5,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 7.5
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 16.7
+        },
+        "semantic_cluster": 3,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Membership\ninv: (self.user <> null) and (self.group.oclIsTypeOf(Group))",
+      "pattern_id": "association_exists",
+      "pattern_name": "Association Exists",
+      "context": "Membership",
+      "parameters": {
+        "association": "user"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T19:19:25.335060",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 1,
+        "generation_number": 3175,
+        "profile": "medium",
+        "operators_used": [
+          "<",
+          "<>",
+          ">",
+          "and",
+          "oclIsTypeOf"
+        ],
+        "navigation_depth": 3,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 5,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 3.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 2,
+            "wnc": 3.0,
+            "tnc": 2.7,
+            "vrc": 0,
+            "wno": 4.5,
+            "wnm": 1.0,
+            "total": 8.2
+          },
+          "computational": {
+            "oc": 4.5,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 4.5
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 12.7
+        },
+        "semantic_cluster": 3,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Follow\ninv: self.follower <> null",
+      "pattern_id": "association_exists",
+      "pattern_name": "Association Exists",
+      "context": "Follow",
+      "parameters": {
+        "association": "follower"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T19:19:25.336252",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 1,
+        "generation_number": 3184,
+        "profile": "easy",
+        "operators_used": [
+          "<",
+          "<>",
+          ">"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 1.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.0,
+            "vrc": 0,
+            "wno": 3.0,
+            "wnm": 0.0,
+            "total": 4.0
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 7.0
+        },
+        "semantic_cluster": 0,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context FriendRequest\ninv: self.fromUser <> null",
+      "pattern_id": "association_exists",
+      "pattern_name": "Association Exists",
+      "context": "FriendRequest",
+      "parameters": {
+        "association": "fromUser"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T19:19:25.336653",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 1,
+        "generation_number": 3185,
+        "profile": "easy",
+        "operators_used": [
+          "<",
+          "<>",
+          ">"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 1.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.0,
+            "vrc": 0,
+            "wno": 3.0,
+            "wnm": 0.0,
+            "total": 4.0
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 7.0
+        },
+        "semantic_cluster": 0,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Notification\ninv: (self.recipient <> null) and (self.message.toLowerCase() = 'test')",
+      "pattern_id": "association_exists",
+      "pattern_name": "Association Exists",
+      "context": "Notification",
+      "parameters": {
+        "association": "recipient"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T19:19:25.339014",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 1,
+        "generation_number": 3206,
+        "profile": "medium",
+        "operators_used": [
+          "<",
+          "<>",
+          "=",
+          ">",
+          "and"
+        ],
+        "navigation_depth": 3,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 5,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 3.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 2,
+            "wnc": 3.0,
+            "tnc": 2.7,
+            "vrc": 0,
+            "wno": 5.5,
+            "wnm": 1.0,
+            "total": 9.2
+          },
+          "computational": {
+            "oc": 5.5,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 5.5
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 14.7
+        },
+        "semantic_cluster": 4,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Message\ninv: self.conversation <> null",
+      "pattern_id": "association_exists",
+      "pattern_name": "Association Exists",
+      "context": "Message",
+      "parameters": {
+        "association": "conversation"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T19:19:25.341954",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 1,
+        "generation_number": 3238,
+        "profile": "easy",
+        "operators_used": [
+          "<",
+          "<>",
+          ">"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 1.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.0,
+            "vrc": 0,
+            "wno": 3.0,
+            "wnm": 0.0,
+            "total": 4.0
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 7.0
+        },
+        "semantic_cluster": 0,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Reaction\ninv: self.user <> null",
+      "pattern_id": "association_exists",
+      "pattern_name": "Association Exists",
+      "context": "Reaction",
+      "parameters": {
+        "association": "user"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T19:19:25.346609",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 1,
+        "generation_number": 3301,
+        "profile": "easy",
+        "operators_used": [
+          "<",
+          "<>",
+          ">"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 1.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.0,
+            "vrc": 0,
+            "wno": 3.0,
+            "wnm": 0.0,
+            "total": 4.0
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 7.0
+        },
+        "semantic_cluster": 0,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Membership\ninv: self.user.profile.birthDate <> ''",
+      "pattern_id": "navigation_chain",
+      "pattern_name": "Navigation Chain",
+      "context": "Membership",
+      "parameters": {
+        "navigation_path": "self.user.profile.birthDate <> ''"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T19:19:25.346901",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 2,
+        "generation_number": 3302,
+        "profile": "medium",
+        "operators_used": [
+          "<",
+          "<>",
+          ">"
+        ],
+        "navigation_depth": 4,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 3.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 3,
+            "wnc": 3.0,
+            "tnc": 3.0,
+            "vrc": 0,
+            "wno": 3.0,
+            "wnm": 0.0,
+            "total": 6.0
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 9.0
+        },
+        "semantic_cluster": 5,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Message\ninv: self.sender.profile.bio <> ''",
+      "pattern_id": "navigation_chain",
+      "pattern_name": "Navigation Chain",
+      "context": "Message",
+      "parameters": {
+        "navigation_path": "self.sender.profile.bio <> ''"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T19:19:25.348120",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 2,
+        "generation_number": 3306,
+        "profile": "medium",
+        "operators_used": [
+          "<",
+          "<>",
+          ">"
+        ],
+        "navigation_depth": 4,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 3.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 3,
+            "wnc": 3.0,
+            "tnc": 3.0,
+            "vrc": 0,
+            "wno": 3.0,
+            "wnm": 0.0,
+            "total": 6.0
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 9.0
+        },
+        "semantic_cluster": 5,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Profile\ninv: self.user.profile.fullName <> ''",
+      "pattern_id": "navigation_chain",
+      "pattern_name": "Navigation Chain",
+      "context": "Profile",
+      "parameters": {
+        "navigation_path": "self.user.profile.fullName <> ''"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T19:19:25.348422",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 2,
+        "generation_number": 3307,
+        "profile": "medium",
+        "operators_used": [
+          "<",
+          "<>",
+          ">"
+        ],
+        "navigation_depth": 4,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 3.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 3,
+            "wnc": 3.0,
+            "tnc": 3.0,
+            "vrc": 0,
+            "wno": 3.0,
+            "wnm": 0.0,
+            "total": 6.0
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 9.0
+        },
+        "semantic_cluster": 5,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Profile\ninv: self.user.profile.bio <> ''",
+      "pattern_id": "navigation_chain",
+      "pattern_name": "Navigation Chain",
+      "context": "Profile",
+      "parameters": {
+        "navigation_path": "self.user.profile.bio <> ''"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T19:19:25.348725",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 2,
+        "generation_number": 3308,
+        "profile": "medium",
+        "operators_used": [
+          "<",
+          "<>",
+          ">"
+        ],
+        "navigation_depth": 4,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 3.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 3,
+            "wnc": 3.0,
+            "tnc": 3.0,
+            "vrc": 0,
+            "wno": 3.0,
+            "wnm": 0.0,
+            "total": 6.0
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 9.0
+        },
+        "semantic_cluster": 5,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context FriendRequest\ninv: self.fromUser.profile.bio <> ''",
+      "pattern_id": "navigation_chain",
+      "pattern_name": "Navigation Chain",
+      "context": "FriendRequest",
+      "parameters": {
+        "navigation_path": "self.fromUser.profile.bio <> ''"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T19:19:25.349026",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 2,
+        "generation_number": 3309,
+        "profile": "medium",
+        "operators_used": [
+          "<",
+          "<>",
+          ">"
+        ],
+        "navigation_depth": 4,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 3.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 3,
+            "wnc": 3.0,
+            "tnc": 3.0,
+            "vrc": 0,
+            "wno": 3.0,
+            "wnm": 0.0,
+            "total": 6.0
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 9.0
+        },
+        "semantic_cluster": 5,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Notification\ninv: self.recipient.profile.bio <> ''",
+      "pattern_id": "navigation_chain",
+      "pattern_name": "Navigation Chain",
+      "context": "Notification",
+      "parameters": {
+        "navigation_path": "self.recipient.profile.bio <> ''"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T19:19:25.349330",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 2,
+        "generation_number": 3310,
+        "profile": "medium",
+        "operators_used": [
+          "<",
+          "<>",
+          ">"
+        ],
+        "navigation_depth": 4,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 3.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 3,
+            "wnc": 3.0,
+            "tnc": 3.0,
+            "vrc": 0,
+            "wno": 3.0,
+            "wnm": 0.0,
+            "total": 6.0
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 9.0
+        },
+        "semantic_cluster": 5,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Group\ninv: self.memberships->any(x | x.role <> '') <> null",
+      "pattern_id": "any_operation",
+      "pattern_name": "Any Operation",
+      "context": "Group",
+      "parameters": {
+        "collection": "memberships",
+        "iterator": "x",
+        "condition": "x.role <> ''"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T19:19:25.350305",
+      "metadata": {
+        "category": "collection",
+        "complexity": 2,
+        "generation_number": 3314,
+        "profile": "difficult",
+        "operators_used": [
+          "-",
+          "<",
+          "<>",
+          ">",
+          "any"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "difficult",
+        "operator_count": 5,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 3.0,
+            "wnc": 5.0,
+            "tnc": 4.0,
+            "vrc": 1,
+            "wno": 7.0,
+            "wnm": 1.0,
+            "total": 13.0
+          },
+          "computational": {
+            "oc": 7.0,
+            "tcc": 0.0,
+            "cic": 2.0,
+            "total": 9.0
+          },
+          "dependency": {
+            "ruc": 8,
+            "total": 8.0
+          },
+          "tc": 30.0
+        },
+        "semantic_cluster": 3,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Conversation\ninv: self.participants->any(x | x.email <> '') <> null",
+      "pattern_id": "any_operation",
+      "pattern_name": "Any Operation",
+      "context": "Conversation",
+      "parameters": {
+        "collection": "participants",
+        "iterator": "x",
+        "condition": "x.email <> ''"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T19:19:25.351244",
+      "metadata": {
+        "category": "collection",
+        "complexity": 2,
+        "generation_number": 3317,
+        "profile": "difficult",
+        "operators_used": [
+          "-",
+          "<",
+          "<>",
+          ">",
+          "any"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "difficult",
+        "operator_count": 5,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 3.0,
+            "wnc": 5.0,
+            "tnc": 4.0,
+            "vrc": 1,
+            "wno": 7.0,
+            "wnm": 1.0,
+            "total": 13.0
+          },
+          "computational": {
+            "oc": 7.0,
+            "tcc": 0.0,
+            "cic": 2.0,
+            "total": 9.0
+          },
+          "dependency": {
+            "ruc": 9,
+            "total": 9.0
+          },
+          "tc": 31.0
+        },
+        "semantic_cluster": 3,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context User\ninv: self.profile <> null",
+      "pattern_id": "association_exists",
+      "pattern_name": "Association Exists",
+      "context": "User",
+      "parameters": {
+        "association": "profile"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T19:19:37.471422",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 1,
+        "generation_number": 3415,
+        "operators_used": [
+          "<",
+          "<>",
+          ">"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 1.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.0,
+            "vrc": 0,
+            "wno": 3.0,
+            "wnm": 0.0,
+            "total": 4.0
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 7.0
+        },
+        "semantic_cluster": 0,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context User\ninv: self.posts->any(x | x.isPublic <> false) <> null",
+      "pattern_id": "any_operation",
+      "pattern_name": "Any Operation",
+      "context": "User",
+      "parameters": {
+        "collection": "posts",
+        "iterator": "x",
+        "condition": "x.isPublic <> false"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T19:19:25.354301",
+      "metadata": {
+        "category": "collection",
+        "complexity": 2,
+        "generation_number": 3325,
+        "profile": "difficult",
+        "operators_used": [
+          "-",
+          "<",
+          "<>",
+          ">",
+          "any"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "difficult",
+        "operator_count": 5,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 3.0,
+            "wnc": 5.0,
+            "tnc": 4.0,
+            "vrc": 1,
+            "wno": 7.0,
+            "wnm": 1.0,
+            "total": 13.0
+          },
+          "computational": {
+            "oc": 7.0,
+            "tcc": 0.0,
+            "cic": 2.0,
+            "total": 9.0
+          },
+          "dependency": {
+            "ruc": 5,
+            "total": 5.0
+          },
+          "tc": 27.0
+        },
+        "semantic_cluster": 0,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Tag\ninv: self.posts->collect(x | x.reactions)->size() >= 3",
+      "pattern_id": "collection_collectNested",
+      "pattern_name": "Collection Nested Collection Flatten",
+      "context": "Tag",
+      "parameters": {
+        "collection": "posts",
+        "nested_collection": "reactions",
+        "min_size": 3
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T19:19:25.356382",
+      "metadata": {
+        "category": "collection",
+        "complexity": 4,
+        "generation_number": 3328,
+        "profile": "difficult",
+        "operators_used": [
+          "-",
+          "=",
+          ">",
+          ">=",
+          "collect",
+          "size"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "difficult",
+        "operator_count": 6,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 3.0,
+            "wnc": 5.0,
+            "tnc": 4.0,
+            "vrc": 1,
+            "wno": 7.0,
+            "wnm": 2.0,
+            "total": 14.0
+          },
+          "computational": {
+            "oc": 7.0,
+            "tcc": 0.0,
+            "cic": 2.0,
+            "total": 9.0
+          },
+          "dependency": {
+            "ruc": 12,
+            "total": 12.0
+          },
+          "tc": 35.0
+        },
+        "semantic_cluster": 1,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Conversation\ninv: self.messages->asSequence()->notEmpty()",
+      "pattern_id": "collection_asSequence",
+      "pattern_name": "Collection As Sequence Conversion",
+      "context": "Conversation",
+      "parameters": {
+        "collection": "messages"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T19:19:39.527697",
+      "metadata": {
+        "category": "collection",
+        "complexity": 2,
+        "generation_number": 3419,
+        "operators_used": [
+          "-",
+          ">",
+          "asSequence",
+          "notEmpty"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 4,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.4,
+            "vrc": 0,
+            "wno": 2.0,
+            "wnm": 2.0,
+            "total": 5.4
+          },
+          "computational": {
+            "oc": 2.0,
+            "tcc": 1.5,
+            "cic": 0.0,
+            "total": 3.5
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 8.9
+        },
+        "semantic_cluster": 6,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Conversation\ninv: self.participants->size() <= 1",
+      "pattern_id": "size_constraint",
+      "pattern_name": "Collection Size Constraint",
+      "context": "Conversation",
+      "parameters": {
+        "collection": "participants",
+        "operator": "<=",
+        "value": 1
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T19:19:25.359882",
+      "metadata": {
+        "category": "basic",
+        "complexity": 1,
+        "generation_number": 3334,
+        "profile": "medium",
+        "operators_used": [
+          "-",
+          "<",
+          "<=",
+          "=",
+          ">",
+          "size"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 6,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.4,
+            "vrc": 0,
+            "wno": 4.0,
+            "wnm": 1.0,
+            "total": 6.4
+          },
+          "computational": {
+            "oc": 4.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 4.0
+          },
+          "dependency": {
+            "ruc": 9,
+            "total": 9.0
+          },
+          "tc": 19.4
+        },
+        "semantic_cluster": 1,
+        "implies": [
+          "collection_size_range_Conversation"
+        ]
+      }
+    },
+    {
+      "ocl": "context Conversation\ninv: self.messages->size() > 0",
+      "pattern_id": "collection_not_empty_check",
+      "pattern_name": "Collection Not Empty Check",
+      "context": "Conversation",
+      "parameters": {
+        "collection": "messages"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T19:19:40.936755",
+      "metadata": {
+        "category": "collection",
+        "complexity": 1,
+        "generation_number": 3421,
+        "operators_used": [
+          "-",
+          ">",
+          "size"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.4,
+            "vrc": 0,
+            "wno": 2.0,
+            "wnm": 1.0,
+            "total": 4.4
+          },
+          "computational": {
+            "oc": 2.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 2.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 6.4
+        },
+        "semantic_cluster": 6,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Tag\ninv: self.posts->excluding(self.posts->any(true))->size() < self.posts->size()",
+      "pattern_id": "collection_excluding",
+      "pattern_name": "Collection Excluding Element",
+      "context": "Tag",
+      "parameters": {
+        "collection": "posts",
+        "element": "posts"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T19:19:42.234151",
+      "metadata": {
+        "category": "collection",
+        "complexity": 3,
+        "generation_number": 3425,
+        "operators_used": [
+          "-",
+          "<",
+          ">",
+          "any",
+          "excluding",
+          "size"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "difficult",
+        "operator_count": 6,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 6.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 1,
+            "wnc": 3.0,
+            "tnc": 3.6,
+            "vrc": 0,
+            "wno": 5.0,
+            "wnm": 4.0,
+            "total": 12.6
+          },
+          "computational": {
+            "oc": 5.0,
+            "tcc": 0.0,
+            "cic": 2.0,
+            "total": 7.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 19.6
+        },
+        "semantic_cluster": 1,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Group\ninv: self.memberships->size() <= 2",
+      "pattern_id": "collection_max_size",
+      "pattern_name": "Collection Maximum Size",
+      "context": "Group",
+      "parameters": {
+        "collection": "memberships",
+        "max_size": 2
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T19:19:25.362499",
+      "metadata": {
+        "category": "collection",
+        "complexity": 1,
+        "generation_number": 3338,
+        "profile": "medium",
+        "operators_used": [
+          "-",
+          "<",
+          "<=",
+          "=",
+          ">",
+          "size"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 6,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.4,
+            "vrc": 0,
+            "wno": 4.0,
+            "wnm": 1.0,
+            "total": 6.4
+          },
+          "computational": {
+            "oc": 4.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 4.0
+          },
+          "dependency": {
+            "ruc": 8,
+            "total": 8.0
+          },
+          "tc": 18.4
+        },
+        "semantic_cluster": 1,
+        "implies": [
+          "collection_size_range_Group",
+          "collection_size_range_unsat_Group"
+        ]
+      }
+    },
+    {
+      "ocl": "context Conversation\ninv: self.participants->size() >= 1",
+      "pattern_id": "size_constraint",
+      "pattern_name": "Collection Size Constraint",
+      "context": "Conversation",
+      "parameters": {
+        "collection": "participants",
+        "operator": ">=",
+        "value": 1
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T19:19:25.363670",
+      "metadata": {
+        "category": "basic",
+        "complexity": 1,
+        "generation_number": 3341,
+        "profile": "medium",
+        "operators_used": [
+          "-",
+          "=",
+          ">",
+          ">=",
+          "size"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 5,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.4,
+            "vrc": 0,
+            "wno": 4.0,
+            "wnm": 1.0,
+            "total": 6.4
+          },
+          "computational": {
+            "oc": 4.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 4.0
+          },
+          "dependency": {
+            "ruc": 9,
+            "total": 9.0
+          },
+          "tc": 19.4
+        },
+        "semantic_cluster": 1,
+        "implies": [
+          "collection_size_range_Conversation"
+        ]
+      }
+    },
+    {
+      "ocl": "context Tag\ninv: self.posts->asSequence()->notEmpty()",
+      "pattern_id": "collection_asSequence",
+      "pattern_name": "Collection As Sequence Conversion",
+      "context": "Tag",
+      "parameters": {
+        "collection": "posts"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T19:19:43.992864",
+      "metadata": {
+        "category": "collection",
+        "complexity": 2,
+        "generation_number": 3427,
+        "operators_used": [
+          "-",
+          ">",
+          "asSequence",
+          "notEmpty"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 4,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.4,
+            "vrc": 0,
+            "wno": 2.0,
+            "wnm": 2.0,
+            "total": 5.4
+          },
+          "computational": {
+            "oc": 2.0,
+            "tcc": 1.5,
+            "cic": 0.0,
+            "total": 3.5
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 8.9
+        },
+        "semantic_cluster": 6,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Conversation\ninv: self.createdAt <> null",
+      "pattern_id": "attribute_not_null_simple",
+      "pattern_name": "Attribute Not Null (Simple)",
+      "context": "Conversation",
+      "parameters": {
+        "attribute": "createdAt"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T19:19:46.145632",
+      "metadata": {
+        "category": "basic",
+        "complexity": 1,
+        "generation_number": 3435,
+        "operators_used": [
+          "<",
+          "<>",
+          ">"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 1.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.0,
+            "vrc": 0,
+            "wno": 3.0,
+            "wnm": 0.0,
+            "total": 4.0
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 7.0
+        },
+        "semantic_cluster": 0,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Post\ninv: self.comments->size() > 0",
+      "pattern_id": "collection_not_empty_check",
+      "pattern_name": "Collection Not Empty Check",
+      "context": "Post",
+      "parameters": {
+        "collection": "comments"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T19:19:25.366259",
+      "metadata": {
+        "category": "collection",
+        "complexity": 1,
+        "generation_number": 3345,
+        "profile": "easy",
+        "operators_used": [
+          "-",
+          ">",
+          "size"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.4,
+            "vrc": 0,
+            "wno": 2.0,
+            "wnm": 1.0,
+            "total": 4.4
+          },
+          "computational": {
+            "oc": 2.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 2.0
+          },
+          "dependency": {
+            "ruc": 4,
+            "total": 4.0
+          },
+          "tc": 10.4
+        },
+        "semantic_cluster": 1,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Conversation\ninv: self.messages->size() = 3",
+      "pattern_id": "collection_has_size",
+      "pattern_name": "Collection Has Specific Size",
+      "context": "Conversation",
+      "parameters": {
+        "collection": "messages",
+        "size": 3
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T19:19:46.940842",
+      "metadata": {
+        "category": "collection",
+        "complexity": 1,
+        "generation_number": 3436,
+        "operators_used": [
+          "-",
+          "=",
+          ">",
+          "size"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 4,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.4,
+            "vrc": 0,
+            "wno": 2.0,
+            "wnm": 1.0,
+            "total": 4.4
+          },
+          "computational": {
+            "oc": 2.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 2.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 6.4
+        },
+        "semantic_cluster": 1,
+        "implies": [
+          "collection_not_empty_check_Conversation",
+          "collection_size_range_unsat_Conversation"
+        ]
+      }
+    },
+    {
+      "ocl": "context Post\ninv: self.reactions->size() >= 3",
+      "pattern_id": "collection_min_size",
+      "pattern_name": "Collection Minimum Size",
+      "context": "Post",
+      "parameters": {
+        "collection": "reactions",
+        "min_size": 3
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T19:19:25.369505",
+      "metadata": {
+        "category": "collection",
+        "complexity": 1,
+        "generation_number": 3350,
+        "profile": "medium",
+        "operators_used": [
+          "-",
+          "=",
+          ">",
+          ">=",
+          "size"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 5,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.4,
+            "vrc": 0,
+            "wno": 4.0,
+            "wnm": 1.0,
+            "total": 6.4
+          },
+          "computational": {
+            "oc": 4.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 4.0
+          },
+          "dependency": {
+            "ruc": 3,
+            "total": 3.0
+          },
+          "tc": 13.4
+        },
+        "semantic_cluster": 1,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Post\ninv: self.comments->size() <= 1",
+      "pattern_id": "collection_max_size",
+      "pattern_name": "Collection Maximum Size",
+      "context": "Post",
+      "parameters": {
+        "collection": "comments",
+        "max_size": 1
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T19:19:25.370171",
+      "metadata": {
+        "category": "collection",
+        "complexity": 1,
+        "generation_number": 3351,
+        "profile": "medium",
+        "operators_used": [
+          "-",
+          "<",
+          "<=",
+          "=",
+          ">",
+          "size"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 6,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.4,
+            "vrc": 0,
+            "wno": 4.0,
+            "wnm": 1.0,
+            "total": 6.4
+          },
+          "computational": {
+            "oc": 4.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 4.0
+          },
+          "dependency": {
+            "ruc": 4,
+            "total": 4.0
+          },
+          "tc": 14.4
+        },
+        "semantic_cluster": 1,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Post\ninv: self.isPublic <> null",
+      "pattern_id": "attribute_not_null_simple",
+      "pattern_name": "Attribute Not Null (Simple)",
+      "context": "Post",
+      "parameters": {
+        "attribute": "isPublic"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T19:19:50.437500",
+      "metadata": {
+        "category": "basic",
+        "complexity": 1,
+        "generation_number": 3440,
+        "operators_used": [
+          "<",
+          "<>",
+          ">"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 1.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.0,
+            "vrc": 0,
+            "wno": 3.0,
+            "wnm": 0.0,
+            "total": 4.0
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 7.0
+        },
+        "semantic_cluster": 0,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context User\ninv: self.posts->size() > 0",
+      "pattern_id": "collection_not_empty_check",
+      "pattern_name": "Collection Not Empty Check",
+      "context": "User",
+      "parameters": {
+        "collection": "posts"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T19:19:25.371455",
+      "metadata": {
+        "category": "collection",
+        "complexity": 1,
+        "generation_number": 3353,
+        "profile": "easy",
+        "operators_used": [
+          "-",
+          ">",
+          "size"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.4,
+            "vrc": 0,
+            "wno": 2.0,
+            "wnm": 1.0,
+            "total": 4.4
+          },
+          "computational": {
+            "oc": 2.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 2.0
+          },
+          "dependency": {
+            "ruc": 5,
+            "total": 5.0
+          },
+          "tc": 11.4
+        },
+        "semantic_cluster": 1,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Post\ninv: self.media->size() < 1",
+      "pattern_id": "size_constraint",
+      "pattern_name": "Collection Size Constraint",
+      "context": "Post",
+      "parameters": {
+        "collection": "media",
+        "operator": "<",
+        "value": 1
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T19:19:25.374502",
+      "metadata": {
+        "category": "basic",
+        "complexity": 1,
+        "generation_number": 3377,
+        "profile": "easy",
+        "operators_used": [
+          "-",
+          "<",
+          ">",
+          "size"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 4,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.4,
+            "vrc": 0,
+            "wno": 2.0,
+            "wnm": 1.0,
+            "total": 4.4
+          },
+          "computational": {
+            "oc": 2.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 2.0
+          },
+          "dependency": {
+            "ruc": 4,
+            "total": 4.0
+          },
+          "tc": 10.4
+        },
+        "semantic_cluster": 7,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Comment\ninv: (self.createdAt <> null) and (self.text <> null)",
+      "pattern_id": "attribute_not_null_simple",
+      "pattern_name": "Attribute Not Null (Simple)",
+      "context": "Comment",
+      "parameters": {
+        "attribute": "createdAt"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T19:19:25.375154",
+      "metadata": {
+        "category": "basic",
+        "complexity": 1,
+        "generation_number": 3378,
+        "profile": "medium",
+        "operators_used": [
+          "<",
+          "<>",
+          ">",
+          "and"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 4,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 1,
+            "wnc": 2.0,
+            "tnc": 1.7,
+            "vrc": 0,
+            "wno": 7.5,
+            "wnm": 0.0,
+            "total": 9.2
+          },
+          "computational": {
+            "oc": 7.5,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 7.5
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 16.7
+        },
+        "semantic_cluster": 0,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Post\ninv: self.media->asSequence()->notEmpty()",
+      "pattern_id": "collection_asSequence",
+      "pattern_name": "Collection As Sequence Conversion",
+      "context": "Post",
+      "parameters": {
+        "collection": "media"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T19:19:52.574878",
+      "metadata": {
+        "category": "collection",
+        "complexity": 2,
+        "generation_number": 3441,
+        "operators_used": [
+          "-",
+          ">",
+          "asSequence",
+          "notEmpty"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 4,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.4,
+            "vrc": 0,
+            "wno": 2.0,
+            "wnm": 2.0,
+            "total": 5.4
+          },
+          "computational": {
+            "oc": 2.0,
+            "tcc": 1.5,
+            "cic": 0.0,
+            "total": 3.5
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 8.9
+        },
+        "semantic_cluster": 6,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Post\ninv: self.comments->asSequence()->notEmpty()",
+      "pattern_id": "collection_asSequence",
+      "pattern_name": "Collection As Sequence Conversion",
+      "context": "Post",
+      "parameters": {
+        "collection": "comments"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T19:19:53.114310",
+      "metadata": {
+        "category": "collection",
+        "complexity": 2,
+        "generation_number": 3442,
+        "operators_used": [
+          "-",
+          ">",
+          "asSequence",
+          "notEmpty"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 4,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.4,
+            "vrc": 0,
+            "wno": 2.0,
+            "wnm": 2.0,
+            "total": 5.4
+          },
+          "computational": {
+            "oc": 2.0,
+            "tcc": 1.5,
+            "cic": 0.0,
+            "total": 3.5
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 8.9
+        },
+        "semantic_cluster": 6,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Group\ninv: self.memberships->excluding(self.memberships->any(true))->size() < self.memberships->size()",
+      "pattern_id": "collection_excluding",
+      "pattern_name": "Collection Excluding Element",
+      "context": "Group",
+      "parameters": {
+        "collection": "memberships",
+        "element": "memberships"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T19:19:53.637538",
+      "metadata": {
+        "category": "collection",
+        "complexity": 3,
+        "generation_number": 3443,
+        "operators_used": [
+          "-",
+          "<",
+          ">",
+          "any",
+          "excluding",
+          "size"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "difficult",
+        "operator_count": 6,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 6.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 1,
+            "wnc": 3.0,
+            "tnc": 3.6,
+            "vrc": 0,
+            "wno": 5.0,
+            "wnm": 4.0,
+            "total": 12.6
+          },
+          "computational": {
+            "oc": 5.0,
+            "tcc": 0.0,
+            "cic": 2.0,
+            "total": 7.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 19.6
+        },
+        "semantic_cluster": 1,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Comment\ninv: (self.post.author.username <> '') and (not(self.post.author.username <> ''))",
+      "pattern_id": "navigation_chain_unsat",
+      "pattern_name": "Navigation Chain (UNSAT)",
+      "context": "Comment",
+      "parameters": {
+        "navigation_path": "self.post.author.username <> ''"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T19:19:54.117668",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 2,
+        "generation_number": 3313,
+        "profile": "medium",
+        "operators_used": [
+          "<",
+          "<>",
+          ">"
+        ],
+        "navigation_depth": 4,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 3.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 3,
+            "wnc": 3.0,
+            "tnc": 3.0,
+            "vrc": 0,
+            "wno": 3.0,
+            "wnm": 0.0,
+            "total": 6.0
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 9.0
+        },
+        "is_unsat": true,
+        "mutation": "self_contradiction",
+        "original_pattern_id": "navigation_chain",
+        "semantic_cluster": 0,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Post\ninv: (self.reactions->forAll(x | x.createdAt <> '')) and (not(self.reactions->forAll(x | x.createdAt <> '')))",
+      "pattern_id": "collection_navigation_unsat",
+      "pattern_name": "Collection Navigation (UNSAT)",
+      "context": "Post",
+      "parameters": {
+        "collection": "reactions",
+        "operation": "forAll",
+        "iterator": "x",
+        "nested": "createdAt <> ''"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T19:19:54.581063",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 3,
+        "generation_number": 3157,
+        "profile": "difficult",
+        "operators_used": [
+          "-",
+          "<",
+          "<>",
+          ">",
+          "forAll"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "difficult",
+        "operator_count": 5,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 3.0,
+            "wnc": 5.0,
+            "tnc": 4.0,
+            "vrc": 1,
+            "wno": 7.0,
+            "wnm": 1.0,
+            "total": 13.0
+          },
+          "computational": {
+            "oc": 7.0,
+            "tcc": 0.0,
+            "cic": 3.0,
+            "total": 10.0
+          },
+          "dependency": {
+            "ruc": 3,
+            "total": 3.0
+          },
+          "tc": 26.0
+        },
+        "is_unsat": true,
+        "mutation": "self_contradiction",
+        "original_pattern_id": "collection_navigation",
+        "semantic_cluster": 8,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Media\ninv: (self.post.author.email <> '') and (not(self.post.author.email <> ''))",
+      "pattern_id": "navigation_chain_unsat",
+      "pattern_name": "Navigation Chain (UNSAT)",
+      "context": "Media",
+      "parameters": {
+        "navigation_path": "self.post.author.email <> ''"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T19:19:54.117698",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 2,
+        "generation_number": 3303,
+        "profile": "medium",
+        "operators_used": [
+          "<",
+          "<>",
+          ">"
+        ],
+        "navigation_depth": 4,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 3.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 3,
+            "wnc": 3.0,
+            "tnc": 3.0,
+            "vrc": 0,
+            "wno": 3.0,
+            "wnm": 0.0,
+            "total": 6.0
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 9.0
+        },
+        "is_unsat": true,
+        "mutation": "self_contradiction",
+        "original_pattern_id": "navigation_chain",
+        "semantic_cluster": 4,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Conversation\ninv: ((self.messages->size() <= 3)) and (self.messages->size() > 3)",
+      "pattern_id": "collection_size_range_unsat",
+      "pattern_name": "Collection Size in Range (UNSAT)",
+      "context": "Conversation",
+      "parameters": {
+        "collection": "messages",
+        "min_size": 2,
+        "max_size": 3
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T19:19:54.034213",
+      "metadata": {
+        "category": "collection",
+        "complexity": 2,
+        "generation_number": 3098,
+        "profile": "medium",
+        "operators_used": [
+          "-",
+          "<",
+          "<=",
+          "=",
+          ">",
+          "size"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 6,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.4,
+            "vrc": 0,
+            "wno": 4.0,
+            "wnm": 1.0,
+            "total": 6.4
+          },
+          "computational": {
+            "oc": 4.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 4.0
+          },
+          "dependency": {
+            "ruc": 2,
+            "total": 2.0
+          },
+          "tc": 12.4
+        },
+        "is_unsat": true,
+        "mutation": "contradictory_bounds",
+        "original_pattern_id": "collection_size_range",
+        "contradiction_ocl": "context Conversation\ninv: self.messages->size() > 3",
+        "semantic_cluster": 1,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Tag\ninv: (self.posts->size() <= 1) and (self.posts->size() > 1)",
+      "pattern_id": "collection_max_size_unsat",
+      "pattern_name": "Collection Maximum Size (UNSAT)",
+      "context": "Tag",
+      "parameters": {
+        "collection": "posts",
+        "max_size": 1
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T19:19:53.946577",
+      "metadata": {
+        "category": "collection",
+        "complexity": 1,
+        "generation_number": 3416,
+        "operators_used": [
+          "-",
+          "<",
+          "<=",
+          "=",
+          ">",
+          "size"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 6,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.4,
+            "vrc": 0,
+            "wno": 4.0,
+            "wnm": 1.0,
+            "total": 6.4
+          },
+          "computational": {
+            "oc": 4.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 4.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 10.4
+        },
+        "is_unsat": true,
+        "mutation": "contradictory_bounds",
+        "original_pattern_id": "collection_max_size",
+        "contradiction_ocl": "context Tag\ninv: self.posts->size() > 1",
+        "semantic_cluster": 1,
+        "implies": [
+          "collection_size_range_Tag",
+          "collection_size_range_unsat_Tag"
+        ]
+      }
+    },
+    {
+      "ocl": "context Group\ninv: (self.memberships->size() > 0) and (self.memberships->size() <= 0)",
+      "pattern_id": "collection_not_empty_check_unsat",
+      "pattern_name": "Collection Not Empty Check (UNSAT)",
+      "context": "Group",
+      "parameters": {
+        "collection": "memberships"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T19:19:54.402791",
+      "metadata": {
+        "category": "collection",
+        "complexity": 1,
+        "generation_number": 3337,
+        "profile": "easy",
+        "operators_used": [
+          "-",
+          ">",
+          "size"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.4,
+            "vrc": 0,
+            "wno": 2.0,
+            "wnm": 1.0,
+            "total": 4.4
+          },
+          "computational": {
+            "oc": 2.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 2.0
+          },
+          "dependency": {
+            "ruc": 8,
+            "total": 8.0
+          },
+          "tc": 14.4
+        },
+        "is_unsat": true,
+        "mutation": "empty_collection",
+        "original_pattern_id": "collection_not_empty_check",
+        "contradiction_ocl": "context Group\ninv: self.memberships->size() <= 0",
+        "semantic_cluster": 1,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Tag\ninv: ((self.posts->size() <= 1)) and (self.posts->size() > 1)",
+      "pattern_id": "collection_size_range_unsat",
+      "pattern_name": "Collection Size in Range (UNSAT)",
+      "context": "Tag",
+      "parameters": {
+        "collection": "posts",
+        "min_size": 1,
+        "max_size": 1
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T19:19:54.210415",
+      "metadata": {
+        "category": "collection",
+        "complexity": 2,
+        "generation_number": 3112,
+        "profile": "medium",
+        "operators_used": [
+          "-",
+          "<",
+          "<=",
+          "=",
+          ">",
+          "size"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 6,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.4,
+            "vrc": 0,
+            "wno": 4.0,
+            "wnm": 1.0,
+            "total": 6.4
+          },
+          "computational": {
+            "oc": 4.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 4.0
+          },
+          "dependency": {
+            "ruc": 12,
+            "total": 12.0
+          },
+          "tc": 22.4
+        },
+        "is_unsat": true,
+        "mutation": "contradictory_bounds",
+        "original_pattern_id": "collection_size_range",
+        "contradiction_ocl": "context Tag\ninv: self.posts->size() > 1",
+        "semantic_cluster": 1,
+        "implies": [
+          "collection_size_range_Tag",
+          "collection_max_size_unsat_Tag"
+        ]
+      }
+    },
+    {
+      "ocl": "context Notification\ninv: (self.recipient.profile.fullName <> '') and (not(self.recipient.profile.fullName <> ''))",
+      "pattern_id": "navigation_chain_unsat",
+      "pattern_name": "Navigation Chain (UNSAT)",
+      "context": "Notification",
+      "parameters": {
+        "navigation_path": "self.recipient.profile.fullName <> ''"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T19:19:54.210396",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 2,
+        "generation_number": 3312,
+        "profile": "medium",
+        "operators_used": [
+          "<",
+          "<>",
+          ">"
+        ],
+        "navigation_depth": 4,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 3.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 3,
+            "wnc": 3.0,
+            "tnc": 3.0,
+            "vrc": 0,
+            "wno": 3.0,
+            "wnm": 0.0,
+            "total": 6.0
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 9.0
+        },
+        "is_unsat": true,
+        "mutation": "self_contradiction",
+        "original_pattern_id": "navigation_chain",
+        "semantic_cluster": 4,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Message\ninv: ((self.sender <> null) and (self.isRead = true)) and (not((self.sender <> null) and (self.isRead = true)))",
+      "pattern_id": "association_exists_unsat",
+      "pattern_name": "Association Exists (UNSAT)",
+      "context": "Message",
+      "parameters": {
+        "association": "sender"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T19:19:54.034197",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 1,
+        "generation_number": 3165,
+        "profile": "medium",
+        "operators_used": [
+          "<",
+          "<>",
+          "=",
+          ">",
+          "and"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 5,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 1,
+            "wnc": 2.0,
+            "tnc": 1.7,
+            "vrc": 0,
+            "wno": 5.5,
+            "wnm": 0.0,
+            "total": 7.2
+          },
+          "computational": {
+            "oc": 5.5,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 5.5
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 12.7
+        },
+        "is_unsat": true,
+        "mutation": "self_contradiction",
+        "original_pattern_id": "association_exists",
+        "semantic_cluster": 4,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Follow\ninv: (self.follower.profile.fullName <> '') and (not(self.follower.profile.fullName <> ''))",
+      "pattern_id": "navigation_chain_unsat",
+      "pattern_name": "Navigation Chain (UNSAT)",
+      "context": "Follow",
+      "parameters": {
+        "navigation_path": "self.follower.profile.fullName <> ''"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T19:19:54.117691",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 2,
+        "generation_number": 3304,
+        "profile": "medium",
+        "operators_used": [
+          "<",
+          "<>",
+          ">"
+        ],
+        "navigation_depth": 4,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 3.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 3,
+            "wnc": 3.0,
+            "tnc": 3.0,
+            "vrc": 0,
+            "wno": 3.0,
+            "wnm": 0.0,
+            "total": 6.0
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 9.0
+        },
+        "is_unsat": true,
+        "mutation": "self_contradiction",
+        "original_pattern_id": "navigation_chain",
+        "semantic_cluster": 4,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Group\ninv: ((self.memberships->size() <= 2)) and (self.memberships->size() > 2)",
+      "pattern_id": "collection_size_range_unsat",
+      "pattern_name": "Collection Size in Range (UNSAT)",
+      "context": "Group",
+      "parameters": {
+        "collection": "memberships",
+        "min_size": 1,
+        "max_size": 2
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T19:19:53.859545",
+      "metadata": {
+        "category": "collection",
+        "complexity": 2,
+        "generation_number": 3102,
+        "profile": "medium",
+        "operators_used": [
+          "-",
+          "<",
+          "<=",
+          "=",
+          ">",
+          "size"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 6,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.4,
+            "vrc": 0,
+            "wno": 4.0,
+            "wnm": 1.0,
+            "total": 6.4
+          },
+          "computational": {
+            "oc": 4.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 4.0
+          },
+          "dependency": {
+            "ruc": 8,
+            "total": 8.0
+          },
+          "tc": 18.4
+        },
+        "is_unsat": true,
+        "mutation": "contradictory_bounds",
+        "original_pattern_id": "collection_size_range",
+        "contradiction_ocl": "context Group\ninv: self.memberships->size() > 2",
+        "semantic_cluster": 1,
+        "implies": [
+          "collection_size_range_Group",
+          "collection_max_size_Group"
+        ]
+      }
+    },
+    {
+      "ocl": "context Tag\ninv: (self.posts->collect(x | x.comments)->size() >= 3) and (not(self.posts->collect(x | x.comments)->size() >= 3))",
+      "pattern_id": "collection_collectNested_unsat",
+      "pattern_name": "Collection Nested Collection Flatten (UNSAT)",
+      "context": "Tag",
+      "parameters": {
+        "collection": "posts",
+        "nested_collection": "comments",
+        "min_size": 3
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T19:19:54.117719",
+      "metadata": {
+        "category": "collection",
+        "complexity": 4,
+        "generation_number": 3326,
+        "profile": "difficult",
+        "operators_used": [
+          "-",
+          "=",
+          ">",
+          ">=",
+          "collect",
+          "size"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "difficult",
+        "operator_count": 6,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 3.0,
+            "wnc": 5.0,
+            "tnc": 4.0,
+            "vrc": 1,
+            "wno": 7.0,
+            "wnm": 2.0,
+            "total": 14.0
+          },
+          "computational": {
+            "oc": 7.0,
+            "tcc": 0.0,
+            "cic": 2.0,
+            "total": 9.0
+          },
+          "dependency": {
+            "ruc": 12,
+            "total": 12.0
+          },
+          "tc": 35.0
+        },
+        "is_unsat": true,
+        "mutation": "self_contradiction",
+        "original_pattern_id": "collection_collectNested",
+        "semantic_cluster": 1,
+        "implies": []
+      }
+    }
+  ],
+  "verification": {
+    "enabled": true,
+    "results": [
+      {
+        "constraint_id": "navigation_chain_Media",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.003102372090021769
+      },
+      {
+        "constraint_id": "navigation_chain_Comment",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.003102372090021769
+      },
+      {
+        "constraint_id": "collection_size_range_Conversation",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.003102372090021769
+      },
+      {
+        "constraint_id": "collection_size_range_Group",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.003102372090021769
+      },
+      {
+        "constraint_id": "collection_size_range_Tag",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.003102372090021769
+      },
+      {
+        "constraint_id": "collection_size_range_Group",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.003102372090021769
+      },
+      {
+        "constraint_id": "collection_navigation_Tag",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.003102372090021769
+      },
+      {
+        "constraint_id": "collection_navigation_Conversation",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.003102372090021769
+      },
+      {
+        "constraint_id": "association_exists_Comment",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.003102372090021769
+      },
+      {
+        "constraint_id": "association_exists_Follow",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.003102372090021769
+      },
+      {
+        "constraint_id": "association_exists_Media",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.003102372090021769
+      },
+      {
+        "constraint_id": "association_exists_Membership",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.003102372090021769
+      },
+      {
+        "constraint_id": "association_exists_Membership",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.003102372090021769
+      },
+      {
+        "constraint_id": "association_exists_Follow",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.003102372090021769
+      },
+      {
+        "constraint_id": "association_exists_FriendRequest",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.003102372090021769
+      },
+      {
+        "constraint_id": "association_exists_Notification",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.003102372090021769
+      },
+      {
+        "constraint_id": "association_exists_Message",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.003102372090021769
+      },
+      {
+        "constraint_id": "association_exists_Reaction",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.003102372090021769
+      },
+      {
+        "constraint_id": "navigation_chain_Membership",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.003102372090021769
+      },
+      {
+        "constraint_id": "navigation_chain_Message",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.003102372090021769
+      },
+      {
+        "constraint_id": "navigation_chain_Profile",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.003102372090021769
+      },
+      {
+        "constraint_id": "navigation_chain_Profile",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.003102372090021769
+      },
+      {
+        "constraint_id": "navigation_chain_FriendRequest",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.003102372090021769
+      },
+      {
+        "constraint_id": "navigation_chain_Notification",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.003102372090021769
+      },
+      {
+        "constraint_id": "any_operation_Group",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.003102372090021769
+      },
+      {
+        "constraint_id": "any_operation_Conversation",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.003102372090021769
+      },
+      {
+        "constraint_id": "association_exists_User",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.003102372090021769
+      },
+      {
+        "constraint_id": "any_operation_User",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.003102372090021769
+      },
+      {
+        "constraint_id": "collection_collectNested_Tag",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.003102372090021769
+      },
+      {
+        "constraint_id": "collection_asSequence_Conversation",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.003102372090021769
+      },
+      {
+        "constraint_id": "size_constraint_Conversation",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.003102372090021769
+      },
+      {
+        "constraint_id": "collection_not_empty_check_Conversation",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.003102372090021769
+      },
+      {
+        "constraint_id": "collection_excluding_Tag",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.003102372090021769
+      },
+      {
+        "constraint_id": "collection_max_size_Group",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.003102372090021769
+      },
+      {
+        "constraint_id": "size_constraint_Conversation",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.003102372090021769
+      },
+      {
+        "constraint_id": "collection_asSequence_Tag",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.003102372090021769
+      },
+      {
+        "constraint_id": "attribute_not_null_simple_Conversation",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.003102372090021769
+      },
+      {
+        "constraint_id": "collection_not_empty_check_Post",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.003102372090021769
+      },
+      {
+        "constraint_id": "collection_has_size_Conversation",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.003102372090021769
+      },
+      {
+        "constraint_id": "collection_min_size_Post",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.003102372090021769
+      },
+      {
+        "constraint_id": "collection_max_size_Post",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.003102372090021769
+      },
+      {
+        "constraint_id": "attribute_not_null_simple_Post",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.003102372090021769
+      },
+      {
+        "constraint_id": "collection_not_empty_check_User",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.003102372090021769
+      },
+      {
+        "constraint_id": "size_constraint_Post",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.003102372090021769
+      },
+      {
+        "constraint_id": "attribute_not_null_simple_Comment",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.003102372090021769
+      },
+      {
+        "constraint_id": "collection_asSequence_Post",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.003102372090021769
+      },
+      {
+        "constraint_id": "collection_asSequence_Post",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.003102372090021769
+      },
+      {
+        "constraint_id": "collection_excluding_Group",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.003102372090021769
+      }
+    ]
+  }
+}

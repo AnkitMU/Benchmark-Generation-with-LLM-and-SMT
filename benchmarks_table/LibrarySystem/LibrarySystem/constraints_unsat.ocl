@@ -1,0 +1,113 @@
+-- Benchmark: LibrarySystem / balanced
+-- Type: UNSAT Constraints Only
+-- Generated: 2026-06-18T17:26:41.123877
+-- Count: 18
+
+-- #1 Collection Minimum Size (UNSAT) in Branch
+-- Difficulty: medium
+-- Mutation Strategy: contradictory_bounds
+context Branch
+inv: (self.reservations->size() >= 2) and (self.reservations->size() < 2)
+
+-- #2 Navigation Chain (UNSAT) in Librarian
+-- Difficulty: medium
+-- Mutation Strategy: self_contradiction
+context Librarian
+inv: ((self.managedBranch.library.maxLoanDays > 1) and (self.level.toLowerCase() = 'test')) and (not((self.managedBranch.library.maxLoanDays > 1) and (self.level.toLowerCase() = 'test')))
+
+-- #3 Simple Implication (UNSAT) in Loan
+-- Difficulty: medium
+-- Mutation Strategy: self_contradiction
+context Loan
+inv: (self.startDate <> null implies self.dueDate <> null) and (not(self.startDate <> null implies self.dueDate <> null))
+
+-- #4 Select (Filter) Operation (UNSAT) in Category
+-- Difficulty: difficult
+-- Mutation Strategy: self_contradiction
+context Category
+inv: (self.books->select(x | x.pages > 0)->size() >= 1) and (not(self.books->select(x | x.pages > 0)->size() >= 1))
+
+-- #5 All Attributes Defined (UNSAT) in Reservation
+-- Difficulty: medium
+-- Mutation Strategy: self_contradiction
+context Reservation
+inv: (self.requestDate <> null and self.expiryDate <> null) and (not(self.requestDate <> null and self.expiryDate <> null))
+
+-- #6 Navigation Chain (UNSAT) in Book
+-- Difficulty: easy
+-- Mutation Strategy: self_contradiction
+context Book
+inv: (self.library.maxLoanDays > 5) and (not(self.library.maxLoanDays > 5))
+
+-- #7 Bi-directional Implication (UNSAT) in Loan
+-- Difficulty: medium
+-- Mutation Strategy: self_contradiction
+context Loan
+inv: ((self.startDate <> null) = (self.returnDate <> null)) and (not((self.startDate <> null) = (self.returnDate <> null)))
+
+-- #8 Existential Quantification (exists) (UNSAT) in Category
+-- Difficulty: difficult
+-- Mutation Strategy: self_contradiction
+context Category
+inv: (self.books->exists(x | x.publishYear <= 10)) and (not(self.books->exists(x | x.publishYear <= 10)))
+
+-- #9 Association Exists (UNSAT) in Loan
+-- Difficulty: easy
+-- Mutation Strategy: self_contradiction
+context Loan
+inv: (self.copy <> null) and (not(self.copy <> null))
+
+-- #10 Collection Has Specific Size (UNSAT) in Copy
+-- Difficulty: easy
+-- Mutation Strategy: self_contradiction
+context Copy
+inv: (self.reservations->size() = 2) and (not(self.reservations->size() = 2))
+
+-- #11 Association Exists (UNSAT) in Loan
+-- Difficulty: easy
+-- Mutation Strategy: self_contradiction
+context Loan
+inv: (self.branch <> null) and (not(self.branch <> null))
+
+-- #12 Numeric Absolute Value Bounded (UNSAT) in Payment
+-- Difficulty: medium
+-- Mutation Strategy: self_contradiction
+context Payment
+inv: (self.amount.abs() <= 5) and (not(self.amount.abs() <= 5))
+
+-- #13 Collection Navigation (UNSAT) in Category
+-- Difficulty: difficult
+-- Mutation Strategy: self_contradiction
+context Category
+inv: (self.books->forAll(x | x.publishYear >= 10)) and (not(self.books->forAll(x | x.publishYear >= 10)))
+
+-- #14 Collection Sum (UNSAT) in Fine
+-- Difficulty: difficult
+-- Mutation Strategy: self_contradiction
+context Fine
+inv: (self.payments->collect(x | x.amount)->sum() >= 6) and (not(self.payments->collect(x | x.amount)->sum() >= 6))
+
+-- #15 Association Exists (UNSAT) in Librarian
+-- Difficulty: medium
+-- Mutation Strategy: self_contradiction
+context Librarian
+inv: ((self.managedBranch <> null) and (self.level.size() = 27)) and (not((self.managedBranch <> null) and (self.level.size() = 27)))
+
+-- #16 Numeric Less Than Value (UNSAT) in Book
+-- Difficulty: easy
+-- Mutation Strategy: contradictory_bounds
+context Book
+inv: (self.pages < 49) and (self.pages > 54)
+
+-- #17 Numeric Absolute Value Bounded (UNSAT) in Book
+-- Difficulty: medium
+-- Mutation Strategy: self_contradiction
+context Book
+inv: (self.pages.abs() <= 2) and (not(self.pages.abs() <= 2))
+
+-- #18 Navigation Chain (UNSAT) in Fine
+-- Difficulty: medium
+-- Mutation Strategy: self_contradiction
+context Fine
+inv: (self.member.library.maxLoanDays <= 1000) and (not(self.member.library.maxLoanDays <= 1000))
+

@@ -204,6 +204,9 @@ class SteeredGenerator:
         # can drive above zero. These index the discrete pattern space by box.
         self.fp: Dict[Tuple[str, str], Dict[str, Tuple[float, float]]] = {}
         self.cap: Dict[Tuple[str, str], Set[str]] = {}
+        # Whether a pair's draws are top-level conjunctions (=> the lowering
+        # actuator can reduce an over-target component by dropping a conjunct).
+        self.splittable: Dict[Tuple[str, str], bool] = {}
         self.fam_of: Dict[str, str] = {}
 
     # ---- engine primitives -------------------------------------------------
@@ -240,14 +243,18 @@ class SteeredGenerator:
             for cls in self.classes:
                 if not self._applicable(pid, cls):
                     continue
+                from .complexity_calculator import _get_body
                 seen: Set[str] = set()
                 vecs: List[Vec] = []
+                splittable = False
                 for _ in range(self.spec.K):
                     c = self._instantiate(pid, cls)
                     if c is None or c.ocl in seen:
                         continue
                     seen.add(c.ocl)
                     vecs.append(self._measure(c.ocl, cls))
+                    if not splittable and len(self._split_top_and(_get_body(c.ocl))) >= 2:
+                        splittable = True
                 if vecs:
                     self.prof[(pid, cls)] = vecs
                     fp: Dict[str, Tuple[float, float]] = {}
@@ -259,6 +266,7 @@ class SteeredGenerator:
                             cap.add(comp)
                     self.fp[(pid, cls)] = fp
                     self.cap[(pid, cls)] = cap
+                    self.splittable[(pid, cls)] = splittable
 
     # ---- Footprints: reachability envelope & box feasibility ---------------
     def reachable_envelope(self) -> Dict[str, Tuple[float, float]]:
@@ -378,7 +386,8 @@ class SteeredGenerator:
             if not has_cap(cls):
                 continue
             dmin = min(self._dist(box, v) for v in vecs)
-            if any(self._box_reachable(v, box, cls) for v in vecs):
+            split = self.splittable.get((pid, cls), False)
+            if any(self._box_reachable(v, box, cls, split) for v in vecs):
                 c_in.append((pid, cls, dmin))
             elif dmin <= self.spec.eps:
                 c_near.append((pid, cls, dmin))
@@ -460,14 +469,15 @@ class SteeredGenerator:
             raisable |= set(self._RAISE_BY_DEEPNAV)
         return raisable
 
-    def _box_reachable(self, v: Vec, box: Box, cls: str) -> bool:
-        """True if ``v`` is in ``box`` or can be RAISED into it by an available
-        actuator (below the lower bound only on raisable components; nothing above
-        the upper bound, since no lowering actuator exists yet). Used by selection
-        so a pair whose base draws sit below a box is still eligible."""
+    def _box_reachable(self, v: Vec, box: Box, cls: str, lowerable: bool = False) -> bool:
+        """True if ``v`` is in ``box`` or can be moved into it by an available
+        actuator: RAISED (below the lower bound only on raisable components), or
+        LOWERED (above the upper bound only when ``lowerable`` -- the pair produces
+        conjunctions a drop can reduce). Used by selection so a pair whose base
+        draws sit just outside a box is still eligible."""
         raisable = self._actuators_for(cls)
         for comp, (lo, hi) in box.ranges.items():
-            if v[comp] > hi:
+            if v[comp] > hi and not lowerable:
                 return False
             if v[comp] < lo and comp not in raisable:
                 return False
@@ -560,25 +570,86 @@ class SteeredGenerator:
                 return f"{prefix}.{an} = {prefix}.{an}"          # type-agnostic, still deepens
         return None
 
+    @staticmethod
+    def _split_top_and(body: str) -> List[str]:
+        """Split a boolean body on top-level ' and ' (outside parentheses)."""
+        parts: List[str] = []
+        depth = 0
+        start = 0
+        i = 0
+        n = len(body)
+        while i < n:
+            ch = body[i]
+            if ch in "([":
+                depth += 1
+                i += 1
+            elif ch in ")]":
+                depth -= 1
+                i += 1
+            elif depth == 0:
+                m = re.match(r"\s+and\s+", body[i:])
+                if m:
+                    parts.append(body[start:i].strip())
+                    i += m.end()
+                    start = i
+                else:
+                    i += 1
+            else:
+                i += 1
+        parts.append(body[start:].strip())
+        return [p for p in parts if p]
+
+    def _drop_conjunct(self, c, cls: str, over: Set[str]):
+        """Lowering actuator: if ``c``'s body is a top-level conjunction, drop the
+        conjunct whose removal most reduces the over-target components, keeping a
+        valid invariant. Returns a new OCLConstraint or None."""
+        from dataclasses import replace
+        from .complexity_calculator import _get_body
+        parts = self._split_top_and(_get_body(c.ocl))
+        if len(parts) < 2:
+            return None
+        best = None
+        best_score = None
+        for i in range(len(parts)):
+            rest = parts[:i] + parts[i + 1:]
+            nb = " and ".join(f"({p})" for p in rest)
+            cand = replace(c, ocl=f"context {cls}\ninv: {nb}")
+            score = sum(self._measure(cand.ocl, cls).get(comp, 0.0) for comp in over)
+            if best_score is None or score < best_score:
+                best_score = score
+                best = cand
+        return best
+
     def _actuate(self, c, cls: str, gaps: Dict[str, float]):
-        """Apply the actuator for a deficient (below-target) component: deepen-nav
-        for dn_ca, forAll-wrap for cic/vrc, cast for tcc, conjoin for operator/
-        navigation load. Returns a new OCLConstraint or None."""
+        """Apply the actuator for an out-of-box component, returning
+        ``(new_constraint, kind)`` or None. Lowering (drop a conjunct) when a
+        component overshoots; otherwise raising: deepen-nav (dn_ca), forAll-wrap
+        (cic/vrc), cast (tcc), conjoin (operator/navigation load)."""
         below = {comp for comp, g in gaps.items() if g > 0.0}
+        above = {comp for comp, g in gaps.items() if g < 0.0}
+        if above:                                       # over-target: lower
+            r = self._drop_conjunct(c, cls, above)
+            if r is not None:
+                return r, "drop"
         if below & set(self._RAISE_BY_DEEPNAV):
             t = self._deepnav_term(cls)
-            if t:
-                return self._conjoin_with(c, cls, t)
+            r = self._conjoin_with(c, cls, t) if t else None
+            if r is not None:
+                return r, "deepnav"
         if below & set(self._RAISE_BY_FORALL):
             t = self._forall_term(cls)
-            if t:
-                return self._conjoin_with(c, cls, t)
+            r = self._conjoin_with(c, cls, t) if t else None
+            if r is not None:
+                return r, "forall"
         if below & set(self._RAISE_BY_CAST):
             t = self._cast_term(cls)
-            if t:
-                return self._conjoin_with(c, cls, t)
+            r = self._conjoin_with(c, cls, t) if t else None
+            if r is not None:
+                return r, "cast"
         if below & set(self._RAISE_BY_CONJOIN):
-            return self._conjoin(c, cls)
+            r = self._conjoin(c, cls)
+            if r is not None:
+                return r, "conjoin"
         return None
 
     # ---- Phase 0: Compile (marginal-preserving joint slots) ----------------
@@ -599,7 +670,8 @@ class SteeredGenerator:
     def _support(self, slot: Slot) -> int:
         n = 0
         for pid, cls, vecs in self._eligible(slot.family, slot.polarity, set()):
-            if any(self._box_reachable(v, slot.box, cls) for v in vecs):
+            split = self.splittable.get((pid, cls), False)
+            if any(self._box_reachable(v, slot.box, cls, split) for v in vecs):
                 n += 1
         return n
 
@@ -619,7 +691,8 @@ class SteeredGenerator:
                 if pq == 0:
                     continue
                 box = self.spec.profiles[idx][0]
-                ok = any(any(self._box_reachable(v, box, cls) for v in vecs)
+                ok = any(any(self._box_reachable(v, box, cls, self.splittable.get((pid, cls), False))
+                             for v in vecs)
                          for pid, cls, vecs in self._eligible(fam, "sat", set()))
                 if not ok:
                     reasons.append(f"no SAT pattern supports family '{fam}' x profile '{box.label or idx}'")
@@ -675,21 +748,22 @@ class SteeredGenerator:
                     # navigation load, conjoin it with another in-class invariant
                     # to raise that load, then re-measure and accept if in box.
                     if act_budget > 0:
-                        ac = self._actuate(c, cls, gaps)
-                        if ac is not None:
+                        res = self._actuate(c, cls, gaps)
+                        if res is not None:
+                            ac, kind = res
                             act_budget -= 1
                             if ac.ocl not in A and ac.ocl not in H:
                                 A.add(ac.ocl)
                                 v2 = self._measure(ac.ocl, cls)
                                 if active_box.contains(v2):
                                     suite.append((ac, slot.family, slot.polarity, cls,
-                                                  v2, active_box.label + "+conjoin"))
+                                                  v2, active_box.label + "+" + kind))
                                     H.add(ac.ocl)
                                     cap[cls] -= 1
                                     got[cls] += 1
                                     need[cls] = max(0, need[cls] - 1)
                                     use[pid] = use.get(pid, 0) + 1
-                                    report.append(("actuator", "conjoin", cls, active_box.label))
+                                    report.append(("actuator", kind, cls, active_box.label))
                                     return True
                     gn = self._norm(gaps)
                     stall = stall + 1 if gn >= g_prev else 0

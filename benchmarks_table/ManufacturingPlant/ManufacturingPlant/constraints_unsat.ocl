@@ -1,0 +1,101 @@
+-- Benchmark: ManufacturingPlant / balanced
+-- Type: UNSAT Constraints Only
+-- Generated: 2026-06-18T17:30:14.610258
+-- Count: 16
+
+-- #1 Numeric Attribute Bounded (UNSAT) in Product
+-- Difficulty: difficult
+-- Mutation Strategy: contradictory_bounds
+context Product
+inv: (self.unitPrice >= 66 and self.unitPrice <= 77) and (self.unitPrice < 66)
+
+-- #2 Collection Not Empty Check (UNSAT) in Plant
+-- Difficulty: easy
+-- Mutation Strategy: empty_collection
+context Plant
+inv: (self.workshops->size() > 0) and (self.workshops->size() <= 0)
+
+-- #3 Collection Not Empty Check (UNSAT) in Plant
+-- Difficulty: easy
+-- Mutation Strategy: empty_collection
+context Plant
+inv: (self.suppliers->size() > 0) and (self.suppliers->size() <= 0)
+
+-- #4 Navigation Chain (UNSAT) in Shipment
+-- Difficulty: easy
+-- Mutation Strategy: self_contradiction
+context Shipment
+inv: (self.supplier.name <> '') and (not(self.supplier.name <> ''))
+
+-- #5 Navigation Chain (UNSAT) in MaintenanceTask
+-- Difficulty: medium
+-- Mutation Strategy: self_contradiction
+context MaintenanceTask
+inv: (self.machine.station.stationId <> '') and (not(self.machine.station.stationId <> ''))
+
+-- #6 Collection Maximum Size (UNSAT) in Machine
+-- Difficulty: medium
+-- Mutation Strategy: contradictory_bounds
+context Machine
+inv: (self.maintenanceTasks->size() <= 1) and (self.maintenanceTasks->size() > 1)
+
+-- #7 Numeric Absolute Value Bounded (UNSAT) in Sensor
+-- Difficulty: medium
+-- Mutation Strategy: self_contradiction
+context Sensor
+inv: (self.lastReading.abs() <= 5) and (not(self.lastReading.abs() <= 5))
+
+-- #8 Collection Nested Collection Flatten (UNSAT) in Plant
+-- Difficulty: difficult
+-- Mutation Strategy: self_contradiction
+context Plant
+inv: (self.suppliers->collect(x | x.shipments)->size() >= 2) and (not(self.suppliers->collect(x | x.shipments)->size() >= 2))
+
+-- #9 Navigation Chain (UNSAT) in Technician
+-- Difficulty: medium
+-- Mutation Strategy: self_contradiction
+context Technician
+inv: (self.shift.endTime <> '') and (not(self.shift.endTime <> ''))
+
+-- #10 Collection Navigation (UNSAT) in Workstation
+-- Difficulty: difficult
+-- Mutation Strategy: self_contradiction
+context Workstation
+inv: (self.machines->forAll(x | x.manufacturer <> '')) and (not(self.machines->forAll(x | x.manufacturer <> '')))
+
+-- #11 Navigation Chain (UNSAT) in Technician
+-- Difficulty: easy
+-- Mutation Strategy: self_contradiction
+context Technician
+inv: (self.shift.shiftName <> '') and (not(self.shift.shiftName <> ''))
+
+-- #12 Collection Maximum Size (UNSAT) in Plant
+-- Difficulty: medium
+-- Mutation Strategy: contradictory_bounds
+context Plant
+inv: (self.workshops->size() <= 2) and (self.workshops->size() > 2)
+
+-- #13 Association Exists (UNSAT) in ProductionLine
+-- Difficulty: easy
+-- Mutation Strategy: self_contradiction
+context ProductionLine
+inv: (self.workshop <> null) and (not(self.workshop <> null))
+
+-- #14 Navigation Chain (UNSAT) in DefectReport
+-- Difficulty: medium
+-- Mutation Strategy: self_contradiction
+context DefectReport
+inv: (self.qualityCheck.workOrder.plannedQuantity >= 0) and (not(self.qualityCheck.workOrder.plannedQuantity >= 0))
+
+-- #15 Bi-directional Implication (UNSAT) in Shift
+-- Difficulty: medium
+-- Mutation Strategy: self_contradiction
+context Shift
+inv: ((self.endTime <> null) = (self.startTime <> null)) and (not((self.endTime <> null) = (self.startTime <> null)))
+
+-- #16 Association Exists (UNSAT) in BOMItem
+-- Difficulty: easy
+-- Mutation Strategy: self_contradiction
+context BOMItem
+inv: (self.inventoryItem <> null) and (not(self.inventoryItem <> null))
+

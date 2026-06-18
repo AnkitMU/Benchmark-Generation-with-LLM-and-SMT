@@ -441,6 +441,10 @@ class SteeredGenerator:
     _RAISE_BY_CAST:    Tuple[str, ...] = ("tcc",)
     _RAISE_BY_DEEPNAV: Tuple[str, ...] = ("dn_ca",)
     _NUMERIC_HINTS = ("int", "real", "float", "double", "long", "number")
+    # Max actuators stacked onto one candidate. A box that is below on several axes
+    # at once (e.g. 'difficult' needs depth + iteration + operator load together)
+    # cannot be reached by a single actuator, so _actuate composes up to this many.
+    _MAX_COMPOSE: int = 4
 
     def _collection_assocs(self, cls: str):
         try:
@@ -507,10 +511,13 @@ class SteeredGenerator:
         return None
 
     def _forall_term(self, cls: str) -> Optional[str]:
-        """A boolean ``forAll`` term over a collection association (raises cic, vrc,
-        wnm), formed by re-binding a generated element-type invariant to the
-        iterator variable. None if ``cls`` has no collection association."""
-        from .complexity_calculator import _get_body
+        """A LIGHT boolean ``forAll`` term over a collection association: a single
+        scalar predicate on a target attribute (``self.coll->forAll(v | v.attr >= 0)``).
+        It raises cic by exactly one iteration level with minimal nnr_c/wno, so the
+        compositional actuator can nudge a candidate into a moderate box without
+        overshooting -- re-binding a *full* generated invariant here instead spikes
+        cic to 3 and blows past the upper bounds (e.g. the 'difficult' box). None if
+        ``cls`` has no collection whose target exposes a usable attribute."""
         assocs = self._collection_assocs(cls)
         random.shuffle(assocs)
         for a in assocs[:6]:
@@ -518,17 +525,9 @@ class SteeredGenerator:
             tgt = getattr(a, "target_class", None)
             if not ref or not tgt:
                 continue
-            pids = [pid for pid in self.pat_by_id if self._applicable(pid, tgt)]
-            random.shuffle(pids)
-            for pid in pids[:6]:
-                c2 = self._instantiate(pid, tgt)
-                if c2 is None:
-                    continue
-                body = _get_body(c2.ocl)
-                if not body or "self" not in body:
-                    continue
-                body_v = re.sub(r"\bself\b", "v", body)
-                return f"self.{ref}->forAll(v | {body_v})"
+            pred = self.eng._attr_predicate(tgt, var="v")
+            if pred:
+                return f"self.{ref}->forAll(v | {pred})"
         return None
 
     def _cast_term(self, cls: str) -> Optional[str]:
@@ -620,37 +619,290 @@ class SteeredGenerator:
                 best = cand
         return best
 
-    def _actuate(self, c, cls: str, gaps: Dict[str, float]):
-        """Apply the actuator for an out-of-box component, returning
-        ``(new_constraint, kind)`` or None. Lowering (drop a conjunct) when a
-        component overshoots; otherwise raising: deepen-nav (dn_ca), forAll-wrap
-        (cic/vrc), cast (tcc), conjoin (operator/navigation load)."""
-        below = {comp for comp, g in gaps.items() if g > 0.0}
+    # ---- Per-context joint-consistency (generation-time) -------------------
+    @staticmethod
+    def _strip_wrap(s: str) -> str:
+        """Strip balanced WRAPPING parens (from `_split_top_and` conjuncts) without
+        eating a trailing method-call '()'. '(self.x->isEmpty())' -> 'self.x->isEmpty()'."""
+        s = s.strip()
+        while len(s) >= 2 and s[0] == '(' and s[-1] == ')':
+            depth, wrapped = 0, True
+            for i, ch in enumerate(s):
+                if ch == '(':
+                    depth += 1
+                elif ch == ')':
+                    depth -= 1
+                    if depth == 0 and i != len(s) - 1:
+                        wrapped = False
+                        break
+            if not wrapped:
+                break
+            s = s[1:-1].strip()
+        return s
+
+    @staticmethod
+    def _bool_claim(conjunct: str):
+        """If ``conjunct`` forces a boolean nav path true/false, return (path, bool).
+        Recognises 'self.x = true/false', 'self.x <> true/false', and a bare boolean
+        navigation 'self.x' (asserts true). None otherwise."""
+        c = SteeredGenerator._strip_wrap(conjunct)
+        m = re.match(r'self\.([\w.]+)\s*(=|<>)\s*(true|false)$', c)
+        if m:
+            val = (m.group(3) == 'true')
+            if m.group(2) == '<>':
+                val = not val
+            return (m.group(1), val)
+        if re.match(r'self\.[\w.]+$', c):     # bare boolean nav => asserts true
+            return (c[5:], True)
+        return None
+
+    @staticmethod
+    def _emptiness_claim(conjunct: str):
+        """If ``conjunct`` forces a collection nav path empty/non-empty, return
+        (path, 'EMPTY'|'NONEMPTY'). None otherwise."""
+        m = re.match(r'self\.([\w.]+)->(.+)', SteeredGenerator._strip_wrap(conjunct))
+        if not m:
+            return None
+        path, rest = m.group(1), m.group(2)
+        if rest.startswith('isEmpty()'):
+            return (path, 'EMPTY')
+        if re.match(r'(notEmpty\(\)|exists\(|any\(|one\()', rest):
+            return (path, 'NONEMPTY')
+        # 'size()' appears at the start of rest for a direct 'self.coll->size()' and
+        # after '->' for 'self.coll->collect(...)->size()'; match both.
+        sm = re.search(r'(?:^|->)size\(\)\s*(>=|<=|>|<|=)\s*(\d+)', rest)
+        if sm:
+            op, n = sm.group(1), int(sm.group(2))
+            if op == '>':
+                return (path, 'NONEMPTY')                 # size > n (>= 0) -> non-empty
+            if op == '>=':
+                return (path, 'NONEMPTY') if n >= 1 else None
+            if op == '=':
+                return (path, 'EMPTY' if n == 0 else 'NONEMPTY')
+            if op == '<':
+                return (path, 'EMPTY') if n <= 1 else None   # size < 1 -> empty
+            if op == '<=':
+                return (path, 'EMPTY') if n == 0 else None   # size <= 0 -> empty
+        # 'collect(...)->sum() >= N' (N > 0) requires a non-empty source collection.
+        if re.search(r'->sum\(\)\s*(>=|>)\s*[1-9]', rest):
+            return (path, 'NONEMPTY')
+        return None
+
+    @staticmethod
+    def _mod_claim(conjunct: str):
+        """If ``conjunct`` pins an attribute's PARITY via an even modulus, return
+        (path, 'ODD'|'EVEN'). 'x mod 2 = 1' => ODD; 'x mod 4 = 0' => EVEN. An odd
+        modulus does not pin parity, so returns None there."""
+        m = re.match(r'self\.([\w.]+)\s+mod\s+(\d+)\s*=\s*(\d+)$',
+                     SteeredGenerator._strip_wrap(conjunct))
+        if m:
+            mod, rem = int(m.group(2)), int(m.group(3))
+            if mod % 2 == 0:                          # even modulus pins parity
+                return (m.group(1), 'ODD' if rem % 2 else 'EVEN')
+        return None
+
+    _ALL_SIGNS = frozenset({'+', '-', '0'})
+    _OP_SIGNS = {'>': frozenset({'+'}), '>=': frozenset({'+', '0'}),
+                 '<': frozenset({'-'}), '<=': frozenset({'-', '0'}),
+                 '=': frozenset({'0'}), '<>': frozenset({'+', '-'})}
+
+    @staticmethod
+    def _order_signs(conjunct: str):
+        """Ordering between two attributes, as the allowed signs of (a - b). E.g.
+        'self.a > self.b' -> ('a|b', {'+'}); 'self.a - self.b >= 10' -> ('a|b', {'+'}).
+        The pair is normalised (alphabetical) with the sign-set flipped if swapped, so
+        contradictory orderings on the same pair intersect to the empty set."""
+        s = SteeredGenerator._strip_wrap(conjunct)
+        m = re.match(r'self\.(\w+)\s*(>=|<=|<>|>|<|=)\s*self\.(\w+)$', s)
+        if m:
+            a, b, signs = m.group(1), m.group(3), set(SteeredGenerator._OP_SIGNS[m.group(2)])
+        else:
+            m = re.match(r'self\.(\w+)\s*-\s*self\.(\w+)\s*(>=|>)\s*(\d+)$', s)
+            if not m:
+                return None
+            a, b, op, k = m.group(1), m.group(2), m.group(3), int(m.group(4))
+            signs = {'+'} if (k > 0 or op == '>') else {'+', '0'}   # a-b (>=k>0 | >k>=0) => a>b
+        if a > b:
+            flip = {'+': '-', '-': '+', '0': '0'}
+            a, b, signs = b, a, {flip[x] for x in signs}
+        return (f"{a}|{b}", frozenset(signs))
+
+    @staticmethod
+    def _quant_claim(conjunct: str):
+        """forAll/exists/any over a collection with a BOOLEAN element body. Returns
+        (coll, attr, 'A'|'E', boolval): 'A' = universal (forAll), 'E' = existential
+        (exists/any). e.g. 'self.posts->forAll(x | x.isPublic <> true)' ->
+        ('posts','isPublic','A',False)."""
+        s = SteeredGenerator._strip_wrap(conjunct)
+        s = re.sub(r'\s*<>\s*null$', '', s)          # 'any(...) <> null' tail
+        m = re.match(
+            r'self\.(\w+)->(forAll|exists|any)\(\s*(\w+)\s*\|\s*\3\.(\w+)\s*(=|<>)\s*(true|false)\s*\)$',
+            s)
+        if not m:
+            return None
+        val = (m.group(6) == 'true')
+        if m.group(5) == '<>':
+            val = not val
+        return (m.group(1), m.group(4), 'A' if m.group(2) == 'forAll' else 'E', val)
+
+    @staticmethod
+    def _check_register(cls: str, ocl: str, claims: dict) -> bool:
+        """Per-context joint-consistency gate (single source of truth, used by the
+        generator at fill time and by the controller's post-generation pass). Extracts
+        the claims a constraint makes on ``cls`` — boolean polarity, collection
+        emptiness, mod parity, attribute ordering, and boolean quantifier bodies — and
+        checks them against ``claims`` (mutated in place). Returns False (recording
+        nothing) on any contradiction: a boolean forced true AND false, a collection
+        forced empty AND non-empty, a number forced odd AND even, an ordering whose
+        sign-set intersects to empty (a>b AND a<=b), or a collection whose elements are
+        forced by forAll to one boolean value while exists requires the other
+        (forAll(attr=false) vs exists(attr=true)). On no conflict, records and True."""
+        from .complexity_calculator import _get_body
+        eq: Dict[Tuple[str, str], Any] = {}        # exact-value claims
+        orders: Dict[Tuple[str, str], frozenset] = {}  # ordering sign-sets
+        quants = []                                # (coll, attr, 'A'|'E', boolval)
+        for cj in SteeredGenerator._split_top_and(_get_body(ocl)):
+            for tag, fn in (('b:', SteeredGenerator._bool_claim),
+                            ('e:', SteeredGenerator._emptiness_claim),
+                            ('p:', SteeredGenerator._mod_claim)):
+                r = fn(cj)
+                if r:
+                    eq[(cls, tag + r[0])] = r[1]
+            o = SteeredGenerator._order_signs(cj)
+            if o:
+                k = (cls, 'o:' + o[0])
+                orders[k] = orders.get(k, SteeredGenerator._ALL_SIGNS) & o[1]
+            q = SteeredGenerator._quant_claim(cj)
+            if q:
+                quants.append(q)
+        for k, v in eq.items():
+            if k in claims and claims[k] != v:
+                return False
+        merged = {}
+        for k, sg in orders.items():
+            inter = claims.get(k, SteeredGenerator._ALL_SIGNS) & sg
+            if not inter:
+                return False
+            merged[k] = inter
+        # quantifier-body conflicts: forAll pins every element's bool value; exists
+        # requires at least one element of the other value -> contradiction.
+        qa_new, qe_new = {}, {}
+        for coll, attr, kind, val in quants:
+            ka, ke = (cls, f'qa:{coll}.{attr}'), (cls, f'qe:{coll}.{attr}')
+            if kind == 'A':
+                if claims.get(ka, val) != val:
+                    return False                      # forAll true AND forAll false
+                if any(ev != val for ev in claims.get(ke, ())):
+                    return False                      # forAll W vs exists V!=W
+                qa_new[ka] = val
+            else:
+                if claims.get(ka, val) != val:
+                    return False                      # exists V vs forAll W!=V
+                qe_new.setdefault(ke, set()).add(val)
+        claims.update(eq)
+        claims.update(merged)
+        claims.update(qa_new)
+        for ke, vals in qe_new.items():
+            claims[ke] = set(claims.get(ke, set())) | vals
+        return True
+
+    def _register_claims(self, cls: str, ocl: str) -> bool:
+        """Gen-time wrapper over the shared consistency gate (uses self.claims)."""
+        return self._check_register(cls, ocl, self.claims)
+
+    def _raise_once(self, c, cls: str, box: Box, below: Set[str]):
+        """Apply the first actuator whose result does NOT overshoot any box ceiling
+        and that targets a still-below component, returning ``(new_constraint, kind)``
+        or None. Order is deliberate: forAll-wrap FIRST -- its scalar body raises cic
+        AND dn_ca together (one collection navigation), so the 'difficult' box is hit
+        without a separate deepen-nav, whose +nnr_c quantum would breach the ceiling.
+        Then deepen-nav (dn_ca), cast (tcc), conjoin (operator/navigation load). A
+        candidate that overshoots is skipped so the next actuator is tried."""
+        attempts = []
+        if below & set(self._RAISE_BY_FORALL):
+            t = self._forall_term(cls)
+            attempts.append((self._conjoin_with(c, cls, t) if t else None, "forall"))
+        if below & set(self._RAISE_BY_DEEPNAV):
+            t = self._deepnav_term(cls)
+            attempts.append((self._conjoin_with(c, cls, t) if t else None, "deepnav"))
+        if below & set(self._RAISE_BY_CAST):
+            t = self._cast_term(cls)
+            attempts.append((self._conjoin_with(c, cls, t) if t else None, "cast"))
+        if below & set(self._RAISE_BY_CONJOIN):
+            attempts.append((self._conjoin(c, cls), "conjoin"))
+        for r, kind in attempts:
+            if r is None:
+                continue
+            v = self._measure(r.ocl, cls)
+            if not any(v[comp] > hi for comp, (lo, hi) in box.ranges.items()):
+                return r, kind
+        return None
+
+    def _actuate(self, c, cls: str, box: Box, gaps: Dict[str, float]):
+        """Move ``c`` toward ``box``, returning ``(new_constraint, kind)`` or None.
+        Overshoot -> lower (drop a conjunct). Otherwise RAISE by COMPOSING actuators:
+        apply one for a still-below component, re-measure, and stack the next onto the
+        result, until ``c`` is in ``box`` or no non-overshooting actuator applies. A
+        single actuator cannot close a gap that is below on several axes at once (the
+        'difficult' box needs depth + iteration + operator load together), so up to
+        ``_MAX_COMPOSE`` are composed; ``kind`` is the '+'-joined chain."""
         above = {comp for comp, g in gaps.items() if g < 0.0}
         if above:                                       # over-target: lower
             r = self._drop_conjunct(c, cls, above)
             if r is not None:
                 return r, "drop"
-        if below & set(self._RAISE_BY_DEEPNAV):
-            t = self._deepnav_term(cls)
-            r = self._conjoin_with(c, cls, t) if t else None
-            if r is not None:
-                return r, "deepnav"
-        if below & set(self._RAISE_BY_FORALL):
-            t = self._forall_term(cls)
-            r = self._conjoin_with(c, cls, t) if t else None
-            if r is not None:
-                return r, "forall"
-        if below & set(self._RAISE_BY_CAST):
-            t = self._cast_term(cls)
-            r = self._conjoin_with(c, cls, t) if t else None
-            if r is not None:
-                return r, "cast"
-        if below & set(self._RAISE_BY_CONJOIN):
-            r = self._conjoin(c, cls)
-            if r is not None:
-                return r, "conjoin"
-        return None
+        # A box that MANDATES iteration (cic lower bound > 0) is best built forAll-FIRST
+        # from a minimal seed: bolting the heavy forAll onto an already-complex base
+        # overshoots nnr_c/wno (the base may already sit near their ceilings), so cic
+        # can never be raised. gaps['cic'] > 0 means the base has too little iteration.
+        if gaps.get("cic", 0.0) > 0.0:
+            seed = self._iteration_seed(c, cls, box)
+            if seed is not None:
+                return seed
+        cur, kinds = c, []
+        for _ in range(self._MAX_COMPOSE):
+            v = self._measure(cur.ocl, cls)
+            if box.contains(v):
+                break
+            below = {comp for comp, g in self._gaps(box, v).items() if g > 0.0}
+            if not below:
+                break
+            step = self._raise_once(cur, cls, box, below)
+            if step is None:
+                break
+            cur, kinds = step[0], kinds + [step[1]]
+        if not kinds:
+            return None
+        return cur, "+".join(kinds)
+
+    def _iteration_seed(self, c, cls: str, box: Box):
+        """Build an iteration constraint forAll-FIRST for a box that requires cic>=1.
+        A scalar-bodied forAll over a collection supplies cic AND dn_ca cheaply; a
+        minimal scalar arithmetic conjunct (and optional top-up conjuncts) raise
+        wno/nnr_c into range. Returns ``(constraint, kind)`` in-box, or None. This
+        replaces actuating an already-complex base, whose intrinsic nnr_c/wno leaves
+        no headroom for the forAll's cost (e.g. arithmetic x difficult)."""
+        from dataclasses import replace
+        fa = self._forall_term(cls)
+        if not fa:
+            return None
+        pred = self.eng._attr_predicate(cls)            # 'attr >= 0' (no prefix)
+        expr = f"(self.{pred}) and ({fa})" if pred else fa
+        cur = replace(c, ocl=f"context {cls}\ninv: {expr}")
+        kinds = ["forall"]
+        for _ in range(self._MAX_COMPOSE):
+            v = self._measure(cur.ocl, cls)
+            if box.contains(v):
+                return cur, "+".join(kinds)
+            below = {comp for comp, g in self._gaps(box, v).items() if g > 0.0}
+            if not below:
+                break
+            step = self._raise_once(cur, cls, box, below)
+            if step is None:
+                break
+            cur, kinds = step[0], kinds + [step[1]]
+        v = self._measure(cur.ocl, cls)
+        return (cur, "+".join(kinds)) if box.contains(v) else None
 
     # ---- Phase 0: Compile (marginal-preserving joint slots) ----------------
     def _compile(self, fam_q, prof_q, n_sat) -> List[Slot]:
@@ -733,7 +985,7 @@ class SteeredGenerator:
                 dup = 0
                 v = self._measure(c.ocl, cls)
                 in_box = (active_box is SKIP_BOX) or active_box.contains(v)
-                if in_box and c.ocl not in H:
+                if in_box and c.ocl not in H and self._register_claims(cls, c.ocl):
                     blabel = "skip" if active_box is SKIP_BOX else active_box.label
                     suite.append((c, slot.family, slot.polarity, cls, v, blabel))
                     H.add(c.ocl)
@@ -748,14 +1000,14 @@ class SteeredGenerator:
                     # navigation load, conjoin it with another in-class invariant
                     # to raise that load, then re-measure and accept if in box.
                     if act_budget > 0:
-                        res = self._actuate(c, cls, gaps)
+                        res = self._actuate(c, cls, active_box, gaps)
                         if res is not None:
                             ac, kind = res
                             act_budget -= 1
                             if ac.ocl not in A and ac.ocl not in H:
                                 A.add(ac.ocl)
                                 v2 = self._measure(ac.ocl, cls)
-                                if active_box.contains(v2):
+                                if active_box.contains(v2) and self._register_claims(cls, ac.ocl):
                                     suite.append((ac, slot.family, slot.polarity, cls,
                                                   v2, active_box.label + "+" + kind))
                                     H.add(ac.ocl)
@@ -763,7 +1015,9 @@ class SteeredGenerator:
                                     got[cls] += 1
                                     need[cls] = max(0, need[cls] - 1)
                                     use[pid] = use.get(pid, 0) + 1
-                                    report.append(("actuator", kind, cls, active_box.label))
+                                    # one report row per composed actuator -> clean histogram
+                                    for k in kind.split("+"):
+                                        report.append(("actuator", k, cls, active_box.label))
                                     return True
                     gn = self._norm(gaps)
                     stall = stall + 1 if gn >= g_prev else 0
@@ -835,6 +1089,9 @@ class SteeredGenerator:
         suite: List[Any] = []
         H: Set[str] = set()
         A: Set[str] = set()
+        # Per-context claims accumulated from accepted constraints, used to reject a
+        # candidate that would make the context's invariant set jointly UNSAT.
+        self.claims: Dict[Tuple[str, str], Any] = {}
 
         for slot in slots:
             self._fill_slot(slot, cap, got, need, use, H, A, suite, report)

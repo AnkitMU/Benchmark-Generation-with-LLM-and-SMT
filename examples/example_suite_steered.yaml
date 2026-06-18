@@ -6,18 +6,22 @@ description: "Profile-guided complexity steering with per-component (5-knob) box
 generation_mode: steered
 
 models:
-  - xmi: "models/car_rental.xmi"
-    name: "CarRental"
+  - xmi: "models/social_media.xmi"
+    name: "Social Media"
     profiles:
 
       - name: "balanced"
         seed: 42
-        constraints: 60            # N : requested suite size
+        constraints: 100            # N : requested suite size
         sat_ratio: 0.8             # r
         unsat_ratio: 0.2
+        similarity_threshold: 0.95 # structural (tree-edit) dedup: drop a constraint
+                                   # only if similarity > this. 1.0 = keep all (off);
+                                   # 0.95 = drop near-identical; 0.85 = default;
+                                   # 0.0 = drop ANY similar (max dedup).
 
         per_class_min: 3           # L
-        per_class_max: 25          # U
+        per_class_max: 50          # U
         on_infeasible: relax       # report | relax | skip
 
         # Pattern family distribution F (must sum to 100)
@@ -49,21 +53,61 @@ models:
         # ============================================================
         complexity_profiles:
           - label: easy
-            pct: 50
+            pct: 40
             ranges:
               nnr_c: [1, 3]
               dn_ca: [1, 2]
               wno:   [0, 4]
               cic:   [0, 0]         # no iteration
               tcc:   [0, 0]         # no casts
-          - label: hard
-            pct: 50
+          - label: medium
+            pct: 35
+            ranges:
+              nnr_c: [2, 5]
+              dn_ca: [1, 3]
+              wno:   [3, 8]
+              cic:   [0, 1]         # optional single iterator
+              tcc:   [0, 1]
+          - label: difficult
+            pct: 25
             ranges:
               nnr_c: [3, 7]
               dn_ca: [2, 4]
               wno:   [6, 12]
               cic:   [1, 3]         # iteration required (vrc>0 follows)
               tcc:   [0, 2]
+
+        # Operator weights for Measure() (Table 1). MERGED on top of the
+        # framework defaults (which already weight arithmetic/string operators
+        # for WNO), so these verification weights do NOT collapse WNO into OC.
+        operator_weights:
+          # Comparison operators (baseline, lightweight in verification)
+          "=":  1.0
+          "<>": 1.0
+          ">":  1.0
+          "<":  1.0
+          ">=": 1.0
+          "<=": 1.0
+          # Logical operators (evaluate multiple conditions)
+          "and": 1.5
+          "or":  1.5
+          "not": 1.5
+          # Higher logical operators (logical dependencies)
+          "implies": 2.0
+          "xor":     2.0
+          # Collection traversal (iteration over collections)
+          "select":  2.0
+          "collect": 2.0
+          "reject":  2.0
+          "flatten": 2.0
+          # Quantifiers & higher-order iteration (nested iteration)
+          "forAll":  3.0
+          "exists":  3.0
+          "closure": 3.0
+          "iterate": 3.0
+          # Type / set conversion
+          "oclAsType": 2.0
+          "asSet":     1.5
 
 semantic:
   enable: true
@@ -74,7 +118,7 @@ semantic:
 # Inline VGCR: individual status check + joint consistency of the SAT subset.
 vgcr:
   enable: true
-  max_retries: 3                   # R
+  max_retries: 9                   # R
 
 verification:
   enable: true

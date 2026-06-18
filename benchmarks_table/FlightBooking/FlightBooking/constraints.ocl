@@ -1,0 +1,397 @@
+-- Benchmark: FlightBooking / balanced
+-- Generated: 2026-06-18T17:23:41.816640
+-- Seed: 42
+-- Complexity: standard
+-- Count: 65
+-- Advanced Features: ENABLED
+
+-- #1 Navigation Chain in Aircraft
+-- Difficulty: easy
+-- Type: SAT
+context Aircraft
+inv: self.airline.name <> ''
+
+-- #2 Navigation Chain in Aircraft
+-- Difficulty: easy
+-- Type: SAT
+context Aircraft
+inv: self.airline.code <> ''
+
+-- #3 Association Exists in Payment
+-- Difficulty: easy
+-- Type: SAT
+context Payment
+inv: self.booking <> null
+
+-- #4 Association Exists in Baggage
+-- Difficulty: medium
+-- Type: SAT
+context Baggage
+inv: (self.booking <> null) and (self.weightKg < 19)
+
+-- #5 Association Exists in Ticket
+-- Difficulty: medium
+-- Type: SAT
+context Ticket
+inv: (self.booking <> null) and (self.booking.flight.arrivalTime <> '')
+
+-- #6 Association Exists in BoardingPass
+-- Difficulty: medium
+-- Type: SAT
+context BoardingPass
+inv: (self.checkIn <> null) and (self.barcode.size() <= 19)
+
+-- #7 Association Exists in CheckIn
+-- Difficulty: medium
+-- Type: SAT
+context CheckIn
+inv: (self.boardingPass <> null) and (self.checkInTime.size() = 31)
+
+-- #8 Collection Navigation in Passenger
+-- Difficulty: difficult
+-- Type: SAT
+context Passenger
+inv: self.bookings->forAll(x | x.createdAt <> '')
+
+-- #9 Collection Navigation in Airline
+-- Difficulty: difficult
+-- Type: SAT
+context Airline
+inv: self.aircrafts->forAll(x | x.model <> '')
+
+-- #10 Navigation Chain in Baggage
+-- Difficulty: medium
+-- Type: SAT
+context Baggage
+inv: self.booking.flight.arrivalTime <> ''
+
+-- #11 Navigation Chain in BoardingPass
+-- Difficulty: medium
+-- Type: SAT
+context BoardingPass
+inv: self.checkIn.booking.bookingRef <> ''
+
+-- #12 Navigation Chain in Ticket
+-- Difficulty: medium
+-- Type: SAT
+context Ticket
+inv: self.booking.flight.departureTime <> ''
+
+-- #13 Navigation Chain in Payment
+-- Difficulty: medium
+-- Type: SAT
+context Payment
+inv: self.booking.flight.flightNo <> ''
+
+-- #14 Navigation Chain in Seat
+-- Difficulty: medium
+-- Type: SAT
+context Seat
+inv: self.aircraft.airline.code <> ''
+
+-- #15 Navigation Chain in Seat
+-- Difficulty: medium
+-- Type: SAT
+context Seat
+inv: self.aircraft.airline.name <> ''
+
+-- #16 Collection Size in Range in Airline
+-- Difficulty: easy
+-- Type: SAT
+context Airline
+inv: (self.flights->size() <= 3)
+
+-- #17 Collection Size in Range in Passenger
+-- Difficulty: medium
+-- Type: SAT
+context Passenger
+inv: (self.bookings->size() <= 1)
+
+-- #18 Collection Size in Range in Airline
+-- Difficulty: medium
+-- Type: SAT
+context Airline
+inv: (self.flights->size() <= 1)
+
+-- #19 Collection Size in Range in Airport
+-- Difficulty: easy
+-- Type: SAT
+context Airport
+inv: (self.arrivingFlights->size() <= 1)
+
+-- #20 Numeric Absolute Value Bounded in Baggage
+-- Difficulty: medium
+-- Type: SAT
+context Baggage
+inv: self.weightKg.abs() <= 1
+
+-- #21 Numeric Absolute Value Bounded in Payment
+-- Difficulty: medium
+-- Type: SAT
+context Payment
+inv: self.amount.abs() <= 0
+
+-- #22 Numeric Attribute Bounded in Payment
+-- Difficulty: medium
+-- Type: SAT
+context Payment
+inv: self.amount >= 24 and self.amount <= 39
+
+-- #23 Numeric Greater Than Value in Baggage
+-- Difficulty: easy
+-- Type: SAT
+context Baggage
+inv: self.weightKg > 85
+
+-- #24 Numeric Absolute Value Bounded in Baggage
+-- Difficulty: medium
+-- Type: SAT
+context Baggage
+inv: self.weightKg.abs() <= 3
+
+-- #25 Numeric Absolute Value Bounded in Baggage
+-- Difficulty: medium
+-- Type: SAT
+context Baggage
+inv: self.weightKg.abs() <= 9
+
+-- #26 Numeric Absolute Value Bounded in Payment
+-- Difficulty: medium
+-- Type: SAT
+context Payment
+inv: self.amount.abs() <= 2
+
+-- #27 Numeric Absolute Value Bounded in Payment
+-- Difficulty: medium
+-- Type: SAT
+context Payment
+inv: self.amount.abs() <= 1
+
+-- #28 Existential Quantification (exists) in Booking
+-- Difficulty: difficult
+-- Type: SAT
+context Booking
+inv: self.baggages->exists(x | x.weightKg <= 50)
+
+-- #29 Any Operation in Airport
+-- Difficulty: difficult
+-- Type: SAT
+context Airport
+inv: self.arrivingFlights->any(x | x.departureTime <> '') <> null
+
+-- #30 Collection Nested Collection Flatten in Airline
+-- Difficulty: difficult
+-- Type: SAT
+context Airline
+inv: self.flights->collect(x | x.bookings)->size() >= 2
+
+-- #31 Collection As Sequence Conversion in Passenger
+-- Difficulty: medium
+-- Type: SAT
+context Passenger
+inv: self.bookings->asSequence()->notEmpty()
+
+-- #32 Collection Minimum Size in Flight
+-- Difficulty: medium
+-- Type: SAT
+context Flight
+inv: self.bookings->size() >= 1
+
+-- #33 Collection Nested Collection Flatten in Airport
+-- Difficulty: difficult
+-- Type: SAT
+context Airport
+inv: self.departingFlights->collect(x | x.bookings)->size() >= 1
+
+-- #34 Collection Not Empty (Simple) in Airline
+-- Difficulty: easy
+-- Type: SAT
+context Airline
+inv: self.aircrafts->notEmpty()
+
+-- #35 Attribute Not Null (Simple) in Airline
+-- Difficulty: easy
+-- Type: SAT
+context Airline
+inv: self.name <> null
+
+-- #36 Collection Nested Collection Flatten in Airline
+-- Difficulty: difficult
+-- Type: SAT
+context Airline
+inv: self.aircrafts->collect(x | x.seats)->size() >= 3
+
+-- #37 Set Intersection in Airport
+-- Difficulty: medium
+-- Type: SAT
+context Airport
+inv: self.arrivingFlights->intersection(self.departingFlights)->notEmpty()
+
+-- #38 Attribute Not Null (Simple) in Seat
+-- Difficulty: easy
+-- Type: SAT
+context Seat
+inv: self.seatNo <> null
+
+-- #39 Collection Size Constraint in Airport
+-- Difficulty: easy
+-- Type: SAT
+context Airport
+inv: self.arrivingFlights->size() = 1
+
+-- #40 Collection Has Specific Size in Booking
+-- Difficulty: easy
+-- Type: SAT
+context Booking
+inv: self.baggages->size() = 3
+
+-- #41 Collection Not Empty Check in Aircraft
+-- Difficulty: easy
+-- Type: SAT
+context Aircraft
+inv: self.seats->size() > 0
+
+-- #42 Collection As Sequence Conversion in Airline
+-- Difficulty: medium
+-- Type: SAT
+context Airline
+inv: self.aircrafts->asSequence()->notEmpty()
+
+-- #43 Collection Has Specific Size in Airport
+-- Difficulty: easy
+-- Type: SAT
+context Airport
+inv: self.departingFlights->size() = 1
+
+-- #44 Collection Minimum Size in Airline
+-- Difficulty: medium
+-- Type: SAT
+context Airline
+inv: self.aircrafts->size() >= 2
+
+-- #45 Two Attributes Not Equal in Flight
+-- Difficulty: easy
+-- Type: SAT
+context Flight
+inv: self.departureTime <> self.arrivalTime
+
+-- #46 Collection Size Constraint in Aircraft
+-- Difficulty: easy
+-- Type: SAT
+context Aircraft
+inv: self.seats->size() > 1
+
+-- #47 Collection Excluding Element in Airport
+-- Difficulty: difficult
+-- Type: SAT
+context Airport
+inv: self.arrivingFlights->excluding(self.arrivingFlights->any(true))->size() < self.arrivingFlights->size()
+
+-- #48 Bi-directional Implication in Flight
+-- Difficulty: medium
+-- Type: SAT
+context Flight
+inv: (self.arrivalTime <> null) = (self.departureTime <> null)
+
+-- #49 All Attributes Defined in Flight
+-- Difficulty: medium
+-- Type: SAT
+context Flight
+inv: self.departureTime <> null and self.arrivalTime <> null
+
+-- #50 Set Difference in Airport
+-- Difficulty: medium
+-- Type: SAT
+context Airport
+inv: self.arrivingFlights->excludingAll(self.departingFlights)->isEmpty()
+
+-- #51 Attribute Not Null (Simple) in Aircraft
+-- Difficulty: easy
+-- Type: SAT
+context Aircraft
+inv: self.registrationNo <> null
+
+-- #52 Simple Implication in Flight
+-- Difficulty: medium
+-- Type: SAT
+context Flight
+inv: self.departureTime <> null implies self.arrivalTime <> null
+
+-- #53 Association Exists (UNSAT) in Booking
+-- Difficulty: easy
+-- Type: UNSAT
+context Booking
+inv: (self.payment <> null) and (not(self.payment <> null))
+
+-- #54 Collection Nested Collection Flatten (UNSAT) in Airport
+-- Difficulty: difficult
+-- Type: UNSAT
+context Airport
+inv: (self.arrivingFlights->collect(x | x.bookings)->size() >= 3) and (not(self.arrivingFlights->collect(x | x.bookings)->size() >= 3))
+
+-- #55 Collection Nested Collection Flatten (UNSAT) in Flight
+-- Difficulty: difficult
+-- Type: UNSAT
+context Flight
+inv: (self.bookings->collect(x | x.baggages)->size() >= 2) and (not(self.bookings->collect(x | x.baggages)->size() >= 2))
+
+-- #56 Numeric Attribute Positive (UNSAT) in Payment
+-- Difficulty: easy
+-- Type: UNSAT
+context Payment
+inv: (self.amount > 0) and (self.amount < -5)
+
+-- #57 Numeric Absolute Value Bounded (UNSAT) in Baggage
+-- Difficulty: medium
+-- Type: UNSAT
+context Baggage
+inv: (self.weightKg.abs() <= 2) and (not(self.weightKg.abs() <= 2))
+
+-- #58 Collection As Sequence Conversion (UNSAT) in Airport
+-- Difficulty: medium
+-- Type: UNSAT
+context Airport
+inv: (self.departingFlights->asSequence()->notEmpty()) and (not(self.departingFlights->asSequence()->notEmpty()))
+
+-- #59 Collection Navigation (UNSAT) in Booking
+-- Difficulty: difficult
+-- Type: UNSAT
+context Booking
+inv: (self.baggages->forAll(x | x.weightKg >= 1)) and (not(self.baggages->forAll(x | x.weightKg >= 1)))
+
+-- #60 Existential Quantification (exists) (UNSAT) in Aircraft
+-- Difficulty: difficult
+-- Type: UNSAT
+context Aircraft
+inv: (self.seats->exists(x | x.seatNo <> '')) and (not(self.seats->exists(x | x.seatNo <> '')))
+
+-- #61 Numeric Absolute Value Bounded (UNSAT) in Payment
+-- Difficulty: medium
+-- Type: UNSAT
+context Payment
+inv: (self.amount.abs() <= 1) and (not(self.amount.abs() <= 1))
+
+-- #62 Navigation Chain (UNSAT) in CheckIn
+-- Difficulty: medium
+-- Type: UNSAT
+context CheckIn
+inv: (self.booking.flight.departureTime <> '') and (not(self.booking.flight.departureTime <> ''))
+
+-- #63 Collection Navigation (UNSAT) in Airport
+-- Difficulty: difficult
+-- Type: UNSAT
+context Airport
+inv: (self.departingFlights->exists(x | x.flightNo <> '')) and (not(self.departingFlights->exists(x | x.flightNo <> '')))
+
+-- #64 Numeric Absolute Value Bounded (UNSAT) in Baggage
+-- Difficulty: medium
+-- Type: UNSAT
+context Baggage
+inv: (self.weightKg.abs() <= 1) and (not(self.weightKg.abs() <= 1))
+
+-- #65 Navigation Chain (UNSAT) in BoardingPass
+-- Difficulty: medium
+-- Type: UNSAT
+context BoardingPass
+inv: (self.checkIn.booking.bookingRef <> '') and (not(self.checkIn.booking.bookingRef <> ''))
+

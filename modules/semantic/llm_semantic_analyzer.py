@@ -553,9 +553,13 @@ _DOMAIN_PATTERNS = {
                  "range", "depth", "altitude", "elevation"},
     "money": {"price", "cost", "amount", "salary", "wage", "fee",
               "bonus", "revenue", "budget", "balance", "payment",
-              "charge", "discount", "tax", "deposit", "rent"},
+              "charge", "discount", "tax", "deposit", "rent",
+              "credit", "debit", "invoice", "rate", "value",
+              "insurance", "premium", "worth", "fare", "total"},
     "count": {"count", "quantity", "seats", "capacity", "door",
-              "cores", "threads", "slots", "items"},
+              "cores", "threads", "slots", "items", "points", "score", "staff"},
+    "geo": {"longitude", "latitude", "lon", "lng", "lat", "coordinate",
+            "coord", "geo", "bearing"},
     "percentage": {"percent", "ratio", "progress",
                    "utilization", "efficiency", "coverage", "pct"},
     "temperature": {"temp", "temperature", "heat", "celsius", "fahrenheit"},
@@ -568,7 +572,7 @@ _DOMAIN_PATTERNS = {
                    "key", "identifier"},
     "label": {"name", "title", "label", "description", "category",
               "status", "kind", "tag"},
-    "time": {"time", "hour", "minute", "duration"},
+    "time": {"time", "hour", "minute", "duration", "day", "week"},
     "level": {"level", "tank", "fuel"},
     "power": {"horsepower", "hp", "watt", "kilowatt", "torque"},
     "age": {"age"},
@@ -586,6 +590,7 @@ _DOMAIN_FAMILY = {
     "temperature": "temperature",
     "weight": "weight",
     "memory": "memory",
+    "geo": "geo",
     "unit": "unit",
     "version": "version",
     "identifier": "identifier",
@@ -620,6 +625,7 @@ _NEVER_CROSS_FAMILIES = {
     "label",        # name, title, description — never compare with anything
     "unit",         # unit names — never compare
     "version",      # version numbers — never compare with non-versions
+    "geo",          # longitude/latitude — only comparable with other coordinates
 }
 
 # Additional keyword patterns for attributes that should never be in comparisons.

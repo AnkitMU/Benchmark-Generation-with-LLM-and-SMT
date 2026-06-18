@@ -347,15 +347,155 @@ class EnhancedSMTEncoder:
         return solver, model_vars
     
     def encode_global_collection(self, text: str, context: Dict) -> Tuple[Solver, Dict]:
-        """Pattern 3: Global collection constraint"""
+        """Pattern 3: Global collection — C.allInstances() with full enumeration.
+
+        Creates presence and attribute variables for all instance slots,
+        then encodes the downstream operation (size, forAll, exists, select, etc.).
+        """
         solver = Solver()
         model_vars = {}
-        
-        all_valid = Bool("all_valid")
-        model_vars["all_valid"] = all_valid
-        solver.add(Not(all_valid))
-        
+        scope = context.get('scope', 5)
+
+        # Parse target class
+        match = re.search(r'(\w+)\.allInstances\(\)', text)
+        if not match:
+            solver.add(BoolVal(True))
+            return solver, model_vars
+
+        class_name = match.group(1)
+        if class_name not in self.extractor.classes:
+            solver.add(BoolVal(True))
+            return solver, model_vars
+
+        # Create instance slots
+        presence = [Bool(f"{class_name}_p_{j}") for j in range(scope)]
+        for j in range(scope):
+            model_vars[f"{class_name}_present_{j}"] = presence[j]
+
+        # Everything after allInstances()
+        after = text[text.index('allInstances()') + len('allInstances()'):]
+
+        # ── size() op N ───────────────────────────────────────────────
+        size_match = re.search(r'->size\(\)\s*([><=]+|<>)\s*(\d+)', after)
+        if size_match and '->select(' not in after:
+            op, val = size_match.group(1), int(size_match.group(2))
+            count = Sum([If(presence[j], 1, 0) for j in range(scope)])
+            self._add_comp(solver, count, op, val)
+            return solver, model_vars
+
+        # ── notEmpty / isEmpty ────────────────────────────────────────
+        if '->notEmpty()' in after and '->select(' not in after:
+            solver.add(Or(presence))
+            return solver, model_vars
+        if '->isEmpty()' in after and '->select(' not in after:
+            solver.add(And([Not(p) for p in presence]))
+            return solver, model_vars
+
+        # Helper: get or create attribute variables for the target class
+        def get_attrs(attr_name):
+            key = f"_ai_{class_name}_{attr_name}"
+            if key in model_vars:
+                return [model_vars[f"{key}_{j}"] for j in range(scope)]
+            meta = self.extractor.get_attribute_by_name(class_name, attr_name)
+            if not meta:
+                return None
+            z3t = Int if ('Int' in meta.attr_type or 'EInt' in meta.attr_type) else (
+                Real if ('Double' in meta.attr_type or 'Float' in meta.attr_type
+                         or 'EDouble' in meta.attr_type) else Bool)
+            vs = [z3t(f"{class_name}_{j}_{attr_name}") for j in range(scope)]
+            for j in range(scope):
+                model_vars[f"{key}_{j}"] = vs[j]
+            return vs
+
+        def parse_pred(pred_text, var_name, j):
+            """Encode a simple predicate for slot j."""
+            comp = re.match(
+                rf'{re.escape(var_name)}\.(\w+)\s*([><=!]+|<>)\s*(.+)$',
+                pred_text.strip())
+            if comp:
+                attrs = get_attrs(comp.group(1))
+                if not attrs:
+                    return None
+                lhs = attrs[j]
+                rhs_str = comp.group(3).strip()
+                try:
+                    rhs = int(rhs_str) if '.' not in rhs_str else float(rhs_str)
+                except ValueError:
+                    if rhs_str.lower() == 'true':
+                        return lhs == True
+                    elif rhs_str.lower() == 'false':
+                        return lhs == False
+                    return None
+                op = comp.group(2)
+                if op == '>':    return lhs > rhs
+                elif op == '>=': return lhs >= rhs
+                elif op == '<':  return lhs < rhs
+                elif op == '<=': return lhs <= rhs
+                elif op in ('=', '=='): return lhs == rhs
+                elif op in ('<>', '!='): return lhs != rhs
+
+            # Bare boolean
+            bare = re.match(rf'{re.escape(var_name)}\.(\w+)$', pred_text.strip())
+            if bare:
+                attrs = get_attrs(bare.group(1))
+                if attrs:
+                    return attrs[j] == True
+            return None
+
+        # ── forAll(x | predicate) ─────────────────────────────────────
+        forall_match = re.search(r'->forAll\((\w+)\s*\|\s*(.+)\)', after)
+        if forall_match:
+            var_name = forall_match.group(1)
+            predicate = forall_match.group(2).strip().rstrip(')')
+            for j in range(scope):
+                pred = parse_pred(predicate, var_name, j)
+                if pred is not None:
+                    solver.add(Implies(presence[j], pred))
+            solver.add(Or(presence))  # at least one instance
+            return solver, model_vars
+
+        # ── exists(x | predicate) ─────────────────────────────────────
+        exists_match = re.search(r'->exists\((\w+)\s*\|\s*(.+)\)', after)
+        if exists_match:
+            var_name = exists_match.group(1)
+            predicate = exists_match.group(2).strip().rstrip(')')
+            matches = []
+            for j in range(scope):
+                pred = parse_pred(predicate, var_name, j)
+                if pred is not None:
+                    matches.append(And(presence[j], pred))
+            if matches:
+                solver.add(Or(matches))
+            return solver, model_vars
+
+        # ── select(x | pred)->size() op N ─────────────────────────────
+        sel_size = re.search(
+            r'->select\((\w+)\s*\|\s*(.+?)\)->size\(\)\s*([><=]+|<>)\s*(\d+)', after)
+        if sel_size:
+            var_name, predicate = sel_size.group(1), sel_size.group(2).strip()
+            op, val = sel_size.group(3), int(sel_size.group(4))
+            terms = []
+            for j in range(scope):
+                pred = parse_pred(predicate, var_name, j)
+                if pred is not None:
+                    terms.append(If(And(presence[j], pred), 1, 0))
+            if terms:
+                self._add_comp(solver, Sum(terms), op, val)
+            return solver, model_vars
+
+        # ── Fallback ──────────────────────────────────────────────────
+        solver.add(Or(presence))
         return solver, model_vars
+
+    @staticmethod
+    def _add_comp(solver, expr, op: str, val: int):
+        """Add comparison: expr op val."""
+        if op == '>':    solver.add(expr > val)
+        elif op == '>=': solver.add(expr >= val)
+        elif op == '<':  solver.add(expr < val)
+        elif op == '<=': solver.add(expr <= val)
+        elif op in ('=', '=='): solver.add(expr == val)
+        elif op in ('<>', '!='): solver.add(expr != val)
     
     def encode_set_intersection(self, text: str, context: Dict) -> Tuple[Solver, Dict]:
         """Pattern 4: Set intersection"""
@@ -828,14 +968,67 @@ class EnhancedSMTEncoder:
         return solver, model_vars
     
     def encode_type_check_casting(self, text: str, context: Dict) -> Tuple[Solver, Dict]:
-        """Pattern 16: Type check casting"""
+        """Pattern 16: Type check casting — oclIsKindOf / oclIsTypeOf / oclAsType
+
+        Uses type discriminator variables to model the class hierarchy.
+        """
         solver = Solver()
         model_vars = {}
-        
-        type_valid = Bool("type_valid")
-        model_vars["type_valid"] = type_valid
-        
-        solver.add(Not(type_valid))
+        scope = context.get('scope', 5)
+        context_class = context.get('context_class', '')
+
+        # Detect target type
+        match = re.search(
+            r'oclIsKindOf\((\w+)\)|oclIsTypeOf\((\w+)\)|oclAsType\((\w+)\)', text
+        )
+        if not match:
+            # Fallback: cannot parse — mark as satisfiable so it is not
+            # incorrectly flagged as a contradiction.
+            solver.add(BoolVal(True))
+            return solver, model_vars
+
+        target_type = match.group(1) or match.group(2) or match.group(3)
+        is_exact = match.group(2) is not None  # oclIsTypeOf = exact match
+
+        # Build concrete type set for the target
+        concrete_subtypes = sorted(self.extractor.get_concrete_subtypes(target_type))
+        if not concrete_subtypes:
+            # Target type not in metamodel or has no concrete subtype
+            solver.add(BoolVal(True))
+            return solver, model_vars
+
+        # Create an uninterpreted sort for types and one constant per concrete class
+        TypeSort = DeclareSort('TypeSort')
+        type_consts = {c: Const(f"TV_{c}", TypeSort) for c in concrete_subtypes}
+        if len(type_consts) > 1:
+            solver.add(Distinct(list(type_consts.values())))
+        for cname, cval in type_consts.items():
+            model_vars[f"type_{cname}"] = cval
+
+        # Create instance slots with type discriminator
+        tau = [Const(f"tau_{i}", TypeSort) for i in range(scope)]
+        presence = [Bool(f"present_{i}") for i in range(scope)]
+        for i in range(scope):
+            model_vars[f"tau_{i}"] = tau[i]
+            model_vars[f"present_{i}"] = presence[i]
+            # Each present instance must have a valid concrete type
+            solver.add(Implies(
+                presence[i],
+                Or([tau[i] == type_consts[c] for c in concrete_subtypes])
+            ))
+
+        # Type-check predicate per slot
+        def type_pred(i):
+            if is_exact:
+                return tau[i] == type_consts.get(target_type, BoolVal(False))
+            else:
+                opts = [tau[i] == type_consts[c] for c in concrete_subtypes
+                        if c in type_consts]
+                return Or(opts) if opts else BoolVal(False)
+
+        # Assert: at least one present instance satisfies the type check
+        solver.add(Or([And(presence[i], type_pred(i)) for i in range(scope)]))
+
         return solver, model_vars
     
     def encode_subset_disjointness(self, text: str, context: Dict) -> Tuple[Solver, Dict]:

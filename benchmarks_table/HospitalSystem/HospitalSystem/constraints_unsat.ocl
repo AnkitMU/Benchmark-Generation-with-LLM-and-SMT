@@ -1,0 +1,101 @@
+-- Benchmark: HospitalSystem / balanced
+-- Type: UNSAT Constraints Only
+-- Generated: 2026-06-18T17:31:31.027442
+-- Count: 16
+
+-- #1 Navigation Chain (UNSAT) in Procedure
+-- Difficulty: repair
+-- Mutation Strategy: self_contradiction
+context Procedure
+inv: (self.record.patient.isInsured = true) and (not(self.record.patient.isInsured = true))
+
+-- #2 Association Exists (UNSAT) in Invoice
+-- Difficulty: easy
+-- Mutation Strategy: self_contradiction
+context Invoice
+inv: (self.payment <> null) and (not(self.payment <> null))
+
+-- #3 Collection Nested Collection Flatten (UNSAT) in Department
+-- Difficulty: difficult
+-- Mutation Strategy: self_contradiction
+context Department
+inv: (self.doctors->collect(x | x.appointments)->size() >= 1) and (not(self.doctors->collect(x | x.appointments)->size() >= 1))
+
+-- #4 Navigation Chain (UNSAT) in Patient
+-- Difficulty: medium
+-- Mutation Strategy: self_contradiction
+context Patient
+inv: (self.insurance.patient.isInsured <> true) and (not(self.insurance.patient.isInsured <> true))
+
+-- #5 Navigation Chain (UNSAT) in Department
+-- Difficulty: easy
+-- Mutation Strategy: self_contradiction
+context Department
+inv: (self.hospital.address <> '') and (not(self.hospital.address <> ''))
+
+-- #6 Collection Not Empty (Simple) (UNSAT) in Hospital
+-- Difficulty: easy
+-- Mutation Strategy: empty_collection
+context Hospital
+inv: (self.departments->notEmpty()) and (self.departments->isEmpty())
+
+-- #7 Navigation Chain (UNSAT) in LabResult
+-- Difficulty: medium
+-- Mutation Strategy: self_contradiction
+context LabResult
+inv: (self.test.record.recordNo <> '') and (not(self.test.record.recordNo <> ''))
+
+-- #8 Boolean Is False (UNSAT) in Patient
+-- Difficulty: easy
+-- Mutation Strategy: self_contradiction
+context Patient
+inv: (self.isInsured = false) and (not(self.isInsured = false))
+
+-- #9 Navigation Chain (UNSAT) in InsurancePolicy
+-- Difficulty: medium
+-- Mutation Strategy: self_contradiction
+context InsurancePolicy
+inv: (self.patient.insurance.validUntil <> '') and (not(self.patient.insurance.validUntil <> ''))
+
+-- #10 Attribute Not Null (Simple) (UNSAT) in Discharge
+-- Difficulty: easy
+-- Mutation Strategy: self_contradiction
+context Discharge
+inv: (self.summary <> null) and (not(self.summary <> null))
+
+-- #11 Association Exists (UNSAT) in LabTest
+-- Difficulty: easy
+-- Mutation Strategy: self_contradiction
+context LabTest
+inv: (self.record <> null) and (not(self.record <> null))
+
+-- #12 Boolean Is True (UNSAT) in Bed
+-- Difficulty: medium
+-- Mutation Strategy: self_contradiction
+context Bed
+inv: ((self.isOccupied = true) and (self.bedNo.toUpperCase() = 'TEST')) and (not((self.isOccupied = true) and (self.bedNo.toUpperCase() = 'TEST')))
+
+-- #13 Collection Size in Range (UNSAT) in Room
+-- Difficulty: easy
+-- Mutation Strategy: contradictory_bounds
+context Room
+inv: ((self.beds->size() <= 1)) and (self.beds->size() > 1)
+
+-- #14 Attribute Not Null (Simple) (UNSAT) in Procedure
+-- Difficulty: easy
+-- Mutation Strategy: self_contradiction
+context Procedure
+inv: (self.name <> null) and (not(self.name <> null))
+
+-- #15 Collection As Sequence Conversion (UNSAT) in Department
+-- Difficulty: medium
+-- Mutation Strategy: self_contradiction
+context Department
+inv: (self.nurses->asSequence()->notEmpty()) and (not(self.nurses->asSequence()->notEmpty()))
+
+-- #16 Attribute Not Null (Simple) (UNSAT) in Nurse
+-- Difficulty: medium
+-- Mutation Strategy: self_contradiction
+context Nurse
+inv: ((self.shift <> null) and (self.department.oclIsTypeOf(Department))) and (not((self.shift <> null) and (self.department.oclIsTypeOf(Department))))
+

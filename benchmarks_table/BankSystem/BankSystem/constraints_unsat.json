@@ -1,0 +1,914 @@
+{
+  "metadata": {
+    "type": "UNSAT",
+    "model": "BankSystem",
+    "profile": "balanced",
+    "generated_at": "2026-06-18T17:25:21.263253",
+    "constraint_count": 16
+  },
+  "constraints": [
+    {
+      "ocl": "context Address\ninv: (self.customer <> null) and (not(self.customer <> null))",
+      "pattern_id": "association_exists_unsat",
+      "pattern_name": "Association Exists (UNSAT)",
+      "context": "Address",
+      "parameters": {
+        "association": "customer"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T17:25:07.704658",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 1,
+        "generation_number": 3817,
+        "profile": "easy",
+        "operators_used": [
+          "<",
+          "<>",
+          ">"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 1.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.0,
+            "vrc": 0,
+            "wno": 3.0,
+            "wnm": 0.0,
+            "total": 4.0
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 7.0
+        },
+        "is_unsat": true,
+        "mutation": "self_contradiction",
+        "original_pattern_id": "association_exists",
+        "semantic_cluster": 5,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Loan\ninv: (self.interestRate <> null implies self.principal <> null) and (not(self.interestRate <> null implies self.principal <> null))",
+      "pattern_id": "implies_simple_unsat",
+      "pattern_name": "Simple Implication (UNSAT)",
+      "context": "Loan",
+      "parameters": {
+        "first_attribute": "interestRate",
+        "second_attribute": "principal"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T17:25:07.455259",
+      "metadata": {
+        "category": "advanced",
+        "complexity": 2,
+        "generation_number": 4383,
+        "profile": "medium",
+        "operators_used": [
+          "<",
+          "<>",
+          ">",
+          "implies"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 4,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 1,
+            "wnc": 2.0,
+            "tnc": 1.7,
+            "vrc": 0,
+            "wno": 8.0,
+            "wnm": 0.0,
+            "total": 9.7
+          },
+          "computational": {
+            "oc": 8.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 8.0
+          },
+          "dependency": {
+            "ruc": 7,
+            "total": 7.0
+          },
+          "tc": 24.7
+        },
+        "is_unsat": true,
+        "mutation": "self_contradiction",
+        "original_pattern_id": "implies_simple",
+        "semantic_cluster": 5,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Employee\ninv: (self.branch.bank.swiftCode <> '') and (not(self.branch.bank.swiftCode <> ''))",
+      "pattern_id": "navigation_chain_unsat",
+      "pattern_name": "Navigation Chain (UNSAT)",
+      "context": "Employee",
+      "parameters": {
+        "navigation_path": "self.branch.bank.swiftCode <> ''"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T17:25:07.704652",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 2,
+        "generation_number": 4055,
+        "profile": "medium",
+        "operators_used": [
+          "<",
+          "<>",
+          ">"
+        ],
+        "navigation_depth": 4,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 3.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 3,
+            "wnc": 3.0,
+            "tnc": 3.0,
+            "vrc": 0,
+            "wno": 3.0,
+            "wnm": 0.0,
+            "total": 6.0
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 9.0
+        },
+        "is_unsat": true,
+        "mutation": "self_contradiction",
+        "original_pattern_id": "navigation_chain",
+        "semantic_cluster": 0,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Address\ninv: (self.customer.branch.city <> '') and (not(self.customer.branch.city <> ''))",
+      "pattern_id": "navigation_chain_unsat",
+      "pattern_name": "Navigation Chain (UNSAT)",
+      "context": "Address",
+      "parameters": {
+        "navigation_path": "self.customer.branch.city <> ''"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T17:25:07.704637",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 2,
+        "generation_number": 4067,
+        "profile": "medium",
+        "operators_used": [
+          "<",
+          "<>",
+          ">"
+        ],
+        "navigation_depth": 4,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 3.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 3,
+            "wnc": 3.0,
+            "tnc": 3.0,
+            "vrc": 0,
+            "wno": 3.0,
+            "wnm": 0.0,
+            "total": 6.0
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 9.0
+        },
+        "is_unsat": true,
+        "mutation": "self_contradiction",
+        "original_pattern_id": "navigation_chain",
+        "semantic_cluster": 0,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Bank\ninv: (self.branches->size() <> 1) and (not(self.branches->size() <> 1))",
+      "pattern_id": "size_constraint_unsat",
+      "pattern_name": "Collection Size Constraint (UNSAT)",
+      "context": "Bank",
+      "parameters": {
+        "collection": "branches",
+        "operator": "<>",
+        "value": 1
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T17:25:07.455414",
+      "metadata": {
+        "category": "basic",
+        "complexity": 1,
+        "generation_number": 4193,
+        "profile": "easy",
+        "operators_used": [
+          "-",
+          "<",
+          "<>",
+          ">",
+          "size"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 5,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.4,
+            "vrc": 0,
+            "wno": 4.0,
+            "wnm": 1.0,
+            "total": 6.4
+          },
+          "computational": {
+            "oc": 4.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 4.0
+          },
+          "dependency": {
+            "ruc": 10,
+            "total": 10.0
+          },
+          "tc": 20.4
+        },
+        "is_unsat": true,
+        "mutation": "self_contradiction",
+        "original_pattern_id": "size_constraint",
+        "semantic_cluster": 4,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Customer\ninv: (self.loans->forAll(x | x.principal >= 1)) and (not(self.loans->forAll(x | x.principal >= 1)))",
+      "pattern_id": "collection_navigation_unsat",
+      "pattern_name": "Collection Navigation (UNSAT)",
+      "context": "Customer",
+      "parameters": {
+        "collection": "loans",
+        "operation": "forAll",
+        "iterator": "x",
+        "nested": "principal >= 1"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T17:25:07.621867",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 3,
+        "generation_number": 3811,
+        "profile": "difficult",
+        "operators_used": [
+          "-",
+          "=",
+          ">",
+          ">=",
+          "forAll"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "difficult",
+        "operator_count": 5,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 3.0,
+            "wnc": 5.0,
+            "tnc": 4.0,
+            "vrc": 1,
+            "wno": 7.0,
+            "wnm": 1.0,
+            "total": 13.0
+          },
+          "computational": {
+            "oc": 7.0,
+            "tcc": 0.0,
+            "cic": 3.0,
+            "total": 10.0
+          },
+          "dependency": {
+            "ruc": 1,
+            "total": 1.0
+          },
+          "tc": 24.0
+        },
+        "is_unsat": true,
+        "mutation": "self_contradiction",
+        "original_pattern_id": "collection_navigation",
+        "semantic_cluster": 8,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Payment\ninv: (self.transaction <> null) and (not(self.transaction <> null))",
+      "pattern_id": "association_exists_unsat",
+      "pattern_name": "Association Exists (UNSAT)",
+      "context": "Payment",
+      "parameters": {
+        "association": "transaction"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T17:25:07.621881",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 1,
+        "generation_number": 3885,
+        "profile": "easy",
+        "operators_used": [
+          "<",
+          "<>",
+          ">"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 1.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.0,
+            "vrc": 0,
+            "wno": 3.0,
+            "wnm": 0.0,
+            "total": 4.0
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 7.0
+        },
+        "is_unsat": true,
+        "mutation": "self_contradiction",
+        "original_pattern_id": "association_exists",
+        "semantic_cluster": 1,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context SavingsAccount\ninv: (self.interestRate < 89) and (self.interestRate > 94)",
+      "pattern_id": "numeric_less_than_value_unsat",
+      "pattern_name": "Numeric Less Than Value (UNSAT)",
+      "context": "SavingsAccount",
+      "parameters": {
+        "numeric_attribute": "interestRate",
+        "value": 89
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T17:25:07.704689",
+      "metadata": {
+        "category": "arithmetic",
+        "complexity": 1,
+        "generation_number": 4100,
+        "profile": "easy",
+        "operators_used": [
+          "<"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 1,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 1.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.0,
+            "vrc": 0,
+            "wno": 1.0,
+            "wnm": 0.0,
+            "total": 2.0
+          },
+          "computational": {
+            "oc": 1.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 1.0
+          },
+          "dependency": {
+            "ruc": 2,
+            "total": 2.0
+          },
+          "tc": 5.0
+        },
+        "is_unsat": true,
+        "mutation": "contradictory_bounds",
+        "original_pattern_id": "numeric_less_than_value",
+        "contradiction_ocl": "context SavingsAccount\ninv: self.interestRate > 94",
+        "semantic_cluster": 8,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Address\ninv: (self.customer.branch.branchCode <> '') and (not(self.customer.branch.branchCode <> ''))",
+      "pattern_id": "navigation_chain_unsat",
+      "pattern_name": "Navigation Chain (UNSAT)",
+      "context": "Address",
+      "parameters": {
+        "navigation_path": "self.customer.branch.branchCode <> ''"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T17:25:07.455397",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 2,
+        "generation_number": 4060,
+        "profile": "medium",
+        "operators_used": [
+          "<",
+          "<>",
+          ">"
+        ],
+        "navigation_depth": 4,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 3.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 3,
+            "wnc": 3.0,
+            "tnc": 3.0,
+            "vrc": 0,
+            "wno": 3.0,
+            "wnm": 0.0,
+            "total": 6.0
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 9.0
+        },
+        "is_unsat": true,
+        "mutation": "self_contradiction",
+        "original_pattern_id": "navigation_chain",
+        "semantic_cluster": 0,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Bank\ninv: (self.branches->any(x | x.city <> '') <> null) and (not(self.branches->any(x | x.city <> '') <> null))",
+      "pattern_id": "any_operation_unsat",
+      "pattern_name": "Any Operation (UNSAT)",
+      "context": "Bank",
+      "parameters": {
+        "collection": "branches",
+        "iterator": "x",
+        "condition": "x.city <> ''"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T17:25:07.870905",
+      "metadata": {
+        "category": "collection",
+        "complexity": 2,
+        "generation_number": 4081,
+        "profile": "difficult",
+        "operators_used": [
+          "-",
+          "<",
+          "<>",
+          ">",
+          "any"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "difficult",
+        "operator_count": 5,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 3.0,
+            "wnc": 5.0,
+            "tnc": 4.0,
+            "vrc": 1,
+            "wno": 7.0,
+            "wnm": 1.0,
+            "total": 13.0
+          },
+          "computational": {
+            "oc": 7.0,
+            "tcc": 0.0,
+            "cic": 2.0,
+            "total": 9.0
+          },
+          "dependency": {
+            "ruc": 10,
+            "total": 10.0
+          },
+          "tc": 32.0
+        },
+        "is_unsat": true,
+        "mutation": "self_contradiction",
+        "original_pattern_id": "any_operation",
+        "semantic_cluster": 0,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Teller\ninv: (self.counterNo mod 5 = 0) and (not(self.counterNo mod 5 = 0))",
+      "pattern_id": "numeric_multiple_of_unsat",
+      "pattern_name": "Numeric Multiple Of (UNSAT)",
+      "context": "Teller",
+      "parameters": {
+        "numeric_attribute": "counterNo",
+        "divisor": 5
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T17:25:07.704625",
+      "metadata": {
+        "category": "arithmetic",
+        "complexity": 2,
+        "generation_number": 4117,
+        "profile": "easy",
+        "operators_used": [
+          "=",
+          "mod"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 2,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 1.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.0,
+            "vrc": 0,
+            "wno": 2.0,
+            "wnm": 0.0,
+            "total": 3.0
+          },
+          "computational": {
+            "oc": 1.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 1.0
+          },
+          "dependency": {
+            "ruc": 2,
+            "total": 2.0
+          },
+          "tc": 6.0
+        },
+        "is_unsat": true,
+        "mutation": "self_contradiction",
+        "original_pattern_id": "numeric_multiple_of",
+        "semantic_cluster": 7,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Bank\ninv: (self.branches->excluding(self.branches->any(true))->size() < self.branches->size()) and (not(self.branches->excluding(self.branches->any(true))->size() < self.branches->size()))",
+      "pattern_id": "collection_excluding_unsat",
+      "pattern_name": "Collection Excluding Element (UNSAT)",
+      "context": "Bank",
+      "parameters": {
+        "collection": "branches",
+        "element": "branches"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T17:25:07.621981",
+      "metadata": {
+        "category": "collection",
+        "complexity": 3,
+        "generation_number": 4485,
+        "operators_used": [
+          "-",
+          "<",
+          ">",
+          "any",
+          "excluding",
+          "size"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "difficult",
+        "operator_count": 6,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 6.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 1,
+            "wnc": 3.0,
+            "tnc": 3.6,
+            "vrc": 0,
+            "wno": 5.0,
+            "wnm": 4.0,
+            "total": 12.6
+          },
+          "computational": {
+            "oc": 5.0,
+            "tcc": 0.0,
+            "cic": 2.0,
+            "total": 7.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 19.6
+        },
+        "is_unsat": true,
+        "mutation": "self_contradiction",
+        "original_pattern_id": "collection_excluding",
+        "semantic_cluster": 4,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context SavingsAccount\ninv: (self.interestRate.abs() <= 3) and (not(self.interestRate.abs() <= 3))",
+      "pattern_id": "numeric_abs_bounded_unsat",
+      "pattern_name": "Numeric Absolute Value Bounded (UNSAT)",
+      "context": "SavingsAccount",
+      "parameters": {
+        "numeric_attribute": "interestRate",
+        "max_abs": 3
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T17:25:07.704681",
+      "metadata": {
+        "category": "arithmetic",
+        "complexity": 2,
+        "generation_number": 4472,
+        "operators_used": [
+          "<",
+          "<=",
+          "=",
+          "abs"
+        ],
+        "navigation_depth": 3,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 4,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 2,
+            "wnc": 2.0,
+            "tnc": 2.0,
+            "vrc": 0,
+            "wno": 4.0,
+            "wnm": 1.0,
+            "total": 7.0
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 10.0
+        },
+        "is_unsat": true,
+        "mutation": "self_contradiction",
+        "original_pattern_id": "numeric_abs_bounded",
+        "semantic_cluster": 8,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context CardTransaction\ninv: (self.card.customer.email <> '') and (not(self.card.customer.email <> ''))",
+      "pattern_id": "navigation_chain_unsat",
+      "pattern_name": "Navigation Chain (UNSAT)",
+      "context": "CardTransaction",
+      "parameters": {
+        "navigation_path": "self.card.customer.email <> ''"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T17:25:07.704645",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 2,
+        "generation_number": 4461,
+        "operators_used": [
+          "<",
+          "<>",
+          ">"
+        ],
+        "navigation_depth": 4,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 3.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 3,
+            "wnc": 3.0,
+            "tnc": 3.0,
+            "vrc": 0,
+            "wno": 3.0,
+            "wnm": 0.0,
+            "total": 6.0
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 9.0
+        },
+        "is_unsat": true,
+        "mutation": "self_contradiction",
+        "original_pattern_id": "navigation_chain",
+        "semantic_cluster": 3,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Address\ninv: (self.country <> null and self.line1 <> null) and (not(self.country <> null and self.line1 <> null))",
+      "pattern_id": "all_attributes_defined_unsat",
+      "pattern_name": "All Attributes Defined (UNSAT)",
+      "context": "Address",
+      "parameters": {
+        "first_attribute": "country",
+        "second_attribute": "line1"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T17:25:07.455388",
+      "metadata": {
+        "category": "advanced",
+        "complexity": 1,
+        "generation_number": 4409,
+        "profile": "medium",
+        "operators_used": [
+          "<",
+          "<>",
+          ">",
+          "and"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 4,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 1,
+            "wnc": 2.0,
+            "tnc": 1.7,
+            "vrc": 0,
+            "wno": 7.5,
+            "wnm": 0.0,
+            "total": 9.2
+          },
+          "computational": {
+            "oc": 7.5,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 7.5
+          },
+          "dependency": {
+            "ruc": 2,
+            "total": 2.0
+          },
+          "tc": 18.7
+        },
+        "is_unsat": true,
+        "mutation": "self_contradiction",
+        "original_pattern_id": "all_attributes_defined",
+        "semantic_cluster": 11,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context CreditCard\ninv: (self.cardTransactions->size() >= 1) and (self.cardTransactions->size() < 1)",
+      "pattern_id": "collection_min_size_unsat",
+      "pattern_name": "Collection Minimum Size (UNSAT)",
+      "context": "CreditCard",
+      "parameters": {
+        "collection": "cardTransactions",
+        "min_size": 1
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-06-18T17:25:07.785057",
+      "metadata": {
+        "category": "collection",
+        "complexity": 1,
+        "generation_number": 4477,
+        "operators_used": [
+          "-",
+          "=",
+          ">",
+          ">=",
+          "size"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 5,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.4,
+            "vrc": 0,
+            "wno": 4.0,
+            "wnm": 1.0,
+            "total": 6.4
+          },
+          "computational": {
+            "oc": 4.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 4.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 10.4
+        },
+        "is_unsat": true,
+        "mutation": "contradictory_bounds",
+        "original_pattern_id": "collection_min_size",
+        "contradiction_ocl": "context CreditCard\ninv: self.cardTransactions->size() < 1",
+        "semantic_cluster": 1,
+        "implies": []
+      }
+    }
+  ]
+}

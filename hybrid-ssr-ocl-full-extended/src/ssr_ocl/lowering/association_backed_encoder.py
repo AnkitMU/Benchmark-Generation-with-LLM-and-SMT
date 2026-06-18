@@ -58,13 +58,17 @@ class AssociationMetadata:
 
 
 class XMIMetadataExtractor:
-    """Dynamically extracts ALL classes, attributes, and associations from XMI file"""
-    
+    """Dynamically extracts ALL classes, attributes, associations, and inheritance from XMI file"""
+
     def __init__(self, xmi_file: str):
         self.xmi_file = xmi_file
         self.associations: List[AssociationMetadata] = []
         self.attributes: List[AttributeMetadata] = []
         self.classes: Set[str] = set()
+        # Inheritance support
+        self.supertype_map: Dict[str, str] = {}       # child -> parent
+        self.abstract_classes: Set[str] = set()        # abstract class names
+        self._subtype_cache: Dict[str, Set[str]] = {}  # parent -> all subtypes (cached)
         self._parse_xmi()
     
     def _parse_xmi(self):
@@ -73,11 +77,24 @@ class XMIMetadataExtractor:
             tree = ET.parse(self.xmi_file)
             root = tree.getroot()
             
-            # Extract all classes
+            # Extract all classes (with inheritance and abstract flags)
             for elem in root.findall(".//eClassifiers[@{http://www.w3.org/2001/XMLSchema-instance}type='ecore:EClass']"):
                 class_name = elem.get('name')
                 if class_name:
                     self.classes.add(class_name)
+
+                    # Parse abstract flag
+                    if elem.get('abstract', 'false').lower() == 'true':
+                        self.abstract_classes.add(class_name)
+
+                    # Parse eSuperTypes (inheritance)
+                    super_types = elem.get('eSuperTypes', '')
+                    if super_types:
+                        # eSuperTypes can be space-separated for multiple inheritance
+                        for st in super_types.strip().split():
+                            parent = st.split('#//')[-1] if '#//' in st else st
+                            if parent:
+                                self.supertype_map[class_name] = parent
                     
                     # Extract ALL attributes from this class
                     for attr in elem.findall("./eStructuralFeatures[@{http://www.w3.org/2001/XMLSchema-instance}type='ecore:EAttribute']"):
@@ -167,6 +184,57 @@ class XMIMetadataExtractor:
         if self.get_association_by_ref(class_name, prop_name):
             return 'association'
         return None
+
+    # ── Inheritance / Type Hierarchy helpers ──────────────────────────
+
+    def is_abstract(self, class_name: str) -> bool:
+        """Check if a class is abstract."""
+        return class_name in self.abstract_classes
+
+    def get_parent(self, class_name: str) -> Optional[str]:
+        """Return the direct supertype of *class_name*, or None."""
+        return self.supertype_map.get(class_name)
+
+    def get_direct_subtypes(self, class_name: str) -> Set[str]:
+        """Return the set of classes that directly extend *class_name*."""
+        return {child for child, parent in self.supertype_map.items()
+                if parent == class_name}
+
+    def get_all_subtypes(self, class_name: str) -> Set[str]:
+        """Return all direct and indirect subtypes (transitive closure)."""
+        if class_name in self._subtype_cache:
+            return self._subtype_cache[class_name]
+
+        result: Set[str] = set()
+        worklist = list(self.get_direct_subtypes(class_name))
+        while worklist:
+            child = worklist.pop()
+            if child not in result:
+                result.add(child)
+                worklist.extend(self.get_direct_subtypes(child))
+
+        self._subtype_cache[class_name] = result
+        return result
+
+    def get_concrete_subtypes(self, class_name: str) -> Set[str]:
+        """Return all concrete (non-abstract) subtypes, including *class_name*
+        itself if it is concrete."""
+        candidates = self.get_all_subtypes(class_name) | {class_name}
+        return {c for c in candidates if c not in self.abstract_classes}
+
+    def has_inheritance(self) -> bool:
+        """Return True if the metamodel contains any inheritance relation."""
+        return len(self.supertype_map) > 0
+
+    def get_inheritance_roots(self) -> Set[str]:
+        """Return top-level classes that have at least one subtype."""
+        parents = set(self.supertype_map.values())
+        # Roots are parents that themselves have no parent
+        return {p for p in parents if p not in self.supertype_map}
+
+    def classes_in_hierarchy(self, root: str) -> Set[str]:
+        """Return *root* plus all of its transitive subtypes."""
+        return {root} | self.get_all_subtypes(root)
 
 
 class AssociationBackedEncoder:

@@ -330,10 +330,13 @@ class Parameter:
                    if a.type in ['Boolean', 'EBoolean']]
         
         elif self.options == "target_attributes":
-            # Attributes of target class (requires dependency)
-            if dependency_values and 'collection' in dependency_values:
-                assoc_name = dependency_values['collection']
-                assoc = next((a for a in metamodel.get_associations_for(context) 
+            # Attributes of the target class reached through a sibling association
+            # parameter. The sibling is named by `depends_on` (e.g. 'association'
+            # for simple_navigation); fall back to 'collection' for older patterns.
+            dep_key = self.depends_on or 'collection'
+            if dependency_values and dep_key in dependency_values:
+                assoc_name = dependency_values[dep_key]
+                assoc = next((a for a in metamodel.get_associations_for(context)
                             if a.ref_name == assoc_name), None)
                 if assoc:
                     return [a.name for a in metamodel.get_attributes_for(assoc.target_class)]

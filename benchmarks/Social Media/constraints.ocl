@@ -1,0 +1,367 @@
+-- Benchmark: Social Media / balanced
+-- Generated: 2026-06-18T19:20:13.951252
+-- Seed: 42
+-- Complexity: standard
+-- Count: 60
+-- Advanced Features: ENABLED
+
+-- #1 Navigation Chain in Media
+-- Difficulty: medium
+-- Type: SAT
+context Media
+inv: self.post.author.email <> ''
+
+-- #2 Navigation Chain in Comment
+-- Difficulty: medium
+-- Type: SAT
+context Comment
+inv: self.post.author.createdAt <> ''
+
+-- #3 Collection Size in Range in Conversation
+-- Difficulty: medium
+-- Type: SAT
+context Conversation
+inv: (self.participants->size() <= 2)
+
+-- #4 Collection Size in Range in Group
+-- Difficulty: easy
+-- Type: SAT
+context Group
+inv: (self.memberships->size() <= 3)
+
+-- #5 Collection Size in Range in Tag
+-- Difficulty: medium
+-- Type: SAT
+context Tag
+inv: (self.posts->size() <= 3)
+
+-- #6 Collection Size in Range in Group
+-- Difficulty: easy
+-- Type: SAT
+context Group
+inv: (self.memberships->size() <= 1)
+
+-- #7 Collection Navigation in Tag
+-- Difficulty: difficult
+-- Type: SAT
+context Tag
+inv: self.posts->forAll(x | x.isPublic <> true)
+
+-- #8 Collection Navigation in Conversation
+-- Difficulty: difficult
+-- Type: SAT
+context Conversation
+inv: self.participants->exists(x | x.createdAt <> '')
+
+-- #9 Association Exists in Comment
+-- Difficulty: easy
+-- Type: SAT
+context Comment
+inv: self.author <> null
+
+-- #10 Association Exists in Follow
+-- Difficulty: medium
+-- Type: SAT
+context Follow
+inv: (self.followee <> null) and (self.follower.profile.bio <> '')
+
+-- #11 Association Exists in Media
+-- Difficulty: easy
+-- Type: SAT
+context Media
+inv: self.post <> null
+
+-- #12 Association Exists in Membership
+-- Difficulty: medium
+-- Type: SAT
+context Membership
+inv: (self.group <> null) and (self.role <> null)
+
+-- #13 Association Exists in Membership
+-- Difficulty: medium
+-- Type: SAT
+context Membership
+inv: (self.user <> null) and (self.group.oclIsTypeOf(Group))
+
+-- #14 Association Exists in Follow
+-- Difficulty: easy
+-- Type: SAT
+context Follow
+inv: self.follower <> null
+
+-- #15 Association Exists in FriendRequest
+-- Difficulty: easy
+-- Type: SAT
+context FriendRequest
+inv: self.fromUser <> null
+
+-- #16 Association Exists in Notification
+-- Difficulty: medium
+-- Type: SAT
+context Notification
+inv: (self.recipient <> null) and (self.message.toLowerCase() = 'test')
+
+-- #17 Association Exists in Message
+-- Difficulty: easy
+-- Type: SAT
+context Message
+inv: self.conversation <> null
+
+-- #18 Association Exists in Reaction
+-- Difficulty: easy
+-- Type: SAT
+context Reaction
+inv: self.user <> null
+
+-- #19 Navigation Chain in Membership
+-- Difficulty: medium
+-- Type: SAT
+context Membership
+inv: self.user.profile.birthDate <> ''
+
+-- #20 Navigation Chain in Message
+-- Difficulty: medium
+-- Type: SAT
+context Message
+inv: self.sender.profile.bio <> ''
+
+-- #21 Navigation Chain in Profile
+-- Difficulty: medium
+-- Type: SAT
+context Profile
+inv: self.user.profile.fullName <> ''
+
+-- #22 Navigation Chain in Profile
+-- Difficulty: medium
+-- Type: SAT
+context Profile
+inv: self.user.profile.bio <> ''
+
+-- #23 Navigation Chain in FriendRequest
+-- Difficulty: medium
+-- Type: SAT
+context FriendRequest
+inv: self.fromUser.profile.bio <> ''
+
+-- #24 Navigation Chain in Notification
+-- Difficulty: medium
+-- Type: SAT
+context Notification
+inv: self.recipient.profile.bio <> ''
+
+-- #25 Any Operation in Group
+-- Difficulty: difficult
+-- Type: SAT
+context Group
+inv: self.memberships->any(x | x.role <> '') <> null
+
+-- #26 Any Operation in Conversation
+-- Difficulty: difficult
+-- Type: SAT
+context Conversation
+inv: self.participants->any(x | x.email <> '') <> null
+
+-- #27 Association Exists in User
+-- Difficulty: easy
+-- Type: SAT
+context User
+inv: self.profile <> null
+
+-- #28 Any Operation in User
+-- Difficulty: difficult
+-- Type: SAT
+context User
+inv: self.posts->any(x | x.isPublic <> false) <> null
+
+-- #29 Collection Nested Collection Flatten in Tag
+-- Difficulty: difficult
+-- Type: SAT
+context Tag
+inv: self.posts->collect(x | x.reactions)->size() >= 3
+
+-- #30 Collection As Sequence Conversion in Conversation
+-- Difficulty: medium
+-- Type: SAT
+context Conversation
+inv: self.messages->asSequence()->notEmpty()
+
+-- #31 Collection Size Constraint in Conversation
+-- Difficulty: medium
+-- Type: SAT
+context Conversation
+inv: self.participants->size() <= 1
+
+-- #32 Collection Not Empty Check in Conversation
+-- Difficulty: easy
+-- Type: SAT
+context Conversation
+inv: self.messages->size() > 0
+
+-- #33 Collection Excluding Element in Tag
+-- Difficulty: difficult
+-- Type: SAT
+context Tag
+inv: self.posts->excluding(self.posts->any(true))->size() < self.posts->size()
+
+-- #34 Collection Maximum Size in Group
+-- Difficulty: medium
+-- Type: SAT
+context Group
+inv: self.memberships->size() <= 2
+
+-- #35 Collection Size Constraint in Conversation
+-- Difficulty: medium
+-- Type: SAT
+context Conversation
+inv: self.participants->size() >= 1
+
+-- #36 Collection As Sequence Conversion in Tag
+-- Difficulty: medium
+-- Type: SAT
+context Tag
+inv: self.posts->asSequence()->notEmpty()
+
+-- #37 Attribute Not Null (Simple) in Conversation
+-- Difficulty: easy
+-- Type: SAT
+context Conversation
+inv: self.createdAt <> null
+
+-- #38 Collection Not Empty Check in Post
+-- Difficulty: easy
+-- Type: SAT
+context Post
+inv: self.comments->size() > 0
+
+-- #39 Collection Has Specific Size in Conversation
+-- Difficulty: easy
+-- Type: SAT
+context Conversation
+inv: self.messages->size() = 3
+
+-- #40 Collection Minimum Size in Post
+-- Difficulty: medium
+-- Type: SAT
+context Post
+inv: self.reactions->size() >= 3
+
+-- #41 Collection Maximum Size in Post
+-- Difficulty: medium
+-- Type: SAT
+context Post
+inv: self.comments->size() <= 1
+
+-- #42 Attribute Not Null (Simple) in Post
+-- Difficulty: easy
+-- Type: SAT
+context Post
+inv: self.isPublic <> null
+
+-- #43 Collection Not Empty Check in User
+-- Difficulty: easy
+-- Type: SAT
+context User
+inv: self.posts->size() > 0
+
+-- #44 Collection Size Constraint in Post
+-- Difficulty: easy
+-- Type: SAT
+context Post
+inv: self.media->size() < 1
+
+-- #45 Attribute Not Null (Simple) in Comment
+-- Difficulty: medium
+-- Type: SAT
+context Comment
+inv: (self.createdAt <> null) and (self.text <> null)
+
+-- #46 Collection As Sequence Conversion in Post
+-- Difficulty: medium
+-- Type: SAT
+context Post
+inv: self.media->asSequence()->notEmpty()
+
+-- #47 Collection As Sequence Conversion in Post
+-- Difficulty: medium
+-- Type: SAT
+context Post
+inv: self.comments->asSequence()->notEmpty()
+
+-- #48 Collection Excluding Element in Group
+-- Difficulty: difficult
+-- Type: SAT
+context Group
+inv: self.memberships->excluding(self.memberships->any(true))->size() < self.memberships->size()
+
+-- #49 Navigation Chain (UNSAT) in Comment
+-- Difficulty: medium
+-- Type: UNSAT
+context Comment
+inv: (self.post.author.username <> '') and (not(self.post.author.username <> ''))
+
+-- #50 Collection Navigation (UNSAT) in Post
+-- Difficulty: difficult
+-- Type: UNSAT
+context Post
+inv: (self.reactions->forAll(x | x.createdAt <> '')) and (not(self.reactions->forAll(x | x.createdAt <> '')))
+
+-- #51 Navigation Chain (UNSAT) in Media
+-- Difficulty: medium
+-- Type: UNSAT
+context Media
+inv: (self.post.author.email <> '') and (not(self.post.author.email <> ''))
+
+-- #52 Collection Size in Range (UNSAT) in Conversation
+-- Difficulty: medium
+-- Type: UNSAT
+context Conversation
+inv: ((self.messages->size() <= 3)) and (self.messages->size() > 3)
+
+-- #53 Collection Maximum Size (UNSAT) in Tag
+-- Difficulty: medium
+-- Type: UNSAT
+context Tag
+inv: (self.posts->size() <= 1) and (self.posts->size() > 1)
+
+-- #54 Collection Not Empty Check (UNSAT) in Group
+-- Difficulty: easy
+-- Type: UNSAT
+context Group
+inv: (self.memberships->size() > 0) and (self.memberships->size() <= 0)
+
+-- #55 Collection Size in Range (UNSAT) in Tag
+-- Difficulty: medium
+-- Type: UNSAT
+context Tag
+inv: ((self.posts->size() <= 1)) and (self.posts->size() > 1)
+
+-- #56 Navigation Chain (UNSAT) in Notification
+-- Difficulty: medium
+-- Type: UNSAT
+context Notification
+inv: (self.recipient.profile.fullName <> '') and (not(self.recipient.profile.fullName <> ''))
+
+-- #57 Association Exists (UNSAT) in Message
+-- Difficulty: medium
+-- Type: UNSAT
+context Message
+inv: ((self.sender <> null) and (self.isRead = true)) and (not((self.sender <> null) and (self.isRead = true)))
+
+-- #58 Navigation Chain (UNSAT) in Follow
+-- Difficulty: medium
+-- Type: UNSAT
+context Follow
+inv: (self.follower.profile.fullName <> '') and (not(self.follower.profile.fullName <> ''))
+
+-- #59 Collection Size in Range (UNSAT) in Group
+-- Difficulty: medium
+-- Type: UNSAT
+context Group
+inv: ((self.memberships->size() <= 2)) and (self.memberships->size() > 2)
+
+-- #60 Collection Nested Collection Flatten (UNSAT) in Tag
+-- Difficulty: difficult
+-- Type: UNSAT
+context Tag
+inv: (self.posts->collect(x | x.comments)->size() >= 3) and (not(self.posts->collect(x | x.comments)->size() >= 3))
+

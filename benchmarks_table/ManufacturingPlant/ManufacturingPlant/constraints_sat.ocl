@@ -1,0 +1,320 @@
+-- Benchmark: ManufacturingPlant / balanced
+-- Type: SAT Constraints Only
+-- Generated: 2026-06-18T17:30:14.607511
+-- Count: 63
+
+-- #1 Navigation Chain in InventoryItem
+-- Difficulty: easy
+context InventoryItem
+inv: self.plant.location <> ''
+
+-- #2 Navigation Chain in Operator
+-- Difficulty: easy
+context Operator
+inv: self.shift.startTime <> ''
+
+-- #3 Navigation Chain in Operator
+-- Difficulty: easy
+context Operator
+inv: self.shift.endTime <> ''
+
+-- #4 Navigation Chain in Shipment
+-- Difficulty: easy
+context Shipment
+inv: self.supplier.supplierId <> ''
+
+-- #5 Navigation Chain in WorkOrder
+-- Difficulty: medium
+context WorkOrder
+inv: self.line.workshop.name <> ''
+
+-- #6 Navigation Chain in Operator
+-- Difficulty: easy
+context Operator
+inv: self.shift.shiftName <> ''
+
+-- #7 Navigation Chain in InventoryItem
+-- Difficulty: easy
+context InventoryItem
+inv: self.plant.name <> ''
+
+-- #8 Association Exists in BOMItem
+-- Difficulty: medium
+context BOMItem
+inv: (self.bom <> null) and (self.requiredQty > 0)
+
+-- #9 Association Exists in InventoryItem
+-- Difficulty: easy
+context InventoryItem
+inv: self.supplier <> null
+
+-- #10 Association Exists in BillOfMaterials
+-- Difficulty: easy
+context BillOfMaterials
+inv: self.product <> null
+
+-- #11 Association Exists in Machine
+-- Difficulty: easy
+context Machine
+inv: self.station <> null
+
+-- #12 Association Exists in Product
+-- Difficulty: easy
+context Product
+inv: self.bom <> null
+
+-- #13 Association Exists in DefectReport
+-- Difficulty: easy
+context DefectReport
+inv: self.qualityCheck <> null
+
+-- #14 Association Exists in MaintenanceTask
+-- Difficulty: medium
+context MaintenanceTask
+inv: (self.machine <> null) and (self.isDone = true)
+
+-- #15 Association Exists in QualityCheck
+-- Difficulty: easy
+context QualityCheck
+inv: self.workOrder <> null
+
+-- #16 Numeric Less Than Value in WorkOrder
+-- Difficulty: easy
+context WorkOrder
+inv: self.plannedQuantity < 63
+
+-- #17 Numeric Attribute Positive in WorkOrder
+-- Difficulty: easy
+context WorkOrder
+inv: self.plannedQuantity > 0
+
+-- #18 Navigation Chain in BOMItem
+-- Difficulty: medium
+context BOMItem
+inv: self.bom.product.unitPrice <= 10
+
+-- #19 Navigation Chain in MaintenanceTask
+-- Difficulty: medium
+context MaintenanceTask
+inv: self.machine.station.name <> ''
+
+-- #20 Navigation Chain in DefectReport
+-- Difficulty: medium
+context DefectReport
+inv: (self.qualityCheck.workOrder.plannedQuantity < 100) and (self.defectId.toUpperCase() = 'TEST')
+
+-- #21 Navigation Chain in Product
+-- Difficulty: medium
+context Product
+inv: (self.bom.product.unitPrice < 1000) and (self.sku.size() >= 1)
+
+-- #22 Collection Navigation in BillOfMaterials
+-- Difficulty: difficult
+context BillOfMaterials
+inv: self.items->forAll(x | x.requiredQty <= 1000)
+
+-- #23 Collection Navigation in QualityCheck
+-- Difficulty: difficult
+context QualityCheck
+inv: self.defects->exists(x | x.severity <= 1000)
+
+-- #24 Collection Navigation in Plant
+-- Difficulty: difficult
+context Plant
+inv: self.workshops->forAll(x | x.name <> '')
+
+-- #25 Collection Navigation in Workshop
+-- Difficulty: difficult
+context Workshop
+inv: self.lines->exists(x | x.isActive <> true)
+
+-- #26 Collection Navigation in Workstation
+-- Difficulty: difficult
+context Workstation
+inv: self.machines->exists(x | x.manufacturer <> '')
+
+-- #27 Numeric Greater Than Value in Sensor
+-- Difficulty: medium
+context Sensor
+inv: (self.lastReading > 40) and (self.machine.station.stationId <> '')
+
+-- #28 Numeric Less Than Value in Sensor
+-- Difficulty: easy
+context Sensor
+inv: self.lastReading < 45
+
+-- #29 Collection Size in Range in Workstation
+-- Difficulty: easy
+context Workstation
+inv: (self.machines->size() <= 2)
+
+-- #30 Collection Size in Range in Shift
+-- Difficulty: medium
+context Shift
+inv: (self.operators->size() <= 2)
+
+-- #31 Collection Size in Range in Supplier
+-- Difficulty: medium
+context Supplier
+inv: (self.shipments->size() <= 2)
+
+-- #32 Collection Size in Range in Plant
+-- Difficulty: medium
+context Plant
+inv: (self.workshops->size() <= 3)
+
+-- #33 Collection Size in Range in Plant
+-- Difficulty: medium
+context Plant
+inv: (self.inventory->size() <= 3)
+
+-- #34 Collection Size in Range in Supplier
+-- Difficulty: easy
+context Supplier
+inv: (self.items->size() <= 1)
+
+-- #35 Numeric Absolute Value Bounded in BOMItem
+-- Difficulty: medium
+context BOMItem
+inv: self.requiredQty.abs() <= 9
+
+-- #36 Numeric Is Even in WorkOrder
+-- Difficulty: easy
+context WorkOrder
+inv: self.plannedQuantity mod 2 = 0
+
+-- #37 Numeric Is Odd in BOMItem
+-- Difficulty: easy
+context BOMItem
+inv: self.requiredQty mod 2 = 1
+
+-- #38 Any Operation in BillOfMaterials
+-- Difficulty: difficult
+context BillOfMaterials
+inv: self.items->any(x | x.requiredQty >= 1) <> null
+
+-- #39 Any Operation in Plant
+-- Difficulty: difficult
+context Plant
+inv: self.suppliers->any(x | x.name <> '') <> null
+
+-- #40 Select (Filter) Operation in Machine
+-- Difficulty: difficult
+context Machine
+inv: self.sensors->select(x | x.lastReading < 100)->size() >= 1
+
+-- #41 Any Operation in ProductionLine
+-- Difficulty: difficult
+context ProductionLine
+inv: self.stations->any(x | x.stationId <> '') <> null
+
+-- #42 Collection Must Be Empty in WorkOrder
+-- Difficulty: easy
+context WorkOrder
+inv: self.qualityChecks->isEmpty()
+
+-- #43 Collection Nested Collection Flatten in Workshop
+-- Difficulty: difficult
+context Workshop
+inv: self.lines->collect(x | x.stations)->size() >= 1
+
+-- #44 Collection As Sequence Conversion in ProductionLine
+-- Difficulty: medium
+context ProductionLine
+inv: self.stations->asSequence()->notEmpty()
+
+-- #45 Collection Nested Collection Flatten in ProductionLine
+-- Difficulty: difficult
+context ProductionLine
+inv: self.stations->collect(x | x.machines)->size() >= 3
+
+-- #46 Boolean Is False in Robot
+-- Difficulty: easy
+context Robot
+inv: self.isCalibrated = false
+
+-- #47 Attribute Not Null (Simple) in Robot
+-- Difficulty: easy
+context Robot
+inv: self.model <> null
+
+-- #48 Attribute Not Null (Simple) in Robot
+-- Difficulty: easy
+context Robot
+inv: self.robotId <> null
+
+-- #49 Collection Size Constraint in Plant
+-- Difficulty: easy
+context Plant
+inv: self.inventory->size() <= 1
+
+-- #50 Collection Has Specific Size in BillOfMaterials
+-- Difficulty: easy
+context BillOfMaterials
+inv: self.items->size() = 2
+
+-- #51 Collection Not Empty Check in Machine
+-- Difficulty: easy
+context Machine
+inv: self.maintenanceTasks->size() > 0
+
+-- #52 Collection Size Constraint in QualityCheck
+-- Difficulty: easy
+context QualityCheck
+inv: self.defects->size() >= 1
+
+-- #53 Collection Not Empty (Simple) in ProductionLine
+-- Difficulty: easy
+context ProductionLine
+inv: self.workOrders->notEmpty()
+
+-- #54 Collection Excluding Element in BillOfMaterials
+-- Difficulty: difficult
+context BillOfMaterials
+inv: self.items->excluding(self.items->any(true))->size() < self.items->size()
+
+-- #55 Collection Size Constraint in Shift
+-- Difficulty: medium
+context Shift
+inv: self.operators->size() >= 1
+
+-- #56 Bi-directional Implication in Shift
+-- Difficulty: medium
+context Shift
+inv: (self.startTime <> null) = (self.endTime <> null)
+
+-- #57 Collection Minimum Size in Machine
+-- Difficulty: medium
+context Machine
+inv: self.sensors->size() >= 1
+
+-- #58 All Attributes Defined in Shift
+-- Difficulty: medium
+context Shift
+inv: self.endTime <> null and self.startTime <> null
+
+-- #59 All Attributes Defined in Shift
+-- Difficulty: medium
+context Shift
+inv: self.startTime <> null and self.endTime <> null
+
+-- #60 Collection Size Constraint in BillOfMaterials
+-- Difficulty: medium
+context BillOfMaterials
+inv: self.items->size() <> 1
+
+-- #61 Simple Implication in Shift
+-- Difficulty: medium
+context Shift
+inv: self.endTime <> null implies self.startTime <> null
+
+-- #62 Attribute Not Null (Simple) in BillOfMaterials
+-- Difficulty: easy
+context BillOfMaterials
+inv: self.bomId <> null
+
+-- #63 Reverse Implication in Shift
+-- Difficulty: medium
+context Shift
+inv: self.startTime <> null implies self.endTime <> null
+

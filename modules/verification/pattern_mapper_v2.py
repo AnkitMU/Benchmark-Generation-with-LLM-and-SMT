@@ -513,9 +513,10 @@ class PatternMapperV2:
         mappings['string_exact_length'] = PatternMapping('string_operations', 'str.size() = N')
         mappings['string_contains_substring'] = PatternMapping('string_pattern', 'str.indexOf(substr)')
         mappings['string_starts_with'] = PatternMapping('string_pattern', 'str.startsWith()')
-        mappings['string_to_upper_equals'] = PatternMapping('string_comparison', 'str.toUpper() = value')
+        mappings['string_to_upper_equals'] = PatternMapping('string_operations', 'str.toUpper() = value')
+        mappings['string_to_lower_equals'] = PatternMapping('string_operations', 'str.toLower() = value')
         mappings['string_concat_check'] = PatternMapping('string_concat', 'str1.concat(str2)')
-        mappings['string_upper_case_equals'] = PatternMapping('string_comparison', 'str.toUpper() = value')
+        mappings['string_upper_case_equals'] = PatternMapping('string_operations', 'str.toUpper() = value')
         mappings['string_equality'] = PatternMapping('string_comparison', 'str1 = str2')
         
         # Boolean logic
@@ -573,6 +574,7 @@ class PatternMapperV2:
         mappings['oclIsKindOf_check'] = PatternMapping('type_check_casting', 'oclIsKindOf()')
         mappings['oclIsTypeOf_check'] = PatternMapping('type_check_casting', 'oclIsTypeOf()')
         mappings['oclAsType_cast'] = PatternMapping('ocl_as_type', 'oclAsType()')
+        mappings['oclAsType'] = PatternMapping('ocl_as_type', 'oclAsType() shorthand')
         mappings['type_check'] = PatternMapping('type_check_casting', 'type check')
         mappings['allInstances_check'] = PatternMapping('global_collection', 'allInstances()')
         

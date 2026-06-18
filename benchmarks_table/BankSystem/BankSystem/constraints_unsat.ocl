@@ -1,0 +1,101 @@
+-- Benchmark: BankSystem / balanced
+-- Type: UNSAT Constraints Only
+-- Generated: 2026-06-18T17:25:21.263206
+-- Count: 16
+
+-- #1 Association Exists (UNSAT) in Address
+-- Difficulty: easy
+-- Mutation Strategy: self_contradiction
+context Address
+inv: (self.customer <> null) and (not(self.customer <> null))
+
+-- #2 Simple Implication (UNSAT) in Loan
+-- Difficulty: medium
+-- Mutation Strategy: self_contradiction
+context Loan
+inv: (self.interestRate <> null implies self.principal <> null) and (not(self.interestRate <> null implies self.principal <> null))
+
+-- #3 Navigation Chain (UNSAT) in Employee
+-- Difficulty: medium
+-- Mutation Strategy: self_contradiction
+context Employee
+inv: (self.branch.bank.swiftCode <> '') and (not(self.branch.bank.swiftCode <> ''))
+
+-- #4 Navigation Chain (UNSAT) in Address
+-- Difficulty: medium
+-- Mutation Strategy: self_contradiction
+context Address
+inv: (self.customer.branch.city <> '') and (not(self.customer.branch.city <> ''))
+
+-- #5 Collection Size Constraint (UNSAT) in Bank
+-- Difficulty: easy
+-- Mutation Strategy: self_contradiction
+context Bank
+inv: (self.branches->size() <> 1) and (not(self.branches->size() <> 1))
+
+-- #6 Collection Navigation (UNSAT) in Customer
+-- Difficulty: difficult
+-- Mutation Strategy: self_contradiction
+context Customer
+inv: (self.loans->forAll(x | x.principal >= 1)) and (not(self.loans->forAll(x | x.principal >= 1)))
+
+-- #7 Association Exists (UNSAT) in Payment
+-- Difficulty: easy
+-- Mutation Strategy: self_contradiction
+context Payment
+inv: (self.transaction <> null) and (not(self.transaction <> null))
+
+-- #8 Numeric Less Than Value (UNSAT) in SavingsAccount
+-- Difficulty: easy
+-- Mutation Strategy: contradictory_bounds
+context SavingsAccount
+inv: (self.interestRate < 89) and (self.interestRate > 94)
+
+-- #9 Navigation Chain (UNSAT) in Address
+-- Difficulty: medium
+-- Mutation Strategy: self_contradiction
+context Address
+inv: (self.customer.branch.branchCode <> '') and (not(self.customer.branch.branchCode <> ''))
+
+-- #10 Any Operation (UNSAT) in Bank
+-- Difficulty: difficult
+-- Mutation Strategy: self_contradiction
+context Bank
+inv: (self.branches->any(x | x.city <> '') <> null) and (not(self.branches->any(x | x.city <> '') <> null))
+
+-- #11 Numeric Multiple Of (UNSAT) in Teller
+-- Difficulty: easy
+-- Mutation Strategy: self_contradiction
+context Teller
+inv: (self.counterNo mod 5 = 0) and (not(self.counterNo mod 5 = 0))
+
+-- #12 Collection Excluding Element (UNSAT) in Bank
+-- Difficulty: difficult
+-- Mutation Strategy: self_contradiction
+context Bank
+inv: (self.branches->excluding(self.branches->any(true))->size() < self.branches->size()) and (not(self.branches->excluding(self.branches->any(true))->size() < self.branches->size()))
+
+-- #13 Numeric Absolute Value Bounded (UNSAT) in SavingsAccount
+-- Difficulty: medium
+-- Mutation Strategy: self_contradiction
+context SavingsAccount
+inv: (self.interestRate.abs() <= 3) and (not(self.interestRate.abs() <= 3))
+
+-- #14 Navigation Chain (UNSAT) in CardTransaction
+-- Difficulty: medium
+-- Mutation Strategy: self_contradiction
+context CardTransaction
+inv: (self.card.customer.email <> '') and (not(self.card.customer.email <> ''))
+
+-- #15 All Attributes Defined (UNSAT) in Address
+-- Difficulty: medium
+-- Mutation Strategy: self_contradiction
+context Address
+inv: (self.country <> null and self.line1 <> null) and (not(self.country <> null and self.line1 <> null))
+
+-- #16 Collection Minimum Size (UNSAT) in CreditCard
+-- Difficulty: medium
+-- Mutation Strategy: contradictory_bounds
+context CreditCard
+inv: (self.cardTransactions->size() >= 1) and (self.cardTransactions->size() < 1)
+

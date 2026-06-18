@@ -19,6 +19,8 @@ The nine components (RUC/dependency is suite-level and handled by VGCR, not here
 from __future__ import annotations
 
 import random
+import re
+import warnings
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional, Set, Tuple
 
@@ -29,6 +31,91 @@ from .metadata_enricher import get_complexity_weights
 STRUCT: Tuple[str, ...] = ("nnr_c", "wnc", "dn_ca", "vrc", "wno", "wnm")
 COMPUT: Tuple[str, ...] = ("oc", "tcc", "cic")
 COMPONENTS: Tuple[str, ...] = STRUCT + COMPUT
+
+# The five components a user may set in a complexity profile's ``ranges``.
+# These are the independently controllable axes (measurement-grounded): the
+# others are either redundant or coupled to these and must not be user-pinned.
+USER_SETTABLE: Tuple[str, ...] = ("nnr_c", "dn_ca", "wno", "cic", "tcc")
+# The four engine-reported components: present in the measured nine-vector and
+# in the deviation report, but NOT accepted as input.
+DERIVED_REPORTED: Tuple[str, ...] = ("oc", "wnc", "vrc", "wnm")
+REPORTED_COMPONENTS: Tuple[str, ...] = DERIVED_REPORTED  # public alias
+_DERIVED_REASON: Dict[str, str] = {
+    "oc":  "equals wno under the current operator weights",
+    "wnc": "follows from nnr_c and dn_ca",
+    "vrc": "follows from cic (iterators bind variables)",
+    "wnm": "follows from wno and cic",
+}
+
+
+def validate_complexity_profiles(profiles: Optional[List[Dict]]) -> Optional[List[Dict]]:
+    """Validate user-supplied ``complexity_profiles`` against the five-knob model.
+
+    Only the five independently controllable components may appear in a
+    profile's ``ranges``:
+
+        nnr_c  navigation breadth   dn_ca  navigation depth
+        wno    operator load        cic    collection iteration
+        tcc    type conversions
+
+    The four derived components (oc, wnc, vrc, wnm) are engine-reported and
+    are rejected as input. Each range must be ``[lo, hi]`` with
+    ``0 <= lo <= hi``. Shares (``pct``) should sum to 100 (a non-fatal warning
+    is emitted otherwise; the engine normalises by largest remainder).
+
+    Returns ``profiles`` unchanged on success; raises :class:`ValueError` with
+    an actionable message otherwise.
+    """
+    if not profiles:
+        return profiles
+    total_pct = 0.0
+    for i, pr in enumerate(profiles):
+        label = pr.get("label") if isinstance(pr, dict) else None
+        where = f"complexity_profiles[{i}]" + (f" ('{label}')" if label else "")
+        if not isinstance(pr, dict):
+            raise ValueError(f"{where}: each profile must be a mapping with 'pct' and 'ranges'")
+
+        pct = pr.get("pct", pr.get("share"))
+        if pct is None:
+            raise ValueError(f"{where}: missing 'pct' (share of the suite)")
+        try:
+            total_pct += float(pct)
+        except (TypeError, ValueError):
+            raise ValueError(f"{where}: 'pct' must be a number, got {pct!r}")
+
+        ranges = pr.get("ranges") or {}
+        if not isinstance(ranges, dict):
+            raise ValueError(f"{where}: 'ranges' must be a mapping component -> [lo, hi]")
+        for comp, rng in ranges.items():
+            if comp in DERIVED_REPORTED:
+                raise ValueError(
+                    f"{where}: '{comp}' is engine-reported, not user-settable "
+                    f"({_DERIVED_REASON.get(comp, 'coupled to the settable components')}). "
+                    f"Set only {list(USER_SETTABLE)}."
+                )
+            if comp not in USER_SETTABLE:
+                raise ValueError(
+                    f"{where}: unknown complexity component '{comp}'. "
+                    f"Settable components are {list(USER_SETTABLE)}."
+                )
+            if not isinstance(rng, (list, tuple)) or len(rng) != 2:
+                raise ValueError(f"{where}: range for '{comp}' must be [lo, hi], got {rng!r}")
+            try:
+                lo, hi = float(rng[0]), float(rng[1])
+            except (TypeError, ValueError):
+                raise ValueError(f"{where}: range bounds for '{comp}' must be numbers, got {rng!r}")
+            if lo < 0 or hi < 0:
+                raise ValueError(f"{where}: range for '{comp}' must be non-negative, got {rng!r}")
+            if lo > hi:
+                raise ValueError(f"{where}: range for '{comp}' has lo > hi: {rng!r}")
+
+    if abs(total_pct - 100.0) > 1e-6:
+        warnings.warn(
+            f"complexity_profiles 'pct' values sum to {total_pct:g}, not 100; "
+            f"shares will be normalised.",
+            stacklevel=2,
+        )
+    return profiles
 
 Vec = Dict[str, float]
 SKIP_BOX = object()  # sentinel for the "skip" policy active box (accept any in-family)
@@ -112,6 +199,11 @@ class SteeredGenerator:
         self.unsat_ids: Set[str] = set(getattr(engine, "UNSAT_LIKELY_PATTERNS", set()))
         self.classes: List[str] = list(self.mm.get_class_names())
         self.prof: Dict[Tuple[str, str], List[Vec]] = {}
+        # Footprints (built during profile()): per (pattern, class) the measured
+        # per-component envelope, and the capability set of components the pair
+        # can drive above zero. These index the discrete pattern space by box.
+        self.fp: Dict[Tuple[str, str], Dict[str, Tuple[float, float]]] = {}
+        self.cap: Dict[Tuple[str, str], Set[str]] = {}
         self.fam_of: Dict[str, str] = {}
 
     # ---- engine primitives -------------------------------------------------
@@ -158,6 +250,68 @@ class SteeredGenerator:
                     vecs.append(self._measure(c.ocl, cls))
                 if vecs:
                     self.prof[(pid, cls)] = vecs
+                    fp: Dict[str, Tuple[float, float]] = {}
+                    cap: Set[str] = set()
+                    for comp in COMPONENTS:
+                        col = [v[comp] for v in vecs]
+                        fp[comp] = (min(col), max(col))
+                        if max(col) > 0.0:
+                            cap.add(comp)
+                    self.fp[(pid, cls)] = fp
+                    self.cap[(pid, cls)] = cap
+
+    # ---- Footprints: reachability envelope & box feasibility ---------------
+    def reachable_envelope(self) -> Dict[str, Tuple[float, float]]:
+        """Union per-component ``[min, max]`` over all profiled pairs: the region
+        of the nine-component space the library can actually reach under the
+        current binding sampling. A user box outside this envelope is infeasible."""
+        env: Dict[str, Tuple[float, float]] = {}
+        for fp in self.fp.values():
+            for comp, (lo, hi) in fp.items():
+                if comp in env:
+                    env[comp] = (min(env[comp][0], lo), max(env[comp][1], hi))
+                else:
+                    env[comp] = (lo, hi)
+        return env
+
+    @staticmethod
+    def _supports(fp: Dict[str, Tuple[float, float]], cap: Set[str], box: Box) -> bool:
+        """True if this pair's footprint can satisfy every constrained component of
+        ``box``: the footprint range must intersect the target, and a positive
+        lower bound requires the component to be reachable (in ``cap``)."""
+        for comp, (blo, bhi) in box.ranges.items():
+            flo, fhi = fp.get(comp, (0.0, 0.0))
+            if fhi < blo or flo > bhi:          # footprint disjoint from target range
+                return False
+            if blo > 0.0 and comp not in cap:   # prerequisite construct absent
+                return False
+        return True
+
+    def supported_pairs(self, box: Box) -> List[Tuple[str, str]]:
+        """Profiled (pattern, class) pairs whose footprint can reach ``box``."""
+        return [key for key, fp in self.fp.items()
+                if self._supports(fp, self.cap.get(key, set()), box)]
+
+    def validate_boxes(self, boxes: List[Tuple[Box, float]]) -> List[Any]:
+        """Feasibility of each requested box against the reachable footprints.
+        Emits a deviation entry for any box no pair can reach, naming the
+        blocking components (or all components when the conflict is joint)."""
+        env = self.reachable_envelope()
+        any_cap = set().union(*self.cap.values()) if self.cap else set()
+        out: List[Any] = []
+        for box, _share in boxes:
+            if not box.ranges or self.supported_pairs(box):
+                continue
+            blocking: List[str] = []
+            for comp, (blo, bhi) in box.ranges.items():
+                elo, ehi = env.get(comp, (0.0, 0.0))
+                if ehi < blo or elo > bhi or (blo > 0.0 and comp not in any_cap):
+                    blocking.append(comp)
+            # empty `blocking` => each component is individually reachable but no
+            # single pair reaches them jointly.
+            out.append(("box_unreachable", box.label,
+                        blocking or sorted(box.ranges), "joint" if not blocking else "component"))
+        return out
 
     # ---- distances / gaps --------------------------------------------------
     def _dist(self, box: Box, v: Vec) -> float:
@@ -224,7 +378,7 @@ class SteeredGenerator:
             if not has_cap(cls):
                 continue
             dmin = min(self._dist(box, v) for v in vecs)
-            if any(box.contains(v) for v in vecs):
+            if any(self._box_reachable(v, box, cls) for v in vecs):
                 c_in.append((pid, cls, dmin))
             elif dmin <= self.spec.eps:
                 c_near.append((pid, cls, dmin))
@@ -262,6 +416,171 @@ class SteeredGenerator:
             new[c] = (max(0.0, round(lo - d)), round(hi + d))
         return Box(new, label=box.label + "+relax")
 
+    # ---- Actuators: structural transforms layered on a base candidate -------
+    # The fixed templates reach only a small region of the nine-component space;
+    # an actuator rewrites a base candidate to move a deficient component toward
+    # its target. CONJOIN (implemented) raises operator/navigation load
+    # (wno, oc, nnr_c, wnc, wnm) by AND-ing a second in-class invariant onto the
+    # base. The structural actuators -- forAll-wrap (raises cic, vrc) and
+    # cast-insert (raises tcc) -- are specified for future work and currently
+    # return None, so the loop falls back to binding re-draw / pattern switching
+    # for those components. Polarity, redundancy, and joint consistency of any
+    # actuated candidate are checked downstream by VGCR.
+    # Components each actuator raises.
+    _RAISE_BY_CONJOIN: Tuple[str, ...] = ("wno", "oc", "nnr_c", "wnc", "wnm")
+    _RAISE_BY_FORALL:  Tuple[str, ...] = ("cic", "vrc")
+    _RAISE_BY_CAST:    Tuple[str, ...] = ("tcc",)
+    _RAISE_BY_DEEPNAV: Tuple[str, ...] = ("dn_ca",)
+    _NUMERIC_HINTS = ("int", "real", "float", "double", "long", "number")
+
+    def _collection_assocs(self, cls: str):
+        try:
+            return list(self.mm.get_collection_associations(cls))
+        except Exception:
+            return []
+
+    def _single_assocs(self, cls: str):
+        try:
+            return list(self.mm.get_single_associations(cls))
+        except Exception:
+            return []
+
+    def _attrs(self, cls: str):
+        try:
+            return list(self.mm.get_attributes_for(cls))
+        except Exception:
+            return []
+
+    def _actuators_for(self, cls: str) -> Set[str]:
+        """Components raisable by an actuator available for this class."""
+        raisable = set(self._RAISE_BY_CONJOIN)        # conjoin is always available
+        if self._collection_assocs(cls):              # forAll-wrap / cast need a collection
+            raisable |= set(self._RAISE_BY_FORALL) | set(self._RAISE_BY_CAST)
+        if self._single_assocs(cls):                  # deepen-navigation needs a single assoc
+            raisable |= set(self._RAISE_BY_DEEPNAV)
+        return raisable
+
+    def _box_reachable(self, v: Vec, box: Box, cls: str) -> bool:
+        """True if ``v`` is in ``box`` or can be RAISED into it by an available
+        actuator (below the lower bound only on raisable components; nothing above
+        the upper bound, since no lowering actuator exists yet). Used by selection
+        so a pair whose base draws sit below a box is still eligible."""
+        raisable = self._actuators_for(cls)
+        for comp, (lo, hi) in box.ranges.items():
+            if v[comp] > hi:
+                return False
+            if v[comp] < lo and comp not in raisable:
+                return False
+        return True
+
+    def _conjoin_with(self, c, cls: str, term: str):
+        """Build ``(base) and (term)`` as a new OCLConstraint, or None."""
+        from dataclasses import replace
+        from .complexity_calculator import _get_body
+        base = _get_body(c.ocl)
+        if not term or term == base:
+            return None
+        return replace(c, ocl=f"context {cls}\ninv: ({base}) and ({term})")
+
+    def _conjoin(self, c1, cls: str):
+        """Conjoin a second distinct in-class invariant (raises operator/nav load)."""
+        from .complexity_calculator import _get_body
+        applicable = [pid for pid in self.pat_by_id if self._applicable(pid, cls)]
+        random.shuffle(applicable)
+        for pid in applicable[:8]:
+            c2 = self._instantiate(pid, cls)
+            if c2 is None:
+                continue
+            r = self._conjoin_with(c1, cls, _get_body(c2.ocl))
+            if r is not None:
+                return r
+        return None
+
+    def _forall_term(self, cls: str) -> Optional[str]:
+        """A boolean ``forAll`` term over a collection association (raises cic, vrc,
+        wnm), formed by re-binding a generated element-type invariant to the
+        iterator variable. None if ``cls`` has no collection association."""
+        from .complexity_calculator import _get_body
+        assocs = self._collection_assocs(cls)
+        random.shuffle(assocs)
+        for a in assocs[:6]:
+            ref = getattr(a, "ref_name", None)
+            tgt = getattr(a, "target_class", None)
+            if not ref or not tgt:
+                continue
+            pids = [pid for pid in self.pat_by_id if self._applicable(pid, tgt)]
+            random.shuffle(pids)
+            for pid in pids[:6]:
+                c2 = self._instantiate(pid, tgt)
+                if c2 is None:
+                    continue
+                body = _get_body(c2.ocl)
+                if not body or "self" not in body:
+                    continue
+                body_v = re.sub(r"\bself\b", "v", body)
+                return f"self.{ref}->forAll(v | {body_v})"
+        return None
+
+    def _cast_term(self, cls: str) -> Optional[str]:
+        """A boolean term using a type-conversion op over a collection association
+        (raises tcc via asSet). None if ``cls`` has no collection association."""
+        for a in self._collection_assocs(cls):
+            ref = getattr(a, "ref_name", None)
+            if ref:
+                return f"self.{ref}->asSet()->size() >= 0"
+        return None
+
+    def _deepnav_term(self, cls: str) -> Optional[str]:
+        """A boolean term over a length-2 (sometimes 3) navigation chain (raises
+        dn_ca, and nnr_c/wnc), built from single-valued associations plus an
+        attribute of the reached class. None if no such chain exists."""
+        singles = self._single_assocs(cls)
+        random.shuffle(singles)
+        for a in singles[:6]:
+            ref1 = getattr(a, "ref_name", None)
+            t1 = getattr(a, "target_class", None)
+            if not ref1 or not t1:
+                continue
+            prefix, tgt = f"self.{ref1}", t1                    # depth 2
+            for b in self._single_assocs(t1)[:3]:               # optionally extend to depth 3
+                ref2 = getattr(b, "ref_name", None)
+                t2 = getattr(b, "target_class", None)
+                if ref2 and t2 and random.random() < 0.5:
+                    prefix, tgt = f"self.{ref1}.{ref2}", t2
+                    break
+            attrs = self._attrs(tgt)
+            random.shuffle(attrs)
+            for at in attrs[:6]:
+                an = getattr(at, "name", None)
+                if not an:
+                    continue
+                ty = str(getattr(at, "type", "")).lower()
+                if any(k in ty for k in self._NUMERIC_HINTS):
+                    return f"{prefix}.{an} >= 0"
+                return f"{prefix}.{an} = {prefix}.{an}"          # type-agnostic, still deepens
+        return None
+
+    def _actuate(self, c, cls: str, gaps: Dict[str, float]):
+        """Apply the actuator for a deficient (below-target) component: deepen-nav
+        for dn_ca, forAll-wrap for cic/vrc, cast for tcc, conjoin for operator/
+        navigation load. Returns a new OCLConstraint or None."""
+        below = {comp for comp, g in gaps.items() if g > 0.0}
+        if below & set(self._RAISE_BY_DEEPNAV):
+            t = self._deepnav_term(cls)
+            if t:
+                return self._conjoin_with(c, cls, t)
+        if below & set(self._RAISE_BY_FORALL):
+            t = self._forall_term(cls)
+            if t:
+                return self._conjoin_with(c, cls, t)
+        if below & set(self._RAISE_BY_CAST):
+            t = self._cast_term(cls)
+            if t:
+                return self._conjoin_with(c, cls, t)
+        if below & set(self._RAISE_BY_CONJOIN):
+            return self._conjoin(c, cls)
+        return None
+
     # ---- Phase 0: Compile (marginal-preserving joint slots) ----------------
     def _compile(self, fam_q, prof_q, n_sat) -> List[Slot]:
         fam_bag: List[str] = []
@@ -280,7 +599,7 @@ class SteeredGenerator:
     def _support(self, slot: Slot) -> int:
         n = 0
         for pid, cls, vecs in self._eligible(slot.family, slot.polarity, set()):
-            if any(slot.box.contains(v) for v in vecs):
+            if any(self._box_reachable(v, slot.box, cls) for v in vecs):
                 n += 1
         return n
 
@@ -300,7 +619,7 @@ class SteeredGenerator:
                 if pq == 0:
                     continue
                 box = self.spec.profiles[idx][0]
-                ok = any(any(box.contains(v) for v in vecs)
+                ok = any(any(self._box_reachable(v, box, cls) for v in vecs)
                          for pid, cls, vecs in self._eligible(fam, "sat", set()))
                 if not ok:
                     reasons.append(f"no SAT pattern supports family '{fam}' x profile '{box.label or idx}'")
@@ -325,6 +644,7 @@ class SteeredGenerator:
 
         pid, cls = pair
         stall = dup = 0
+        act_budget = 3            # max conjoin-actuator attempts for this slot
         g_prev = float("inf")
         active_box = box  # Box or SKIP_BOX
         for _ in range(self.spec.T):
@@ -351,6 +671,26 @@ class SteeredGenerator:
                     return True
                 if active_box is not SKIP_BOX:
                     gaps = self._gaps(active_box, v)
+                    # Actuator: if the candidate is BELOW target on operator/
+                    # navigation load, conjoin it with another in-class invariant
+                    # to raise that load, then re-measure and accept if in box.
+                    if act_budget > 0:
+                        ac = self._actuate(c, cls, gaps)
+                        if ac is not None:
+                            act_budget -= 1
+                            if ac.ocl not in A and ac.ocl not in H:
+                                A.add(ac.ocl)
+                                v2 = self._measure(ac.ocl, cls)
+                                if active_box.contains(v2):
+                                    suite.append((ac, slot.family, slot.polarity, cls,
+                                                  v2, active_box.label + "+conjoin"))
+                                    H.add(ac.ocl)
+                                    cap[cls] -= 1
+                                    got[cls] += 1
+                                    need[cls] = max(0, need[cls] - 1)
+                                    use[pid] = use.get(pid, 0) + 1
+                                    report.append(("actuator", "conjoin", cls, active_box.label))
+                                    return True
                     gn = self._norm(gaps)
                     stall = stall + 1 if gn >= g_prev else 0
                     g_prev = gn
@@ -400,6 +740,10 @@ class SteeredGenerator:
     def run(self) -> Tuple[List[Any], List[Any]]:
         spec = self.spec
         report: List[Any] = []
+        # Footprint feasibility (Phase 2): record the library's reachable envelope
+        # and flag any requested box no profiled pattern can reach.
+        report.append(("reachable_envelope", self.reachable_envelope()))
+        report.extend(self.validate_boxes(spec.profiles))
         fam_q = _largest_remainder(spec.family_quota, spec.n)
         prof_q = _largest_remainder({i: pct for i, (_b, pct) in enumerate(spec.profiles)}, spec.n)
         n_sat = round(spec.sat_ratio * spec.n)
@@ -421,4 +765,18 @@ class SteeredGenerator:
         for slot in slots:
             self._fill_slot(slot, cap, got, need, use, H, A, suite, report)
         self._repair_minima(got, need, cap, use, H, suite, report)
+
+        # Surface the four engine-reported (derived) components explicitly:
+        # they are MEASURED, never user-set. Report their realised [min, max]
+        # across the accepted suite so the deviation report shows what the
+        # coupled components came out to be.
+        derived: Dict[str, Tuple[float, float]] = {}
+        for comp in DERIVED_REPORTED:
+            vals = [t[4][comp] for t in suite
+                    if len(t) > 4 and isinstance(t[4], dict) and comp in t[4]]
+            if vals:
+                derived[comp] = (min(vals), max(vals))
+        if derived:
+            report.append(("reported_derived_components", derived))
+
         return suite, report

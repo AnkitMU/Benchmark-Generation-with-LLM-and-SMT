@@ -44,6 +44,19 @@ DEFAULT_OPERATOR_WEIGHTS: Dict[str, float] = {
 
     # Set conversion (weight 1.5) - lightweight collection operation
     'asSet': 1.5,
+
+    # --- Operations counted by WNO but NOT by OC -----------------------------
+    # OC (compute_oc) sums only the verification-relevant subset
+    # (_VERIFICATION_OPS). The arithmetic and string operations below are
+    # counted by WNO (which sums every weighted operator), making WNO a strict
+    # superset so the two metrics are no longer identical.
+    # Arithmetic symbols ('-' is omitted to avoid clashing with the '->' arrow).
+    '+': 1.0, '*': 1.0, '/': 1.0,
+    'mod': 1.0, 'div': 1.0, 'abs': 1.0, 'max': 1.0, 'min': 1.0,
+    'round': 1.0, 'floor': 1.0,
+    # String operations.
+    'concat': 1.0, 'substring': 1.0, 'toUpper': 1.0, 'toLower': 1.0,
+    'indexOf': 1.0, 'toInteger': 1.0, 'toReal': 1.0,
 }
 
 

@@ -1,0 +1,87 @@
+suite_name: "OCL-Steered-FiveKnob"
+version: "3.0"
+description: "Profile-guided complexity steering with per-component (5-knob) boxes."
+
+# Per-component complexity boxes + inline measured-feedback steering.
+generation_mode: steered
+
+models:
+  - xmi: "models/car_rental.xmi"
+    name: "CarRental"
+    profiles:
+
+      - name: "balanced"
+        seed: 42
+        constraints: 60            # N : requested suite size
+        sat_ratio: 0.8             # r
+        unsat_ratio: 0.2
+
+        per_class_min: 3           # L
+        per_class_max: 25          # U
+        on_infeasible: relax       # report | relax | skip
+
+        # Pattern family distribution F (must sum to 100)
+        families_pct:
+          cardinality: 30
+          arithmetic:  25
+          navigation:  25
+          quantified:  20
+
+        # ============================================================
+        # COMPLEXITY PROFILES  (box + share)
+        # ------------------------------------------------------------
+        # The user sets ranges for the FIVE independently controllable
+        # components only:
+        #   nnr_c  navigation breadth   dn_ca  navigation depth
+        #   wno    operator load        cic    collection iteration
+        #   tcc    type conversions
+        #
+        # The four DERIVED components are engine-reported, NOT input
+        # (the loader rejects them in `ranges`):
+        #   oc  = wno                  wnc follows nnr_c + dn_ca
+        #   vrc follows cic            wnm follows wno + cic
+        # They appear in the measured nine-vector and in the
+        # 'reported_derived_components' entry of the deviation report.
+        #
+        # Notes: a component omitted from `ranges` is unbounded;
+        #        cic/tcc are presence prerequisites (0 vs >0);
+        #        `pct` shares must sum to 100.
+        # ============================================================
+        complexity_profiles:
+          - label: easy
+            pct: 50
+            ranges:
+              nnr_c: [1, 3]
+              dn_ca: [1, 2]
+              wno:   [0, 4]
+              cic:   [0, 0]         # no iteration
+              tcc:   [0, 0]         # no casts
+          - label: hard
+            pct: 50
+            ranges:
+              nnr_c: [3, 7]
+              dn_ca: [2, 4]
+              wno:   [6, 12]
+              cic:   [1, 3]         # iteration required (vrc>0 follows)
+              tcc:   [0, 2]
+
+semantic:
+  enable: true
+  model: "phi4-mini"
+  ollama_url: "http://localhost:11434"
+  use_cache: true
+
+# Inline VGCR: individual status check + joint consistency of the SAT subset.
+vgcr:
+  enable: true
+  max_retries: 3                   # R
+
+verification:
+  enable: true
+  objective: "both"
+  scope_per_class: 6               # kappa : bounded SMT scope (instances per class)
+  per_constraint_timeout_ms: 15000
+  batch_timeout_ms: 60000
+
+output_root: "benchmarks/"
+framework_version: "3.0"

@@ -2,7 +2,6 @@
 
 
 This framework generates **complexity-aware, solver-verified OCL benchmark suites** from
-
 UML/Ecore metamodels. Given a metamodel and a target *complexity profile*, it produces diverse
 OCL invariants whose **measured** complexity lands inside user-specified ranges, keeps the SAT
 subset **jointly satisfiable**, and confirms every SAT/UNSAT label with the **Z3** SMT solver.

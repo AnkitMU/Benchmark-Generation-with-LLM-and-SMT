@@ -2,7 +2,7 @@
 Seed portfolio for joint-consistency checks.
 
 Z3's search on our larger consistency instances is highly seed-sensitive: on
-the recorded hard instance (tests/fixtures/carrental_hard_joint_instance_sat.json)
+a recorded hard CarRental joint instance
 seeds 0 and 3 find a model in ~12 s while seeds 1, 2, 4 and 5 run past 90 s.
 Every definite verdict is trustworthy (a model proves consistency, an unsat
 core proves a conflict), so running the same check under several seeds in

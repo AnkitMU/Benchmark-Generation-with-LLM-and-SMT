@@ -29,6 +29,20 @@ python generate_benchmark_suite.py --config examples/example_suite.yaml
 
 Outputs are written to `benchmarks/`.
 
+## Repository layout
+- `generate_benchmark_suite.py` — entry point; drives generation, verification and export from a YAML config
+- `modules/` — generation (pattern engine, composer), semantic analysis, synthesis, verification (VGCR) and utilities
+- `hybrid-ssr-ocl-full-extended/` — embedded hybrid OCL→SMT verifier package (`ssr_ocl`), including the trained pattern classifier under `models/adapted_model/`
+- `models/` — the ten UML/Ecore XMI metamodels used in the paper
+- `examples/` — ready-to-run suite configs (`example_suite.yaml`, `paper_ten_models_*.yaml`, `one_model_*.yaml`)
+- `templates/` — OCL pattern library
+- `config/` — semantic rules and business-logic profiles
+- `benchmarks/` — generated suites; `paper/`, `paper_v2/`, `paper_v3/` are the runs reported in the paper (with and without VGCR)
+- `benchmarks_table/` — an earlier steered-generation suite kept for reference
+- `experiments/` — parallel runner, paper-table builder and the USE-based oracle comparison (`use_comparison/`)
+- `tests/` — pytest suite
+- `cache/` and `logs/` are created at runtime and are not tracked
+
 Notes:
 - The embedded hybrid verifier package targets Python `>=3.10`.
 - `z3-solver` is pinned below `4.14` to prefer wheel-backed macOS installs and avoid local source builds.

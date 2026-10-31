@@ -39,7 +39,6 @@ Outputs are written to `benchmarks/`.
 - `config/` — semantic rules and business-logic profiles
 - `benchmarks/` — generated suites; `paper/`, `paper_v2/`, `paper_v3/` are the runs reported in the paper (with and without VGCR)
 - `benchmarks_table/` — an earlier steered-generation suite kept for reference
-- `experiments/` — parallel runner, paper-table builder and the USE-based oracle comparison (`use_comparison/`)
 - `cache/` and `logs/` are created at runtime and are not tracked
 
 Notes:

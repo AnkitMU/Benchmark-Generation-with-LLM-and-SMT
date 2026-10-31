@@ -988,9 +988,14 @@ class GenericOCLEncoder:
         if name == 'notEmpty' and not args:
             return Scalar(_or([g for g, _ in elems]), 'bool')
 
+        if name == 'closure':
+            if body is None or len(iters) != 1:
+                raise UnsupportedOCL("->closure() needs exactly one iterator and a body")
+            return self._closure(elems, ekind, iters[0], body, env)
+
         if name in ('exists', 'forAll', 'one', 'select', 'reject', 'collect',
-                    'collectNested', 'any', 'isUnique', 'sortedBy', 'closure', 'iterate'):
-            if name in ('sortedBy', 'closure', 'iterate'):
+                    'collectNested', 'any', 'isUnique', 'sortedBy', 'iterate'):
+            if name in ('sortedBy', 'iterate'):
                 raise UnsupportedOCL(f"->{name}() is not supported")
             if body is None:
                 if name == 'isUnique' and not args:
@@ -1126,6 +1131,73 @@ class GenericOCLEncoder:
         if name == 'exists':
             return Scalar(_or(parts), 'bool')
         return Scalar(_and(*parts), 'bool')
+
+    def _closure(self, elems, ekind: str, var: str, body, env) -> ObjSet:
+        """Bounded transitive closure ``src->closure(v | body)``.
+
+        The step relation is obtained by evaluating *body* with the iterator
+        bound to each of the ``k`` slots of the element class, which yields the
+        adjacency guards ``r[i][j]`` (slot *i* steps to slot *j*).  Because the
+        body is evaluated by the ordinary encoder, any object-valued expression
+        is admitted (``v.parent``, ``v.parts.owner``, ``v.next->select(...)``),
+        provided it stays within the element class.
+
+        The closure is unrolled stepwise over the shared adjacency::
+
+            R(1)[i][j]   = r[i][j]
+            R(s+1)[i][j] = R(s)[i][j]  or  OR_l ( R(s)[i][l] and r[l][j] )
+
+        and ``y`` is reachable from ``x`` iff ``R(k-1)[x][y]``.  Within scope
+        ``k`` a simple path visits at most ``k`` slots, i.e. has at most ``k-1``
+        edges, so ``R(k-1)`` is the exact transitive closure at that scope; the
+        unrolling introduces no approximation.
+
+        Following OCL (and USE), the result is ``src`` together with everything
+        reachable from ``src`` in one or more steps: ``self.parent->closure(p |
+        p.parent)`` yields the parent and all further ancestors, and
+        ``Set{self}->closure(...)`` includes ``self``.  Absent slots neither
+        step nor are reached (presence bits guard both ends of every edge)."""
+        if not elems:
+            return ObjSet([], single=False)
+        if ekind != 'obj':
+            raise UnsupportedOCL("->closure() over primitive values")
+        cls = elems[0][1][0]
+        if any(c != cls for _, (c, _) in elems):
+            raise UnsupportedOCL("->closure() over a heterogeneous collection")
+        k = self._n(cls)
+        pres = self._presence(cls)
+
+        # Step relation r[i][j] from the body, one evaluation per source slot.
+        r: List[List[Any]] = []
+        for i in range(k):
+            env2 = dict(env)
+            env2[var] = self._bind('obj', (cls, i))
+            out = self._eval(body, env2)
+            if isinstance(out, NullVal):
+                out = ObjSet([], single=True)
+            if not isinstance(out, ObjSet):
+                raise UnsupportedOCL("->closure() body must yield objects")
+            row: List[List[Any]] = [[] for _ in range(k)]
+            for g, c, j in out.elems:
+                if c != cls:
+                    raise UnsupportedOCL(f"->closure() body leaves {cls} (yields {c})")
+                row[j].append(g)
+            r.append([_and(pres[i], _or(gs)) if gs else _FALSE for gs in row])
+
+        # Unroll: R(s+1) = R(s) or R(s).r, for k-1 steps in total.
+        R = [list(row) for row in r]
+        for _ in range(max(0, k - 2)):
+            R = [[_or([R[i][j]] + [_and(R[i][l], r[l][j]) for l in range(k)])
+                  for j in range(k)] for i in range(k)]
+
+        # Result: slot y is a member iff it is a source element or some source
+        # slot x (under its guard) reaches it.  One entry per slot, so
+        # ->size() does not double count.
+        res: List[Tuple[Any, str, int]] = []
+        for y in range(k):
+            reach = [gx if x == y else _and(gx, R[x][y]) for gx, (_, x) in elems]
+            res.append((_and(_or(reach), pres[y]), cls, y))
+        return ObjSet(res, single=False)
 
     def _is_unique(self, elems, ekind, var, body, env) -> Scalar:
         vals: List[Tuple[Any, Scalar]] = []

@@ -76,6 +76,10 @@ def classify_family(pattern_id: str, category: str) -> str:
         return "quantified"
     if cat == "navigation" or "navigation" in pid:
         return "navigation"
+    # Transitive-closure patterns are reachability constraints over a
+    # self-association: graph navigation, not cardinality.
+    if "closure" in pid or pid == "acyclicity":
+        return "navigation"
     if "unique" in pid or pid in ("uniqueness_constraint", "all_different"):
         return "uniqueness"
     if any(k in pid for k in ["size", "isempty", "notempty", "includes", "excludes", "cardinality"]):
@@ -309,7 +313,6 @@ class BenchmarkEngineV2:
 
         # Not a constraint (expression without assertion)
         'set_difference',                   # Just returns a set
-        'closure_operation',                # Just returns a closure
         'product_operation',                # Just returns a product
         'abs_min_max',                      # Expression without comparison
 
@@ -1915,7 +1918,7 @@ class BenchmarkEngineV2:
     def _is_pattern_applicable(self, pattern, context: str) -> bool:
         """Quick check if pattern is applicable to the given context class."""
         # Special applicability checks for known problematic patterns
-        if pattern.id == 'acyclicity':
+        if pattern.id in ('acyclicity', 'closure_operation'):
             # Require a self-association so closure stays in same type
             self_assocs = [
                 a for a in self.metamodel.get_associations_for(context)
@@ -2295,12 +2298,17 @@ class BenchmarkEngineV2:
                 else:
                     options = []
 
-            if pattern.id == 'acyclicity' and param.options == 'associations':
+            if pattern.id in ('acyclicity', 'closure_operation') and param.options == 'associations':
                 self_assocs = [
                     a.ref_name for a in self.metamodel.get_associations_for(context)
                     if a.target_class == context
                 ]
                 options = self_assocs
+                # The step relation iterates the same self-association the
+                # closure starts from, so the result is a genuine transitive
+                # closure (ancestors, reports chain) rather than a mixed walk.
+                if param.name == 'next_relation' and params.get('relation') in self_assocs:
+                    options = [params['relation']]
 
             if pattern.id == 'collection_collectNested' and param.name == 'nested_collection':
                 assoc_name = params.get('collection')

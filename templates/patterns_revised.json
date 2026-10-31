@@ -55,10 +55,10 @@
         },
         {
           "id": "closure_operation",
-          "name": "Transitive Closure",
+          "name": "Bounded Transitive Reach",
           "category": "advanced",
-          "description": "Compute transitive closure of a relation",
-          "template": "self.{relation}->closure({iterator} | {iterator}.{next_relation})",
+          "description": "Transitive closure of a self-relation has at most max_size members (bounded depth/fan-out of a hierarchy)",
+          "template": "self.{relation}->closure({iterator} | {iterator}.{next_relation})->size() <= {max_size}",
           "parameters": [
             {
               "name": "relation",
@@ -80,11 +80,18 @@
               "type": "select",
               "options": "associations",
               "required": true
+            },
+            {
+              "name": "max_size",
+              "label": "Maximum Reach",
+              "type": "number",
+              "required": false,
+              "default": 3
             }
           ],
           "examples": [
-            "self.parent->closure(p | p.parent)",
-            "self.manager->closure(m | m.manager)"
+            "self.parent->closure(p | p.parent)->size() <= 3",
+            "self.manager->closure(m | m.manager)->size() <= 4"
           ],
           "complexity": 4,
           "tags": [
@@ -4157,10 +4164,10 @@
     },
     {
       "id": "closure_operation",
-      "name": "Transitive Closure",
+      "name": "Bounded Transitive Reach",
       "category": "advanced",
-      "description": "Compute transitive closure of a relation",
-      "template": "self.{relation}->closure({iterator} | {iterator}.{next_relation})",
+      "description": "Transitive closure of a self-relation has at most max_size members (bounded depth/fan-out of a hierarchy)",
+      "template": "self.{relation}->closure({iterator} | {iterator}.{next_relation})->size() <= {max_size}",
       "parameters": [
         {
           "name": "relation",
@@ -4182,11 +4189,18 @@
           "type": "select",
           "options": "associations",
           "required": true
+        },
+        {
+          "name": "max_size",
+          "label": "Maximum Reach",
+          "type": "number",
+          "required": false,
+          "default": 3
         }
       ],
       "examples": [
-        "self.parent->closure(p | p.parent)",
-        "self.manager->closure(m | m.manager)"
+        "self.parent->closure(p | p.parent)->size() <= 3",
+        "self.manager->closure(m | m.manager)->size() <= 4"
       ],
       "complexity": 4,
       "tags": [

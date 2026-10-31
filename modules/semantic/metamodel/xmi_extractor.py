@@ -8,10 +8,8 @@ from pathlib import Path
 from typing import Optional
 
 # Add verification framework to path
-# Try multiple possible locations
 VERIFICATION_FRAMEWORK_PATHS = [
-    Path(__file__).parent.parent.parent.parent / 'hybrid-ssr-ocl-full-extended' / 'src',  # Local copy (preferred)
-    Path('/Users/ankitjha/Downloads/hybrid-ssr-ocl-full-extended/src'),  # Fallback: original location
+    Path(__file__).parent.parent.parent.parent / 'hybrid-ssr-ocl-full-extended' / 'src',
 ]
 
 # Add first valid path

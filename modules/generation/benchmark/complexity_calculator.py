@@ -177,7 +177,12 @@ def _get_body(ocl: str) -> str:
 # =============================================================================
 
 # Regex for navigation chains: self.a.b.c or var.x.y
-_NAV_CHAIN_RE = re.compile(r'\b([a-zA-Z_]\w*(?:\.[a-zA-Z_]\w*)+)')
+# A dotted step that is followed by '(' is a method call (self.amount.abs(),
+# self.vin.size()), not a navigation step, so the chain ends before it:
+# 'self.amount.abs()' yields the chain 'self.amount'. The '\b' ahead of the
+# lookahead stops the engine from backtracking into a shorter identifier
+# ('self.amount.ab') to dodge the '('.
+_NAV_CHAIN_RE = re.compile(r'\b([a-zA-Z_]\w*(?:\.[a-zA-Z_]\w*\b(?!\s*\())+)')
 
 # Collection operations that introduce iteration scope
 _COLLECTION_ITER_OPS = {'forAll', 'exists', 'select', 'reject', 'collect',
@@ -199,14 +204,117 @@ _LET_VAR_RE = re.compile(r'\blet\s+([a-zA-Z_]\w*)\b')
 # Regex for message calls: .methodName() or ->methodName()
 _MESSAGE_RE = re.compile(r'(?:\.|->)\s*([a-zA-Z_]\w*)\s*\(')
 
+# Regex for an iterator variable together with the collection it ranges over:
+#   <chain>->op(var |        e.g. self.rentals->forAll(x |
+# Group 1 is the source chain, group 2 the variable. Only an identifier/dotted
+# source is captured: a variable over a computed collection (after
+# '->select(...)->forAll(y |') has no resolvable source.
+_ITERATOR_SOURCE_RE = re.compile(
+    r'(\b[a-zA-Z_]\w*(?:\.[a-zA-Z_]\w*\b(?!\s*\())*)\s*->\s*(?:'
+    + '|'.join(_COLLECTION_ITER_OPS) + r')\s*\(\s*([a-zA-Z_]\w*)\s*\|'
+)
+
+
+def _iterator_sources(body: str) -> Dict[str, List[str]]:
+    """
+    Map each iterator variable to the navigation steps of the collection it
+    ranges over, with 'self' dropped and nested iterator variables expanded:
+
+        self.rentals->forAll(x | x.lateFee > 2)   ->   {'x': ['rentals']}
+
+    so that ``x.lateFee`` is the navigation path ``self.rentals.lateFee``.
+    """
+    raw = {var: src.split('.') for src, var in _ITERATOR_SOURCE_RE.findall(body)}
+    resolved: Dict[str, List[str]] = {}
+
+    def resolve(var: str, active: set) -> List[str]:
+        if var in resolved:
+            return resolved[var]
+        parts = raw[var]
+        head, rest = parts[0], parts[1:]
+        if head == 'self':
+            path = rest
+        elif head in raw and head not in active:   # nested iterator variable
+            path = resolve(head, active | {head}) + rest
+        else:
+            path = parts   # unknown head (e.g. a let variable): kept as a step
+        resolved[var] = path
+        return path
+
+    for var in raw:
+        resolve(var, {var})
+    return resolved
+
+
+def _nav_paths(body: str) -> List[Tuple[int, List[str], List[str]]]:
+    """
+    Every navigation chain in ``body`` as ``(position, prefix, steps)``.
+
+    ``steps`` are the chain's own navigation steps (attribute and
+    association-end references). The chain head is not a step when it is
+    ``self`` or an iterator variable; for an iterator variable ``prefix``
+    holds the steps of the collection it ranges over (``_iterator_sources``),
+    so ``prefix + steps`` is the full path from ``self``. Method calls never
+    appear as steps (see ``_NAV_CHAIN_RE``). A chain whose head is neither
+    (e.g. a let variable) keeps the head as a step, as before.
+    """
+    sources = _iterator_sources(body)
+    paths: List[Tuple[int, List[str], List[str]]] = []
+    for match in _NAV_CHAIN_RE.finditer(body):
+        parts = match.group(1).split('.')
+        head = parts[0]
+        if head == 'self':
+            paths.append((match.start(), [], parts[1:]))
+        elif head in sources:
+            paths.append((match.start(), sources[head], parts[1:]))
+        else:
+            paths.append((match.start(), [], parts))
+    return paths
+
+
+def _nav_step(metamodel, current_class: str, part: str,
+              weights: ComplexityWeights) -> Tuple[float, str]:
+    """
+    Resolve one navigation step from ``current_class``.
+
+    Returns ``(weight, next_class)``: a collection-valued association end
+    weighs ``collection_nav_weight``, any other reference (single-valued end,
+    attribute, or a step the metamodel cannot resolve) ``single_nav_weight``.
+    ``next_class`` is '' once the step cannot be followed further.
+    """
+    if metamodel and current_class:
+        # Try as association first
+        assoc = next(
+            (a for a in metamodel.get_associations_for(current_class)
+             if a.ref_name == part), None
+        )
+        if assoc:
+            w = weights.collection_nav_weight if assoc.is_collection else weights.single_nav_weight
+            return w, assoc.target_class
+        # Try as attribute
+        attr = next(
+            (a for a in metamodel.get_attributes_for(current_class)
+             if a.name == part), None
+        )
+        if attr:
+            return weights.single_nav_weight, ''  # attributes are endpoints
+    # Fallback: unknown navigation step
+    return weights.single_nav_weight, ''
+
 
 def compute_nnr_c(ocl: str, metamodel=None, context_class: str = '',
                   weights: ComplexityWeights = None) -> float:
     """
     NNR-C: Cardinality-Aware Navigation Reference Count.
 
-    Quantifies navigated relationships, weighting 1..* navigations higher
-    than 1..1 navigations because collections introduce iteration overhead.
+    Counts attribute and association-end references, weighting 1..* ends
+    (``collection_nav_weight``, 2) higher than any other reference
+    (``single_nav_weight``, 1) because collections introduce iteration
+    overhead. Method calls (``.abs()``, ``.size()``) and chain heads
+    (``self``, iterator variables) are not references: ``self.amount.abs()``
+    counts 1 and ``self.rentals->forAll(x | x.lateFee > 2)`` counts
+    ``rentals`` + ``lateFee``, with ``x`` resolved to the element class of
+    ``self.rentals`` so ``lateFee`` is looked up on the right class.
 
     Falls back to equal weighting (1.0) when metamodel is unavailable.
     """
@@ -214,38 +322,17 @@ def compute_nnr_c(ocl: str, metamodel=None, context_class: str = '',
         weights = ComplexityWeights()
 
     body = _get_body(ocl)
-    chains = _NAV_CHAIN_RE.findall(body)
     total = 0.0
 
-    for chain in chains:
-        parts = chain.split('.')
-        # Walk the chain, resolving cardinality where possible
-        current_class = context_class if parts[0] == 'self' else ''
-        start = 1 if parts[0] == 'self' else 0
-
-        for part in parts[start:]:
-            if metamodel and current_class:
-                # Try as association first
-                assoc = next(
-                    (a for a in metamodel.get_associations_for(current_class)
-                     if a.ref_name == part), None
-                )
-                if assoc:
-                    w = weights.collection_nav_weight if assoc.is_collection else weights.single_nav_weight
-                    total += w
-                    current_class = assoc.target_class
-                    continue
-                # Try as attribute
-                attr = next(
-                    (a for a in metamodel.get_attributes_for(current_class)
-                     if a.name == part), None
-                )
-                if attr:
-                    total += weights.single_nav_weight
-                    current_class = ''  # attributes are endpoints
-                    continue
-            # Fallback: unknown navigation step
-            total += weights.single_nav_weight
+    for _pos, prefix, steps in _nav_paths(body):
+        current_class = context_class
+        # Walk an iterator variable's source collection only to find the class
+        # it ranges over; those steps belong to the chain that introduced it.
+        for part in prefix:
+            _w, current_class = _nav_step(metamodel, current_class, part, weights)
+        for part in steps:
+            w, current_class = _nav_step(metamodel, current_class, part, weights)
+            total += w
 
     return total
 
@@ -257,17 +344,17 @@ def compute_nnc_plus(ocl: str) -> float:
     Deeper navigation paths get higher weights:
       self.customer     -> weight 1
       self.membership.card -> weight 2
+
+    Depth counts navigation steps only (method calls excluded); a chain
+    rooted at an iterator variable is measured from ``self`` through the
+    collection it ranges over.
     """
     body = _get_body(ocl)
-    chains = _NAV_CHAIN_RE.findall(body)
     total = 0.0
 
-    for chain in chains:
-        parts = chain.split('.')
-        start = 1 if parts[0] == 'self' else 0
-        depth = len(parts) - start  # number of navigation steps
+    for _pos, prefix, steps in _nav_paths(body):
         # Weight = depth (deeper chains are more complex)
-        total += depth
+        total += len(prefix) + len(steps)
 
     return total
 
@@ -314,6 +401,13 @@ def compute_dn_ca(ocl: str, weights: ComplexityWeights = None) -> float:
 
     Measures maximum navigation depth, with a multiplier when the navigation
     occurs inside collection-based operations (forAll, select, etc.).
+
+    Depth counts navigation steps only: ``self.amount.abs()`` has depth 1
+    (the call is not a step). A chain rooted at an iterator variable is
+    measured from ``self`` through the collection it ranges over, so in
+    ``self.rentals->forAll(x | x.lateFee > 2)`` the path ``x.lateFee`` is
+    ``self.rentals.lateFee`` (depth 2) and, being inside the iterator body,
+    scores 2 * 1.5 = 3.0.
     """
     if weights is None:
         weights = ComplexityWeights()
@@ -321,14 +415,11 @@ def compute_dn_ca(ocl: str, weights: ComplexityWeights = None) -> float:
     body = _get_body(ocl)
     max_depth = 0.0
 
-    for match in _NAV_CHAIN_RE.finditer(body):
-        chain = match.group()
-        parts = chain.split('.')
-        start = 1 if parts[0] == 'self' else 0
-        depth = len(parts) - start
+    for pos, prefix, steps in _nav_paths(body):
+        depth = len(prefix) + len(steps)
 
         # Apply collection op multiplier if inside a quantifier/iterator
-        if _is_inside_collection_op(body, match.start()):
+        if _is_inside_collection_op(body, pos):
             depth *= weights.collection_op_depth_multiplier
 
         max_depth = max(max_depth, depth)
@@ -340,20 +431,18 @@ def compute_wnc(ocl: str) -> float:
     """
     WNC: Weighted Navigation Chains.
 
-    Each navigation chain's weight equals its length (depth).
+    Each navigation chain's weight equals its length (depth, navigation
+    steps only, measured from ``self`` as in DN-CA).
     Chains inside collection operations are doubled.
     """
     body = _get_body(ocl)
     total = 0.0
 
-    for match in _NAV_CHAIN_RE.finditer(body):
-        chain = match.group()
-        parts = chain.split('.')
-        start = 1 if parts[0] == 'self' else 0
-        chain_length = len(parts) - start
+    for pos, prefix, steps in _nav_paths(body):
+        chain_length = len(prefix) + len(steps)
 
         # Double weight when inside collection ops
-        multiplier = 2.0 if _is_inside_collection_op(body, match.start()) else 1.0
+        multiplier = 2.0 if _is_inside_collection_op(body, pos) else 1.0
         total += chain_length * multiplier
 
     return total
@@ -396,28 +485,48 @@ def compute_vrc(ocl: str) -> int:
     return len(variables)
 
 
+# Collection arrow, removed before symbol operators are counted so that its
+# '>' is never taken for a comparison.
+_ARROW_RE = re.compile(r'->')
+
+
+def _count_operators(body: str, ops) -> Dict[str, int]:
+    """
+    Count every occurrence of each operator in ``ops`` within ``body``.
+
+    Keyword operators (and, forAll, abs, ...) are matched on word boundaries.
+    Symbol operators are tokenised with one longest-first alternation after
+    the '->' arrow is stripped, so each character belongs to at most one
+    operator: '<=' counts once (not as '<', '=' and '<='), '<>' counts once
+    (not as '<', '>' and '<>'), and the '>' of '->' is not counted.
+    """
+    counts = {op: 0 for op in ops}
+    symbols = sorted((op for op in ops if not op.isalpha()), key=lambda s: (-len(s), s))
+    for op in ops:
+        if op.isalpha():
+            # Word-boundary matching for keyword operators
+            counts[op] = len(re.findall(r'\b' + re.escape(op) + r'\b', body))
+    if symbols:
+        sym_re = re.compile('|'.join(re.escape(op) for op in symbols))
+        for match in sym_re.finditer(_ARROW_RE.sub(' ', body)):
+            counts[match.group()] += 1
+    return counts
+
+
 def compute_wno(ocl: str, weights: ComplexityWeights = None) -> float:
     """
     WNO: Weighted Number of Operations.
 
-    Sum of Table 1 weights for every occurrence of every OCL operator/keyword.
+    Sum of Table 1 weights for every occurrence of every OCL operator/keyword
+    in ``weights.operator_weights``. Each occurrence is consumed exactly once
+    (see ``_count_operators``): ``self.branch <> null`` scores 1.0.
     """
     if weights is None:
         weights = ComplexityWeights()
 
     body = _get_body(ocl)
-    total = 0.0
-
-    for op, w in weights.operator_weights.items():
-        if op.isalpha():
-            # Word-boundary matching for keyword operators
-            count = len(re.findall(r'\b' + re.escape(op) + r'\b', body))
-        else:
-            # Symbol operators: escape for regex and count
-            count = len(re.findall(re.escape(op), body))
-        total += count * w
-
-    return total
+    counts = _count_operators(body, weights.operator_weights)
+    return float(sum(counts[op] * w for op, w in weights.operator_weights.items()))
 
 
 def compute_wnm(ocl: str) -> float:
@@ -468,22 +577,15 @@ def compute_oc(ocl: str, weights: ComplexityWeights = None) -> float:
 
     Sum of Table 1 weights for comparison, logical, and collection operators.
     Focuses on constructs that most significantly affect solver performance.
+    Operators are tokenised exactly as in WNO (``_count_operators``), so a
+    comparison such as '<=' is counted once.
     """
     if weights is None:
         weights = ComplexityWeights()
 
     body = _get_body(ocl)
-    total = 0.0
-
-    for op in _VERIFICATION_OPS:
-        w = weights.get_operator_weight(op)
-        if op.isalpha():
-            count = len(re.findall(r'\b' + re.escape(op) + r'\b', body))
-        else:
-            count = len(re.findall(re.escape(op), body))
-        total += count * w
-
-    return total
+    counts = _count_operators(body, _VERIFICATION_OPS)
+    return float(sum(counts[op] * weights.get_operator_weight(op) for op in _VERIFICATION_OPS))
 
 
 def compute_tcc(ocl: str, weights: ComplexityWeights = None) -> float:

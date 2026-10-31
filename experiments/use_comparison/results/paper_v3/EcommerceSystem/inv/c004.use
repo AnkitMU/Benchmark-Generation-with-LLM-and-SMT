@@ -1,0 +1,243 @@
+model EcommerceSystem
+
+enum OrderStatus {Created, Paid, Shipped, Delivered, Cancelled}
+enum PaymentStatus {Pending, Success, Failed, Refunded}
+
+class Address
+attributes
+  line1 : String
+  city : String
+  country : String
+  postalCode : String
+end
+
+class Shipment
+attributes
+  carrier : String
+  trackingNo : String
+  shippedAt : String
+end
+
+class SupportTicket
+attributes
+  ticketNo : String
+  subject : String
+  status : String
+end
+
+class ProductVariant
+attributes
+  variantId : String
+  optionName : String
+  optionValue : String
+  priceDelta : Integer
+end
+
+class DiscountRule
+attributes
+  minOrderTotal : Integer
+  percentOff : Integer
+end
+
+class Product
+attributes
+  sku : String
+  name : String
+  basePrice : Integer
+end
+
+class Category
+attributes
+  title : String
+end
+
+class Supplier
+attributes
+  name : String
+  contactEmail : String
+end
+
+class Cart
+attributes
+  createdAt : String
+end
+
+class Coupon
+attributes
+  code : String
+  validUntil : String
+end
+
+class CartItem
+attributes
+  quantity : Integer
+end
+
+class Store
+attributes
+  name : String
+  currency : String
+end
+
+class Customer
+attributes
+  customerId : String
+  fullName : String
+  email : String
+end
+
+class Payment
+attributes
+  amount : Integer
+  paidAt : String
+  status : PaymentStatus
+end
+
+class Order
+attributes
+  orderNo : String
+  placedAt : String
+  status : OrderStatus
+end
+
+class OrderItem
+attributes
+  quantity : Integer
+  unitPrice : Integer
+end
+
+class ReturnRequest
+attributes
+  reason : String
+  requestedAt : String
+end
+
+class Review
+attributes
+  rating : Integer
+  comment : String
+end
+
+class InventoryItem
+attributes
+  quantity : Integer
+  warehouseCode : String
+end
+
+association Address_customer between
+  Address[0..*] role addresses
+  Customer[1] role customer
+end
+
+association Shipment_order between
+  Shipment[0..1] role shipment
+  Order[1] role order
+end
+
+association SupportTicket_customer between
+  SupportTicket[0..*] role tickets
+  Customer[1] role customer
+end
+
+association ProductVariant_product between
+  ProductVariant[0..*] role variants
+  Product[1] role product
+end
+
+association ProductVariant_inventory between
+  ProductVariant[1] role variant
+  InventoryItem[0..1] role inventory
+end
+
+association DiscountRule_coupon between
+  DiscountRule[0..1] role rule
+  Coupon[1] role coupon
+end
+
+association Product_store between
+  Product[0..*] role products
+  Store[1] role store
+end
+
+association Product_category between
+  Product[0..*] role products
+  Category[1] role category
+end
+
+association Product_reviews between
+  Product[1] role product
+  Review[0..*] role reviews
+end
+
+association Category_store between
+  Category[0..*] role categories
+  Store[1] role store
+end
+
+association Supplier_inventoryItems between
+  Supplier[0..1] role supplier
+  InventoryItem[0..*] role inventoryItems
+end
+
+association Cart_customer between
+  Cart[0..1] role cart
+  Customer[1] role customer
+end
+
+association Cart_items between
+  Cart[1] role cart
+  CartItem[0..*] role items
+end
+
+association Coupon_store between
+  Coupon[0..*] role coupons
+  Store[1] role store
+end
+
+association Coupon_orders between
+  Coupon[0..1] role coupon
+  Order[0..*] role orders
+end
+
+association CartItem_variant between
+  CartItem[0..*] role cartItem_variant_src
+  ProductVariant[1] role variant
+end
+
+association Customer_orders between
+  Customer[1] role customer
+  Order[0..*] role orders
+end
+
+association Payment_order between
+  Payment[0..1] role payment
+  Order[1] role order
+end
+
+association Order_items between
+  Order[1] role order
+  OrderItem[0..*] role items
+end
+
+association OrderItem_variant between
+  OrderItem[0..*] role orderItem_variant_src
+  ProductVariant[1] role variant
+end
+
+association ReturnRequest_order between
+  ReturnRequest[0..*] role returnRequest_order_src
+  Order[1] role order
+end
+
+association ReturnRequest_item between
+  ReturnRequest[0..*] role returnRequest_item_src
+  OrderItem[0..1] role item
+end
+
+association Review_customer between
+  Review[0..*] role review_customer_src
+  Customer[1] role customer
+end
+
+constraints
+context Coupon inv c004: self.rule <> null

@@ -1,0 +1,101 @@
+-- Benchmark: EcommerceSystem / balanced
+-- Type: UNSAT Constraints Only
+-- Generated: 2026-10-16T06:25:22.557659
+-- Count: 16
+
+-- #1 Numeric Greater Than Value (UNSAT) in Payment
+-- Difficulty: easy
+-- Mutation Strategy: contradictory_bounds
+context Payment
+inv: (self.amount > 24) and (self.amount < 19)
+
+-- #2 Collection Sum (UNSAT) in Product
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Product
+inv: ((self.variants->collect(x | x.priceDelta)->sum() >= 5) and (self.variants->any(x | x.priceDelta > 0) <> null)) and (not((self.variants->collect(x | x.priceDelta)->sum() >= 5) and (self.variants->any(x | x.priceDelta > 0) <> null)))
+
+-- #3 Navigation Chain (UNSAT) in OrderItem
+-- Difficulty: medium
+-- Mutation Strategy: contradictory_bounds
+context OrderItem
+inv: ((self.order.customer.customerId <> '') and (self.unitPrice < 12)) and (self.unitPrice > 17)
+
+-- #4 Collection Size in Range (UNSAT) in Cart
+-- Difficulty: unboxed
+-- Mutation Strategy: universal_negation
+context Cart
+inv: ((self.createdAt <> '') and (self.items->forAll(v | v.quantity > 2))) and (self.items->exists(v | not(v.quantity > 2)))
+
+-- #5 Collection Navigation (UNSAT) in Store
+-- Difficulty: difficult
+-- Mutation Strategy: self_contradiction
+context Store
+inv: (self.categories->exists(x | x.title <> '')) and (not(self.categories->exists(x | x.title <> '')))
+
+-- #6 Navigation Consistency (UNSAT) in Product
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Product
+inv: (self.category.store = self.store) and (not(self.category.store = self.store))
+
+-- #7 Collection Maximum Size (UNSAT) in Cart
+-- Difficulty: medium
+-- Mutation Strategy: contradictory_bounds
+context Cart
+inv: (self.items->size() <= 2) and (self.items->size() > 2)
+
+-- #8 Numeric Absolute Value Bounded (UNSAT) in InventoryItem
+-- Difficulty: medium
+-- Mutation Strategy: self_contradiction
+context InventoryItem
+inv: (self.quantity.abs() <= 2) and (not(self.quantity.abs() <= 2))
+
+-- #9 Collection Maximum Size (UNSAT) in Order
+-- Difficulty: medium
+-- Mutation Strategy: contradictory_bounds
+context Order
+inv: (self.items->size() <= 1) and (self.items->size() > 1)
+
+-- #10 Collection Not Empty (Simple) (UNSAT) in Category
+-- Difficulty: unboxed
+-- Mutation Strategy: empty_collection
+context Category
+inv: (self.products->notEmpty()) and (self.products->isEmpty())
+
+-- #11 Collection Size in Range (UNSAT) in Order
+-- Difficulty: unboxed
+-- Mutation Strategy: contradictory_bounds
+context Order
+inv: (self.items->size() >= 3 and self.items->size() <= 3) and (self.items->size() < 3)
+
+-- #12 Any Operation (UNSAT) in Coupon
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Coupon
+inv: ((self.orders->any(x | x.placedAt <> '') <> null) and (self.code.toUpperCase() = 'TEST')) and (not((self.orders->any(x | x.placedAt <> '') <> null) and (self.code.toUpperCase() = 'TEST')))
+
+-- #13 Attribute Not Null (Simple) (UNSAT) in Product
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Product
+inv: ((self.sku <> null) and (self.basePrice.abs() <= 1)) and (not((self.sku <> null) and (self.basePrice.abs() <= 1)))
+
+-- #14 Collection Not Empty Check (UNSAT) in Customer
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Customer
+inv: ((self.customerId <> '') and (self.addresses->forAll(v | v.line1 <> ''))) and (not((self.customerId <> '') and (self.addresses->forAll(v | v.line1 <> ''))))
+
+-- #15 Collection Has Specific Size (UNSAT) in Product
+-- Difficulty: difficult
+-- Mutation Strategy: contradictory_bounds
+context Product
+inv: ((self.basePrice < 100) and (self.variants->forAll(v | v.priceDelta <= 100))) and (self.basePrice > 105)
+
+-- #16 Existential Quantification (exists) (UNSAT) in Order
+-- Difficulty: difficult
+-- Mutation Strategy: self_contradiction
+context Order
+inv: (self.items->exists(x | x.unitPrice > 1)) and (not(self.items->exists(x | x.unitPrice > 1)))
+

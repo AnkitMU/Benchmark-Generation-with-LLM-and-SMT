@@ -1,0 +1,113 @@
+-- Benchmark: IoTSensorNetwork / balanced
+-- Type: UNSAT Constraints Only
+-- Generated: 2026-10-12T20:25:22.843161
+-- Count: 18
+
+-- #1 Collection As Sequence Conversion (UNSAT) in AccessPolicy
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context AccessPolicy
+inv: ((self.description <> '') and (self.roles->forAll(v | v.roleName <> ''))) and (not((self.description <> '') and (self.roles->forAll(v | v.roleName <> ''))))
+
+-- #2 Navigation Chain (UNSAT) in Metric
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Metric
+inv: (self.sensor.sampleRateHz >= 5) and (not(self.sensor.sampleRateHz >= 5))
+
+-- #3 Numeric Is Odd (UNSAT) in SensorNode
+-- Difficulty: medium
+-- Mutation Strategy: self_contradiction
+context SensorNode
+inv: (self.sampleRateHz mod 2 = 1) and (not(self.sampleRateHz mod 2 = 1))
+
+-- #4 Numeric Absolute Value Bounded (UNSAT) in ActuatorNode
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context ActuatorNode
+inv: (self.maxLoad.abs() <= 7) and (not(self.maxLoad.abs() <= 7))
+
+-- #5 Collection Size Constraint (UNSAT) in AccessPolicy
+-- Difficulty: medium
+-- Mutation Strategy: self_contradiction
+context AccessPolicy
+inv: (self.roles->size() = 1) and (not(self.roles->size() = 1))
+
+-- #6 Collection Not Empty Check (UNSAT) in DataStream
+-- Difficulty: medium
+-- Mutation Strategy: empty_collection
+context DataStream
+inv: (self.records->size() > 0) and (self.records->size() <= 0)
+
+-- #7 Simple Navigation (UNSAT) in DataStream
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context DataStream
+inv: ((self.link.isSecure) and (self.topic.size() >= 19)) and (not((self.link.isSecure) and (self.topic.size() >= 19)))
+
+-- #8 Numeric Attribute Bounded (UNSAT) in CommunicationLink
+-- Difficulty: unboxed
+-- Mutation Strategy: contradictory_bounds
+context CommunicationLink
+inv: (self.bandwidthKbps >= 48 and self.bandwidthKbps <= 66) and (self.bandwidthKbps < 48)
+
+-- #9 Association Exists (UNSAT) in APIKey
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context APIKey
+inv: (self.user <> null) and (not(self.user <> null))
+
+-- #10 Navigation Chain (UNSAT) in Metric
+-- Difficulty: medium
+-- Mutation Strategy: self_contradiction
+context Metric
+inv: (self.sensor.sampleRateHz < 1000) and (not(self.sensor.sampleRateHz < 1000))
+
+-- #11 Collection Navigation (UNSAT) in IoTPlatform
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context IoTPlatform
+inv: (self.networks->forAll(x | x.networkId <> '')) and (not(self.networks->forAll(x | x.networkId <> '')))
+
+-- #12 Navigation Chain (UNSAT) in AccessPolicy
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context AccessPolicy
+inv: (self.platform.version <> '') and (not(self.platform.version <> ''))
+
+-- #13 Association Exists (UNSAT) in AccessPolicy
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context AccessPolicy
+inv: (self.platform <> null) and (not(self.platform <> null))
+
+-- #14 Simple Navigation (UNSAT) in EdgeNode
+-- Difficulty: medium
+-- Mutation Strategy: self_contradiction
+context EdgeNode
+inv: (self.gateway.isPrimary) and (not(self.gateway.isPrimary))
+
+-- #15 Collection As Sequence Conversion (UNSAT) in AccessPolicy
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context AccessPolicy
+inv: ((self.rulesJson <> '') and (self.roles->forAll(v | v.roleName <> ''))) and (not((self.rulesJson <> '') and (self.roles->forAll(v | v.roleName <> ''))))
+
+-- #16 Collection Maximum Size (UNSAT) in ConnectivityModule
+-- Difficulty: medium
+-- Mutation Strategy: contradictory_bounds
+context ConnectivityModule
+inv: (self.links->size() <= 1) and (self.links->size() > 1)
+
+-- #17 Collection Has Specific Size (UNSAT) in Cluster
+-- Difficulty: medium
+-- Mutation Strategy: self_contradiction
+context Cluster
+inv: (self.gateways->size() = 3) and (not(self.gateways->size() = 3))
+
+-- #18 Navigation Chain (UNSAT) in Metric
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Metric
+inv: (self.sensor.sampleRateHz >= 2) and (not(self.sensor.sampleRateHz >= 2))
+

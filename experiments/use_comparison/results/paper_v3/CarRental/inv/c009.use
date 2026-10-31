@@ -1,0 +1,144 @@
+model CarRental
+
+enum VehicleStatus {Available, Rented, Maintenance}
+
+class Vehicle
+attributes
+  vin : String
+  category : String
+  year : Integer
+  seats : Integer
+  doors : Integer
+  horsepower : Integer
+  mileage : Integer
+  tankLevel : Integer
+  weightKg : Integer
+  dailyRate : Integer
+  purchasePrice : Integer
+  insuranceValue : Integer
+  isAvailable : Boolean
+  status : VehicleStatus
+end
+
+class License
+attributes
+  number : String
+  expiry : String
+  isValid : Boolean
+end
+
+class Branch
+attributes
+  name : String
+  address : String
+  capacity : Integer
+  vehicleCount : Integer
+  staffCount : Integer
+  latitude : Integer
+  longitude : Integer
+  monthlyRevenue : Integer
+  isOpen : Boolean
+end
+
+class Reservation
+attributes
+  dateFrom : String
+  dateTo : String
+  createdAt : String
+  confirmedAt : String
+  estimatedCost : Integer
+  isConfirmed : Boolean
+end
+
+class Customer
+attributes
+  name : String
+  age : Integer
+  rentalCount : Integer
+  loyaltyPoints : Integer
+  balance : Integer
+  depositAmount : Integer
+  isPremium : Boolean
+end
+
+class Payment
+attributes
+  amount : Integer
+  tax : Integer
+  discount : Integer
+  timestamp : String
+  isProcessed : Boolean
+end
+
+class Company
+attributes
+  name : String
+  isActive : Boolean
+end
+
+class Rental
+attributes
+  startDate : String
+  endDate : String
+  mileageStart : Integer
+  mileageEnd : Integer
+  daysRented : Integer
+  totalAmount : Integer
+  lateFee : Integer
+  depositPaid : Integer
+  fuelCharge : Integer
+  isCompleted : Boolean
+end
+
+association Vehicle_branch between
+  Vehicle[0..*] role vehicles
+  Branch[1] role branch
+end
+
+association Vehicle_rentals between
+  Vehicle[1] role vehicle
+  Rental[0..*] role rentals
+end
+
+association Vehicle_reservations between
+  Vehicle[0..1] role vehicle
+  Reservation[0..*] role reservations
+end
+
+association License_customer between
+  License[1] role license
+  Customer[1] role customer
+end
+
+association Branch_company between
+  Branch[0..*] role branches
+  Company[1] role company
+end
+
+association Branch_rentals between
+  Branch[1] role branch
+  Rental[0..*] role rentals
+end
+
+association Branch_reservations between
+  Branch[1] role branch
+  Reservation[0..*] role reservations
+end
+
+association Reservation_customer between
+  Reservation[0..*] role reservations
+  Customer[1] role customer
+end
+
+association Customer_rentals between
+  Customer[1] role customer
+  Rental[0..*] role rentals
+end
+
+association Payment_rental between
+  Payment[0..1] role payment
+  Rental[1] role rental
+end
+
+constraints
+context Branch inv c009: self.company.isActive <> true

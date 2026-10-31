@@ -1,0 +1,101 @@
+-- Benchmark: BankSystem / balanced
+-- Type: UNSAT Constraints Only
+-- Generated: 2026-10-15T11:50:26.282710
+-- Count: 16
+
+-- #1 Collection Size in Range (UNSAT) in CreditCard
+-- Difficulty: difficult
+-- Mutation Strategy: contradictory_bounds
+context CreditCard
+inv: ((self.limit <= 10) and (self.cardTransactions->forAll(v | v.merchant <> ''))) and (self.limit > 10)
+
+-- #2 Collection As Sequence Conversion (UNSAT) in Branch
+-- Difficulty: unboxed
+-- Mutation Strategy: universal_negation
+context Branch
+inv: ((self.city <> '') and (self.employees->forAll(v | v.name <> ''))) and (self.employees->exists(v | not(v.name <> '')))
+
+-- #3 Navigation Chain (UNSAT) in Account
+-- Difficulty: difficult
+-- Mutation Strategy: contradictory_bounds
+context Account
+inv: ((self.balance > 1) and (self.transactions->forAll(v | v.amount > 5))) and (self.balance < -4)
+
+-- #4 Numeric Less Than Value (UNSAT) in Account
+-- Difficulty: easy
+-- Mutation Strategy: contradictory_bounds
+context Account
+inv: (self.balance < 69) and (self.balance > 74)
+
+-- #5 Association Exists (UNSAT) in Transaction
+-- Difficulty: medium
+-- Mutation Strategy: self_contradiction
+context Transaction
+inv: (self.payment <> null) and (not(self.payment <> null))
+
+-- #6 Numeric Attribute Bounded (UNSAT) in CreditCard
+-- Difficulty: difficult
+-- Mutation Strategy: contradictory_bounds
+context CreditCard
+inv: ((self.limit > 2) and (self.cardTransactions->forAll(v | v.merchant <> ''))) and (self.limit < -3)
+
+-- #7 Any Operation (UNSAT) in Account
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Account
+inv: ((self.transactions->any(x | x.amount > 2) <> null) and (self.accountNo.size() >= 20)) and (not((self.transactions->any(x | x.amount > 2) <> null) and (self.accountNo.size() >= 20)))
+
+-- #8 Bi-directional Implication (UNSAT) in Address
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Address
+inv: ((self.city <> null) = (self.line1 <> null)) and (not((self.city <> null) = (self.line1 <> null)))
+
+-- #9 Collection Not Empty (Simple) (UNSAT) in Bank
+-- Difficulty: unboxed
+-- Mutation Strategy: contradictory_bounds
+context Bank
+inv: (((self.branches->notEmpty()) and (self.name <> null)) and (self.branches->size() = 1)) and (self.branches->size() <> 1)
+
+-- #10 Existential Quantification (exists) (UNSAT) in Branch
+-- Difficulty: difficult
+-- Mutation Strategy: self_contradiction
+context Branch
+inv: (self.customers->exists(x | x.fullName <> '')) and (not(self.customers->exists(x | x.fullName <> '')))
+
+-- #11 Collection Minimum Size (UNSAT) in Account
+-- Difficulty: medium
+-- Mutation Strategy: contradictory_bounds
+context Account
+inv: (self.transactions->size() >= 2) and (self.transactions->size() < 2)
+
+-- #12 Collection Size Constraint (UNSAT) in Account
+-- Difficulty: difficult
+-- Mutation Strategy: contradictory_bounds
+context Account
+inv: ((self.transactions->size() = 1) and (self.transactions->collect(x | x.timestamp)->notEmpty())) and (self.transactions->size() <> 1)
+
+-- #13 Numeric Sum Constraint (UNSAT) in Loan
+-- Difficulty: medium
+-- Mutation Strategy: self_contradiction
+context Loan
+inv: (self.principal + self.interestRate > 69) and (not(self.principal + self.interestRate > 69))
+
+-- #14 Flatten Operation (UNSAT) in Customer
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Customer
+inv: (self.accounts->collect(x | x.transactions)->flatten()->notEmpty()) and (not(self.accounts->collect(x | x.transactions)->flatten()->notEmpty()))
+
+-- #15 Numeric Attribute Bounded (UNSAT) in CreditCard
+-- Difficulty: difficult
+-- Mutation Strategy: contradictory_bounds
+context CreditCard
+inv: ((self.limit <= 1000) and (self.cardTransactions->forAll(v | v.merchant <> ''))) and (self.limit > 1000)
+
+-- #16 Any Operation (UNSAT) in Customer
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Customer
+inv: ((self.cards->any(x | x.limit <= 50) <> null) and (self.address <> null)) and (not((self.cards->any(x | x.limit <= 50) <> null) and (self.address <> null)))
+

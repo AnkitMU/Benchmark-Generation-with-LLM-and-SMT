@@ -1,0 +1,101 @@
+-- Benchmark: FlightBooking / balanced
+-- Type: UNSAT Constraints Only
+-- Generated: 2026-10-12T20:16:26.420676
+-- Count: 16
+
+-- #1 Association Exists (UNSAT) in Booking
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Booking
+inv: (self.payment <> null) and (not(self.payment <> null))
+
+-- #2 Collection Size Constraint (UNSAT) in Flight
+-- Difficulty: medium
+-- Mutation Strategy: self_contradiction
+context Flight
+inv: (self.bookings->size() = 1) and (not(self.bookings->size() = 1))
+
+-- #3 Association Exists (UNSAT) in BoardingPass
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context BoardingPass
+inv: (self.seat <> null) and (not(self.seat <> null))
+
+-- #4 Association Exists (UNSAT) in Payment
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Payment
+inv: ((self.booking <> null) and (self.booking.oclIsTypeOf(Booking))) and (not((self.booking <> null) and (self.booking.oclIsTypeOf(Booking))))
+
+-- #5 Collection Must Be Empty (UNSAT) in Passenger
+-- Difficulty: medium
+-- Mutation Strategy: self_contradiction
+context Passenger
+inv: (self.bookings->isEmpty()) and (not(self.bookings->isEmpty()))
+
+-- #6 Numeric Absolute Value Bounded (UNSAT) in Baggage
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Baggage
+inv: (self.weightKg.abs() <= 2) and (not(self.weightKg.abs() <= 2))
+
+-- #7 Any Operation (UNSAT) in Airline
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Airline
+inv: (self.aircrafts->any(x | x.model <> '') <> null) and (not(self.aircrafts->any(x | x.model <> '') <> null))
+
+-- #8 Association Exists (UNSAT) in BoardingPass
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context BoardingPass
+inv: ((self.seat <> null) and (self.checkIn.booking.bookingRef <> '')) and (not((self.seat <> null) and (self.checkIn.booking.bookingRef <> '')))
+
+-- #9 Numeric Less Than Value (UNSAT) in Baggage
+-- Difficulty: easy
+-- Mutation Strategy: contradictory_bounds
+context Baggage
+inv: (self.weightKg < 32) and (self.weightKg > 37)
+
+-- #10 Existential Quantification (exists) (UNSAT) in Airline
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Airline
+inv: (self.aircrafts->exists(x | x.model <> '')) and (not(self.aircrafts->exists(x | x.model <> '')))
+
+-- #11 Flatten Operation (UNSAT) in Passenger
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Passenger
+inv: (self.bookings->collect(x | x.baggages)->flatten()->notEmpty()) and (not(self.bookings->collect(x | x.baggages)->flatten()->notEmpty()))
+
+-- #12 Numeric Absolute Value Bounded (UNSAT) in Baggage
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Baggage
+inv: (self.weightKg.abs() <= 9) and (not(self.weightKg.abs() <= 9))
+
+-- #13 Numeric Less Than Value (UNSAT) in Payment
+-- Difficulty: easy
+-- Mutation Strategy: contradictory_bounds
+context Payment
+inv: (self.amount < 27) and (self.amount > 32)
+
+-- #14 Collection Size Constraint (UNSAT) in Aircraft
+-- Difficulty: medium
+-- Mutation Strategy: contradictory_bounds
+context Aircraft
+inv: (self.seats->size() >= 1) and (self.seats->size() < 1)
+
+-- #15 Collect (Map) Operation (UNSAT) in Aircraft
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Aircraft
+inv: ((self.seats->collect(x | x.seatNo)->notEmpty()) and (self.seats->size() > 0)) and (not((self.seats->collect(x | x.seatNo)->notEmpty()) and (self.seats->size() > 0)))
+
+-- #16 Numeric Absolute Value Bounded (UNSAT) in Baggage
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Baggage
+inv: (self.weightKg.abs() <= 8) and (not(self.weightKg.abs() <= 8))
+

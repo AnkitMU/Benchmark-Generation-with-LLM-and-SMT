@@ -27,6 +27,16 @@ os.environ.setdefault("TF_CPP_MIN_LOG_LEVEL", "3")
 os.environ.setdefault("GRPC_POLL_STRATEGY", "poll")
 os.environ.setdefault("no_grpc_proxy", "localhost,127.0.0.1")
 os.environ.setdefault("OBJC_DISABLE_INITIALIZE_FORK_SAFETY", "YES")
+# CRITICAL: stop `transformers` (pulled in by sentence-transformers during the
+# semantic-similarity step) from EAGERLY importing TensorFlow, whose native init
+# deadlocks here and hangs the run at "Computing semantic similarity..." with
+# `[mutex.cc:452] RAW: Lock blocking @cache`. Use the torch backend only. Set at the
+# entry point so it precedes every import in the process.
+os.environ.setdefault("USE_TF", "0")
+os.environ.setdefault("USE_FLAX", "0")
+os.environ.setdefault("USE_TORCH", "1")
+os.environ.setdefault("TRANSFORMERS_NO_ADVISORY_WARNINGS", "1")
+os.environ.setdefault("TOKENIZERS_PARALLELISM", "false")
 
 from modules.generation.benchmark.suite_config import BenchmarkSuite
 from modules.generation.benchmark.suite_controller_enhanced import EnhancedSuiteController
@@ -245,6 +255,10 @@ Examples:
                 print(f"  Unknown: {stats['total_unknown']}")
         else:
             print("No constraints generated.")
+
+        _secs = stats.get('total_generation_time_s', 0.0)
+        _tstr = f"{_secs:.1f}s" if _secs < 60 else f"{int(_secs)//60}m {int(_secs)%60:02d}s ({_secs:.1f}s)"
+        print(f"  Total generation time: {_tstr}")
 
         # --- VGCR summary ---
         _print_vgcr_summary(stats)

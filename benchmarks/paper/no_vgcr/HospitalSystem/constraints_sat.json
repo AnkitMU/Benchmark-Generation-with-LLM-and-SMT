@@ -1,0 +1,3587 @@
+{
+  "metadata": {
+    "type": "SAT",
+    "model": "HospitalSystem",
+    "profile": "balanced",
+    "generated_at": "2026-10-12T20:24:39.926585",
+    "constraint_count": 65
+  },
+  "constraints": [
+    {
+      "ocl": "context Admission\ninv: self.patient.isInsured",
+      "pattern_id": "simple_navigation",
+      "pattern_name": "Simple Navigation",
+      "context": "Admission",
+      "parameters": {
+        "association": "patient",
+        "attribute": "isInsured"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:24:13.180261",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 1,
+        "generation_number": 5044,
+        "profile": "easy",
+        "operators_used": [],
+        "navigation_depth": 3,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 0,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 2,
+            "wnc": 2.0,
+            "tnc": 2.0,
+            "vrc": 0,
+            "wno": 0.0,
+            "wnm": 0.0,
+            "total": 2.0
+          },
+          "computational": {
+            "oc": 0.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 0.0
+          },
+          "dependency": {
+            "ruc": 1,
+            "total": 1.0
+          },
+          "tc": 3.0
+        },
+        "semantic_cluster": 0,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Department\ninv: self.hospital.name <> ''",
+      "pattern_id": "navigation_chain",
+      "pattern_name": "Navigation Chain",
+      "context": "Department",
+      "parameters": {
+        "navigation_path": "self.hospital.name <> ''"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:24:13.181904",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 2,
+        "generation_number": 5046,
+        "profile": "easy",
+        "operators_used": [
+          "<",
+          "<>",
+          ">"
+        ],
+        "navigation_depth": 3,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 2,
+            "wnc": 2.0,
+            "tnc": 2.0,
+            "vrc": 0,
+            "wno": 3.0,
+            "wnm": 0.0,
+            "total": 5.0
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 8.0
+        },
+        "semantic_cluster": 0,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Ward\ninv: self.hospital.address <> ''",
+      "pattern_id": "navigation_chain",
+      "pattern_name": "Navigation Chain",
+      "context": "Ward",
+      "parameters": {
+        "navigation_path": "self.hospital.address <> ''"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:24:13.186569",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 2,
+        "generation_number": 5053,
+        "profile": "easy",
+        "operators_used": [
+          "<",
+          "<>",
+          ">"
+        ],
+        "navigation_depth": 3,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 2,
+            "wnc": 2.0,
+            "tnc": 2.0,
+            "vrc": 0,
+            "wno": 3.0,
+            "wnm": 0.0,
+            "total": 5.0
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 8.0
+        },
+        "semantic_cluster": 0,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Hospital\ninv: self.departments->exists(x | x.phone <> '')",
+      "pattern_id": "collection_navigation",
+      "pattern_name": "Collection Navigation",
+      "context": "Hospital",
+      "parameters": {
+        "collection": "departments",
+        "operation": "exists",
+        "iterator": "x",
+        "nested": "phone <> ''"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:24:13.195604",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 3,
+        "generation_number": 5085,
+        "profile": "difficult",
+        "operators_used": [
+          "-",
+          "<",
+          "<>",
+          ">",
+          "exists"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "difficult",
+        "operator_count": 5,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 3.0,
+            "wnc": 5.0,
+            "tnc": 4.0,
+            "vrc": 1,
+            "wno": 7.0,
+            "wnm": 1.0,
+            "total": 13.0
+          },
+          "computational": {
+            "oc": 7.0,
+            "tcc": 0.0,
+            "cic": 3.0,
+            "total": 10.0
+          },
+          "dependency": {
+            "ruc": 6,
+            "total": 6.0
+          },
+          "tc": 29.0
+        },
+        "semantic_cluster": 3,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Patient\ninv: self.admissions->exists(x | x.admitDate <> '')",
+      "pattern_id": "collection_navigation",
+      "pattern_name": "Collection Navigation",
+      "context": "Patient",
+      "parameters": {
+        "collection": "admissions",
+        "operation": "exists",
+        "iterator": "x",
+        "nested": "admitDate <> ''"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:24:13.196376",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 3,
+        "generation_number": 5087,
+        "profile": "difficult",
+        "operators_used": [
+          "-",
+          "<",
+          "<>",
+          ">",
+          "exists"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "difficult",
+        "operator_count": 5,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 3.0,
+            "wnc": 5.0,
+            "tnc": 4.0,
+            "vrc": 1,
+            "wno": 7.0,
+            "wnm": 1.0,
+            "total": 13.0
+          },
+          "computational": {
+            "oc": 7.0,
+            "tcc": 0.0,
+            "cic": 3.0,
+            "total": 10.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 23.0
+        },
+        "semantic_cluster": 3,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Discharge\ninv: self.admission <> null",
+      "pattern_id": "association_exists",
+      "pattern_name": "Association Exists",
+      "context": "Discharge",
+      "parameters": {
+        "association": "admission"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:24:13.205696",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 1,
+        "generation_number": 5095,
+        "profile": "easy",
+        "operators_used": [
+          "<",
+          "<>",
+          ">"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 1.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.0,
+            "vrc": 0,
+            "wno": 3.0,
+            "wnm": 0.0,
+            "total": 4.0
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 7.0
+        },
+        "semantic_cluster": 4,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Medication\ninv: (self.prescription <> null) and (self.prescription.oclIsTypeOf(Prescription))",
+      "pattern_id": "association_exists",
+      "pattern_name": "Association Exists",
+      "context": "Medication",
+      "parameters": {
+        "association": "prescription"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:24:13.206626",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 1,
+        "generation_number": 5096,
+        "profile": "medium",
+        "operators_used": [
+          "<",
+          "<>",
+          ">",
+          "and",
+          "oclIsTypeOf"
+        ],
+        "navigation_depth": 3,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 5,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 3.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 2,
+            "wnc": 3.0,
+            "tnc": 2.7,
+            "vrc": 0,
+            "wno": 4.5,
+            "wnm": 1.0,
+            "total": 8.2
+          },
+          "computational": {
+            "oc": 4.5,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 4.5
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 12.7
+        },
+        "semantic_cluster": 2,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Nurse\ninv: self.department <> null",
+      "pattern_id": "association_exists",
+      "pattern_name": "Association Exists",
+      "context": "Nurse",
+      "parameters": {
+        "association": "department"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:24:13.208302",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 1,
+        "generation_number": 5098,
+        "profile": "easy",
+        "operators_used": [
+          "<",
+          "<>",
+          ">"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 1.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.0,
+            "vrc": 0,
+            "wno": 3.0,
+            "wnm": 0.0,
+            "total": 4.0
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 7.0
+        },
+        "semantic_cluster": 3,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Procedure\ninv: (self.doctor <> null) and (self.record.patient.isInsured = false)",
+      "pattern_id": "association_exists",
+      "pattern_name": "Association Exists",
+      "context": "Procedure",
+      "parameters": {
+        "association": "doctor"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:24:13.209230",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 1,
+        "generation_number": 5099,
+        "profile": "medium",
+        "operators_used": [
+          "<",
+          "<>",
+          "=",
+          ">",
+          "and"
+        ],
+        "navigation_depth": 4,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 5,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 4.0,
+            "dn_ca": 3,
+            "wnc": 4.0,
+            "tnc": 3.7,
+            "vrc": 0,
+            "wno": 5.5,
+            "wnm": 0.0,
+            "total": 9.2
+          },
+          "computational": {
+            "oc": 5.5,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 5.5
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 14.7
+        },
+        "semantic_cluster": 0,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Diagnosis\ninv: (self.record <> null) and (self.code.toUpperCase() = 'TEST')",
+      "pattern_id": "association_exists",
+      "pattern_name": "Association Exists",
+      "context": "Diagnosis",
+      "parameters": {
+        "association": "record"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:24:13.210893",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 1,
+        "generation_number": 5101,
+        "profile": "medium",
+        "operators_used": [
+          "<",
+          "<>",
+          "=",
+          ">",
+          "and"
+        ],
+        "navigation_depth": 3,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 5,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 3.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 2,
+            "wnc": 3.0,
+            "tnc": 2.7,
+            "vrc": 0,
+            "wno": 5.5,
+            "wnm": 1.0,
+            "total": 9.2
+          },
+          "computational": {
+            "oc": 5.5,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 5.5
+          },
+          "dependency": {
+            "ruc": 1,
+            "total": 1.0
+          },
+          "tc": 15.7
+        },
+        "semantic_cluster": 4,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context LabResult\ninv: self.test <> null",
+      "pattern_id": "association_exists",
+      "pattern_name": "Association Exists",
+      "context": "LabResult",
+      "parameters": {
+        "association": "test"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:24:13.212517",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 1,
+        "generation_number": 5103,
+        "profile": "easy",
+        "operators_used": [
+          "<",
+          "<>",
+          ">"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 1.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.0,
+            "vrc": 0,
+            "wno": 3.0,
+            "wnm": 0.0,
+            "total": 4.0
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 7.0
+        },
+        "semantic_cluster": 4,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Payment\ninv: (self.invoice <> null) and (self.paidAt.size() >= 1)",
+      "pattern_id": "association_exists",
+      "pattern_name": "Association Exists",
+      "context": "Payment",
+      "parameters": {
+        "association": "invoice"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:24:13.214954",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 1,
+        "generation_number": 5106,
+        "profile": "medium",
+        "operators_used": [
+          "<",
+          "<>",
+          "=",
+          ">",
+          ">=",
+          "and",
+          "size"
+        ],
+        "navigation_depth": 3,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 7,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 3.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 2,
+            "wnc": 3.0,
+            "tnc": 2.7,
+            "vrc": 0,
+            "wno": 7.5,
+            "wnm": 1.0,
+            "total": 11.2
+          },
+          "computational": {
+            "oc": 7.5,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 7.5
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 18.7
+        },
+        "semantic_cluster": 5,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context LabTest\ninv: self.record <> null",
+      "pattern_id": "association_exists",
+      "pattern_name": "Association Exists",
+      "context": "LabTest",
+      "parameters": {
+        "association": "record"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:24:13.216638",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 1,
+        "generation_number": 5108,
+        "profile": "easy",
+        "operators_used": [
+          "<",
+          "<>",
+          ">"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 1.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.0,
+            "vrc": 0,
+            "wno": 3.0,
+            "wnm": 0.0,
+            "total": 4.0
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 7.0
+        },
+        "semantic_cluster": 4,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Bed\ninv: self.room <> null",
+      "pattern_id": "association_exists",
+      "pattern_name": "Association Exists",
+      "context": "Bed",
+      "parameters": {
+        "association": "room"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:24:13.218424",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 1,
+        "generation_number": 5110,
+        "profile": "easy",
+        "operators_used": [
+          "<",
+          "<>",
+          ">"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 1.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.0,
+            "vrc": 0,
+            "wno": 3.0,
+            "wnm": 0.0,
+            "total": 4.0
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 1,
+            "total": 1.0
+          },
+          "tc": 8.0
+        },
+        "semantic_cluster": 4,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Appointment\ninv: self.doctor <> null",
+      "pattern_id": "association_exists",
+      "pattern_name": "Association Exists",
+      "context": "Appointment",
+      "parameters": {
+        "association": "doctor"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:24:13.220145",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 1,
+        "generation_number": 5118,
+        "profile": "easy",
+        "operators_used": [
+          "<",
+          "<>",
+          ">"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 1.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.0,
+            "vrc": 0,
+            "wno": 3.0,
+            "wnm": 0.0,
+            "total": 4.0
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 7.0
+        },
+        "semantic_cluster": 0,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context InsurancePolicy\ninv: (self.patient <> null) and (self.patient.oclIsTypeOf(Patient))",
+      "pattern_id": "association_exists",
+      "pattern_name": "Association Exists",
+      "context": "InsurancePolicy",
+      "parameters": {
+        "association": "patient"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:24:13.226053",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 1,
+        "generation_number": 5126,
+        "profile": "medium",
+        "operators_used": [
+          "<",
+          "<>",
+          ">",
+          "and",
+          "oclIsTypeOf"
+        ],
+        "navigation_depth": 3,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 5,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 3.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 2,
+            "wnc": 3.0,
+            "tnc": 2.7,
+            "vrc": 0,
+            "wno": 4.5,
+            "wnm": 1.0,
+            "total": 8.2
+          },
+          "computational": {
+            "oc": 4.5,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 4.5
+          },
+          "dependency": {
+            "ruc": 1,
+            "total": 1.0
+          },
+          "tc": 13.7
+        },
+        "semantic_cluster": 0,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Admission\ninv: (self.patient <> null) and (self.patient.insurance.policyNo <> '')",
+      "pattern_id": "association_exists",
+      "pattern_name": "Association Exists",
+      "context": "Admission",
+      "parameters": {
+        "association": "patient"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:24:13.227727",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 1,
+        "generation_number": 5128,
+        "profile": "medium",
+        "operators_used": [
+          "<",
+          "<>",
+          ">",
+          "and"
+        ],
+        "navigation_depth": 4,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 4,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 4.0,
+            "dn_ca": 3,
+            "wnc": 4.0,
+            "tnc": 3.7,
+            "vrc": 0,
+            "wno": 7.5,
+            "wnm": 0.0,
+            "total": 11.2
+          },
+          "computational": {
+            "oc": 7.5,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 7.5
+          },
+          "dependency": {
+            "ruc": 1,
+            "total": 1.0
+          },
+          "tc": 19.7
+        },
+        "semantic_cluster": 0,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Admission\ninv: self.patient <> null",
+      "pattern_id": "association_exists",
+      "pattern_name": "Association Exists",
+      "context": "Admission",
+      "parameters": {
+        "association": "patient"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:24:13.229343",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 1,
+        "generation_number": 5130,
+        "profile": "easy",
+        "operators_used": [
+          "<",
+          "<>",
+          ">"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 1.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.0,
+            "vrc": 0,
+            "wno": 3.0,
+            "wnm": 0.0,
+            "total": 4.0
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 1,
+            "total": 1.0
+          },
+          "tc": 8.0
+        },
+        "semantic_cluster": 0,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Admission\ninv: self.discharge <> null",
+      "pattern_id": "association_exists",
+      "pattern_name": "Association Exists",
+      "context": "Admission",
+      "parameters": {
+        "association": "discharge"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:24:13.231313",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 1,
+        "generation_number": 5142,
+        "profile": "easy",
+        "operators_used": [
+          "<",
+          "<>",
+          ">"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 1.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.0,
+            "vrc": 0,
+            "wno": 3.0,
+            "wnm": 0.0,
+            "total": 4.0
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 7.0
+        },
+        "semantic_cluster": 4,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Bed\ninv: self.room.ward.floor <= 1000",
+      "pattern_id": "navigation_chain",
+      "pattern_name": "Navigation Chain",
+      "context": "Bed",
+      "parameters": {
+        "navigation_path": "self.room.ward.floor <= 1000"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:24:13.231962",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 2,
+        "generation_number": 5143,
+        "profile": "medium",
+        "operators_used": [
+          "<",
+          "<=",
+          "=",
+          "floor"
+        ],
+        "navigation_depth": 4,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 4,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 3.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 3,
+            "wnc": 3.0,
+            "tnc": 3.0,
+            "vrc": 0,
+            "wno": 4.0,
+            "wnm": 0.0,
+            "total": 7.0
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 3,
+            "total": 3.0
+          },
+          "tc": 13.0
+        },
+        "semantic_cluster": 6,
+        "implies": [
+          "navigation_chain_Bed",
+          "navigation_chain_Bed",
+          "navigation_chain_Bed",
+          "navigation_chain_Bed",
+          "navigation_chain_Bed",
+          "navigation_chain_Bed"
+        ]
+      }
+    },
+    {
+      "ocl": "context Appointment\ninv: self.patient.insurance.policyNo <> ''",
+      "pattern_id": "navigation_chain",
+      "pattern_name": "Navigation Chain",
+      "context": "Appointment",
+      "parameters": {
+        "navigation_path": "self.patient.insurance.policyNo <> ''"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:24:13.232597",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 2,
+        "generation_number": 5144,
+        "profile": "medium",
+        "operators_used": [
+          "<",
+          "<>",
+          ">"
+        ],
+        "navigation_depth": 4,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 3.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 3,
+            "wnc": 3.0,
+            "tnc": 3.0,
+            "vrc": 0,
+            "wno": 3.0,
+            "wnm": 0.0,
+            "total": 6.0
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 9.0
+        },
+        "semantic_cluster": 0,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Appointment\ninv: self.patient.insurance.validUntil <> ''",
+      "pattern_id": "navigation_chain",
+      "pattern_name": "Navigation Chain",
+      "context": "Appointment",
+      "parameters": {
+        "navigation_path": "self.patient.insurance.validUntil <> ''"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:24:13.233238",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 2,
+        "generation_number": 5145,
+        "profile": "medium",
+        "operators_used": [
+          "<",
+          "<>",
+          ">"
+        ],
+        "navigation_depth": 4,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 3.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 3,
+            "wnc": 3.0,
+            "tnc": 3.0,
+            "vrc": 0,
+            "wno": 3.0,
+            "wnm": 0.0,
+            "total": 6.0
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 9.0
+        },
+        "semantic_cluster": 0,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Bed\ninv: self.room.ward.floor <= 10",
+      "pattern_id": "navigation_chain",
+      "pattern_name": "Navigation Chain",
+      "context": "Bed",
+      "parameters": {
+        "navigation_path": "self.room.ward.floor <= 10"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:24:13.235331",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 2,
+        "generation_number": 5150,
+        "profile": "medium",
+        "operators_used": [
+          "<",
+          "<=",
+          "=",
+          "floor"
+        ],
+        "navigation_depth": 4,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 4,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 3.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 3,
+            "wnc": 3.0,
+            "tnc": 3.0,
+            "vrc": 0,
+            "wno": 4.0,
+            "wnm": 0.0,
+            "total": 7.0
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 3,
+            "total": 3.0
+          },
+          "tc": 13.0
+        },
+        "semantic_cluster": 6,
+        "implies": [
+          "navigation_chain_Bed",
+          "navigation_chain_Bed",
+          "navigation_chain_Bed",
+          "navigation_chain_Bed",
+          "navigation_chain_Bed",
+          "navigation_chain_Bed"
+        ]
+      }
+    },
+    {
+      "ocl": "context Bed\ninv: (self.room.ward.floor < 50) and (self.bedNo <> null)",
+      "pattern_id": "navigation_chain",
+      "pattern_name": "Navigation Chain",
+      "context": "Bed",
+      "parameters": {
+        "navigation_path": "self.room.ward.floor < 50"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:24:13.237165",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 2,
+        "generation_number": 5153,
+        "profile": "medium",
+        "operators_used": [
+          "<",
+          "<>",
+          ">",
+          "and",
+          "floor"
+        ],
+        "navigation_depth": 4,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 5,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 4.0,
+            "dn_ca": 3,
+            "wnc": 4.0,
+            "tnc": 3.7,
+            "vrc": 0,
+            "wno": 6.5,
+            "wnm": 0.0,
+            "total": 10.2
+          },
+          "computational": {
+            "oc": 5.5,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 5.5
+          },
+          "dependency": {
+            "ruc": 3,
+            "total": 3.0
+          },
+          "tc": 18.7
+        },
+        "semantic_cluster": 6,
+        "implies": [
+          "navigation_chain_Bed",
+          "navigation_chain_Bed",
+          "navigation_chain_Bed",
+          "navigation_chain_Bed",
+          "navigation_chain_Bed",
+          "navigation_chain_Bed"
+        ]
+      }
+    },
+    {
+      "ocl": "context Admission\ninv: (self.patient.isInsured) and (self.admitDate <> '' and self.admitDate.size() > 0)",
+      "pattern_id": "simple_navigation",
+      "pattern_name": "Simple Navigation",
+      "context": "Admission",
+      "parameters": {
+        "association": "patient",
+        "attribute": "isInsured"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:24:13.240534",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 1,
+        "generation_number": 5165,
+        "profile": "medium",
+        "operators_used": [
+          "<",
+          "<>",
+          ">",
+          "and",
+          "size"
+        ],
+        "navigation_depth": 3,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 5,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 5.0,
+            "nnc_plus": 5.0,
+            "dn_ca": 2,
+            "wnc": 5.0,
+            "tnc": 4.1,
+            "vrc": 0,
+            "wno": 7.0,
+            "wnm": 1.0,
+            "total": 12.1
+          },
+          "computational": {
+            "oc": 7.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 7.0
+          },
+          "dependency": {
+            "ruc": 1,
+            "total": 1.0
+          },
+          "tc": 20.1
+        },
+        "semantic_cluster": 0,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Diagnosis\ninv: self.record.patient.isInsured <> true",
+      "pattern_id": "navigation_chain",
+      "pattern_name": "Navigation Chain",
+      "context": "Diagnosis",
+      "parameters": {
+        "navigation_path": "self.record.patient.isInsured <> true"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:24:13.242668",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 2,
+        "generation_number": 5175,
+        "profile": "medium",
+        "operators_used": [
+          "<",
+          "<>",
+          ">"
+        ],
+        "navigation_depth": 4,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 3.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 3,
+            "wnc": 3.0,
+            "tnc": 3.0,
+            "vrc": 0,
+            "wno": 3.0,
+            "wnm": 0.0,
+            "total": 6.0
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 9.0
+        },
+        "semantic_cluster": 0,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Bed\ninv: self.room.ward.floor <= 50",
+      "pattern_id": "navigation_chain",
+      "pattern_name": "Navigation Chain",
+      "context": "Bed",
+      "parameters": {
+        "navigation_path": "self.room.ward.floor <= 50"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:24:13.244025",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 2,
+        "generation_number": 5179,
+        "profile": "medium",
+        "operators_used": [
+          "<",
+          "<=",
+          "=",
+          "floor"
+        ],
+        "navigation_depth": 4,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 4,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 3.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 3,
+            "wnc": 3.0,
+            "tnc": 3.0,
+            "vrc": 0,
+            "wno": 4.0,
+            "wnm": 0.0,
+            "total": 7.0
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 3,
+            "total": 3.0
+          },
+          "tc": 13.0
+        },
+        "semantic_cluster": 6,
+        "implies": [
+          "navigation_chain_Bed",
+          "navigation_chain_Bed",
+          "navigation_chain_Bed",
+          "navigation_chain_Bed",
+          "navigation_chain_Bed",
+          "navigation_chain_Bed"
+        ]
+      }
+    },
+    {
+      "ocl": "context Appointment\ninv: (self.patient.isInsured) and (self.patient <> null)",
+      "pattern_id": "simple_navigation",
+      "pattern_name": "Simple Navigation",
+      "context": "Appointment",
+      "parameters": {
+        "association": "patient",
+        "attribute": "isInsured"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:24:13.246161",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 1,
+        "generation_number": 5183,
+        "profile": "medium",
+        "operators_used": [
+          "<",
+          "<>",
+          ">",
+          "and"
+        ],
+        "navigation_depth": 3,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 4,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 3.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 2,
+            "wnc": 3.0,
+            "tnc": 2.7,
+            "vrc": 0,
+            "wno": 4.5,
+            "wnm": 0.0,
+            "total": 7.2
+          },
+          "computational": {
+            "oc": 4.5,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 4.5
+          },
+          "dependency": {
+            "ruc": 3,
+            "total": 3.0
+          },
+          "tc": 14.7
+        },
+        "semantic_cluster": 0,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context InsurancePolicy\ninv: ((self.patient.isInsured) and (self.validUntil.size() = 25)) and (self.patient <> null)",
+      "pattern_id": "simple_navigation",
+      "pattern_name": "Simple Navigation",
+      "context": "InsurancePolicy",
+      "parameters": {
+        "association": "patient",
+        "attribute": "isInsured"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:24:13.249260",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 1,
+        "generation_number": 5198,
+        "profile": "medium",
+        "operators_used": [
+          "<",
+          "<>",
+          "=",
+          ">",
+          "and",
+          "size"
+        ],
+        "navigation_depth": 3,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 6,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 5.0,
+            "nnc_plus": 5.0,
+            "dn_ca": 2,
+            "wnc": 5.0,
+            "tnc": 4.1,
+            "vrc": 0,
+            "wno": 7.0,
+            "wnm": 1.0,
+            "total": 12.1
+          },
+          "computational": {
+            "oc": 7.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 7.0
+          },
+          "dependency": {
+            "ruc": 2,
+            "total": 2.0
+          },
+          "tc": 21.1
+        },
+        "semantic_cluster": 0,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Ward\ninv: self.floor > 0",
+      "pattern_id": "numeric_positive",
+      "pattern_name": "Numeric Attribute Positive",
+      "context": "Ward",
+      "parameters": {
+        "numeric_attribute": "floor"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:24:13.251050",
+      "metadata": {
+        "category": "arithmetic",
+        "complexity": 1,
+        "generation_number": 5201,
+        "profile": "easy",
+        "operators_used": [
+          ">",
+          "floor"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 2,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 1.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.0,
+            "vrc": 0,
+            "wno": 2.0,
+            "wnm": 0.0,
+            "total": 3.0
+          },
+          "computational": {
+            "oc": 1.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 1.0
+          },
+          "dependency": {
+            "ruc": 5,
+            "total": 5.0
+          },
+          "tc": 9.0
+        },
+        "semantic_cluster": 5,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Ward\ninv: self.floor < 81",
+      "pattern_id": "numeric_less_than_value",
+      "pattern_name": "Numeric Less Than Value",
+      "context": "Ward",
+      "parameters": {
+        "numeric_attribute": "floor",
+        "value": 81
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:24:13.251637",
+      "metadata": {
+        "category": "arithmetic",
+        "complexity": 1,
+        "generation_number": 5202,
+        "profile": "easy",
+        "operators_used": [
+          "<",
+          "floor"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 2,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 1.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.0,
+            "vrc": 0,
+            "wno": 2.0,
+            "wnm": 0.0,
+            "total": 3.0
+          },
+          "computational": {
+            "oc": 1.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 1.0
+          },
+          "dependency": {
+            "ruc": 5,
+            "total": 5.0
+          },
+          "tc": 9.0
+        },
+        "semantic_cluster": 6,
+        "implies": [
+          "numeric_less_than_value_Ward",
+          "collection_max_size_Ward",
+          "collection_max_size_Ward"
+        ]
+      }
+    },
+    {
+      "ocl": "context Payment\ninv: self.amount.abs() <= 10",
+      "pattern_id": "numeric_abs_bounded",
+      "pattern_name": "Numeric Absolute Value Bounded",
+      "context": "Payment",
+      "parameters": {
+        "numeric_attribute": "amount",
+        "max_abs": 10
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:24:13.252226",
+      "metadata": {
+        "category": "arithmetic",
+        "complexity": 2,
+        "generation_number": 5203,
+        "profile": "easy",
+        "operators_used": [
+          "<",
+          "<=",
+          "=",
+          "abs"
+        ],
+        "navigation_depth": 3,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 4,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 2,
+            "wnc": 2.0,
+            "tnc": 2.0,
+            "vrc": 0,
+            "wno": 4.0,
+            "wnm": 1.0,
+            "total": 7.0
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 2,
+            "total": 2.0
+          },
+          "tc": 12.0
+        },
+        "semantic_cluster": 5,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Payment\ninv: self.amount >= 0",
+      "pattern_id": "numeric_non_negative",
+      "pattern_name": "Numeric Attribute Non-Negative",
+      "context": "Payment",
+      "parameters": {
+        "numeric_attribute": "amount"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:24:13.253459",
+      "metadata": {
+        "category": "arithmetic",
+        "complexity": 1,
+        "generation_number": 5211,
+        "profile": "easy",
+        "operators_used": [
+          "=",
+          ">",
+          ">="
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 1.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.0,
+            "vrc": 0,
+            "wno": 3.0,
+            "wnm": 0.0,
+            "total": 4.0
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 1,
+            "total": 1.0
+          },
+          "tc": 8.0
+        },
+        "semantic_cluster": 5,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Ward\ninv: self.floor < 94",
+      "pattern_id": "numeric_less_than_value",
+      "pattern_name": "Numeric Less Than Value",
+      "context": "Ward",
+      "parameters": {
+        "numeric_attribute": "floor",
+        "value": 94
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:24:13.254046",
+      "metadata": {
+        "category": "arithmetic",
+        "complexity": 1,
+        "generation_number": 5212,
+        "profile": "easy",
+        "operators_used": [
+          "<",
+          "floor"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 2,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 1.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.0,
+            "vrc": 0,
+            "wno": 2.0,
+            "wnm": 0.0,
+            "total": 3.0
+          },
+          "computational": {
+            "oc": 1.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 1.0
+          },
+          "dependency": {
+            "ruc": 5,
+            "total": 5.0
+          },
+          "tc": 9.0
+        },
+        "semantic_cluster": 6,
+        "implies": [
+          "numeric_less_than_value_Ward",
+          "collection_max_size_Ward",
+          "collection_max_size_Ward"
+        ]
+      }
+    },
+    {
+      "ocl": "context Ward\ninv: self.floor mod 7 = 0",
+      "pattern_id": "numeric_multiple_of",
+      "pattern_name": "Numeric Multiple Of",
+      "context": "Ward",
+      "parameters": {
+        "numeric_attribute": "floor",
+        "divisor": 7
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:24:13.255218",
+      "metadata": {
+        "category": "arithmetic",
+        "complexity": 2,
+        "generation_number": 5214,
+        "profile": "easy",
+        "operators_used": [
+          "=",
+          "floor",
+          "mod"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 1.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.0,
+            "vrc": 0,
+            "wno": 3.0,
+            "wnm": 0.0,
+            "total": 4.0
+          },
+          "computational": {
+            "oc": 1.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 1.0
+          },
+          "dependency": {
+            "ruc": 5,
+            "total": 5.0
+          },
+          "tc": 10.0
+        },
+        "semantic_cluster": 7,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Invoice\ninv: self.totalAmount.abs() <= 7",
+      "pattern_id": "numeric_abs_bounded",
+      "pattern_name": "Numeric Absolute Value Bounded",
+      "context": "Invoice",
+      "parameters": {
+        "numeric_attribute": "totalAmount",
+        "max_abs": 7
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:24:13.255811",
+      "metadata": {
+        "category": "arithmetic",
+        "complexity": 2,
+        "generation_number": 5215,
+        "profile": "easy",
+        "operators_used": [
+          "<",
+          "<=",
+          "=",
+          "abs"
+        ],
+        "navigation_depth": 3,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 4,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 2,
+            "wnc": 2.0,
+            "tnc": 2.0,
+            "vrc": 0,
+            "wno": 4.0,
+            "wnm": 1.0,
+            "total": 7.0
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 1,
+            "total": 1.0
+          },
+          "tc": 11.0
+        },
+        "semantic_cluster": 5,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Invoice\ninv: self.totalAmount > 0",
+      "pattern_id": "numeric_positive",
+      "pattern_name": "Numeric Attribute Positive",
+      "context": "Invoice",
+      "parameters": {
+        "numeric_attribute": "totalAmount"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:24:13.256412",
+      "metadata": {
+        "category": "arithmetic",
+        "complexity": 1,
+        "generation_number": 5216,
+        "profile": "easy",
+        "operators_used": [
+          ">"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 1,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 1.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.0,
+            "vrc": 0,
+            "wno": 1.0,
+            "wnm": 0.0,
+            "total": 2.0
+          },
+          "computational": {
+            "oc": 1.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 1.0
+          },
+          "dependency": {
+            "ruc": 3,
+            "total": 3.0
+          },
+          "tc": 6.0
+        },
+        "semantic_cluster": 5,
+        "implies": [
+          "numeric_non_negative_Invoice"
+        ]
+      }
+    },
+    {
+      "ocl": "context Invoice\ninv: self.totalAmount >= 0",
+      "pattern_id": "numeric_non_negative",
+      "pattern_name": "Numeric Attribute Non-Negative",
+      "context": "Invoice",
+      "parameters": {
+        "numeric_attribute": "totalAmount"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:24:13.256996",
+      "metadata": {
+        "category": "arithmetic",
+        "complexity": 1,
+        "generation_number": 5217,
+        "profile": "easy",
+        "operators_used": [
+          "=",
+          ">",
+          ">="
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 1.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.0,
+            "vrc": 0,
+            "wno": 3.0,
+            "wnm": 0.0,
+            "total": 4.0
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 3,
+            "total": 3.0
+          },
+          "tc": 10.0
+        },
+        "semantic_cluster": 5,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Payment\ninv: self.amount.abs() <= 8",
+      "pattern_id": "numeric_abs_bounded",
+      "pattern_name": "Numeric Absolute Value Bounded",
+      "context": "Payment",
+      "parameters": {
+        "numeric_attribute": "amount",
+        "max_abs": 8
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:24:13.258161",
+      "metadata": {
+        "category": "arithmetic",
+        "complexity": 2,
+        "generation_number": 5219,
+        "profile": "medium",
+        "operators_used": [
+          "<",
+          "<=",
+          "=",
+          "abs"
+        ],
+        "navigation_depth": 3,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 4,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 2,
+            "wnc": 2.0,
+            "tnc": 2.0,
+            "vrc": 0,
+            "wno": 4.0,
+            "wnm": 1.0,
+            "total": 7.0
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 2,
+            "total": 2.0
+          },
+          "tc": 12.0
+        },
+        "semantic_cluster": 5,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Invoice\ninv: self.totalAmount >= 5 and self.totalAmount <= 78",
+      "pattern_id": "numeric_bounded",
+      "pattern_name": "Numeric Attribute Bounded",
+      "context": "Invoice",
+      "parameters": {
+        "numeric_attribute": "totalAmount",
+        "min_value": 5,
+        "max_value": 78
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:24:13.258757",
+      "metadata": {
+        "category": "arithmetic",
+        "complexity": 2,
+        "generation_number": 5220,
+        "profile": "medium",
+        "operators_used": [
+          "<",
+          "<=",
+          "=",
+          ">",
+          ">=",
+          "and"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 6,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 1,
+            "wnc": 2.0,
+            "tnc": 1.7,
+            "vrc": 0,
+            "wno": 7.5,
+            "wnm": 0.0,
+            "total": 9.2
+          },
+          "computational": {
+            "oc": 7.5,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 7.5
+          },
+          "dependency": {
+            "ruc": 3,
+            "total": 3.0
+          },
+          "tc": 19.7
+        },
+        "semantic_cluster": 5,
+        "implies": [
+          "numeric_positive_Invoice",
+          "numeric_positive_Invoice",
+          "numeric_non_negative_Invoice",
+          "numeric_non_negative_Invoice",
+          "numeric_bounded_Invoice"
+        ]
+      }
+    },
+    {
+      "ocl": "context Invoice\ninv: self.totalAmount >= 39 and self.totalAmount <= 78",
+      "pattern_id": "numeric_bounded",
+      "pattern_name": "Numeric Attribute Bounded",
+      "context": "Invoice",
+      "parameters": {
+        "numeric_attribute": "totalAmount",
+        "min_value": 39,
+        "max_value": 78
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:24:13.259411",
+      "metadata": {
+        "category": "arithmetic",
+        "complexity": 2,
+        "generation_number": 5221,
+        "profile": "medium",
+        "operators_used": [
+          "<",
+          "<=",
+          "=",
+          ">",
+          ">=",
+          "and"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 6,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 1,
+            "wnc": 2.0,
+            "tnc": 1.7,
+            "vrc": 0,
+            "wno": 7.5,
+            "wnm": 0.0,
+            "total": 9.2
+          },
+          "computational": {
+            "oc": 7.5,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 7.5
+          },
+          "dependency": {
+            "ruc": 3,
+            "total": 3.0
+          },
+          "tc": 19.7
+        },
+        "semantic_cluster": 5,
+        "implies": [
+          "numeric_positive_Invoice",
+          "numeric_positive_Invoice",
+          "numeric_non_negative_Invoice",
+          "numeric_non_negative_Invoice",
+          "numeric_bounded_Invoice"
+        ]
+      }
+    },
+    {
+      "ocl": "context Payment\ninv: self.amount.abs() <= 4",
+      "pattern_id": "numeric_abs_bounded",
+      "pattern_name": "Numeric Absolute Value Bounded",
+      "context": "Payment",
+      "parameters": {
+        "numeric_attribute": "amount",
+        "max_abs": 4
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:24:13.260167",
+      "metadata": {
+        "category": "arithmetic",
+        "complexity": 2,
+        "generation_number": 5223,
+        "profile": "medium",
+        "operators_used": [
+          "<",
+          "<=",
+          "=",
+          "abs"
+        ],
+        "navigation_depth": 3,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 4,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 2,
+            "wnc": 2.0,
+            "tnc": 2.0,
+            "vrc": 0,
+            "wno": 4.0,
+            "wnm": 1.0,
+            "total": 7.0
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 2,
+            "total": 2.0
+          },
+          "tc": 12.0
+        },
+        "semantic_cluster": 5,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Ward\ninv: self.floor.abs() <= 10",
+      "pattern_id": "numeric_abs_bounded",
+      "pattern_name": "Numeric Absolute Value Bounded",
+      "context": "Ward",
+      "parameters": {
+        "numeric_attribute": "floor",
+        "max_abs": 10
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:24:13.260743",
+      "metadata": {
+        "category": "arithmetic",
+        "complexity": 2,
+        "generation_number": 5224,
+        "profile": "medium",
+        "operators_used": [
+          "<",
+          "<=",
+          "=",
+          "abs",
+          "floor"
+        ],
+        "navigation_depth": 3,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 5,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 2,
+            "wnc": 2.0,
+            "tnc": 2.0,
+            "vrc": 0,
+            "wno": 5.0,
+            "wnm": 1.0,
+            "total": 8.0
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 1,
+            "total": 1.0
+          },
+          "tc": 12.0
+        },
+        "semantic_cluster": 6,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Payment\ninv: self.amount >= 9 and self.amount <= 17",
+      "pattern_id": "numeric_bounded",
+      "pattern_name": "Numeric Attribute Bounded",
+      "context": "Payment",
+      "parameters": {
+        "numeric_attribute": "amount",
+        "min_value": 9,
+        "max_value": 17
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:24:13.268800",
+      "metadata": {
+        "category": "arithmetic",
+        "complexity": 2,
+        "generation_number": 5237,
+        "profile": "medium",
+        "operators_used": [
+          "<",
+          "<=",
+          "=",
+          ">",
+          ">=",
+          "and"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 6,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 1,
+            "wnc": 2.0,
+            "tnc": 1.7,
+            "vrc": 0,
+            "wno": 7.5,
+            "wnm": 0.0,
+            "total": 9.2
+          },
+          "computational": {
+            "oc": 7.5,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 7.5
+          },
+          "dependency": {
+            "ruc": 1,
+            "total": 1.0
+          },
+          "tc": 17.7
+        },
+        "semantic_cluster": 5,
+        "implies": [
+          "numeric_non_negative_Payment"
+        ]
+      }
+    },
+    {
+      "ocl": "context Hospital\ninv: self.departments->any(x | x.name <> '') <> null",
+      "pattern_id": "any_operation",
+      "pattern_name": "Any Operation",
+      "context": "Hospital",
+      "parameters": {
+        "collection": "departments",
+        "iterator": "x",
+        "condition": "x.name <> ''"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:24:13.269556",
+      "metadata": {
+        "category": "collection",
+        "complexity": 2,
+        "generation_number": 5238,
+        "profile": "difficult",
+        "operators_used": [
+          "-",
+          "<",
+          "<>",
+          ">",
+          "any"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "difficult",
+        "operator_count": 5,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 3.0,
+            "wnc": 5.0,
+            "tnc": 4.0,
+            "vrc": 1,
+            "wno": 7.0,
+            "wnm": 1.0,
+            "total": 13.0
+          },
+          "computational": {
+            "oc": 7.0,
+            "tcc": 0.0,
+            "cic": 2.0,
+            "total": 9.0
+          },
+          "dependency": {
+            "ruc": 6,
+            "total": 6.0
+          },
+          "tc": 28.0
+        },
+        "semantic_cluster": 3,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Department\ninv: self.doctors->any(x | x.doctorId <> '') <> null",
+      "pattern_id": "any_operation",
+      "pattern_name": "Any Operation",
+      "context": "Department",
+      "parameters": {
+        "collection": "doctors",
+        "iterator": "x",
+        "condition": "x.doctorId <> ''"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:24:13.270291",
+      "metadata": {
+        "category": "collection",
+        "complexity": 2,
+        "generation_number": 5239,
+        "profile": "difficult",
+        "operators_used": [
+          "-",
+          "<",
+          "<>",
+          ">",
+          "any"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "difficult",
+        "operator_count": 5,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 3.0,
+            "wnc": 5.0,
+            "tnc": 4.0,
+            "vrc": 1,
+            "wno": 7.0,
+            "wnm": 1.0,
+            "total": 13.0
+          },
+          "computational": {
+            "oc": 7.0,
+            "tcc": 0.0,
+            "cic": 2.0,
+            "total": 9.0
+          },
+          "dependency": {
+            "ruc": 4,
+            "total": 4.0
+          },
+          "tc": 26.0
+        },
+        "semantic_cluster": 0,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context MedicalRecord\ninv: self.prescriptions->size() <= 1",
+      "pattern_id": "size_constraint",
+      "pattern_name": "Collection Size Constraint",
+      "context": "MedicalRecord",
+      "parameters": {
+        "collection": "prescriptions",
+        "operator": "<=",
+        "value": 1
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:24:13.275233",
+      "metadata": {
+        "category": "basic",
+        "complexity": 1,
+        "generation_number": 5244,
+        "profile": "medium",
+        "operators_used": [
+          "-",
+          "<",
+          "<=",
+          "=",
+          ">",
+          "size"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 6,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.4,
+            "vrc": 0,
+            "wno": 4.0,
+            "wnm": 1.0,
+            "total": 6.4
+          },
+          "computational": {
+            "oc": 4.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 4.0
+          },
+          "dependency": {
+            "ruc": 3,
+            "total": 3.0
+          },
+          "tc": 13.4
+        },
+        "semantic_cluster": 2,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Patient\ninv: self.records->size() <= 1",
+      "pattern_id": "collection_max_size",
+      "pattern_name": "Collection Maximum Size",
+      "context": "Patient",
+      "parameters": {
+        "collection": "records",
+        "max_size": 1
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:24:13.278254",
+      "metadata": {
+        "category": "collection",
+        "complexity": 1,
+        "generation_number": 5246,
+        "profile": "medium",
+        "operators_used": [
+          "-",
+          "<",
+          "<=",
+          "=",
+          ">",
+          "size"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 6,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.4,
+            "vrc": 0,
+            "wno": 4.0,
+            "wnm": 1.0,
+            "total": 6.4
+          },
+          "computational": {
+            "oc": 4.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 4.0
+          },
+          "dependency": {
+            "ruc": 2,
+            "total": 2.0
+          },
+          "tc": 12.4
+        },
+        "semantic_cluster": 8,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Doctor\ninv: self.appointments->size() = 3",
+      "pattern_id": "collection_has_size",
+      "pattern_name": "Collection Has Specific Size",
+      "context": "Doctor",
+      "parameters": {
+        "collection": "appointments",
+        "size": 3
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:24:13.280914",
+      "metadata": {
+        "category": "collection",
+        "complexity": 1,
+        "generation_number": 5248,
+        "profile": "easy",
+        "operators_used": [
+          "-",
+          "=",
+          ">",
+          "size"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 4,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.4,
+            "vrc": 0,
+            "wno": 2.0,
+            "wnm": 1.0,
+            "total": 4.4
+          },
+          "computational": {
+            "oc": 2.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 2.0
+          },
+          "dependency": {
+            "ruc": 5,
+            "total": 5.0
+          },
+          "tc": 11.4
+        },
+        "semantic_cluster": 1,
+        "implies": [
+          "collection_min_size_Doctor",
+          "collection_not_empty_simple_Doctor"
+        ]
+      }
+    },
+    {
+      "ocl": "context Department\ninv: self.nurses->notEmpty()",
+      "pattern_id": "collection_not_empty_simple",
+      "pattern_name": "Collection Not Empty (Simple)",
+      "context": "Department",
+      "parameters": {
+        "collection": "nurses"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:24:13.283593",
+      "metadata": {
+        "category": "collection",
+        "complexity": 1,
+        "generation_number": 5250,
+        "profile": "easy",
+        "operators_used": [
+          "-",
+          ">",
+          "notEmpty"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.4,
+            "vrc": 0,
+            "wno": 1.0,
+            "wnm": 1.0,
+            "total": 3.4
+          },
+          "computational": {
+            "oc": 1.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 1.0
+          },
+          "dependency": {
+            "ruc": 1,
+            "total": 1.0
+          },
+          "tc": 5.4
+        },
+        "semantic_cluster": 9,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Hospital\ninv: self.departments->size() >= 3",
+      "pattern_id": "collection_min_size",
+      "pattern_name": "Collection Minimum Size",
+      "context": "Hospital",
+      "parameters": {
+        "collection": "departments",
+        "min_size": 3
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:24:13.284936",
+      "metadata": {
+        "category": "collection",
+        "complexity": 1,
+        "generation_number": 5251,
+        "profile": "medium",
+        "operators_used": [
+          "-",
+          "=",
+          ">",
+          ">=",
+          "size"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 5,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.4,
+            "vrc": 0,
+            "wno": 4.0,
+            "wnm": 1.0,
+            "total": 6.4
+          },
+          "computational": {
+            "oc": 4.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 4.0
+          },
+          "dependency": {
+            "ruc": 6,
+            "total": 6.0
+          },
+          "tc": 16.4
+        },
+        "semantic_cluster": 3,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Hospital\ninv: self.departments->size() = 3",
+      "pattern_id": "collection_has_size",
+      "pattern_name": "Collection Has Specific Size",
+      "context": "Hospital",
+      "parameters": {
+        "collection": "departments",
+        "size": 3
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:24:13.286263",
+      "metadata": {
+        "category": "collection",
+        "complexity": 1,
+        "generation_number": 5252,
+        "profile": "easy",
+        "operators_used": [
+          "-",
+          "=",
+          ">",
+          "size"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 4,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.4,
+            "vrc": 0,
+            "wno": 2.0,
+            "wnm": 1.0,
+            "total": 4.4
+          },
+          "computational": {
+            "oc": 2.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 2.0
+          },
+          "dependency": {
+            "ruc": 6,
+            "total": 6.0
+          },
+          "tc": 12.4
+        },
+        "semantic_cluster": 3,
+        "implies": [
+          "collection_min_size_Hospital"
+        ]
+      }
+    },
+    {
+      "ocl": "context Patient\ninv: self.records->size() > 0",
+      "pattern_id": "collection_not_empty_check",
+      "pattern_name": "Collection Not Empty Check",
+      "context": "Patient",
+      "parameters": {
+        "collection": "records"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:24:13.287718",
+      "metadata": {
+        "category": "collection",
+        "complexity": 1,
+        "generation_number": 5253,
+        "profile": "easy",
+        "operators_used": [
+          "-",
+          ">",
+          "size"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.4,
+            "vrc": 0,
+            "wno": 2.0,
+            "wnm": 1.0,
+            "total": 4.4
+          },
+          "computational": {
+            "oc": 2.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 2.0
+          },
+          "dependency": {
+            "ruc": 2,
+            "total": 2.0
+          },
+          "tc": 8.4
+        },
+        "semantic_cluster": 8,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context MedicalRecord\ninv: self.procedures->size() <= 1",
+      "pattern_id": "size_constraint",
+      "pattern_name": "Collection Size Constraint",
+      "context": "MedicalRecord",
+      "parameters": {
+        "collection": "procedures",
+        "operator": "<=",
+        "value": 1
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:24:13.293591",
+      "metadata": {
+        "category": "basic",
+        "complexity": 1,
+        "generation_number": 5263,
+        "profile": "easy",
+        "operators_used": [
+          "-",
+          "<",
+          "<=",
+          "=",
+          ">",
+          "size"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 6,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.4,
+            "vrc": 0,
+            "wno": 4.0,
+            "wnm": 1.0,
+            "total": 6.4
+          },
+          "computational": {
+            "oc": 4.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 4.0
+          },
+          "dependency": {
+            "ruc": 1,
+            "total": 1.0
+          },
+          "tc": 11.4
+        },
+        "semantic_cluster": 8,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Doctor\ninv: self.appointments->size() >= 2",
+      "pattern_id": "collection_min_size",
+      "pattern_name": "Collection Minimum Size",
+      "context": "Doctor",
+      "parameters": {
+        "collection": "appointments",
+        "min_size": 2
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:24:13.294935",
+      "metadata": {
+        "category": "collection",
+        "complexity": 1,
+        "generation_number": 5264,
+        "profile": "medium",
+        "operators_used": [
+          "-",
+          "=",
+          ">",
+          ">=",
+          "size"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 5,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.4,
+            "vrc": 0,
+            "wno": 4.0,
+            "wnm": 1.0,
+            "total": 6.4
+          },
+          "computational": {
+            "oc": 4.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 4.0
+          },
+          "dependency": {
+            "ruc": 5,
+            "total": 5.0
+          },
+          "tc": 15.4
+        },
+        "semantic_cluster": 1,
+        "implies": [
+          "collection_not_empty_simple_Doctor"
+        ]
+      }
+    },
+    {
+      "ocl": "context Doctor\ninv: self.appointments->notEmpty()",
+      "pattern_id": "collection_not_empty_simple",
+      "pattern_name": "Collection Not Empty (Simple)",
+      "context": "Doctor",
+      "parameters": {
+        "collection": "appointments"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:24:13.296326",
+      "metadata": {
+        "category": "collection",
+        "complexity": 1,
+        "generation_number": 5265,
+        "profile": "easy",
+        "operators_used": [
+          "-",
+          ">",
+          "notEmpty"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.4,
+            "vrc": 0,
+            "wno": 1.0,
+            "wnm": 1.0,
+            "total": 3.4
+          },
+          "computational": {
+            "oc": 1.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 1.0
+          },
+          "dependency": {
+            "ruc": 5,
+            "total": 5.0
+          },
+          "tc": 9.4
+        },
+        "semantic_cluster": 1,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Patient\ninv: self.appointments->size() = 2",
+      "pattern_id": "collection_has_size",
+      "pattern_name": "Collection Has Specific Size",
+      "context": "Patient",
+      "parameters": {
+        "collection": "appointments",
+        "size": 2
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:24:13.298132",
+      "metadata": {
+        "category": "collection",
+        "complexity": 1,
+        "generation_number": 5266,
+        "profile": "easy",
+        "operators_used": [
+          "-",
+          "=",
+          ">",
+          "size"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 4,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.4,
+            "vrc": 0,
+            "wno": 2.0,
+            "wnm": 1.0,
+            "total": 4.4
+          },
+          "computational": {
+            "oc": 2.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 2.0
+          },
+          "dependency": {
+            "ruc": 1,
+            "total": 1.0
+          },
+          "tc": 7.4
+        },
+        "semantic_cluster": 1,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context MedicalRecord\ninv: self.prescriptions->collect(x | x.medications)->flatten()->notEmpty()",
+      "pattern_id": "flatten_operation",
+      "pattern_name": "Flatten Operation",
+      "context": "MedicalRecord",
+      "parameters": {
+        "collection": "prescriptions",
+        "iterator": "x",
+        "nested_collection": "medications"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:24:13.299669",
+      "metadata": {
+        "category": "set_operations",
+        "complexity": 3,
+        "generation_number": 5267,
+        "profile": "difficult",
+        "operators_used": [
+          "-",
+          ">",
+          "collect",
+          "flatten",
+          "notEmpty"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "difficult",
+        "operator_count": 5,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 3.0,
+            "wnc": 5.0,
+            "tnc": 4.0,
+            "vrc": 1,
+            "wno": 7.0,
+            "wnm": 3.0,
+            "total": 15.0
+          },
+          "computational": {
+            "oc": 7.0,
+            "tcc": 2.0,
+            "cic": 2.0,
+            "total": 11.0
+          },
+          "dependency": {
+            "ruc": 3,
+            "total": 3.0
+          },
+          "tc": 29.0
+        },
+        "semantic_cluster": 2,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Ward\ninv: self.rooms->collect(x | x.beds)->size() >= 1",
+      "pattern_id": "collection_collectNested",
+      "pattern_name": "Collection Nested Collection Flatten",
+      "context": "Ward",
+      "parameters": {
+        "collection": "rooms",
+        "nested_collection": "beds",
+        "min_size": 1
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:24:13.301139",
+      "metadata": {
+        "category": "collection",
+        "complexity": 4,
+        "generation_number": 5268,
+        "profile": "difficult",
+        "operators_used": [
+          "-",
+          "=",
+          ">",
+          ">=",
+          "collect",
+          "size"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "difficult",
+        "operator_count": 6,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 3.0,
+            "wnc": 5.0,
+            "tnc": 4.0,
+            "vrc": 1,
+            "wno": 7.0,
+            "wnm": 2.0,
+            "total": 14.0
+          },
+          "computational": {
+            "oc": 7.0,
+            "tcc": 0.0,
+            "cic": 2.0,
+            "total": 9.0
+          },
+          "dependency": {
+            "ruc": 2,
+            "total": 2.0
+          },
+          "tc": 25.0
+        },
+        "semantic_cluster": 10,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Hospital\ninv: self.wards->collect(x | x.rooms)->flatten()->notEmpty()",
+      "pattern_id": "flatten_operation",
+      "pattern_name": "Flatten Operation",
+      "context": "Hospital",
+      "parameters": {
+        "collection": "wards",
+        "iterator": "x",
+        "nested_collection": "rooms"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:24:13.305210",
+      "metadata": {
+        "category": "set_operations",
+        "complexity": 3,
+        "generation_number": 5271,
+        "profile": "difficult",
+        "operators_used": [
+          "-",
+          ">",
+          "collect",
+          "flatten",
+          "notEmpty"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "difficult",
+        "operator_count": 5,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 3.0,
+            "wnc": 5.0,
+            "tnc": 4.0,
+            "vrc": 1,
+            "wno": 7.0,
+            "wnm": 3.0,
+            "total": 15.0
+          },
+          "computational": {
+            "oc": 7.0,
+            "tcc": 2.0,
+            "cic": 2.0,
+            "total": 11.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 26.0
+        },
+        "semantic_cluster": 10,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Hospital\ninv: self.departments->collect(x | x.doctors)->flatten()->notEmpty()",
+      "pattern_id": "flatten_operation",
+      "pattern_name": "Flatten Operation",
+      "context": "Hospital",
+      "parameters": {
+        "collection": "departments",
+        "iterator": "x",
+        "nested_collection": "doctors"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:24:13.329580",
+      "metadata": {
+        "category": "set_operations",
+        "complexity": 3,
+        "generation_number": 5312,
+        "profile": "difficult",
+        "operators_used": [
+          "-",
+          ">",
+          "collect",
+          "flatten",
+          "notEmpty"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "difficult",
+        "operator_count": 5,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 3.0,
+            "wnc": 5.0,
+            "tnc": 4.0,
+            "vrc": 1,
+            "wno": 7.0,
+            "wnm": 3.0,
+            "total": 15.0
+          },
+          "computational": {
+            "oc": 7.0,
+            "tcc": 2.0,
+            "cic": 2.0,
+            "total": 11.0
+          },
+          "dependency": {
+            "ruc": 6,
+            "total": 6.0
+          },
+          "tc": 32.0
+        },
+        "semantic_cluster": 3,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Admission\ninv: self.bed <> null",
+      "pattern_id": "association_exists",
+      "pattern_name": "Association Exists",
+      "context": "Admission",
+      "parameters": {
+        "association": "bed"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:24:13.732812",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 1,
+        "generation_number": 5569,
+        "profile": "easy",
+        "regenerated_from": "association_exists",
+        "regen_box": "easy",
+        "regen_family": "quantified",
+        "refilled_after": "dedup",
+        "operators_used": [
+          "<",
+          "<>",
+          ">"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 1.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.0,
+            "vrc": 0,
+            "wno": 3.0,
+            "wnm": 0.0,
+            "total": 4.0
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 7.0
+        },
+        "semantic_cluster": 4,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Hospital\ninv: self.wards->exists(x | x.floor < 50)",
+      "pattern_id": "exists_constraint",
+      "pattern_name": "Existential Quantification (exists)",
+      "context": "Hospital",
+      "parameters": {
+        "collection": "wards",
+        "iterator": "x",
+        "condition": "x.floor < 50"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:24:13.737581",
+      "metadata": {
+        "category": "collection",
+        "complexity": 2,
+        "generation_number": 5570,
+        "profile": "difficult",
+        "regenerated_from": "any_operation",
+        "regen_box": "difficult",
+        "regen_family": "quantified",
+        "refilled_after": "dedup",
+        "operators_used": [
+          "-",
+          "<",
+          ">",
+          "exists",
+          "floor"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "difficult",
+        "operator_count": 5,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 3.0,
+            "wnc": 5.0,
+            "tnc": 4.0,
+            "vrc": 1,
+            "wno": 6.0,
+            "wnm": 1.0,
+            "total": 12.0
+          },
+          "computational": {
+            "oc": 5.0,
+            "tcc": 0.0,
+            "cic": 3.0,
+            "total": 8.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 20.0
+        },
+        "semantic_cluster": 6,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Department\ninv: (self.phone <> '') and (self.nurses->forAll(v | v.shift <> ''))",
+      "pattern_id": "attribute_not_null_simple",
+      "pattern_name": "Attribute Not Null (Simple)",
+      "context": "Department",
+      "parameters": {
+        "attribute": "name"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:24:13.825970",
+      "metadata": {
+        "category": "basic",
+        "complexity": 1,
+        "generation_number": 5653,
+        "profile": "difficult",
+        "regenerated_from": "flatten_operation",
+        "regen_box": "difficult+forall",
+        "regen_family": "cardinality",
+        "refilled_after": "dedup",
+        "operators_used": [
+          "-",
+          "<",
+          "<>",
+          ">",
+          "and",
+          "forAll"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "difficult",
+        "operator_count": 6,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 5.0,
+            "nnc_plus": 4.0,
+            "dn_ca": 3.0,
+            "wnc": 6.0,
+            "tnc": 4.7,
+            "vrc": 1,
+            "wno": 11.5,
+            "wnm": 1.0,
+            "total": 18.2
+          },
+          "computational": {
+            "oc": 11.5,
+            "tcc": 0.0,
+            "cic": 3.0,
+            "total": 14.5
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 32.7
+        },
+        "semantic_cluster": 11,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Ward\ninv: (self.rooms->asSequence()->notEmpty()) and (self.rooms->forAll(v | v.type <> ''))",
+      "pattern_id": "collection_asSequence",
+      "pattern_name": "Collection As Sequence Conversion",
+      "context": "Ward",
+      "parameters": {
+        "collection": "rooms"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:24:13.847450",
+      "metadata": {
+        "category": "collection",
+        "complexity": 2,
+        "generation_number": 5671,
+        "profile": "difficult",
+        "regenerated_from": "collection_collectNested",
+        "regen_box": "difficult+forall",
+        "regen_family": "cardinality",
+        "refilled_after": "dedup",
+        "operators_used": [
+          "-",
+          "<",
+          "<>",
+          ">",
+          "and",
+          "asSequence",
+          "forAll",
+          "notEmpty"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "difficult",
+        "operator_count": 8,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 6.0,
+            "nnc_plus": 4.0,
+            "dn_ca": 3.0,
+            "wnc": 6.0,
+            "tnc": 5.1,
+            "vrc": 1,
+            "wno": 10.5,
+            "wnm": 3.0,
+            "total": 19.6
+          },
+          "computational": {
+            "oc": 10.5,
+            "tcc": 1.5,
+            "cic": 3.0,
+            "total": 15.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 34.6
+        },
+        "semantic_cluster": 10,
+        "implies": []
+      }
+    }
+  ]
+}

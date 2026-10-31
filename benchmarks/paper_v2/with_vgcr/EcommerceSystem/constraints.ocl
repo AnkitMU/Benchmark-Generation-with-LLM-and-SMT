@@ -1,0 +1,541 @@
+-- Benchmark: EcommerceSystem / balanced
+-- Generated: 2026-10-15T02:04:20.050285
+-- Seed: 42
+-- Complexity: standard
+-- Count: 89
+-- Advanced Features: ENABLED
+
+-- #1 Association Exists in InventoryItem
+-- Difficulty: easy
+-- Type: SAT
+context InventoryItem
+inv: self.supplier <> null
+
+-- #2 Navigation Chain in Category
+-- Difficulty: easy
+-- Type: SAT
+context Category
+inv: self.store.currency <> ''
+
+-- #3 Navigation Consistency in ReturnRequest
+-- Difficulty: easy
+-- Type: SAT
+context ReturnRequest
+inv: self.item.order = self.order
+
+-- #4 Association Exists in Customer
+-- Difficulty: easy
+-- Type: SAT
+context Customer
+inv: self.cart <> null
+
+-- #5 Association Exists in Coupon
+-- Difficulty: easy
+-- Type: SAT
+context Coupon
+inv: self.rule <> null
+
+-- #6 Navigation Consistency in Product
+-- Difficulty: easy
+-- Type: SAT
+context Product
+inv: self.category.store = self.store
+
+-- #7 Association Exists in ProductVariant
+-- Difficulty: easy
+-- Type: SAT
+context ProductVariant
+inv: self.inventory <> null
+
+-- #8 Association Exists in Order
+-- Difficulty: easy
+-- Type: SAT
+context Order
+inv: self.shipment <> null
+
+-- #9 Navigation Chain in Category
+-- Difficulty: easy
+-- Type: SAT
+context Category
+inv: self.store.name <> ''
+
+-- #10 Collection Size in Range in Cart
+-- Difficulty: difficult
+-- Type: SAT
+context Cart
+inv: (self.createdAt <> '') and (self.items->forAll(v | v.quantity > 2))
+
+-- #11 Collection Size in Range in Coupon
+-- Difficulty: difficult
+-- Type: SAT
+context Coupon
+inv: (self.validUntil <> '') and (self.orders->forAll(v | v.placedAt <> ''))
+
+-- #12 Collection Size in Range in Category
+-- Difficulty: difficult
+-- Type: SAT
+context Category
+inv: (self.title <> '') and (self.products->forAll(v | v.basePrice > 5))
+
+-- #13 Numeric Attribute Bounded in Product
+-- Difficulty: difficult
+-- Type: SAT
+context Product
+inv: (self.basePrice >= 5) and (self.variants->forAll(v | v.priceDelta >= 10))
+
+-- #14 Collection Navigation in Store
+-- Difficulty: difficult
+-- Type: SAT
+context Store
+inv: self.categories->exists(x | x.title <> '')
+
+-- #15 Collection Navigation in Supplier
+-- Difficulty: difficult
+-- Type: SAT
+context Supplier
+inv: self.inventoryItems->exists(x | x.quantity >= 0)
+
+-- #16 Collection Navigation in Coupon
+-- Difficulty: difficult
+-- Type: SAT
+context Coupon
+inv: self.orders->exists(x | x.placedAt <> '')
+
+-- #17 Navigation Chain in OrderItem
+-- Difficulty: medium
+-- Type: SAT
+context OrderItem
+inv: (self.order.customer.customerId <> '') and (self.unitPrice < 12)
+
+-- #18 Navigation Chain in DiscountRule
+-- Difficulty: medium
+-- Type: SAT
+context DiscountRule
+inv: ((self.coupon.store.name <> '') and (self.coupon.oclIsTypeOf(Coupon))) and (self.percentOff >= 0)
+
+-- #19 Navigation Chain in Address
+-- Difficulty: medium
+-- Type: SAT
+context Address
+inv: (self.customer.cart.createdAt <> '') and (self.line1.size() <= 48)
+
+-- #20 Navigation Chain in Payment
+-- Difficulty: medium
+-- Type: SAT
+context Payment
+inv: (self.order.customer.email <> '') and (self.amount > 0)
+
+-- #21 Navigation Chain in Shipment
+-- Difficulty: medium
+-- Type: SAT
+context Shipment
+inv: (self.order.customer.email <> '') and (self.carrier.size() >= 3)
+
+-- #22 Association Exists in Customer
+-- Difficulty: medium
+-- Type: SAT
+context Customer
+inv: ((self.cart <> null) and (self.cart.oclIsTypeOf(Cart))) and (self.fullName.toLowerCase() = 'test')
+
+-- #23 Navigation Chain in SupportTicket
+-- Difficulty: medium
+-- Type: SAT
+context SupportTicket
+inv: (self.customer.cart.createdAt <> '') and (self.ticketNo.toLowerCase() = 'test')
+
+-- #24 Navigation Consistency in ReturnRequest
+-- Difficulty: medium
+-- Type: SAT
+context ReturnRequest
+inv: (self.item.order = self.order) and (self.reason <> null)
+
+-- #25 Association Exists in Customer
+-- Difficulty: medium
+-- Type: SAT
+context Customer
+inv: (self.cart <> null) and (self.email.size() <= 19)
+
+-- #26 Select (Filter) Operation in Order
+-- Difficulty: medium
+-- Type: SAT
+context Order
+inv: self.items->select(x | x.quantity <= 100)->size() >= 1
+
+-- #27 Select (Filter) Operation in Store
+-- Difficulty: medium
+-- Type: SAT
+context Store
+inv: self.products->select(x | x.basePrice >= 10)->size() >= 1
+
+-- #28 Collect (Map) Operation in Customer
+-- Difficulty: medium
+-- Type: SAT
+context Customer
+inv: (self.addresses->collect(x | x.postalCode)->notEmpty()) and (self.email <> '' and self.email.size() > 0)
+
+-- #29 Any Operation in Coupon
+-- Difficulty: medium
+-- Type: SAT
+context Coupon
+inv: (self.orders->any(x | x.placedAt <> '') <> null) and (self.code.toUpperCase() = 'TEST')
+
+-- #30 One Operation in Order
+-- Difficulty: medium
+-- Type: SAT
+context Order
+inv: (self.items->one(x | x.unitPrice >= 1)) and (self.items->size() <= 1)
+
+-- #31 Collect (Map) Operation in Category
+-- Difficulty: medium
+-- Type: SAT
+context Category
+inv: (self.products->collect(x | x.sku)->notEmpty()) and (self.store.oclIsTypeOf(Store))
+
+-- #32 Universal Quantification (forAll) in Store
+-- Difficulty: difficult
+-- Type: SAT
+context Store
+inv: self.products->forAll(x | x.basePrice < 50)
+
+-- #33 Existential Quantification (exists) in Order
+-- Difficulty: difficult
+-- Type: SAT
+context Order
+inv: self.items->exists(x | x.unitPrice > 1)
+
+-- #34 Numeric Attribute Bounded in InventoryItem
+-- Difficulty: medium
+-- Type: SAT
+context InventoryItem
+inv: self.quantity >= 49 and self.quantity <= 94
+
+-- #35 Numeric Is Odd in CartItem
+-- Difficulty: easy
+-- Type: SAT
+context CartItem
+inv: self.quantity mod 2 = 1
+
+-- #36 Numeric Is Even in Review
+-- Difficulty: easy
+-- Type: SAT
+context Review
+inv: self.rating mod 2 = 0
+
+-- #37 Numeric Multiple Of in CartItem
+-- Difficulty: easy
+-- Type: SAT
+context CartItem
+inv: self.quantity mod 7 = 0
+
+-- #38 Numeric Attribute Positive in InventoryItem
+-- Difficulty: easy
+-- Type: SAT
+context InventoryItem
+inv: self.quantity > 0
+
+-- #39 Numeric Attribute Bounded in Payment
+-- Difficulty: medium
+-- Type: SAT
+context Payment
+inv: self.amount >= 59 and self.amount <= 76
+
+-- #40 Numeric Greater Than Value in Payment
+-- Difficulty: easy
+-- Type: SAT
+context Payment
+inv: self.amount > 24
+
+-- #41 Numeric Less Than Value in DiscountRule
+-- Difficulty: easy
+-- Type: SAT
+context DiscountRule
+inv: self.minOrderTotal < 88
+
+-- #42 Collection Size in Range in Cart
+-- Difficulty: medium
+-- Type: SAT
+context Cart
+inv: self.items->size() >= 3 and self.items->size() <= 3
+
+-- #43 Numeric Attribute Bounded in CartItem
+-- Difficulty: medium
+-- Type: SAT
+context CartItem
+inv: self.quantity >= 11 and self.quantity <= 88
+
+-- #44 Numeric Multiple Of in CartItem
+-- Difficulty: medium
+-- Type: SAT
+context CartItem
+inv: (self.quantity mod 9 = 0) and (self.cart.customer.customerId <> '')
+
+-- #45 Numeric Attribute Positive in CartItem
+-- Difficulty: medium
+-- Type: SAT
+context CartItem
+inv: (self.quantity > 0) and (self.quantity < 96)
+
+-- #46 Numeric Absolute Value Bounded in OrderItem
+-- Difficulty: medium
+-- Type: SAT
+context OrderItem
+inv: (self.quantity.abs() <= 5) and (self.order.customer.email <> '')
+
+-- #47 Numeric Attribute Non-Negative in CartItem
+-- Difficulty: medium
+-- Type: SAT
+context CartItem
+inv: (self.quantity >= 0) and (self.quantity < 73)
+
+-- #48 Flatten Operation in Coupon
+-- Difficulty: difficult
+-- Type: SAT
+context Coupon
+inv: self.orders->collect(x | x.items)->flatten()->notEmpty()
+
+-- #49 Collection Size Constraint in Coupon
+-- Difficulty: easy
+-- Type: SAT
+context Coupon
+inv: self.orders->size() <> 1
+
+-- #50 Collection Has Specific Size in Order
+-- Difficulty: easy
+-- Type: SAT
+context Order
+inv: self.items->size() = 1
+
+-- #51 Collection Not Empty Check in Category
+-- Difficulty: easy
+-- Type: SAT
+context Category
+inv: self.products->size() > 0
+
+-- #52 Collection Minimum Size in Customer
+-- Difficulty: easy
+-- Type: SAT
+context Customer
+inv: self.addresses->size() >= 1
+
+-- #53 Collection Maximum Size in Order
+-- Difficulty: easy
+-- Type: SAT
+context Order
+inv: self.items->size() <= 1
+
+-- #54 Flatten Operation in Store
+-- Difficulty: difficult
+-- Type: SAT
+context Store
+inv: self.categories->collect(x | x.products)->flatten()->notEmpty()
+
+-- #55 Collection Size Constraint in Customer
+-- Difficulty: easy
+-- Type: SAT
+context Customer
+inv: self.addresses->size() <> 1
+
+-- #56 Collection Not Empty (Simple) in Category
+-- Difficulty: easy
+-- Type: SAT
+context Category
+inv: self.products->notEmpty()
+
+-- #57 Collection Sum in Product
+-- Difficulty: difficult
+-- Type: SAT
+context Product
+inv: (self.reviews->collect(x | x.rating)->sum() >= 8) and (self.basePrice <> null)
+
+-- #58 Collection Not Empty Check in Coupon
+-- Difficulty: easy
+-- Type: SAT
+context Coupon
+inv: self.orders->size() > 0
+
+-- #59 Collection Size Constraint in Cart
+-- Difficulty: easy
+-- Type: SAT
+context Cart
+inv: self.items->size() <> 1
+
+-- #60 Collection Minimum Size in Cart
+-- Difficulty: medium
+-- Type: SAT
+context Cart
+inv: (self.items->size() >= 1) and (self.items->collect(x | x.quantity)->notEmpty())
+
+-- #61 Collection Not Empty (Simple) in Category
+-- Difficulty: medium
+-- Type: SAT
+context Category
+inv: (self.products->notEmpty()) and (self.products->select(x | x.basePrice < 1000)->size() >= 1)
+
+-- #62 Collection Not Empty Check in Cart
+-- Difficulty: medium
+-- Type: SAT
+context Cart
+inv: (self.items->size() > 0) and (self.createdAt.size() >= 2 implies self.createdAt.substring(1, 2) = 'AB')
+
+-- #63 Navigation Chain in ReturnRequest
+-- Difficulty: medium
+-- Type: SAT
+context ReturnRequest
+inv: (self.order.customer.fullName <> '') and (self.requestedAt.size() >= 4 implies self.requestedAt.substring(1, 4) = 'AB')
+
+-- #64 One Operation in Store
+-- Difficulty: medium
+-- Type: SAT
+context Store
+inv: (self.categories->one(x | x.title <> '')) and (self.currency.size() >= 20)
+
+-- #65 Universal Quantification (forAll) in Order
+-- Difficulty: difficult
+-- Type: SAT
+context Order
+inv: self.items->forAll(x | x.unitPrice >= 5)
+
+-- #66 Collection Index Of Element in Customer
+-- Difficulty: difficult
+-- Type: SAT
+context Customer
+inv: (self.email <> '') and (self.tickets->forAll(v | v.status <> ''))
+
+-- #67 Collection Not Empty Check in Customer
+-- Difficulty: difficult
+-- Type: SAT
+context Customer
+inv: (self.customerId <> '') and (self.addresses->forAll(v | v.line1 <> ''))
+
+-- #68 Collection As Sequence Conversion in Customer
+-- Difficulty: difficult
+-- Type: SAT
+context Customer
+inv: (self.fullName <> '') and (self.addresses->forAll(v | v.postalCode <> ''))
+
+-- #69 Collection Minimum Size in Customer
+-- Difficulty: difficult
+-- Type: SAT
+context Customer
+inv: (self.customerId <> '') and (self.tickets->forAll(v | v.status <> ''))
+
+-- #70 Collection Has Specific Size in Product
+-- Difficulty: difficult
+-- Type: SAT
+context Product
+inv: (self.basePrice < 100) and (self.variants->forAll(v | v.priceDelta <= 100))
+
+-- #71 Collection Not Empty (Simple) in Product
+-- Difficulty: medium
+-- Type: SAT
+context Product
+inv: (self.reviews->notEmpty()) and (self.name <> '' and self.name.size() > 0)
+
+-- #72 Collection As Sequence Conversion (UNSAT) in Coupon
+-- Difficulty: unboxed
+-- Type: UNSAT
+context Coupon
+inv: ((self.code <> '') and (self.orders->forAll(v | v.placedAt <> ''))) and (self.orders->exists(v | not(v.placedAt <> '')))
+
+-- #73 Collection Size in Range (UNSAT) in Customer
+-- Difficulty: unboxed
+-- Type: UNSAT
+context Customer
+inv: ((self.email <> '') and (self.addresses->forAll(v | v.city <> ''))) and (self.addresses->exists(v | not(v.city <> '')))
+
+-- #74 Navigation Chain (UNSAT) in Review
+-- Difficulty: unboxed
+-- Type: UNSAT
+context Review
+inv: ((self.product.store.name <> '') and (self.comment.toUpperCase() = 'TEST')) and (not((self.product.store.name <> '') and (self.comment.toUpperCase() = 'TEST')))
+
+-- #75 Collection Size Constraint (UNSAT) in Customer
+-- Difficulty: unboxed
+-- Type: UNSAT
+context Customer
+inv: ((self.fullName <> '') and (self.orders->forAll(v | v.orderNo <> ''))) and (self.orders->exists(v | not(v.orderNo <> '')))
+
+-- #76 Any Operation (UNSAT) in Cart
+-- Difficulty: unboxed
+-- Type: UNSAT
+context Cart
+inv: ((self.items->any(x | x.quantity >= 10) <> null) and (self.createdAt.size() = 44)) and (not((self.items->any(x | x.quantity >= 10) <> null) and (self.createdAt.size() = 44)))
+
+-- #77 Numeric Is Even (UNSAT) in OrderItem
+-- Difficulty: medium
+-- Type: UNSAT
+context OrderItem
+inv: (self.quantity mod 2 = 0) and (not(self.quantity mod 2 = 0))
+
+-- #78 Navigation Chain (UNSAT) in CartItem
+-- Difficulty: medium
+-- Type: UNSAT
+context CartItem
+inv: ((self.cart.customer.email <> '') and (self.quantity < 90)) and (self.quantity > 95)
+
+-- #79 Numeric Multiple Of (UNSAT) in OrderItem
+-- Difficulty: medium
+-- Type: UNSAT
+context OrderItem
+inv: (self.quantity mod 9 = 0) and (not(self.quantity mod 9 = 0))
+
+-- #80 Collection Maximum Size (UNSAT) in Order
+-- Difficulty: medium
+-- Type: UNSAT
+context Order
+inv: ((self.items->size() <= 3) and (self.orderNo.toUpperCase() = 'TEST')) and (self.items->size() > 3)
+
+-- #81 Existential Quantification (exists) (UNSAT) in Store
+-- Difficulty: difficult
+-- Type: UNSAT
+context Store
+inv: (self.products->exists(x | x.basePrice > 2)) and (not(self.products->exists(x | x.basePrice > 2)))
+
+-- #82 Collection Sum (UNSAT) in Product
+-- Difficulty: unboxed
+-- Type: UNSAT
+context Product
+inv: ((self.variants->collect(x | x.priceDelta)->sum() >= 5) and (self.variants->any(x | x.priceDelta > 0) <> null)) and (not((self.variants->collect(x | x.priceDelta)->sum() >= 5) and (self.variants->any(x | x.priceDelta > 0) <> null)))
+
+-- #83 Collection Has Specific Size (UNSAT) in Customer
+-- Difficulty: medium
+-- Type: UNSAT
+context Customer
+inv: (self.orders->size() = 1) and (self.orders->size() <> 1)
+
+-- #84 Numeric Attribute Positive (UNSAT) in Payment
+-- Difficulty: easy
+-- Type: UNSAT
+context Payment
+inv: (self.amount > 0) and (self.amount < -5)
+
+-- #85 Numeric Multiple Of (UNSAT) in OrderItem
+-- Difficulty: medium
+-- Type: UNSAT
+context OrderItem
+inv: (self.quantity mod 5 = 0) and (not(self.quantity mod 5 = 0))
+
+-- #86 Numeric Absolute Value Bounded (UNSAT) in DiscountRule
+-- Difficulty: medium
+-- Type: UNSAT
+context DiscountRule
+inv: (self.minOrderTotal.abs() <= 4) and (not(self.minOrderTotal.abs() <= 4))
+
+-- #87 Collection Minimum Size (UNSAT) in Category
+-- Difficulty: medium
+-- Type: UNSAT
+context Category
+inv: (self.products->size() >= 3) and (self.products->size() < 3)
+
+-- #88 Collection As Sequence Conversion (UNSAT) in Customer
+-- Difficulty: unboxed
+-- Type: UNSAT
+context Customer
+inv: ((self.customerId <> '') and (self.orders->forAll(v | v.orderNo <> ''))) and (self.orders->exists(v | not(v.orderNo <> '')))
+
+-- #89 Collection Nested Collection Flatten (UNSAT) in Store
+-- Difficulty: unboxed
+-- Type: UNSAT
+context Store
+inv: ((self.coupons->collect(x | x.orders)->size() >= 2) and (self.products->size() = 3)) and (self.products->size() <> 3)
+

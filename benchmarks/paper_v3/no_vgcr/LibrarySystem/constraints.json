@@ -1,0 +1,4608 @@
+{
+  "metadata": {
+    "suite": "OCL-Paper-v3-NoVGCR__LibrarySystem",
+    "model": "LibrarySystem",
+    "profile": "balanced",
+    "generated_at": "2026-10-16T06:27:22.287166",
+    "seed": 42,
+    "complexity": "standard",
+    "framework_version": "2.0",
+    "git_commit": "2bbc3d135b258b2187e92ad2097dccd9ccbf4713",
+    "constraint_count": 74,
+    "research_features_enabled": true,
+    "consistency_verified": true,
+    "scope_per_class": 6
+  },
+  "constraints": [
+    {
+      "ocl": "context Book\ninv: self.publisher <> null",
+      "pattern_id": "association_exists",
+      "pattern_name": "Association Exists",
+      "context": "Book",
+      "parameters": {
+        "association": "publisher"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-16T06:25:28.220452",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 1,
+        "generation_number": 4518,
+        "profile": "easy",
+        "operators_used": [
+          "<",
+          "<>",
+          ">"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 1.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.0,
+            "vrc": 0,
+            "wno": 1.0,
+            "wnm": 0.0,
+            "total": 2.0
+          },
+          "computational": {
+            "oc": 1.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 1.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 3.0
+        },
+        "semantic_cluster": 0,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Payment\ninv: self.isProcessed implies self.loan <> null",
+      "pattern_id": "conditional_existence",
+      "pattern_name": "Conditional Existence",
+      "context": "Payment",
+      "parameters": {
+        "bool_attribute": "isProcessed",
+        "optional_association": "loan"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-16T06:25:28.226976",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 1,
+        "generation_number": 4519,
+        "profile": "easy",
+        "operators_used": [
+          "<",
+          "<>",
+          ">",
+          "implies"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 4,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 1,
+            "wnc": 2.0,
+            "tnc": 1.7,
+            "vrc": 0,
+            "wno": 3.0,
+            "wnm": 0.0,
+            "total": 4.7
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 2,
+            "total": 2.0
+          },
+          "tc": 9.7
+        },
+        "semantic_cluster": 1,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Loan\ninv: self.copy.branch = self.branch",
+      "pattern_id": "navigation_consistency",
+      "pattern_name": "Navigation Consistency",
+      "context": "Loan",
+      "parameters": {
+        "assoc_a": "copy",
+        "assoc_b": "branch",
+        "assoc_c": "branch"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-16T06:25:28.229484",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 1,
+        "generation_number": 4520,
+        "profile": "easy",
+        "operators_used": [
+          "="
+        ],
+        "navigation_depth": 3,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 1,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 3.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 2,
+            "wnc": 3.0,
+            "tnc": 2.7,
+            "vrc": 0,
+            "wno": 1.0,
+            "wnm": 0.0,
+            "total": 3.7
+          },
+          "computational": {
+            "oc": 1.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 1.0
+          },
+          "dependency": {
+            "ruc": 1,
+            "total": 1.0
+          },
+          "tc": 5.7
+        },
+        "semantic_cluster": 2,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Address\ninv: self.branch <> null",
+      "pattern_id": "association_exists",
+      "pattern_name": "Association Exists",
+      "context": "Address",
+      "parameters": {
+        "association": "branch"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-16T06:25:28.231874",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 1,
+        "generation_number": 4521,
+        "profile": "easy",
+        "operators_used": [
+          "<",
+          "<>",
+          ">"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 1.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.0,
+            "vrc": 0,
+            "wno": 1.0,
+            "wnm": 0.0,
+            "total": 2.0
+          },
+          "computational": {
+            "oc": 1.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 1.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 3.0
+        },
+        "semantic_cluster": 1,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Fine\ninv: self.loan.member = self.member",
+      "pattern_id": "navigation_consistency",
+      "pattern_name": "Navigation Consistency",
+      "context": "Fine",
+      "parameters": {
+        "assoc_a": "loan",
+        "assoc_b": "member",
+        "assoc_c": "member"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-16T06:25:28.243428",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 1,
+        "generation_number": 4523,
+        "profile": "easy",
+        "operators_used": [
+          "="
+        ],
+        "navigation_depth": 3,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 1,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 3.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 2,
+            "wnc": 3.0,
+            "tnc": 2.7,
+            "vrc": 0,
+            "wno": 1.0,
+            "wnm": 0.0,
+            "total": 3.7
+          },
+          "computational": {
+            "oc": 1.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 1.0
+          },
+          "dependency": {
+            "ruc": 2,
+            "total": 2.0
+          },
+          "tc": 6.7
+        },
+        "semantic_cluster": 3,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Library\ninv: self.members->forAll(x | x.memberId <> '')",
+      "pattern_id": "collection_navigation",
+      "pattern_name": "Collection Navigation",
+      "context": "Library",
+      "parameters": {
+        "collection": "members",
+        "operation": "forAll",
+        "iterator": "x",
+        "nested": "memberId <> ''"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-16T06:25:28.247595",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 3,
+        "generation_number": 4526,
+        "profile": "difficult",
+        "operators_used": [
+          "-",
+          "<",
+          "<>",
+          ">",
+          "forAll"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "difficult",
+        "operator_count": 5,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 3.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 3.0,
+            "wnc": 5.0,
+            "tnc": 3.6,
+            "vrc": 1,
+            "wno": 4.0,
+            "wnm": 1.0,
+            "total": 9.6
+          },
+          "computational": {
+            "oc": 4.0,
+            "tcc": 0.0,
+            "cic": 3.0,
+            "total": 7.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 16.6
+        },
+        "semantic_cluster": 3,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Author\ninv: self.books->exists(x | x.pages <= 10)",
+      "pattern_id": "collection_navigation",
+      "pattern_name": "Collection Navigation",
+      "context": "Author",
+      "parameters": {
+        "collection": "books",
+        "operation": "exists",
+        "iterator": "x",
+        "nested": "pages <= 10"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-16T06:25:28.248551",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 3,
+        "generation_number": 4527,
+        "profile": "difficult",
+        "operators_used": [
+          "-",
+          "<",
+          "<=",
+          "=",
+          ">",
+          "exists"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "difficult",
+        "operator_count": 6,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 3.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 3.0,
+            "wnc": 5.0,
+            "tnc": 3.6,
+            "vrc": 1,
+            "wno": 4.0,
+            "wnm": 1.0,
+            "total": 9.6
+          },
+          "computational": {
+            "oc": 4.0,
+            "tcc": 0.0,
+            "cic": 3.0,
+            "total": 7.0
+          },
+          "dependency": {
+            "ruc": 9,
+            "total": 9.0
+          },
+          "tc": 25.6
+        },
+        "semantic_cluster": 4,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Category\ninv: self.books->forAll(x | x.pages >= 2)",
+      "pattern_id": "collection_navigation",
+      "pattern_name": "Collection Navigation",
+      "context": "Category",
+      "parameters": {
+        "collection": "books",
+        "operation": "forAll",
+        "iterator": "x",
+        "nested": "pages >= 2"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-16T06:25:28.249467",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 3,
+        "generation_number": 4528,
+        "profile": "difficult",
+        "operators_used": [
+          "-",
+          "=",
+          ">",
+          ">=",
+          "forAll"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "difficult",
+        "operator_count": 5,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 3.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 3.0,
+            "wnc": 5.0,
+            "tnc": 3.6,
+            "vrc": 1,
+            "wno": 4.0,
+            "wnm": 1.0,
+            "total": 9.6
+          },
+          "computational": {
+            "oc": 4.0,
+            "tcc": 0.0,
+            "cic": 3.0,
+            "total": 7.0
+          },
+          "dependency": {
+            "ruc": 1,
+            "total": 1.0
+          },
+          "tc": 17.6
+        },
+        "semantic_cluster": 4,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Member\ninv: self.fines->exists(x | x.amount < 100)",
+      "pattern_id": "collection_navigation",
+      "pattern_name": "Collection Navigation",
+      "context": "Member",
+      "parameters": {
+        "collection": "fines",
+        "operation": "exists",
+        "iterator": "x",
+        "nested": "amount < 100"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-16T06:25:28.250372",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 3,
+        "generation_number": 4529,
+        "profile": "difficult",
+        "operators_used": [
+          "-",
+          "<",
+          ">",
+          "exists"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "difficult",
+        "operator_count": 4,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 3.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 3.0,
+            "wnc": 5.0,
+            "tnc": 3.6,
+            "vrc": 1,
+            "wno": 4.0,
+            "wnm": 1.0,
+            "total": 9.6
+          },
+          "computational": {
+            "oc": 4.0,
+            "tcc": 0.0,
+            "cic": 3.0,
+            "total": 7.0
+          },
+          "dependency": {
+            "ruc": 2,
+            "total": 2.0
+          },
+          "tc": 18.6
+        },
+        "semantic_cluster": 5,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Copy\ninv: (self.barcode <> '') and (self.loans->forAll(v | v.dueDate <> ''))",
+      "pattern_id": "navigation_chain",
+      "pattern_name": "Navigation Chain",
+      "context": "Copy",
+      "parameters": {
+        "navigation_path": "self.branch.library.maxLoanDays > 0"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-16T06:25:28.252202",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 2,
+        "generation_number": 4531,
+        "profile": "difficult",
+        "operators_used": [
+          "-",
+          "<",
+          "<>",
+          ">",
+          "and",
+          "forAll"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "difficult",
+        "operator_count": 6,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 4.0,
+            "dn_ca": 3.0,
+            "wnc": 6.0,
+            "tnc": 4.3,
+            "vrc": 1,
+            "wno": 6.5,
+            "wnm": 1.0,
+            "total": 12.8
+          },
+          "computational": {
+            "oc": 6.5,
+            "tcc": 0.0,
+            "cic": 3.0,
+            "total": 9.5
+          },
+          "dependency": {
+            "ruc": 3,
+            "total": 3.0
+          },
+          "tc": 25.3
+        },
+        "semantic_cluster": 6,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Branch\ninv: (self.code <> '') and (self.copies->forAll(v | v.barcode <> ''))",
+      "pattern_id": "collection_size_range",
+      "pattern_name": "Collection Size in Range",
+      "context": "Branch",
+      "parameters": {
+        "collection": "reservations",
+        "min_size": 2,
+        "max_size": 3
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-16T06:25:28.255173",
+      "metadata": {
+        "category": "collection",
+        "complexity": 2,
+        "generation_number": 4533,
+        "profile": "difficult",
+        "operators_used": [
+          "-",
+          "<",
+          "<>",
+          ">",
+          "and",
+          "forAll"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "difficult",
+        "operator_count": 6,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 4.0,
+            "dn_ca": 3.0,
+            "wnc": 6.0,
+            "tnc": 4.3,
+            "vrc": 1,
+            "wno": 6.5,
+            "wnm": 1.0,
+            "total": 12.8
+          },
+          "computational": {
+            "oc": 6.5,
+            "tcc": 0.0,
+            "cic": 3.0,
+            "total": 9.5
+          },
+          "dependency": {
+            "ruc": 3,
+            "total": 3.0
+          },
+          "tc": 25.3
+        },
+        "semantic_cluster": 6,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Branch\ninv: (self.code <> '') and (self.reservations->forAll(v | v.expiryDate <> ''))",
+      "pattern_id": "collection_size_range",
+      "pattern_name": "Collection Size in Range",
+      "context": "Branch",
+      "parameters": {
+        "collection": "loans",
+        "min_size": 1,
+        "max_size": 1
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-16T06:25:28.256755",
+      "metadata": {
+        "category": "collection",
+        "complexity": 2,
+        "generation_number": 4534,
+        "profile": "difficult",
+        "operators_used": [
+          "-",
+          "<",
+          "<>",
+          ">",
+          "and",
+          "forAll"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "difficult",
+        "operator_count": 6,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 4.0,
+            "dn_ca": 3.0,
+            "wnc": 6.0,
+            "tnc": 4.3,
+            "vrc": 1,
+            "wno": 6.5,
+            "wnm": 1.0,
+            "total": 12.8
+          },
+          "computational": {
+            "oc": 6.5,
+            "tcc": 0.0,
+            "cic": 3.0,
+            "total": 9.5
+          },
+          "dependency": {
+            "ruc": 3,
+            "total": 3.0
+          },
+          "tc": 25.3
+        },
+        "semantic_cluster": 6,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Book\ninv: (self.publishYear <= 1000) and (self.reservations->forAll(v | v.expiryDate <> ''))",
+      "pattern_id": "numeric_odd",
+      "pattern_name": "Numeric Is Odd",
+      "context": "Book",
+      "parameters": {
+        "numeric_attribute": "publishYear"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-16T06:25:28.268027",
+      "metadata": {
+        "category": "arithmetic",
+        "complexity": 2,
+        "generation_number": 4538,
+        "profile": "difficult",
+        "operators_used": [
+          "-",
+          "<",
+          "<=",
+          "<>",
+          "=",
+          ">",
+          "and",
+          "forAll"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "difficult",
+        "operator_count": 8,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 4.0,
+            "dn_ca": 3.0,
+            "wnc": 6.0,
+            "tnc": 4.3,
+            "vrc": 1,
+            "wno": 6.5,
+            "wnm": 1.0,
+            "total": 12.8
+          },
+          "computational": {
+            "oc": 6.5,
+            "tcc": 0.0,
+            "cic": 3.0,
+            "total": 9.5
+          },
+          "dependency": {
+            "ruc": 4,
+            "total": 4.0
+          },
+          "tc": 26.3
+        },
+        "semantic_cluster": 6,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Book\ninv: (self.pages > 2) and (self.authors->forAll(v | v.name <> ''))",
+      "pattern_id": "numeric_abs_bounded",
+      "pattern_name": "Numeric Absolute Value Bounded",
+      "context": "Book",
+      "parameters": {
+        "numeric_attribute": "publishYear",
+        "max_abs": 8
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-16T06:25:28.271473",
+      "metadata": {
+        "category": "arithmetic",
+        "complexity": 2,
+        "generation_number": 4539,
+        "profile": "difficult",
+        "operators_used": [
+          "-",
+          "<",
+          "<>",
+          ">",
+          "and",
+          "forAll"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "difficult",
+        "operator_count": 6,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 4.0,
+            "dn_ca": 3.0,
+            "wnc": 6.0,
+            "tnc": 4.3,
+            "vrc": 1,
+            "wno": 6.5,
+            "wnm": 1.0,
+            "total": 12.8
+          },
+          "computational": {
+            "oc": 6.5,
+            "tcc": 0.0,
+            "cic": 3.0,
+            "total": 9.5
+          },
+          "dependency": {
+            "ruc": 6,
+            "total": 6.0
+          },
+          "tc": 28.3
+        },
+        "semantic_cluster": 4,
+        "implies": [
+          "numeric_abs_bounded_Book"
+        ]
+      }
+    },
+    {
+      "ocl": "context Librarian\ninv: (self.managedBranch.library.maxLoanDays >= 5) and (self.level.size() <= 59)",
+      "pattern_id": "navigation_chain",
+      "pattern_name": "Navigation Chain",
+      "context": "Librarian",
+      "parameters": {
+        "navigation_path": "self.managedBranch.library.maxLoanDays >= 5"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-16T06:25:28.274606",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 2,
+        "generation_number": 4540,
+        "profile": "medium",
+        "operators_used": [
+          "<",
+          "<=",
+          "=",
+          ">",
+          ">=",
+          "and",
+          "size"
+        ],
+        "navigation_depth": 4,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 7,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 4.0,
+            "dn_ca": 3,
+            "wnc": 4.0,
+            "tnc": 3.7,
+            "vrc": 0,
+            "wno": 3.5,
+            "wnm": 1.0,
+            "total": 8.2
+          },
+          "computational": {
+            "oc": 3.5,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.5
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 11.7
+        },
+        "semantic_cluster": 7,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Staff\ninv: (self.branch.library.maxLoanDays <= 10) and (self.email.indexOf('test') >= 0)",
+      "pattern_id": "navigation_chain",
+      "pattern_name": "Navigation Chain",
+      "context": "Staff",
+      "parameters": {
+        "navigation_path": "self.branch.library.maxLoanDays <= 10"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-16T06:25:28.277546",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 2,
+        "generation_number": 4542,
+        "profile": "medium",
+        "operators_used": [
+          "<",
+          "<=",
+          "=",
+          ">",
+          ">=",
+          "and",
+          "indexOf"
+        ],
+        "navigation_depth": 4,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 7,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 4.0,
+            "dn_ca": 3,
+            "wnc": 4.0,
+            "tnc": 3.7,
+            "vrc": 0,
+            "wno": 4.5,
+            "wnm": 1.0,
+            "total": 9.2
+          },
+          "computational": {
+            "oc": 3.5,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.5
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 12.7
+        },
+        "semantic_cluster": 7,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Payment\ninv: self.isProcessed implies self.fine <> null",
+      "pattern_id": "conditional_existence",
+      "pattern_name": "Conditional Existence",
+      "context": "Payment",
+      "parameters": {
+        "bool_attribute": "isProcessed",
+        "optional_association": "fine"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-16T06:25:28.280061",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 1,
+        "generation_number": 4546,
+        "profile": "medium",
+        "operators_used": [
+          "<",
+          "<>",
+          ">",
+          "implies"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 4,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 1,
+            "wnc": 2.0,
+            "tnc": 1.7,
+            "vrc": 0,
+            "wno": 3.0,
+            "wnm": 0.0,
+            "total": 4.7
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 3,
+            "total": 3.0
+          },
+          "tc": 10.7
+        },
+        "semantic_cluster": 1,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Fine\ninv: ((self.loan.member = self.member) and (self.member.oclIsTypeOf(Member))) and (self.amount.abs() <= 1)",
+      "pattern_id": "navigation_consistency",
+      "pattern_name": "Navigation Consistency",
+      "context": "Fine",
+      "parameters": {
+        "assoc_a": "loan",
+        "assoc_b": "member",
+        "assoc_c": "member"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-16T06:25:28.281083",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 1,
+        "generation_number": 4547,
+        "profile": "medium",
+        "operators_used": [
+          "<",
+          "<=",
+          "=",
+          "abs",
+          "and",
+          "oclIsTypeOf"
+        ],
+        "navigation_depth": 3,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 6,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 5.0,
+            "nnc_plus": 5.0,
+            "dn_ca": 2,
+            "wnc": 5.0,
+            "tnc": 4.1,
+            "vrc": 0,
+            "wno": 6.0,
+            "wnm": 2.0,
+            "total": 12.1
+          },
+          "computational": {
+            "oc": 5.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 5.0
+          },
+          "dependency": {
+            "ruc": 9,
+            "total": 9.0
+          },
+          "tc": 26.1
+        },
+        "semantic_cluster": 3,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Payment\ninv: (self.loan.fine = self.fine) and (self.timestamp <> '' and self.timestamp.size() > 0)",
+      "pattern_id": "navigation_consistency",
+      "pattern_name": "Navigation Consistency",
+      "context": "Payment",
+      "parameters": {
+        "assoc_a": "loan",
+        "assoc_b": "fine",
+        "assoc_c": "fine"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-16T06:25:28.287508",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 1,
+        "generation_number": 4550,
+        "profile": "medium",
+        "operators_used": [
+          "<",
+          "<>",
+          "=",
+          ">",
+          "and",
+          "size"
+        ],
+        "navigation_depth": 3,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 6,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 5.0,
+            "nnc_plus": 5.0,
+            "dn_ca": 2,
+            "wnc": 5.0,
+            "tnc": 4.1,
+            "vrc": 0,
+            "wno": 6.0,
+            "wnm": 1.0,
+            "total": 11.1
+          },
+          "computational": {
+            "oc": 6.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 6.0
+          },
+          "dependency": {
+            "ruc": 2,
+            "total": 2.0
+          },
+          "tc": 19.1
+        },
+        "semantic_cluster": 6,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Fine\ninv: (self.loan.member = self.member) and (self.reason.toUpperCase() = 'TEST')",
+      "pattern_id": "navigation_consistency",
+      "pattern_name": "Navigation Consistency",
+      "context": "Fine",
+      "parameters": {
+        "assoc_a": "loan",
+        "assoc_b": "member",
+        "assoc_c": "member"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-16T06:25:28.298445",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 1,
+        "generation_number": 4560,
+        "profile": "medium",
+        "operators_used": [
+          "=",
+          "and"
+        ],
+        "navigation_depth": 3,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 2,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 4.0,
+            "dn_ca": 2,
+            "wnc": 4.0,
+            "tnc": 3.4,
+            "vrc": 0,
+            "wno": 3.5,
+            "wnm": 1.0,
+            "total": 7.9
+          },
+          "computational": {
+            "oc": 3.5,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.5
+          },
+          "dependency": {
+            "ruc": 3,
+            "total": 3.0
+          },
+          "tc": 14.4
+        },
+        "semantic_cluster": 3,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Loan\ninv: ((self.payment.isProcessed) and (self.returnDate.size() <= 57)) and (self.branch.oclIsTypeOf(Branch))",
+      "pattern_id": "simple_navigation",
+      "pattern_name": "Simple Navigation",
+      "context": "Loan",
+      "parameters": {
+        "association": "payment",
+        "attribute": "isProcessed"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-16T06:25:28.300450",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 1,
+        "generation_number": 4562,
+        "profile": "medium",
+        "operators_used": [
+          "<",
+          "<=",
+          "=",
+          "and",
+          "oclIsTypeOf",
+          "size"
+        ],
+        "navigation_depth": 3,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 6,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 4.0,
+            "dn_ca": 2,
+            "wnc": 4.0,
+            "tnc": 3.4,
+            "vrc": 0,
+            "wno": 4.0,
+            "wnm": 2.0,
+            "total": 9.4
+          },
+          "computational": {
+            "oc": 4.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 4.0
+          },
+          "dependency": {
+            "ruc": 6,
+            "total": 6.0
+          },
+          "tc": 19.4
+        },
+        "semantic_cluster": 8,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Payment\ninv: (self.fine.member = self.member) and (self.amount >= 0)",
+      "pattern_id": "navigation_consistency",
+      "pattern_name": "Navigation Consistency",
+      "context": "Payment",
+      "parameters": {
+        "assoc_a": "fine",
+        "assoc_b": "member",
+        "assoc_c": "member"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-16T06:25:28.307580",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 1,
+        "generation_number": 4576,
+        "profile": "medium",
+        "operators_used": [
+          "=",
+          ">",
+          ">=",
+          "and"
+        ],
+        "navigation_depth": 3,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 4,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 4.0,
+            "dn_ca": 2,
+            "wnc": 4.0,
+            "tnc": 3.4,
+            "vrc": 0,
+            "wno": 3.5,
+            "wnm": 0.0,
+            "total": 6.9
+          },
+          "computational": {
+            "oc": 3.5,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.5
+          },
+          "dependency": {
+            "ruc": 1,
+            "total": 1.0
+          },
+          "tc": 11.4
+        },
+        "semantic_cluster": 3,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Member\ninv: self.payments->select(x | x.amount > 5)->size() >= 1",
+      "pattern_id": "select_operation",
+      "pattern_name": "Select (Filter) Operation",
+      "context": "Member",
+      "parameters": {
+        "collection": "payments",
+        "iterator": "x",
+        "condition": "x.amount > 5",
+        "result_operation": "->size() >= 1"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-16T06:25:28.314819",
+      "metadata": {
+        "category": "collection",
+        "complexity": 2,
+        "generation_number": 4581,
+        "profile": "medium",
+        "operators_used": [
+          "-",
+          "=",
+          ">",
+          ">=",
+          "select",
+          "size"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "medium",
+        "operator_count": 6,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 3.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 3.0,
+            "wnc": 5.0,
+            "tnc": 3.6,
+            "vrc": 1,
+            "wno": 4.0,
+            "wnm": 2.0,
+            "total": 10.6
+          },
+          "computational": {
+            "oc": 4.0,
+            "tcc": 0.0,
+            "cic": 2.0,
+            "total": 6.0
+          },
+          "dependency": {
+            "ruc": 2,
+            "total": 2.0
+          },
+          "tc": 18.6
+        },
+        "semantic_cluster": 3,
+        "implies": [
+          "forall_nested_Member"
+        ]
+      }
+    },
+    {
+      "ocl": "context Author\ninv: (self.books->collect(x | x.title)->notEmpty()) and (self.name.size() >= 4)",
+      "pattern_id": "collect_operation",
+      "pattern_name": "Collect (Map) Operation",
+      "context": "Author",
+      "parameters": {
+        "collection": "books",
+        "iterator": "x",
+        "attribute": "title"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-16T06:25:28.316524",
+      "metadata": {
+        "category": "collection",
+        "complexity": 2,
+        "generation_number": 4582,
+        "profile": "medium",
+        "operators_used": [
+          "-",
+          "=",
+          ">",
+          ">=",
+          "and",
+          "collect",
+          "notEmpty",
+          "size"
+        ],
+        "navigation_depth": 3,
+        "quantifier_depth": 1,
+        "difficulty": "medium",
+        "operator_count": 8,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 4.0,
+            "dn_ca": 3.0,
+            "wnc": 6.0,
+            "tnc": 4.3,
+            "vrc": 1,
+            "wno": 4.5,
+            "wnm": 3.0,
+            "total": 12.8
+          },
+          "computational": {
+            "oc": 4.5,
+            "tcc": 0.0,
+            "cic": 2.0,
+            "total": 6.5
+          },
+          "dependency": {
+            "ruc": 9,
+            "total": 9.0
+          },
+          "tc": 28.3
+        },
+        "semantic_cluster": 2,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Copy\ninv: (self.loans->any(x | x.startDate <> '') <> null) and (self.barcode.size() = 8)",
+      "pattern_id": "any_operation",
+      "pattern_name": "Any Operation",
+      "context": "Copy",
+      "parameters": {
+        "collection": "loans",
+        "iterator": "x",
+        "condition": "x.startDate <> ''"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-16T06:25:28.319871",
+      "metadata": {
+        "category": "collection",
+        "complexity": 2,
+        "generation_number": 4584,
+        "profile": "medium",
+        "operators_used": [
+          "-",
+          "<",
+          "<>",
+          "=",
+          ">",
+          "and",
+          "any",
+          "size"
+        ],
+        "navigation_depth": 3,
+        "quantifier_depth": 1,
+        "difficulty": "medium",
+        "operator_count": 8,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 4.0,
+            "dn_ca": 3.0,
+            "wnc": 6.0,
+            "tnc": 4.3,
+            "vrc": 1,
+            "wno": 4.5,
+            "wnm": 2.0,
+            "total": 11.8
+          },
+          "computational": {
+            "oc": 4.5,
+            "tcc": 0.0,
+            "cic": 2.0,
+            "total": 6.5
+          },
+          "dependency": {
+            "ruc": 3,
+            "total": 3.0
+          },
+          "tc": 21.3
+        },
+        "semantic_cluster": 6,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Book\ninv: self.publishYear > 0",
+      "pattern_id": "numeric_positive",
+      "pattern_name": "Numeric Attribute Positive",
+      "context": "Book",
+      "parameters": {
+        "numeric_attribute": "publishYear"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-16T06:25:28.325217",
+      "metadata": {
+        "category": "arithmetic",
+        "complexity": 1,
+        "generation_number": 4588,
+        "profile": "easy",
+        "operators_used": [
+          ">"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 1,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 1.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.0,
+            "vrc": 0,
+            "wno": 1.0,
+            "wnm": 0.0,
+            "total": 2.0
+          },
+          "computational": {
+            "oc": 1.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 1.0
+          },
+          "dependency": {
+            "ruc": 3,
+            "total": 3.0
+          },
+          "tc": 6.0
+        },
+        "semantic_cluster": 0,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Library\ninv: (self.maxLoanDays mod 2 = 0) and (self.books->size() > 1)",
+      "pattern_id": "numeric_even",
+      "pattern_name": "Numeric Is Even",
+      "context": "Library",
+      "parameters": {
+        "numeric_attribute": "maxLoanDays"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-16T06:25:28.327133",
+      "metadata": {
+        "category": "arithmetic",
+        "complexity": 2,
+        "generation_number": 4590,
+        "profile": "medium",
+        "operators_used": [
+          "-",
+          "=",
+          ">",
+          "and",
+          "mod",
+          "size"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 6,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 3.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 1,
+            "wnc": 2.0,
+            "tnc": 2.1,
+            "vrc": 0,
+            "wno": 4.5,
+            "wnm": 1.0,
+            "total": 7.6
+          },
+          "computational": {
+            "oc": 3.5,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.5
+          },
+          "dependency": {
+            "ruc": 6,
+            "total": 6.0
+          },
+          "tc": 17.1
+        },
+        "semantic_cluster": 4,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Library\ninv: self.maxLoanDays mod 6 = 0",
+      "pattern_id": "numeric_multiple_of",
+      "pattern_name": "Numeric Multiple Of",
+      "context": "Library",
+      "parameters": {
+        "numeric_attribute": "maxLoanDays",
+        "divisor": 6
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-16T06:25:28.332321",
+      "metadata": {
+        "category": "arithmetic",
+        "complexity": 2,
+        "generation_number": 4592,
+        "profile": "easy",
+        "operators_used": [
+          "=",
+          "mod"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 2,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 1.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.0,
+            "vrc": 0,
+            "wno": 2.0,
+            "wnm": 0.0,
+            "total": 3.0
+          },
+          "computational": {
+            "oc": 1.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 1.0
+          },
+          "dependency": {
+            "ruc": 3,
+            "total": 3.0
+          },
+          "tc": 7.0
+        },
+        "semantic_cluster": 7,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Copy\ninv: self.reservations->size() >= 1 and self.reservations->size() <= 2",
+      "pattern_id": "collection_size_range",
+      "pattern_name": "Collection Size in Range",
+      "context": "Copy",
+      "parameters": {
+        "collection": "reservations",
+        "min_size": 1,
+        "max_size": 2
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-16T06:25:28.336432",
+      "metadata": {
+        "category": "collection",
+        "complexity": 2,
+        "generation_number": 4594,
+        "profile": "medium",
+        "operators_used": [
+          "-",
+          "<",
+          "<=",
+          "=",
+          ">",
+          ">=",
+          "and",
+          "size"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 8,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 1,
+            "wnc": 2.0,
+            "tnc": 2.5,
+            "vrc": 0,
+            "wno": 3.5,
+            "wnm": 2.0,
+            "total": 8.0
+          },
+          "computational": {
+            "oc": 3.5,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.5
+          },
+          "dependency": {
+            "ruc": 1,
+            "total": 1.0
+          },
+          "tc": 12.5
+        },
+        "semantic_cluster": 9,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Book\ninv: ((self.pages < 17) and (self.authors->notEmpty())) and (self.copies->size() > 0)",
+      "pattern_id": "numeric_less_than_value",
+      "pattern_name": "Numeric Less Than Value",
+      "context": "Book",
+      "parameters": {
+        "numeric_attribute": "pages",
+        "value": 17
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-16T06:25:28.350439",
+      "metadata": {
+        "category": "arithmetic",
+        "complexity": 1,
+        "generation_number": 4597,
+        "profile": "medium",
+        "operators_used": [
+          "-",
+          "<",
+          ">",
+          "and",
+          "notEmpty",
+          "size"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 6,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 5.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 1,
+            "wnc": 3.0,
+            "tnc": 3.2,
+            "vrc": 0,
+            "wno": 5.0,
+            "wnm": 2.0,
+            "total": 10.2
+          },
+          "computational": {
+            "oc": 5.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 5.0
+          },
+          "dependency": {
+            "ruc": 8,
+            "total": 8.0
+          },
+          "tc": 23.2
+        },
+        "semantic_cluster": 2,
+        "implies": [
+          "navigation_chain_Book"
+        ]
+      }
+    },
+    {
+      "ocl": "context Book\ninv: (self.pages.abs() <= 6) and (self.authors->any(x | x.name <> '') <> null)",
+      "pattern_id": "numeric_abs_bounded",
+      "pattern_name": "Numeric Absolute Value Bounded",
+      "context": "Book",
+      "parameters": {
+        "numeric_attribute": "pages",
+        "max_abs": 6
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-16T06:25:28.358678",
+      "metadata": {
+        "category": "arithmetic",
+        "complexity": 2,
+        "generation_number": 4605,
+        "profile": "medium",
+        "operators_used": [
+          "-",
+          "<",
+          "<=",
+          "<>",
+          "=",
+          ">",
+          "abs",
+          "and",
+          "any"
+        ],
+        "navigation_depth": 3,
+        "quantifier_depth": 1,
+        "difficulty": "medium",
+        "operator_count": 9,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 4.0,
+            "dn_ca": 3.0,
+            "wnc": 6.0,
+            "tnc": 4.3,
+            "vrc": 1,
+            "wno": 5.5,
+            "wnm": 2.0,
+            "total": 12.8
+          },
+          "computational": {
+            "oc": 4.5,
+            "tcc": 0.0,
+            "cic": 2.0,
+            "total": 6.5
+          },
+          "dependency": {
+            "ruc": 6,
+            "total": 6.0
+          },
+          "tc": 25.3
+        },
+        "semantic_cluster": 4,
+        "implies": [
+          "numeric_abs_bounded_Book"
+        ]
+      }
+    },
+    {
+      "ocl": "context Book\ninv: self.pages mod 2 = 0",
+      "pattern_id": "numeric_multiple_of",
+      "pattern_name": "Numeric Multiple Of",
+      "context": "Book",
+      "parameters": {
+        "numeric_attribute": "pages",
+        "divisor": 2
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-16T06:25:28.361018",
+      "metadata": {
+        "category": "arithmetic",
+        "complexity": 2,
+        "generation_number": 4607,
+        "profile": "easy",
+        "operators_used": [
+          "=",
+          "mod"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 2,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 1.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.0,
+            "vrc": 0,
+            "wno": 2.0,
+            "wnm": 0.0,
+            "total": 3.0
+          },
+          "computational": {
+            "oc": 1.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 1.0
+          },
+          "dependency": {
+            "ruc": 4,
+            "total": 4.0
+          },
+          "tc": 8.0
+        },
+        "semantic_cluster": 10,
+        "implies": [
+          "numeric_even_Book"
+        ]
+      }
+    },
+    {
+      "ocl": "context Book\ninv: (self.publishYear mod 2 = 0) and (self.authors->collect(x | x.books)->size() >= 2)",
+      "pattern_id": "numeric_even",
+      "pattern_name": "Numeric Is Even",
+      "context": "Book",
+      "parameters": {
+        "numeric_attribute": "publishYear"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-16T06:25:28.361843",
+      "metadata": {
+        "category": "arithmetic",
+        "complexity": 2,
+        "generation_number": 4608,
+        "profile": "medium",
+        "operators_used": [
+          "-",
+          "=",
+          ">",
+          ">=",
+          "and",
+          "collect",
+          "mod",
+          "size"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "medium",
+        "operator_count": 8,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 5.0,
+            "nnc_plus": 4.0,
+            "dn_ca": 3.0,
+            "wnc": 6.0,
+            "tnc": 4.7,
+            "vrc": 1,
+            "wno": 6.5,
+            "wnm": 2.0,
+            "total": 14.2
+          },
+          "computational": {
+            "oc": 5.5,
+            "tcc": 0.0,
+            "cic": 2.0,
+            "total": 7.5
+          },
+          "dependency": {
+            "ruc": 7,
+            "total": 7.0
+          },
+          "tc": 28.7
+        },
+        "semantic_cluster": 0,
+        "implies": [
+          "numeric_multiple_of_Book"
+        ]
+      }
+    },
+    {
+      "ocl": "context Library\ninv: self.maxLoanDays >= 0",
+      "pattern_id": "numeric_non_negative",
+      "pattern_name": "Numeric Attribute Non-Negative",
+      "context": "Library",
+      "parameters": {
+        "numeric_attribute": "maxLoanDays"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-16T06:25:28.367806",
+      "metadata": {
+        "category": "arithmetic",
+        "complexity": 1,
+        "generation_number": 4619,
+        "profile": "easy",
+        "operators_used": [
+          "=",
+          ">",
+          ">="
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 1.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.0,
+            "vrc": 0,
+            "wno": 1.0,
+            "wnm": 0.0,
+            "total": 2.0
+          },
+          "computational": {
+            "oc": 1.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 1.0
+          },
+          "dependency": {
+            "ruc": 3,
+            "total": 3.0
+          },
+          "tc": 6.0
+        },
+        "semantic_cluster": 7,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Payment\ninv: ((self.amount > 31) and (self.isProcessed)) and (self.fine.oclIsTypeOf(Fine))",
+      "pattern_id": "numeric_greater_than_value",
+      "pattern_name": "Numeric Greater Than Value",
+      "context": "Payment",
+      "parameters": {
+        "numeric_attribute": "amount",
+        "value": 31
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-16T06:25:28.374227",
+      "metadata": {
+        "category": "arithmetic",
+        "complexity": 1,
+        "generation_number": 4625,
+        "profile": "medium",
+        "operators_used": [
+          ">",
+          "and",
+          "oclIsTypeOf"
+        ],
+        "navigation_depth": 3,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 3.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 1,
+            "wnc": 3.0,
+            "tnc": 2.4,
+            "vrc": 0,
+            "wno": 4.0,
+            "wnm": 1.0,
+            "total": 7.4
+          },
+          "computational": {
+            "oc": 4.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 4.0
+          },
+          "dependency": {
+            "ruc": 4,
+            "total": 4.0
+          },
+          "tc": 15.4
+        },
+        "semantic_cluster": 8,
+        "implies": [
+          "navigation_consistency_Payment"
+        ]
+      }
+    },
+    {
+      "ocl": "context Member\ninv: self.payments->forAll(x | x.amount > 5)",
+      "pattern_id": "forall_nested",
+      "pattern_name": "Universal Quantification (forAll)",
+      "context": "Member",
+      "parameters": {
+        "collection": "payments",
+        "iterator": "x",
+        "condition": "x.amount > 5"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-16T06:25:28.377266",
+      "metadata": {
+        "category": "collection",
+        "complexity": 2,
+        "generation_number": 4628,
+        "profile": "difficult",
+        "operators_used": [
+          "-",
+          ">",
+          "forAll"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "difficult",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 3.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 3.0,
+            "wnc": 5.0,
+            "tnc": 3.6,
+            "vrc": 1,
+            "wno": 4.0,
+            "wnm": 1.0,
+            "total": 9.6
+          },
+          "computational": {
+            "oc": 4.0,
+            "tcc": 0.0,
+            "cic": 3.0,
+            "total": 7.0
+          },
+          "dependency": {
+            "ruc": 2,
+            "total": 2.0
+          },
+          "tc": 18.6
+        },
+        "semantic_cluster": 3,
+        "implies": [
+          "select_operation_Member"
+        ]
+      }
+    },
+    {
+      "ocl": "context Branch\ninv: self.copies->collect(x | x.reservations)->flatten()->notEmpty()",
+      "pattern_id": "flatten_operation",
+      "pattern_name": "Flatten Operation",
+      "context": "Branch",
+      "parameters": {
+        "collection": "copies",
+        "iterator": "x",
+        "nested_collection": "reservations"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-16T06:25:28.380609",
+      "metadata": {
+        "category": "set_operations",
+        "complexity": 3,
+        "generation_number": 4630,
+        "profile": "difficult",
+        "operators_used": [
+          "-",
+          ">",
+          "collect",
+          "flatten",
+          "notEmpty"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "difficult",
+        "operator_count": 5,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 3.0,
+            "wnc": 5.0,
+            "tnc": 4.0,
+            "vrc": 1,
+            "wno": 4.0,
+            "wnm": 3.0,
+            "total": 12.0
+          },
+          "computational": {
+            "oc": 4.0,
+            "tcc": 2.0,
+            "cic": 2.0,
+            "total": 8.0
+          },
+          "dependency": {
+            "ruc": 2,
+            "total": 2.0
+          },
+          "tc": 22.0
+        },
+        "semantic_cluster": 2,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Author\ninv: self.books->size() <> 1",
+      "pattern_id": "size_constraint",
+      "pattern_name": "Collection Size Constraint",
+      "context": "Author",
+      "parameters": {
+        "collection": "books",
+        "operator": "<>",
+        "value": 1
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-16T06:25:28.442727",
+      "metadata": {
+        "category": "basic",
+        "complexity": 1,
+        "generation_number": 4647,
+        "profile": "easy",
+        "operators_used": [
+          "-",
+          "<",
+          "<>",
+          ">",
+          "size"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 5,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.4,
+            "vrc": 0,
+            "wno": 1.0,
+            "wnm": 1.0,
+            "total": 3.4
+          },
+          "computational": {
+            "oc": 1.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 1.0
+          },
+          "dependency": {
+            "ruc": 9,
+            "total": 9.0
+          },
+          "tc": 13.4
+        },
+        "semantic_cluster": 4,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Branch\ninv: self.reservations->size() = 3",
+      "pattern_id": "collection_has_size",
+      "pattern_name": "Collection Has Specific Size",
+      "context": "Branch",
+      "parameters": {
+        "collection": "reservations",
+        "size": 3
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-16T06:25:28.445518",
+      "metadata": {
+        "category": "collection",
+        "complexity": 1,
+        "generation_number": 4648,
+        "profile": "easy",
+        "operators_used": [
+          "-",
+          "=",
+          ">",
+          "size"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 4,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.4,
+            "vrc": 0,
+            "wno": 1.0,
+            "wnm": 1.0,
+            "total": 3.4
+          },
+          "computational": {
+            "oc": 1.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 1.0
+          },
+          "dependency": {
+            "ruc": 2,
+            "total": 2.0
+          },
+          "tc": 6.4
+        },
+        "semantic_cluster": 9,
+        "implies": [
+          "collection_not_empty_check_unsat_Branch"
+        ]
+      }
+    },
+    {
+      "ocl": "context Book\ninv: self.authors->size() > 0",
+      "pattern_id": "collection_not_empty_check",
+      "pattern_name": "Collection Not Empty Check",
+      "context": "Book",
+      "parameters": {
+        "collection": "authors"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-16T06:25:28.450525",
+      "metadata": {
+        "category": "collection",
+        "complexity": 1,
+        "generation_number": 4649,
+        "profile": "easy",
+        "operators_used": [
+          "-",
+          ">",
+          "size"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.4,
+            "vrc": 0,
+            "wno": 1.0,
+            "wnm": 1.0,
+            "total": 3.4
+          },
+          "computational": {
+            "oc": 1.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 1.0
+          },
+          "dependency": {
+            "ruc": 4,
+            "total": 4.0
+          },
+          "tc": 8.4
+        },
+        "semantic_cluster": 0,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Loan\ninv: self.returnDate <> self.startDate",
+      "pattern_id": "two_attributes_not_equal",
+      "pattern_name": "Two Attributes Not Equal",
+      "context": "Loan",
+      "parameters": {
+        "first_attribute": "returnDate",
+        "second_attribute": "startDate"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-16T06:25:28.458638",
+      "metadata": {
+        "category": "basic",
+        "complexity": 1,
+        "generation_number": 4650,
+        "profile": "easy",
+        "operators_used": [
+          "<",
+          "<>",
+          ">"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 1,
+            "wnc": 2.0,
+            "tnc": 1.7,
+            "vrc": 0,
+            "wno": 1.0,
+            "wnm": 0.0,
+            "total": 2.7
+          },
+          "computational": {
+            "oc": 1.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 1.0
+          },
+          "dependency": {
+            "ruc": 8,
+            "total": 8.0
+          },
+          "tc": 11.7
+        },
+        "semantic_cluster": 11,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Book\ninv: self.copies->size() >= 2",
+      "pattern_id": "collection_min_size",
+      "pattern_name": "Collection Minimum Size",
+      "context": "Book",
+      "parameters": {
+        "collection": "copies",
+        "min_size": 2
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-16T06:25:28.460979",
+      "metadata": {
+        "category": "collection",
+        "complexity": 1,
+        "generation_number": 4651,
+        "profile": "easy",
+        "operators_used": [
+          "-",
+          "=",
+          ">",
+          ">=",
+          "size"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 5,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.4,
+            "vrc": 0,
+            "wno": 1.0,
+            "wnm": 1.0,
+            "total": 3.4
+          },
+          "computational": {
+            "oc": 1.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 1.0
+          },
+          "dependency": {
+            "ruc": 2,
+            "total": 2.0
+          },
+          "tc": 6.4
+        },
+        "semantic_cluster": 2,
+        "implies": [
+          "numeric_less_than_value_Book"
+        ]
+      }
+    },
+    {
+      "ocl": "context Book\ninv: self.reservations->size() <= 3",
+      "pattern_id": "collection_max_size",
+      "pattern_name": "Collection Maximum Size",
+      "context": "Book",
+      "parameters": {
+        "collection": "reservations",
+        "max_size": 3
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-16T06:25:28.463235",
+      "metadata": {
+        "category": "collection",
+        "complexity": 1,
+        "generation_number": 4652,
+        "profile": "easy",
+        "operators_used": [
+          "-",
+          "<",
+          "<=",
+          "=",
+          ">",
+          "size"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 6,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.4,
+            "vrc": 0,
+            "wno": 1.0,
+            "wnm": 1.0,
+            "total": 3.4
+          },
+          "computational": {
+            "oc": 1.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 1.0
+          },
+          "dependency": {
+            "ruc": 1,
+            "total": 1.0
+          },
+          "tc": 5.4
+        },
+        "semantic_cluster": 9,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Loan\ninv: (self.dueDate <> null) = (self.returnDate <> null)",
+      "pattern_id": "bi_implication",
+      "pattern_name": "Bi-directional Implication",
+      "context": "Loan",
+      "parameters": {
+        "first_attribute": "dueDate",
+        "second_attribute": "returnDate"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-16T06:25:28.468361",
+      "metadata": {
+        "category": "advanced",
+        "complexity": 2,
+        "generation_number": 4656,
+        "profile": "easy",
+        "operators_used": [
+          "<",
+          "<>",
+          "=",
+          ">"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 4,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 1,
+            "wnc": 2.0,
+            "tnc": 1.7,
+            "vrc": 0,
+            "wno": 3.0,
+            "wnm": 0.0,
+            "total": 4.7
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 8,
+            "total": 8.0
+          },
+          "tc": 15.7
+        },
+        "semantic_cluster": 11,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Reservation\ninv: self.requestDate <> self.expiryDate",
+      "pattern_id": "two_attributes_not_equal",
+      "pattern_name": "Two Attributes Not Equal",
+      "context": "Reservation",
+      "parameters": {
+        "first_attribute": "requestDate",
+        "second_attribute": "expiryDate"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-16T06:25:28.475060",
+      "metadata": {
+        "category": "basic",
+        "complexity": 1,
+        "generation_number": 4659,
+        "profile": "easy",
+        "operators_used": [
+          "<",
+          "<>",
+          ">"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 1,
+            "wnc": 2.0,
+            "tnc": 1.7,
+            "vrc": 0,
+            "wno": 1.0,
+            "wnm": 0.0,
+            "total": 2.7
+          },
+          "computational": {
+            "oc": 1.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 1.0
+          },
+          "dependency": {
+            "ruc": 3,
+            "total": 3.0
+          },
+          "tc": 6.7
+        },
+        "semantic_cluster": 11,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Reservation\ninv: self.requestDate <> null implies self.expiryDate <> null",
+      "pattern_id": "implies_simple",
+      "pattern_name": "Simple Implication",
+      "context": "Reservation",
+      "parameters": {
+        "first_attribute": "requestDate",
+        "second_attribute": "expiryDate"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-16T06:25:28.477292",
+      "metadata": {
+        "category": "advanced",
+        "complexity": 2,
+        "generation_number": 4660,
+        "profile": "easy",
+        "operators_used": [
+          "<",
+          "<>",
+          ">",
+          "implies"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 4,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 1,
+            "wnc": 2.0,
+            "tnc": 1.7,
+            "vrc": 0,
+            "wno": 4.0,
+            "wnm": 0.0,
+            "total": 5.7
+          },
+          "computational": {
+            "oc": 4.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 4.0
+          },
+          "dependency": {
+            "ruc": 3,
+            "total": 3.0
+          },
+          "tc": 12.7
+        },
+        "semantic_cluster": 11,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Loan\ninv: self.returnDate <> null and self.startDate <> null",
+      "pattern_id": "all_attributes_defined",
+      "pattern_name": "All Attributes Defined",
+      "context": "Loan",
+      "parameters": {
+        "first_attribute": "returnDate",
+        "second_attribute": "startDate"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-16T06:25:28.490285",
+      "metadata": {
+        "category": "advanced",
+        "complexity": 1,
+        "generation_number": 4662,
+        "profile": "easy",
+        "operators_used": [
+          "<",
+          "<>",
+          ">",
+          "and"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 4,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 1,
+            "wnc": 2.0,
+            "tnc": 1.7,
+            "vrc": 0,
+            "wno": 3.5,
+            "wnm": 0.0,
+            "total": 5.2
+          },
+          "computational": {
+            "oc": 3.5,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.5
+          },
+          "dependency": {
+            "ruc": 8,
+            "total": 8.0
+          },
+          "tc": 16.7
+        },
+        "semantic_cluster": 11,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Reservation\ninv: self.expiryDate <> null implies self.requestDate <> null",
+      "pattern_id": "implies_reverse",
+      "pattern_name": "Reverse Implication",
+      "context": "Reservation",
+      "parameters": {
+        "first_attribute": "requestDate",
+        "second_attribute": "expiryDate"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-16T06:25:28.496541",
+      "metadata": {
+        "category": "advanced",
+        "complexity": 2,
+        "generation_number": 4664,
+        "profile": "medium",
+        "operators_used": [
+          "<",
+          "<>",
+          ">",
+          "implies"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 4,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 1,
+            "wnc": 2.0,
+            "tnc": 1.7,
+            "vrc": 0,
+            "wno": 4.0,
+            "wnm": 0.0,
+            "total": 5.7
+          },
+          "computational": {
+            "oc": 4.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 4.0
+          },
+          "dependency": {
+            "ruc": 3,
+            "total": 3.0
+          },
+          "tc": 12.7
+        },
+        "semantic_cluster": 11,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Loan\ninv: self.startDate <> null implies self.dueDate <> null",
+      "pattern_id": "implies_simple",
+      "pattern_name": "Simple Implication",
+      "context": "Loan",
+      "parameters": {
+        "first_attribute": "startDate",
+        "second_attribute": "dueDate"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-16T06:25:28.498745",
+      "metadata": {
+        "category": "advanced",
+        "complexity": 2,
+        "generation_number": 4665,
+        "profile": "medium",
+        "operators_used": [
+          "<",
+          "<>",
+          ">",
+          "implies"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 4,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 1,
+            "wnc": 2.0,
+            "tnc": 1.7,
+            "vrc": 0,
+            "wno": 4.0,
+            "wnm": 0.0,
+            "total": 5.7
+          },
+          "computational": {
+            "oc": 4.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 4.0
+          },
+          "dependency": {
+            "ruc": 7,
+            "total": 7.0
+          },
+          "tc": 16.7
+        },
+        "semantic_cluster": 11,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Loan\ninv: self.startDate <> null implies self.returnDate <> null",
+      "pattern_id": "implies_reverse",
+      "pattern_name": "Reverse Implication",
+      "context": "Loan",
+      "parameters": {
+        "first_attribute": "returnDate",
+        "second_attribute": "startDate"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-16T06:25:28.516990",
+      "metadata": {
+        "category": "advanced",
+        "complexity": 2,
+        "generation_number": 4672,
+        "profile": "medium",
+        "operators_used": [
+          "<",
+          "<>",
+          ">",
+          "implies"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 4,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 1,
+            "wnc": 2.0,
+            "tnc": 1.7,
+            "vrc": 0,
+            "wno": 4.0,
+            "wnm": 0.0,
+            "total": 5.7
+          },
+          "computational": {
+            "oc": 4.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 4.0
+          },
+          "dependency": {
+            "ruc": 8,
+            "total": 8.0
+          },
+          "tc": 17.7
+        },
+        "semantic_cluster": 11,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Loan\ninv: self.startDate <> null and self.dueDate <> null and self.returnDate <> null",
+      "pattern_id": "three_attributes_defined",
+      "pattern_name": "Three Attributes Defined",
+      "context": "Loan",
+      "parameters": {
+        "first_attribute": "startDate",
+        "second_attribute": "dueDate",
+        "third_attribute": "returnDate"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-16T06:25:28.521653",
+      "metadata": {
+        "category": "advanced",
+        "complexity": 2,
+        "generation_number": 4673,
+        "profile": "medium",
+        "operators_used": [
+          "<",
+          "<>",
+          ">",
+          "and"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 4,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 3.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 1,
+            "wnc": 3.0,
+            "tnc": 2.4,
+            "vrc": 0,
+            "wno": 6.0,
+            "wnm": 0.0,
+            "total": 8.4
+          },
+          "computational": {
+            "oc": 6.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 6.0
+          },
+          "dependency": {
+            "ruc": 8,
+            "total": 8.0
+          },
+          "tc": 22.4
+        },
+        "semantic_cluster": 11,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Book\ninv: (self.pages < 100) and (self.copies->forAll(v | v.barcode <> ''))",
+      "pattern_id": "navigation_chain",
+      "pattern_name": "Navigation Chain",
+      "context": "Book",
+      "parameters": {
+        "navigation_path": "self.library.maxLoanDays <= 100"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-16T06:25:29.334357",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 2,
+        "generation_number": 4689,
+        "profile": "difficult",
+        "regenerated_from": "collection_navigation",
+        "regen_box": "difficult+forall",
+        "regen_family": "navigation",
+        "refilled_after": "dedup",
+        "operators_used": [
+          "-",
+          "<",
+          "<>",
+          ">",
+          "and",
+          "forAll"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "difficult",
+        "operator_count": 6,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 4.0,
+            "dn_ca": 3.0,
+            "wnc": 6.0,
+            "tnc": 4.3,
+            "vrc": 1,
+            "wno": 6.5,
+            "wnm": 1.0,
+            "total": 12.8
+          },
+          "computational": {
+            "oc": 6.5,
+            "tcc": 0.0,
+            "cic": 3.0,
+            "total": 9.5
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 22.3
+        },
+        "semantic_cluster": 4,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Fine\ninv: (self.amount > 0) and (self.payments->forAll(v | v.amount >= 10))",
+      "pattern_id": "numeric_non_negative",
+      "pattern_name": "Numeric Attribute Non-Negative",
+      "context": "Fine",
+      "parameters": {
+        "numeric_attribute": "amount"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-16T06:25:29.371030",
+      "metadata": {
+        "category": "arithmetic",
+        "complexity": 1,
+        "generation_number": 4690,
+        "profile": "difficult",
+        "regenerated_from": "numeric_bounded",
+        "regen_box": "difficult+forall",
+        "regen_family": "arithmetic",
+        "refilled_after": "dedup",
+        "operators_used": [
+          "-",
+          "=",
+          ">",
+          ">=",
+          "and",
+          "forAll"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "difficult",
+        "operator_count": 6,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 4.0,
+            "dn_ca": 3.0,
+            "wnc": 6.0,
+            "tnc": 4.3,
+            "vrc": 1,
+            "wno": 6.5,
+            "wnm": 1.0,
+            "total": 12.8
+          },
+          "computational": {
+            "oc": 6.5,
+            "tcc": 0.0,
+            "cic": 3.0,
+            "total": 9.5
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 22.3
+        },
+        "semantic_cluster": 3,
+        "implies": [
+          "numeric_non_negative_unsat_Fine",
+          "numeric_positive_unsat_Fine"
+        ]
+      }
+    },
+    {
+      "ocl": "context Book\ninv: (self.pages > 0) and (self.authors->forAll(v | v.name <> ''))",
+      "pattern_id": "numeric_abs_bounded",
+      "pattern_name": "Numeric Absolute Value Bounded",
+      "context": "Book",
+      "parameters": {
+        "numeric_attribute": "publishYear",
+        "max_abs": 4
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-16T06:25:29.383435",
+      "metadata": {
+        "category": "arithmetic",
+        "complexity": 2,
+        "generation_number": 4696,
+        "profile": "difficult",
+        "regenerated_from": "collection_size_range",
+        "regen_box": "difficult+forall",
+        "regen_family": "arithmetic",
+        "refilled_after": "dedup",
+        "operators_used": [
+          "-",
+          "<",
+          "<>",
+          ">",
+          "and",
+          "forAll"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "difficult",
+        "operator_count": 6,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 4.0,
+            "dn_ca": 3.0,
+            "wnc": 6.0,
+            "tnc": 4.3,
+            "vrc": 1,
+            "wno": 6.5,
+            "wnm": 1.0,
+            "total": 12.8
+          },
+          "computational": {
+            "oc": 6.5,
+            "tcc": 0.0,
+            "cic": 3.0,
+            "total": 9.5
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 22.3
+        },
+        "semantic_cluster": 4,
+        "implies": [
+          "numeric_abs_bounded_Book"
+        ]
+      }
+    },
+    {
+      "ocl": "context Category\ninv: (self.books->any(x | x.publishYear < 100) <> null) and (self.books->size() <= 3)",
+      "pattern_id": "any_operation",
+      "pattern_name": "Any Operation",
+      "context": "Category",
+      "parameters": {
+        "collection": "books",
+        "iterator": "x",
+        "condition": "x.publishYear < 100"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-16T06:25:29.438333",
+      "metadata": {
+        "category": "collection",
+        "complexity": 2,
+        "generation_number": 4718,
+        "profile": "difficult",
+        "regenerated_from": "exists_constraint",
+        "regen_box": "difficult+conjoin",
+        "regen_family": "quantified",
+        "refilled_after": "dedup",
+        "operators_used": [
+          "-",
+          "<",
+          "<=",
+          "<>",
+          "=",
+          ">",
+          "and",
+          "any",
+          "size"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "difficult",
+        "operator_count": 9,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 5.0,
+            "nnc_plus": 4.0,
+            "dn_ca": 3.0,
+            "wnc": 6.0,
+            "tnc": 4.7,
+            "vrc": 1,
+            "wno": 4.5,
+            "wnm": 2.0,
+            "total": 12.2
+          },
+          "computational": {
+            "oc": 4.5,
+            "tcc": 0.0,
+            "cic": 2.0,
+            "total": 6.5
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 18.7
+        },
+        "semantic_cluster": 0,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Library\ninv: self.branches->collect(x | x.copies)->flatten()->notEmpty()",
+      "pattern_id": "flatten_operation",
+      "pattern_name": "Flatten Operation",
+      "context": "Library",
+      "parameters": {
+        "collection": "branches",
+        "iterator": "x",
+        "nested_collection": "copies"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-16T06:25:29.468621",
+      "metadata": {
+        "category": "set_operations",
+        "complexity": 3,
+        "generation_number": 4722,
+        "profile": "difficult",
+        "regenerated_from": "collection_collectNested",
+        "regen_box": "difficult",
+        "regen_family": "cardinality",
+        "refilled_after": "dedup",
+        "operators_used": [
+          "-",
+          ">",
+          "collect",
+          "flatten",
+          "notEmpty"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "difficult",
+        "operator_count": 5,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 3.0,
+            "wnc": 5.0,
+            "tnc": 4.0,
+            "vrc": 1,
+            "wno": 4.0,
+            "wnm": 3.0,
+            "total": 12.0
+          },
+          "computational": {
+            "oc": 4.0,
+            "tcc": 2.0,
+            "cic": 2.0,
+            "total": 8.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 20.0
+        },
+        "semantic_cluster": 2,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Book\ninv: (self.publishYear <= 100) and (self.copies->forAll(v | v.barcode <> ''))",
+      "pattern_id": "collection_empty_check",
+      "pattern_name": "Collection Must Be Empty",
+      "context": "Book",
+      "parameters": {
+        "collection": "reservations"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-16T06:25:29.592832",
+      "metadata": {
+        "category": "collection",
+        "complexity": 1,
+        "generation_number": 4772,
+        "profile": "difficult",
+        "regenerated_from": "flatten_operation",
+        "regen_box": "difficult+forall",
+        "regen_family": "cardinality",
+        "refilled_after": "dedup",
+        "operators_used": [
+          "-",
+          "<",
+          "<=",
+          "<>",
+          "=",
+          ">",
+          "and",
+          "forAll"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "difficult",
+        "operator_count": 8,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 4.0,
+            "dn_ca": 3.0,
+            "wnc": 6.0,
+            "tnc": 4.3,
+            "vrc": 1,
+            "wno": 6.5,
+            "wnm": 1.0,
+            "total": 12.8
+          },
+          "computational": {
+            "oc": 6.5,
+            "tcc": 0.0,
+            "cic": 3.0,
+            "total": 9.5
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 22.3
+        },
+        "semantic_cluster": 6,
+        "implies": [
+          "numeric_odd_Book"
+        ]
+      }
+    },
+    {
+      "ocl": "context Library\ninv: (self.members->collect(x | x.reservations)->size() >= 3) and (self.members->size() <= 1)",
+      "pattern_id": "collection_collectNested",
+      "pattern_name": "Collection Nested Collection Flatten",
+      "context": "Library",
+      "parameters": {
+        "collection": "members",
+        "nested_collection": "reservations",
+        "min_size": 3
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-16T06:25:29.622887",
+      "metadata": {
+        "category": "collection",
+        "complexity": 4,
+        "generation_number": 4773,
+        "profile": "difficult",
+        "regenerated_from": "collection_sum",
+        "regen_box": "difficult+conjoin",
+        "regen_family": "cardinality",
+        "refilled_after": "dedup",
+        "operators_used": [
+          "-",
+          "<",
+          "<=",
+          "=",
+          ">",
+          ">=",
+          "and",
+          "collect",
+          "size"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "difficult",
+        "operator_count": 9,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 6.0,
+            "nnc_plus": 4.0,
+            "dn_ca": 3.0,
+            "wnc": 6.0,
+            "tnc": 5.1,
+            "vrc": 1,
+            "wno": 5.5,
+            "wnm": 3.0,
+            "total": 14.6
+          },
+          "computational": {
+            "oc": 5.5,
+            "tcc": 0.0,
+            "cic": 2.0,
+            "total": 7.5
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 22.1
+        },
+        "semantic_cluster": 9,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Branch\ninv: (self.phone <> '') and (self.reservations->forAll(v | v.expiryDate <> ''))",
+      "pattern_id": "collection_indexOf",
+      "pattern_name": "Collection Index Of Element",
+      "context": "Branch",
+      "parameters": {
+        "collection": "loans",
+        "element": "manager"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-16T06:25:29.636459",
+      "metadata": {
+        "category": "collection",
+        "complexity": 3,
+        "generation_number": 4775,
+        "profile": "difficult",
+        "regenerated_from": "collection_collectNested",
+        "regen_box": "difficult+forall",
+        "regen_family": "cardinality",
+        "refilled_after": "dedup",
+        "operators_used": [
+          "-",
+          "<",
+          "<>",
+          ">",
+          "and",
+          "forAll"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "difficult",
+        "operator_count": 6,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 4.0,
+            "dn_ca": 3.0,
+            "wnc": 6.0,
+            "tnc": 4.3,
+            "vrc": 1,
+            "wno": 6.5,
+            "wnm": 1.0,
+            "total": 12.8
+          },
+          "computational": {
+            "oc": 6.5,
+            "tcc": 0.0,
+            "cic": 3.0,
+            "total": 9.5
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 22.3
+        },
+        "semantic_cluster": 6,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Fine\ninv: (self.amount >= 0) and (self.amount < 0)",
+      "pattern_id": "numeric_non_negative_unsat",
+      "pattern_name": "Numeric Attribute Non-Negative (UNSAT)",
+      "context": "Fine",
+      "parameters": {
+        "numeric_attribute": "amount"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-16T06:25:29.681302",
+      "metadata": {
+        "category": "arithmetic",
+        "complexity": 1,
+        "generation_number": 4593,
+        "profile": "easy",
+        "operators_used": [
+          "=",
+          ">",
+          ">="
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 1.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.0,
+            "vrc": 0,
+            "wno": 1.0,
+            "wnm": 0.0,
+            "total": 2.0
+          },
+          "computational": {
+            "oc": 1.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 1.0
+          },
+          "dependency": {
+            "ruc": 7,
+            "total": 7.0
+          },
+          "tc": 10.0
+        },
+        "is_unsat": true,
+        "mutation": "contradictory_bounds",
+        "original_pattern_id": "numeric_non_negative",
+        "contradiction_ocl": "context Fine\ninv: self.amount < 0",
+        "slot_profile": "easy",
+        "semantic_cluster": 3,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Fine\ninv: ((self.payments->collect(x | x.amount)->sum() >= 4) and (self.reason.toUpperCase() = 'TEST')) and (not((self.payments->collect(x | x.amount)->sum() >= 4) and (self.reason.toUpperCase() = 'TEST')))",
+      "pattern_id": "collection_sum_unsat",
+      "pattern_name": "Collection Sum (UNSAT)",
+      "context": "Fine",
+      "parameters": {
+        "collection": "payments",
+        "numeric_attribute": "amount",
+        "min_sum": 4
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-16T06:25:30.426269",
+      "metadata": {
+        "category": "collection",
+        "complexity": 3,
+        "generation_number": 4641,
+        "profile": "unboxed",
+        "operators_used": [
+          "-",
+          "=",
+          ">",
+          ">=",
+          "and",
+          "collect",
+          "sum"
+        ],
+        "navigation_depth": 3,
+        "quantifier_depth": 1,
+        "difficulty": "unboxed",
+        "operator_count": 7,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 4.0,
+            "dn_ca": 3.0,
+            "wnc": 6.0,
+            "tnc": 4.3,
+            "vrc": 1,
+            "wno": 5.5,
+            "wnm": 3.0,
+            "total": 13.8
+          },
+          "computational": {
+            "oc": 5.5,
+            "tcc": 0.0,
+            "cic": 2.0,
+            "total": 7.5
+          },
+          "dependency": {
+            "ruc": 5,
+            "total": 5.0
+          },
+          "tc": 26.3
+        },
+        "is_unsat": true,
+        "mutation": "self_contradiction",
+        "original_pattern_id": "collection_sum",
+        "slot_profile": "difficult",
+        "semantic_cluster": 3,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Book\ninv: ((self.publishYear < 10) and (self.reservations->forAll(v | v.requestDate <> ''))) and (self.publishYear > 15)",
+      "pattern_id": "collection_indexOf_unsat",
+      "pattern_name": "Collection Index Of Element (UNSAT)",
+      "context": "Book",
+      "parameters": {
+        "collection": "copies",
+        "element": "publisher"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-16T06:25:30.426327",
+      "metadata": {
+        "category": "collection",
+        "complexity": 3,
+        "generation_number": 4727,
+        "profile": "difficult",
+        "regenerated_from": "flatten_operation",
+        "regen_box": "difficult+forall",
+        "regen_family": "cardinality",
+        "refilled_after": "dedup",
+        "operators_used": [
+          "-",
+          "<",
+          "<>",
+          ">",
+          "and",
+          "forAll"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "difficult",
+        "operator_count": 6,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 4.0,
+            "dn_ca": 3.0,
+            "wnc": 6.0,
+            "tnc": 4.3,
+            "vrc": 1,
+            "wno": 6.5,
+            "wnm": 1.0,
+            "total": 12.8
+          },
+          "computational": {
+            "oc": 6.5,
+            "tcc": 0.0,
+            "cic": 3.0,
+            "total": 9.5
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 22.3
+        },
+        "is_unsat": true,
+        "mutation": "contradictory_bounds",
+        "original_pattern_id": "collection_indexOf",
+        "contradiction_ocl": "context Book\ninv: self.publishYear > 15",
+        "slot_profile": "difficult",
+        "semantic_cluster": 6,
+        "implies": [
+          "numeric_odd_Book",
+          "collection_empty_check_Book"
+        ]
+      }
+    },
+    {
+      "ocl": "context Book\ninv: ((self.publishYear > 16) and (self.isbn.size() <= 80)) and (self.publishYear < 11)",
+      "pattern_id": "numeric_greater_than_value_unsat",
+      "pattern_name": "Numeric Greater Than Value (UNSAT)",
+      "context": "Book",
+      "parameters": {
+        "numeric_attribute": "publishYear",
+        "value": 16
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-16T06:25:31.139220",
+      "metadata": {
+        "category": "arithmetic",
+        "complexity": 1,
+        "generation_number": 4595,
+        "profile": "medium",
+        "operators_used": [
+          "<",
+          "<=",
+          "=",
+          ">",
+          "and",
+          "size"
+        ],
+        "navigation_depth": 3,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 6,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 1,
+            "wnc": 2.0,
+            "tnc": 1.7,
+            "vrc": 0,
+            "wno": 3.5,
+            "wnm": 1.0,
+            "total": 6.2
+          },
+          "computational": {
+            "oc": 3.5,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.5
+          },
+          "dependency": {
+            "ruc": 3,
+            "total": 3.0
+          },
+          "tc": 12.7
+        },
+        "is_unsat": true,
+        "mutation": "contradictory_bounds",
+        "original_pattern_id": "numeric_greater_than_value",
+        "contradiction_ocl": "context Book\ninv: self.publishYear < 11",
+        "slot_profile": "medium",
+        "semantic_cluster": 0,
+        "implies": [
+          "numeric_positive_Book"
+        ]
+      }
+    },
+    {
+      "ocl": "context Fine\ninv: ((self.amount < 1000) and (self.payments->forAll(v | v.amount < 50))) and (self.amount > 1005)",
+      "pattern_id": "navigation_chain_unsat",
+      "pattern_name": "Navigation Chain (UNSAT)",
+      "context": "Fine",
+      "parameters": {
+        "navigation_path": "self.member.library.maxLoanDays < 1000"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-16T06:25:31.880575",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 2,
+        "generation_number": 4532,
+        "profile": "difficult",
+        "operators_used": [
+          "-",
+          "<",
+          ">",
+          "and",
+          "forAll"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "difficult",
+        "operator_count": 5,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 4.0,
+            "dn_ca": 3.0,
+            "wnc": 6.0,
+            "tnc": 4.3,
+            "vrc": 1,
+            "wno": 6.5,
+            "wnm": 1.0,
+            "total": 12.8
+          },
+          "computational": {
+            "oc": 6.5,
+            "tcc": 0.0,
+            "cic": 3.0,
+            "total": 9.5
+          },
+          "dependency": {
+            "ruc": 9,
+            "total": 9.0
+          },
+          "tc": 31.3
+        },
+        "is_unsat": true,
+        "mutation": "contradictory_bounds",
+        "original_pattern_id": "navigation_chain",
+        "contradiction_ocl": "context Fine\ninv: self.amount > 1005",
+        "slot_profile": "difficult",
+        "semantic_cluster": 3,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Reservation\ninv: (not(self.expiryDate <> null and self.requestDate <> null)) and (not(not(self.expiryDate <> null and self.requestDate <> null)))",
+      "pattern_id": "not_both_defined_unsat",
+      "pattern_name": "Not Both Defined (UNSAT)",
+      "context": "Reservation",
+      "parameters": {
+        "first_attribute": "expiryDate",
+        "second_attribute": "requestDate"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-16T06:25:32.621321",
+      "metadata": {
+        "category": "advanced",
+        "complexity": 2,
+        "generation_number": 4674,
+        "profile": "unboxed",
+        "operators_used": [
+          "<",
+          "<>",
+          ">",
+          "and",
+          "not"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "unboxed",
+        "operator_count": 5,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 1,
+            "wnc": 2.0,
+            "tnc": 1.7,
+            "vrc": 0,
+            "wno": 5.0,
+            "wnm": 0.0,
+            "total": 6.7
+          },
+          "computational": {
+            "oc": 5.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 5.0
+          },
+          "dependency": {
+            "ruc": 3,
+            "total": 3.0
+          },
+          "tc": 14.7
+        },
+        "is_unsat": true,
+        "mutation": "self_contradiction",
+        "original_pattern_id": "not_both_defined",
+        "slot_profile": "medium",
+        "semantic_cluster": 6,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Author\ninv: (self.books->size() >= 3 and self.books->size() <= 3) and (self.books->size() < 3)",
+      "pattern_id": "collection_size_range_unsat",
+      "pattern_name": "Collection Size in Range (UNSAT)",
+      "context": "Author",
+      "parameters": {
+        "collection": "books",
+        "min_size": 3,
+        "max_size": 3
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-16T06:25:32.621376",
+      "metadata": {
+        "category": "collection",
+        "complexity": 2,
+        "generation_number": 4618,
+        "profile": "unboxed",
+        "operators_used": [
+          "-",
+          "<",
+          "<=",
+          "=",
+          ">",
+          ">=",
+          "and",
+          "size"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "unboxed",
+        "operator_count": 8,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 1,
+            "wnc": 2.0,
+            "tnc": 2.5,
+            "vrc": 0,
+            "wno": 3.5,
+            "wnm": 2.0,
+            "total": 8.0
+          },
+          "computational": {
+            "oc": 3.5,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.5
+          },
+          "dependency": {
+            "ruc": 9,
+            "total": 9.0
+          },
+          "tc": 20.5
+        },
+        "is_unsat": true,
+        "mutation": "contradictory_bounds",
+        "original_pattern_id": "collection_size_range",
+        "contradiction_ocl": "context Author\ninv: self.books->size() < 3",
+        "slot_profile": "medium",
+        "semantic_cluster": 4,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Fine\ninv: ((self.amount >= 2) and (self.payments->forAll(v | v.amount >= 2))) and (self.amount < 2)",
+      "pattern_id": "collection_size_range_unsat",
+      "pattern_name": "Collection Size in Range (UNSAT)",
+      "context": "Fine",
+      "parameters": {
+        "collection": "payments",
+        "min_size": 2,
+        "max_size": 3
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-16T06:25:33.401193",
+      "metadata": {
+        "category": "collection",
+        "complexity": 2,
+        "generation_number": 4536,
+        "profile": "difficult",
+        "operators_used": [
+          "-",
+          "=",
+          ">",
+          ">=",
+          "and",
+          "forAll"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "difficult",
+        "operator_count": 6,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 4.0,
+            "dn_ca": 3.0,
+            "wnc": 6.0,
+            "tnc": 4.3,
+            "vrc": 1,
+            "wno": 6.5,
+            "wnm": 1.0,
+            "total": 12.8
+          },
+          "computational": {
+            "oc": 6.5,
+            "tcc": 0.0,
+            "cic": 3.0,
+            "total": 9.5
+          },
+          "dependency": {
+            "ruc": 9,
+            "total": 9.0
+          },
+          "tc": 31.3
+        },
+        "is_unsat": true,
+        "mutation": "contradictory_bounds",
+        "original_pattern_id": "collection_size_range",
+        "contradiction_ocl": "context Fine\ninv: self.amount < 2",
+        "slot_profile": "difficult",
+        "semantic_cluster": 3,
+        "implies": [
+          "numeric_non_negative_Fine",
+          "numeric_non_negative_unsat_Fine",
+          "numeric_positive_unsat_Fine"
+        ]
+      }
+    },
+    {
+      "ocl": "context Copy\ninv: (self.reservations->forAll(x | x.requestDate <> '')) and (self.reservations->exists(x | not(x.requestDate <> '')))",
+      "pattern_id": "collection_navigation_unsat",
+      "pattern_name": "Collection Navigation (UNSAT)",
+      "context": "Copy",
+      "parameters": {
+        "collection": "reservations",
+        "operation": "forAll",
+        "iterator": "x",
+        "nested": "requestDate <> ''"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-16T06:25:34.107981",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 3,
+        "generation_number": 4525,
+        "profile": "difficult",
+        "operators_used": [
+          "-",
+          "<",
+          "<>",
+          ">",
+          "forAll"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "difficult",
+        "operator_count": 5,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 3.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 3.0,
+            "wnc": 5.0,
+            "tnc": 3.6,
+            "vrc": 1,
+            "wno": 4.0,
+            "wnm": 1.0,
+            "total": 9.6
+          },
+          "computational": {
+            "oc": 4.0,
+            "tcc": 0.0,
+            "cic": 3.0,
+            "total": 7.0
+          },
+          "dependency": {
+            "ruc": 1,
+            "total": 1.0
+          },
+          "tc": 17.6
+        },
+        "is_unsat": true,
+        "mutation": "universal_negation",
+        "original_pattern_id": "collection_navigation",
+        "contradiction_ocl": "context Copy\ninv: self.reservations->exists(x | not(x.requestDate <> ''))",
+        "contradiction_pattern_id": "exists_nested",
+        "slot_profile": "difficult",
+        "semantic_cluster": 6,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Branch\ninv: (self.manager <> null) and (not(self.manager <> null))",
+      "pattern_id": "association_exists_unsat",
+      "pattern_name": "Association Exists (UNSAT)",
+      "context": "Branch",
+      "parameters": {
+        "association": "manager"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-16T06:25:34.839936",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 1,
+        "generation_number": 4524,
+        "profile": "medium",
+        "operators_used": [
+          "<",
+          "<>",
+          ">"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 1.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.0,
+            "vrc": 0,
+            "wno": 1.0,
+            "wnm": 0.0,
+            "total": 2.0
+          },
+          "computational": {
+            "oc": 1.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 1.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 3.0
+        },
+        "is_unsat": true,
+        "mutation": "self_contradiction",
+        "original_pattern_id": "association_exists",
+        "slot_profile": "easy",
+        "semantic_cluster": 1,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Author\ninv: (self.books->select(x | x.pages > 1)->size() >= 1) and (not(self.books->select(x | x.pages > 1)->size() >= 1))",
+      "pattern_id": "select_operation_unsat",
+      "pattern_name": "Select (Filter) Operation (UNSAT)",
+      "context": "Author",
+      "parameters": {
+        "collection": "books",
+        "iterator": "x",
+        "condition": "x.pages > 1",
+        "result_operation": "->size() >= 1"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-16T06:25:35.444293",
+      "metadata": {
+        "category": "collection",
+        "complexity": 2,
+        "generation_number": 4580,
+        "profile": "difficult",
+        "operators_used": [
+          "-",
+          "=",
+          ">",
+          ">=",
+          "select",
+          "size"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "difficult",
+        "operator_count": 6,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 3.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 3.0,
+            "wnc": 5.0,
+            "tnc": 3.6,
+            "vrc": 1,
+            "wno": 4.0,
+            "wnm": 2.0,
+            "total": 10.6
+          },
+          "computational": {
+            "oc": 4.0,
+            "tcc": 0.0,
+            "cic": 2.0,
+            "total": 6.0
+          },
+          "dependency": {
+            "ruc": 9,
+            "total": 9.0
+          },
+          "tc": 25.6
+        },
+        "is_unsat": true,
+        "mutation": "self_contradiction",
+        "original_pattern_id": "select_operation",
+        "slot_profile": "medium",
+        "semantic_cluster": 4,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Fine\ninv: (self.amount > 0) and (self.amount < -5)",
+      "pattern_id": "numeric_positive_unsat",
+      "pattern_name": "Numeric Attribute Positive (UNSAT)",
+      "context": "Fine",
+      "parameters": {
+        "numeric_attribute": "amount"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-16T06:25:35.444324",
+      "metadata": {
+        "category": "arithmetic",
+        "complexity": 1,
+        "generation_number": 4617,
+        "profile": "easy",
+        "operators_used": [
+          ">"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 1,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 1.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.0,
+            "vrc": 0,
+            "wno": 1.0,
+            "wnm": 0.0,
+            "total": 2.0
+          },
+          "computational": {
+            "oc": 1.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 1.0
+          },
+          "dependency": {
+            "ruc": 7,
+            "total": 7.0
+          },
+          "tc": 10.0
+        },
+        "is_unsat": true,
+        "mutation": "contradictory_bounds",
+        "original_pattern_id": "numeric_positive",
+        "contradiction_ocl": "context Fine\ninv: self.amount < -5",
+        "slot_profile": "easy",
+        "semantic_cluster": 3,
+        "implies": [
+          "numeric_non_negative_Fine",
+          "numeric_non_negative_unsat_Fine"
+        ]
+      }
+    },
+    {
+      "ocl": "context Reservation\ninv: (self.copy.book = self.book) and (not(self.copy.book = self.book))",
+      "pattern_id": "navigation_consistency_unsat",
+      "pattern_name": "Navigation Consistency (UNSAT)",
+      "context": "Reservation",
+      "parameters": {
+        "assoc_a": "copy",
+        "assoc_b": "book",
+        "assoc_c": "book"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-16T06:25:36.813739",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 1,
+        "generation_number": 4522,
+        "profile": "unboxed",
+        "operators_used": [
+          "="
+        ],
+        "navigation_depth": 3,
+        "quantifier_depth": 0,
+        "difficulty": "unboxed",
+        "operator_count": 1,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 3.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 2,
+            "wnc": 3.0,
+            "tnc": 2.7,
+            "vrc": 0,
+            "wno": 1.0,
+            "wnm": 0.0,
+            "total": 3.7
+          },
+          "computational": {
+            "oc": 1.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 1.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 4.7
+        },
+        "is_unsat": true,
+        "mutation": "self_contradiction",
+        "original_pattern_id": "navigation_consistency",
+        "slot_profile": "easy",
+        "semantic_cluster": 2,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Branch\ninv: (self.reservations->size() > 0) and (self.reservations->size() < -5)",
+      "pattern_id": "collection_not_empty_check_unsat",
+      "pattern_name": "Collection Not Empty Check (UNSAT)",
+      "context": "Branch",
+      "parameters": {
+        "collection": "reservations"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-16T06:25:36.813794",
+      "metadata": {
+        "category": "collection",
+        "complexity": 1,
+        "generation_number": 4661,
+        "profile": "medium",
+        "operators_used": [
+          "-",
+          ">",
+          "size"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.4,
+            "vrc": 0,
+            "wno": 1.0,
+            "wnm": 1.0,
+            "total": 3.4
+          },
+          "computational": {
+            "oc": 1.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 1.0
+          },
+          "dependency": {
+            "ruc": 2,
+            "total": 2.0
+          },
+          "tc": 6.4
+        },
+        "is_unsat": true,
+        "mutation": "contradictory_bounds",
+        "original_pattern_id": "collection_not_empty_check",
+        "contradiction_ocl": "context Branch\ninv: self.reservations->size() < -5",
+        "slot_profile": "easy",
+        "semantic_cluster": 9,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Branch\ninv: ((self.address.branch.code <> '') and (self.name.size() >= 8 implies self.name.substring(1, 8) = 'AB')) and (not((self.address.branch.code <> '') and (self.name.size() >= 8 implies self.name.substring(1, 8) = 'AB')))",
+      "pattern_id": "navigation_chain_unsat",
+      "pattern_name": "Navigation Chain (UNSAT)",
+      "context": "Branch",
+      "parameters": {
+        "navigation_path": "self.address.branch.code <> ''"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-16T06:25:37.332940",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 2,
+        "generation_number": 4578,
+        "profile": "unboxed",
+        "operators_used": [
+          "<",
+          "<>",
+          "=",
+          ">",
+          ">=",
+          "and",
+          "implies",
+          "size",
+          "substring"
+        ],
+        "navigation_depth": 4,
+        "quantifier_depth": 0,
+        "difficulty": "unboxed",
+        "operator_count": 9,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 5.0,
+            "nnc_plus": 5.0,
+            "dn_ca": 3,
+            "wnc": 5.0,
+            "tnc": 4.4,
+            "vrc": 0,
+            "wno": 7.5,
+            "wnm": 2.0,
+            "total": 13.9
+          },
+          "computational": {
+            "oc": 6.5,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 6.5
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 20.4
+        },
+        "is_unsat": true,
+        "mutation": "self_contradiction",
+        "original_pattern_id": "navigation_chain",
+        "slot_profile": "medium",
+        "semantic_cluster": 12,
+        "implies": []
+      }
+    }
+  ],
+  "verification": {
+    "enabled": true,
+    "results": [
+      {
+        "constraint_id": "association_exists_Book",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.44298505783081055
+      },
+      {
+        "constraint_id": "conditional_existence_Payment",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.4654872417449951
+      },
+      {
+        "constraint_id": "navigation_consistency_Loan",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.4649531841278076
+      },
+      {
+        "constraint_id": "association_exists_Address",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.46309518814086914
+      },
+      {
+        "constraint_id": "navigation_consistency_Fine",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.45141100883483887
+      },
+      {
+        "constraint_id": "collection_navigation_Library",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.41951823234558105
+      },
+      {
+        "constraint_id": "collection_navigation_Author",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.4125821590423584
+      },
+      {
+        "constraint_id": "collection_navigation_Category",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.437863826751709
+      },
+      {
+        "constraint_id": "collection_navigation_Member",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.5470600128173828
+      },
+      {
+        "constraint_id": "navigation_chain_Copy",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.47226905822753906
+      },
+      {
+        "constraint_id": "collection_size_range_Branch",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.4502248764038086
+      },
+      {
+        "constraint_id": "collection_size_range_Branch",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.45029783248901367
+      },
+      {
+        "constraint_id": "numeric_odd_Book",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.4282057285308838
+      },
+      {
+        "constraint_id": "numeric_abs_bounded_Book",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.47127604484558105
+      },
+      {
+        "constraint_id": "navigation_chain_Librarian",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.5889301300048828
+      },
+      {
+        "constraint_id": "navigation_chain_Staff",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.5058929920196533
+      },
+      {
+        "constraint_id": "conditional_existence_Payment",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.3975698947906494
+      },
+      {
+        "constraint_id": "navigation_consistency_Fine",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.4341130256652832
+      },
+      {
+        "constraint_id": "navigation_consistency_Payment",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.4499678611755371
+      },
+      {
+        "constraint_id": "navigation_consistency_Fine",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.6835637092590332
+      },
+      {
+        "constraint_id": "simple_navigation_Loan",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.4197120666503906
+      },
+      {
+        "constraint_id": "navigation_consistency_Payment",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.4448268413543701
+      },
+      {
+        "constraint_id": "select_operation_Member",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.41431403160095215
+      },
+      {
+        "constraint_id": "collect_operation_Author",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.498960018157959
+      },
+      {
+        "constraint_id": "any_operation_Copy",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.6374790668487549
+      },
+      {
+        "constraint_id": "numeric_positive_Book",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.39214396476745605
+      },
+      {
+        "constraint_id": "numeric_even_Library",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.4040999412536621
+      },
+      {
+        "constraint_id": "numeric_multiple_of_Library",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.4002039432525635
+      },
+      {
+        "constraint_id": "collection_size_range_Copy",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.40785980224609375
+      },
+      {
+        "constraint_id": "numeric_less_than_value_Book",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.40355396270751953
+      },
+      {
+        "constraint_id": "numeric_abs_bounded_Book",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.4149038791656494
+      },
+      {
+        "constraint_id": "numeric_multiple_of_Book",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.4247591495513916
+      },
+      {
+        "constraint_id": "numeric_even_Book",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.5013513565063477
+      },
+      {
+        "constraint_id": "numeric_non_negative_Library",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.43019700050354004
+      },
+      {
+        "constraint_id": "numeric_greater_than_value_Payment",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.4431180953979492
+      },
+      {
+        "constraint_id": "forall_nested_Member",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.44562506675720215
+      },
+      {
+        "constraint_id": "flatten_operation_Branch",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.46555376052856445
+      },
+      {
+        "constraint_id": "size_constraint_Author",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.45676207542419434
+      },
+      {
+        "constraint_id": "collection_has_size_Branch",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.4572131633758545
+      },
+      {
+        "constraint_id": "collection_not_empty_check_Book",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.4270451068878174
+      },
+      {
+        "constraint_id": "two_attributes_not_equal_Loan",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.42279696464538574
+      },
+      {
+        "constraint_id": "collection_min_size_Book",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.4640166759490967
+      },
+      {
+        "constraint_id": "collection_max_size_Book",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.4367098808288574
+      },
+      {
+        "constraint_id": "bi_implication_Loan",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.465228796005249
+      },
+      {
+        "constraint_id": "two_attributes_not_equal_Reservation",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.511448860168457
+      },
+      {
+        "constraint_id": "implies_simple_Reservation",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.49182987213134766
+      },
+      {
+        "constraint_id": "all_attributes_defined_Loan",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.42318177223205566
+      },
+      {
+        "constraint_id": "implies_reverse_Reservation",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.4436149597167969
+      },
+      {
+        "constraint_id": "implies_simple_Loan",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.4328470230102539
+      },
+      {
+        "constraint_id": "implies_reverse_Loan",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.4208548069000244
+      },
+      {
+        "constraint_id": "three_attributes_defined_Loan",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.44136905670166016
+      },
+      {
+        "constraint_id": "navigation_chain_Book",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.4407329559326172
+      },
+      {
+        "constraint_id": "numeric_non_negative_Fine",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.44199705123901367
+      },
+      {
+        "constraint_id": "numeric_abs_bounded_Book",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.4620840549468994
+      },
+      {
+        "constraint_id": "any_operation_Category",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.4698469638824463
+      },
+      {
+        "constraint_id": "flatten_operation_Library",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.4479789733886719
+      },
+      {
+        "constraint_id": "collection_empty_check_Book",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.45833802223205566
+      },
+      {
+        "constraint_id": "collection_collectNested_Library",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.48418116569519043
+      },
+      {
+        "constraint_id": "collection_indexOf_Branch",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.4503450393676758
+      }
+    ]
+  }
+}

@@ -1,0 +1,95 @@
+-- Benchmark: ManufacturingPlant / balanced
+-- Type: UNSAT Constraints Only
+-- Generated: 2026-10-16T06:31:27.582343
+-- Count: 15
+
+-- #1 Navigation Chain (UNSAT) in Sensor
+-- Difficulty: medium
+-- Mutation Strategy: contradictory_bounds
+context Sensor
+inv: ((self.machine.station.stationId <> '') and (self.lastReading >= 0)) and (self.lastReading < 0)
+
+-- #2 Collection Nested Collection Flatten (UNSAT) in ProductionLine
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context ProductionLine
+inv: ((self.workOrders->collect(x | x.qualityChecks)->size() >= 3) and (self.stations->exists(x | x.name <> ''))) and (not((self.workOrders->collect(x | x.qualityChecks)->size() >= 3) and (self.stations->exists(x | x.name <> ''))))
+
+-- #3 Select (Filter) Operation (UNSAT) in BillOfMaterials
+-- Difficulty: difficult
+-- Mutation Strategy: self_contradiction
+context BillOfMaterials
+inv: (self.items->select(x | x.requiredQty >= 5)->size() >= 1) and (not(self.items->select(x | x.requiredQty >= 5)->size() >= 1))
+
+-- #4 Any Operation (UNSAT) in Plant
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Plant
+inv: ((self.inventory->any(x | x.quantity < 100) <> null) and (self.suppliers->isEmpty())) and (not((self.inventory->any(x | x.quantity < 100) <> null) and (self.suppliers->isEmpty())))
+
+-- #5 Collection As Sequence Conversion (UNSAT) in Machine
+-- Difficulty: unboxed
+-- Mutation Strategy: universal_negation
+context Machine
+inv: ((self.manufacturer <> '') and (self.maintenanceTasks->forAll(v | v.isDone = false))) and (self.maintenanceTasks->exists(v | not(v.isDone = false)))
+
+-- #6 Numeric Attribute Bounded (UNSAT) in Sensor
+-- Difficulty: medium
+-- Mutation Strategy: contradictory_bounds
+context Sensor
+inv: (self.lastReading >= 81 and self.lastReading <= 88) and (self.lastReading < 81)
+
+-- #7 Numeric Multiple Of (UNSAT) in WorkOrder
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context WorkOrder
+inv: ((self.plannedQuantity mod 7 = 0) and (self.qualityChecks->size() <= 1)) and (not((self.plannedQuantity mod 7 = 0) and (self.qualityChecks->size() <= 1)))
+
+-- #8 Collection Size in Range (UNSAT) in Machine
+-- Difficulty: unboxed
+-- Mutation Strategy: universal_negation
+context Machine
+inv: ((self.serialNumber <> '') and (self.maintenanceTasks->forAll(v | v.isDone = false))) and (self.maintenanceTasks->exists(v | not(v.isDone = false)))
+
+-- #9 Collection Navigation (UNSAT) in BillOfMaterials
+-- Difficulty: difficult
+-- Mutation Strategy: self_contradiction
+context BillOfMaterials
+inv: (self.items->exists(x | x.requiredQty > 2)) and (not(self.items->exists(x | x.requiredQty > 2)))
+
+-- #10 Numeric Greater Than Value (UNSAT) in Sensor
+-- Difficulty: easy
+-- Mutation Strategy: contradictory_bounds
+context Sensor
+inv: (self.lastReading > 93) and (self.lastReading < 88)
+
+-- #11 All Attributes Defined (UNSAT) in Shift
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Shift
+inv: (self.endTime <> null and self.startTime <> null) and (not(self.endTime <> null and self.startTime <> null))
+
+-- #12 Numeric Less Than Value (UNSAT) in DefectReport
+-- Difficulty: medium
+-- Mutation Strategy: contradictory_bounds
+context DefectReport
+inv: ((self.severity < 13) and (self.qualityCheck.workOrder.plannedQuantity > 10)) and (self.severity > 18)
+
+-- #13 Collection Maximum Size (UNSAT) in Machine
+-- Difficulty: medium
+-- Mutation Strategy: contradictory_bounds
+context Machine
+inv: (self.sensors->size() <= 1) and (self.sensors->size() > 1)
+
+-- #14 Collection Has Specific Size (UNSAT) in Machine
+-- Difficulty: unboxed
+-- Mutation Strategy: universal_negation
+context Machine
+inv: ((self.serialNumber <> '') and (self.sensors->forAll(v | v.lastReading >= 10))) and (self.sensors->exists(v | not(v.lastReading >= 10)))
+
+-- #15 Not Both Defined (UNSAT) in Shift
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Shift
+inv: (not(self.startTime <> null and self.endTime <> null)) and (not(not(self.startTime <> null and self.endTime <> null)))
+

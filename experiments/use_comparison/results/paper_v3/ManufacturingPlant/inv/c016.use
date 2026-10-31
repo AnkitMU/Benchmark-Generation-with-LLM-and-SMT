@@ -1,0 +1,252 @@
+model ManufacturingPlant
+
+enum MachineStatus {Idle, Running, Maintenance, Breakdown}
+enum WorkOrderStatus {Planned, InProgress, Completed, Cancelled}
+
+class Robot
+attributes
+  robotId : String
+  model_ : String
+  isCalibrated : Boolean
+end
+
+class DefectReport
+attributes
+  defectId : String
+  description : String
+  severity : Integer
+end
+
+class Machine
+attributes
+  serialNumber : String
+  status : MachineStatus
+  manufacturer : String
+end
+
+class Supplier
+attributes
+  supplierId : String
+  name : String
+end
+
+class MaintenanceTask
+attributes
+  taskId : String
+  scheduledAt : String
+  isDone : Boolean
+end
+
+class Sensor
+attributes
+  sensorId : String
+  type : String
+  lastReading : Integer
+end
+
+class InventoryItem
+attributes
+  itemCode : String
+  name : String
+  quantity : Integer
+end
+
+class Technician
+attributes
+  empId : String
+  name : String
+end
+
+class Workstation
+attributes
+  stationId : String
+  name : String
+end
+
+class BillOfMaterials
+attributes
+  bomId : String
+end
+
+class Operator
+attributes
+  empId : String
+  name : String
+end
+
+class QualityCheck
+attributes
+  checkId : String
+  checkedAt : String
+  passed : Boolean
+end
+
+class Workshop
+attributes
+  code : String
+  name : String
+end
+
+class ProductionLine
+attributes
+  lineId : String
+  isActive : Boolean
+end
+
+class Plant
+attributes
+  name : String
+  location : String
+end
+
+class Product
+attributes
+  sku : String
+  name : String
+  unitPrice : Integer
+end
+
+class Shipment
+attributes
+  shipmentId : String
+  shippedAt : String
+  received : Boolean
+end
+
+class WorkOrder
+attributes
+  orderId : String
+  status : WorkOrderStatus
+  plannedQuantity : Integer
+end
+
+class BOMItem
+attributes
+  name : String
+  requiredQty : Integer
+end
+
+class Shift
+attributes
+  shiftName : String
+  startTime : String
+  endTime : String
+end
+
+association DefectReport_qualityCheck between
+  DefectReport[0..*] role defects
+  QualityCheck[1] role qualityCheck
+end
+
+association Machine_station between
+  Machine[0..*] role machines
+  Workstation[1] role station
+end
+
+association Machine_sensors between
+  Machine[1] role machine
+  Sensor[0..*] role sensors
+end
+
+association Machine_maintenanceTasks between
+  Machine[1] role machine
+  MaintenanceTask[0..*] role maintenanceTasks
+end
+
+association Supplier_items between
+  Supplier[0..1] role supplier
+  InventoryItem[0..*] role items
+end
+
+association Supplier_shipments between
+  Supplier[1] role supplier
+  Shipment[0..*] role shipments
+end
+
+association MaintenanceTask_assignedTo between
+  MaintenanceTask[0..*] role tasks
+  Technician[0..1] role assignedTo
+end
+
+association InventoryItem_plant between
+  InventoryItem[0..*] role inventory
+  Plant[1] role plant
+end
+
+association Technician_shift between
+  Technician[0..*] role technician_shift_src
+  Shift[0..1] role shift
+end
+
+association Workstation_line between
+  Workstation[0..*] role stations
+  ProductionLine[1] role line
+end
+
+association Workstation_assignedOperator between
+  Workstation[0..*] role workstation_assignedOperator_src
+  Operator[0..1] role assignedOperator
+end
+
+association BillOfMaterials_product between
+  BillOfMaterials[0..1] role bom
+  Product[1] role product
+end
+
+association BillOfMaterials_items between
+  BillOfMaterials[1] role bom
+  BOMItem[0..*] role items
+end
+
+association Operator_shift between
+  Operator[0..*] role operators
+  Shift[0..1] role shift
+end
+
+association QualityCheck_workOrder between
+  QualityCheck[0..*] role qualityChecks
+  WorkOrder[1] role workOrder
+end
+
+association Workshop_plant between
+  Workshop[0..*] role workshops
+  Plant[1] role plant
+end
+
+association Workshop_lines between
+  Workshop[1] role workshop
+  ProductionLine[0..*] role lines
+end
+
+association ProductionLine_workOrders between
+  ProductionLine[1] role line
+  WorkOrder[0..*] role workOrders
+end
+
+association Plant_suppliers between
+  Plant[0..*] role plant_suppliers_src
+  Supplier[0..*] role suppliers
+end
+
+association Shipment_plant between
+  Shipment[0..*] role shipment_plant_src
+  Plant[1] role plant
+end
+
+association Shipment_items between
+  Shipment[0..*] role shipment_items_src
+  InventoryItem[0..*] role items
+end
+
+association WorkOrder_product between
+  WorkOrder[0..*] role workOrder_product_src
+  Product[1] role product
+end
+
+association BOMItem_inventoryItem between
+  BOMItem[0..*] role bOMItem_inventoryItem_src
+  InventoryItem[0..1] role inventoryItem
+end
+
+constraints
+context Sensor inv c016: (self.machine.station.stationId <> '') and (self.lastReading >= 0)

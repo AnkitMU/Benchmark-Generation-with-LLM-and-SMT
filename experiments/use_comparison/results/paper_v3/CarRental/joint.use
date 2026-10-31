@@ -1,0 +1,211 @@
+model CarRental
+
+enum VehicleStatus {Available, Rented, Maintenance}
+
+class Vehicle
+attributes
+  vin : String
+  category : String
+  year : Integer
+  seats : Integer
+  doors : Integer
+  horsepower : Integer
+  mileage : Integer
+  tankLevel : Integer
+  weightKg : Integer
+  dailyRate : Integer
+  purchasePrice : Integer
+  insuranceValue : Integer
+  isAvailable : Boolean
+  status : VehicleStatus
+end
+
+class License
+attributes
+  number : String
+  expiry : String
+  isValid : Boolean
+end
+
+class Branch
+attributes
+  name : String
+  address : String
+  capacity : Integer
+  vehicleCount : Integer
+  staffCount : Integer
+  latitude : Integer
+  longitude : Integer
+  monthlyRevenue : Integer
+  isOpen : Boolean
+end
+
+class Reservation
+attributes
+  dateFrom : String
+  dateTo : String
+  createdAt : String
+  confirmedAt : String
+  estimatedCost : Integer
+  isConfirmed : Boolean
+end
+
+class Customer
+attributes
+  name : String
+  age : Integer
+  rentalCount : Integer
+  loyaltyPoints : Integer
+  balance : Integer
+  depositAmount : Integer
+  isPremium : Boolean
+end
+
+class Payment
+attributes
+  amount : Integer
+  tax : Integer
+  discount : Integer
+  timestamp : String
+  isProcessed : Boolean
+end
+
+class Company
+attributes
+  name : String
+  isActive : Boolean
+end
+
+class Rental
+attributes
+  startDate : String
+  endDate : String
+  mileageStart : Integer
+  mileageEnd : Integer
+  daysRented : Integer
+  totalAmount : Integer
+  lateFee : Integer
+  depositPaid : Integer
+  fuelCharge : Integer
+  isCompleted : Boolean
+end
+
+association Vehicle_branch between
+  Vehicle[0..*] role vehicles
+  Branch[1] role branch
+end
+
+association Vehicle_rentals between
+  Vehicle[1] role vehicle
+  Rental[0..*] role rentals
+end
+
+association Vehicle_reservations between
+  Vehicle[0..1] role vehicle
+  Reservation[0..*] role reservations
+end
+
+association License_customer between
+  License[1] role license
+  Customer[1] role customer
+end
+
+association Branch_company between
+  Branch[0..*] role branches
+  Company[1] role company
+end
+
+association Branch_rentals between
+  Branch[1] role branch
+  Rental[0..*] role rentals
+end
+
+association Branch_reservations between
+  Branch[1] role branch
+  Reservation[0..*] role reservations
+end
+
+association Reservation_customer between
+  Reservation[0..*] role reservations
+  Customer[1] role customer
+end
+
+association Customer_rentals between
+  Customer[1] role customer
+  Rental[0..*] role rentals
+end
+
+association Payment_rental between
+  Payment[0..1] role payment
+  Rental[1] role rental
+end
+
+constraints
+context Branch inv c000: self.reservations->forAll(x | x.estimatedCost > 0)
+context Vehicle inv c001: (self.horsepower > 10) and (self.rentals->forAll(v | v.mileageStart <= 10))
+context Customer inv c002: self.rentals->exists(x | x.mileageStart >= 0)
+context Company inv c003: self.branches->forAll(x | x.vehicleCount < 10)
+context Payment inv c004: self.rental.isCompleted
+context Reservation inv c005: self.customer.isPremium
+context Rental inv c006: self.isCompleted implies self.payment <> null
+context Reservation inv c007: self.vehicle.branch = self.branch
+context Rental inv c008: self.payment <> null
+context Branch inv c009: self.company.isActive <> true
+context Branch inv c010: self.company.isActive = false
+context Reservation inv c011: self.vehicle <> null
+context Company inv c012: self.branches->select(x | x.monthlyRevenue >= 5)->size() >= 1
+context Company inv c013: (self.branches->collect(x | x.monthlyRevenue)->notEmpty()) and (self.branches->notEmpty())
+context Branch inv c014: self.reservations->select(x | x.estimatedCost >= 5)->size() >= 1
+context Customer inv c015: (self.rentals->collect(x | x.lateFee)->notEmpty()) and (self.age.mod(2) = 0)
+context Rental inv c017: (self.vehicle.branch = self.branch) and (self.fuelCharge < 87)
+context Reservation inv c019: (self.vehicle.branch = self.branch) and (self.isConfirmed <> null)
+context Rental inv c020: (self.vehicle.branch = self.branch) and (self.isCompleted implies self.payment <> null)
+context Branch inv c021: self.vehicles->exists(x | x.seats > 0)
+context Vehicle inv c022: self.rentals->forAll(x | x.depositPaid > 0)
+context Branch inv c023: (self.vehicleCount >= 1) and (self.vehicles->forAll(v | v.doors <= 1000))
+context Customer inv c024: (self.rentalCount <= 1000) and (self.reservations->forAll(v | v.estimatedCost < 50))
+context Customer inv c025: (self.balance >= 2) and (self.rentals->forAll(v | v.mileageStart <= 100))
+context Branch inv c026: (self.capacity <= 10) and (self.vehicles->forAll(v | v.mileage >= 5))
+context Branch inv c027: (self.vehicles->collect(x | x.rentals)->size() >= 1) and (self.vehicleCount.mod(2) = 0)
+context Branch inv c028: (self.longitude < 1000) and (self.vehicles->forAll(v | v.dailyRate < 10))
+context Customer inv c029: self.depositAmount + self.balance > 17
+context Payment inv c030: self.discount = self.tax
+context Vehicle inv c031: self.seats + self.doors > 4
+context Customer inv c032: self.balance - self.depositAmount >= 5
+context Customer inv c033: self.rentalCount >= 14 and self.rentalCount <= 23
+context Rental inv c034: self.fuelCharge <= self.totalAmount
+context Rental inv c035: self.mileageStart.mod(2) = 0
+context Branch inv c036: self.rentals->size() >= 1 and self.rentals->size() <= 3
+context Customer inv c037: (if self.depositAmount < self.balance then self.depositAmount else self.balance endif >= 26) and (self.age.mod(2) = 0)
+context Customer inv c038: self.depositAmount >= 31 and self.depositAmount <= 67
+context Company inv c039: self.branches->size() >= 2 and self.branches->size() <= 3
+context Branch inv c040: self.capacity <= self.staffCount and self.staffCount <= self.vehicleCount
+context Branch inv c041: self.capacity <= self.vehicleCount and self.vehicleCount <= self.staffCount
+context Customer inv c042: self.loyaltyPoints >= 25 and self.loyaltyPoints <= 74
+context Vehicle inv c043: self.reservations->size() = 1
+context Branch inv c044: self.vehicles->size() = 3
+context Rental inv c045: self.mileageEnd <> self.mileageStart
+context Vehicle inv c046: self.rentals->size() > 0
+context Company inv c047: self.branches->size() >= 2
+context Customer inv c048: self.reservations->size() <= 3
+context Rental inv c049: (self.lateFee <> null) = (self.fuelCharge <> null)
+context Payment inv c050: self.discount <> null and self.amount <> null
+context Customer inv c051: self.rentals->size() <> 1
+context Payment inv c052: self.discount <> self.amount
+context Customer inv c053: self.reservations->notEmpty()
+context Company inv c054: self.branches->size() = 2
+context Payment inv c055: self.discount <> null implies self.tax <> null
+context Payment inv c056: self.tax <> null implies self.discount <> null
+context Rental inv c057: self.depositPaid <> null implies self.fuelCharge <> null
+context Payment inv c058: self.discount <> null and self.tax <> null
+context Payment inv c059: (self.amount <> null) = (self.discount <> null)
+context Customer inv c060: (self.balance < 1000) and (self.rentals->forAll(v | v.totalAmount <= 100))
+context Rental inv c061: self.payment.isProcessed
+context Customer inv c062: (self.reservations->one(x | x.estimatedCost > 1)) and (self.isPremium = true)
+context Branch inv c064: self.vehicles->select(x | x.weightKg < 1000)->size() >= 1
+context Branch inv c065: self.vehicles->forAll(x | x.mileage > 10)
+context Company inv c066: self.branches->exists(x | x.capacity < 50)
+context Branch inv c067: (self.capacity >= 5) and (self.rentals->forAll(v | v.daysRented <= 1000))
+context Vehicle inv c068: (self.mileage > 1) and (self.reservations->forAll(v | v.estimatedCost < 100))
+context Branch inv c069: (self.staffCount < 10) and (self.vehicles->forAll(v | v.doors < 100))
+context Customer inv c070: (self.rentalCount.mod(7) = 0) and (self.depositAmount > 0)

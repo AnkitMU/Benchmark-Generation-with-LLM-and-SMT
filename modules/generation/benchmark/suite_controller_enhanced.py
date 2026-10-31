@@ -7,11 +7,23 @@ Features Integrated:
 5. Implication Checking (constraint relationships)
 6. UNSAT Generation (negative examples via mutation)
 """
+import os
+# Force the torch-only transformers backend BEFORE any heavy import. The semantic
+# similarity step (sentence-transformers) otherwise lets `transformers` eagerly
+# import TensorFlow, whose native init deadlocks on some machines and hangs the run
+# at "Computing semantic similarity..." with `[mutex.cc:452] RAW: Lock blocking @cache`.
+os.environ.setdefault("USE_TF", "0")
+os.environ.setdefault("USE_FLAX", "0")
+os.environ.setdefault("USE_TORCH", "1")
+os.environ.setdefault("TRANSFORMERS_NO_ADVISORY_WARNINGS", "1")
+os.environ.setdefault("TOKENIZERS_PARALLELISM", "false")
+
 import json
+import time
 import random
 import subprocess
 from pathlib import Path
-from typing import List, Dict, Optional
+from typing import List, Dict, Optional, Tuple
 from datetime import datetime
 
 from modules.core.models import Metamodel, OCLConstraint
@@ -29,6 +41,18 @@ from modules.generation.benchmark import implication_checker
 from modules.generation.benchmark import unsat_generator
 
 from .suite_config import BenchmarkSuite, ModelSpec, ProfileSpec, get_difficulty_profile
+
+
+def _fmt_duration(seconds: float) -> str:
+    """Human-readable wall-clock: '9.5s', '2m 15s', '1h 03m 20s'."""
+    s = max(0.0, float(seconds))
+    if s < 60:
+        return f"{s:.1f}s"
+    m, sec = divmod(int(round(s)), 60)
+    if m < 60:
+        return f"{m}m {sec:02d}s"
+    h, m = divmod(m, 60)
+    return f"{h}h {m:02d}m {sec:02d}s"
 
 
 class EnhancedSuiteController:
@@ -75,6 +99,11 @@ class EnhancedSuiteController:
         
         self.output_root = Path(suite.output_root)
         self.output_root.mkdir(parents=True, exist_ok=True)
+
+        # Per-model semantic admissibility counts (candidate same-type pairs,
+        # approved, rejected). Persisted into each report.json so the
+        # headline 'rejects X of Y pairs' figure is reproducible from artifacts.
+        self._semantic_summary: Dict[str, Dict] = {}
         
         # Get git commit if not provided
         if suite.git_commit is None:
@@ -144,12 +173,13 @@ class EnhancedSuiteController:
         Returns:
             Suite statistics dictionary
         """
+        suite_t0 = time.monotonic()
         self.logger.section(f"BENCHMARK SUITE GENERATION: {self.suite.suite_name}")
         self.logger.info(f"Version: {self.suite.version}")
         self.logger.info(f"Framework Version: {self.suite.framework_version}")
         self.logger.info(f"Output: {self.output_root}")
         self.logger.info(f"Advanced Features: {'ENABLED' if self.enable_research_features else 'DISABLED'}")
-        
+
         suite_stats = {
             'suite_name': self.suite.suite_name,
             'version': self.suite.version,
@@ -160,7 +190,8 @@ class EnhancedSuiteController:
             'total_sat': 0,
             'total_unsat': 0,
             'total_valid': 0,
-            'total_unknown': 0
+            'total_unknown': 0,
+            'total_generation_time_s': 0.0,
         }
         
         # Process each model
@@ -181,25 +212,19 @@ class EnhancedSuiteController:
             suite_stats['total_unsat'] += model_stats['total_unsat']
             suite_stats['total_unknown'] += model_stats['total_unknown']
         
+        # Total wall-clock for the whole suite (recorded before saving so it lands
+        # in the summary JSON too).
+        suite_stats['total_generation_time_s'] = round(time.monotonic() - suite_t0, 1)
+
         # Save suite summary
         summary_path = self.output_root / f"{self.suite.suite_name}_summary.json"
         with open(summary_path, 'w') as f:
             json.dump(suite_stats, f, indent=2)
-        
+
         self.logger.success(f"Suite summary saved to: {summary_path}")
-        
-        # Final statistics
-        self.logger.section("SUITE GENERATION COMPLETE")
-        self.logger.statistics({
-            'Total Constraints': suite_stats['total_constraints'],
-            'Valid': suite_stats['total_valid'],
-            'SAT': suite_stats['total_sat'],
-            'UNSAT': suite_stats['total_unsat'],
-            'Unknown': suite_stats['total_unknown'],
-            'SAT Ratio': f"{suite_stats['total_sat'] / suite_stats['total_constraints'] * 100:.1f}%" if suite_stats['total_constraints'] > 0 else "0%",
-            'UNSAT Ratio': f"{suite_stats['total_unsat'] / suite_stats['total_constraints'] * 100:.1f}%" if suite_stats['total_constraints'] > 0 else "0%"
-        }, title="FINAL STATISTICS")
-        
+
+        # The final summary (banner, totals, VGCR table) is printed once by the
+        # CLI entry point, which also prints in --quiet mode.
         return suite_stats
     
     def _process_model(self, model_spec: ModelSpec, model_idx: int) -> Dict:
@@ -250,16 +275,49 @@ class EnhancedSuiteController:
                 if n_classes > 0:
                     total_comp = sum(len(p.comparable_pairs) for p in semantic_matrix.class_profiles.values())
                     total_incomp = sum(len(p.incomparable_pairs) for p in semantic_matrix.class_profiles.values())
-                    self.logger.success(
-                        f"Semantic analysis complete: {n_classes} classes, "
-                        f"{total_comp} comparable pairs, {total_incomp} incomparable pairs"
+                    # State provenance and the denominator, so '0 comparable'
+                    # reads as a verdict on N candidate pairs, not as a failure.
+                    cov = analyzer.coverage_summary(semantic_matrix, metamodel)
+                    source = (
+                        f"from cache, generated {semantic_matrix.generated_at}"
+                        if getattr(semantic_matrix, "from_cache", False) else "fresh analysis"
                     )
+                    self.logger.success(
+                        f"Semantic analysis complete ({source}): {n_classes} classes — "
+                        f"{cov['llm_classes']} LLM-analysed, {cov['heuristic_classes']} heuristic"
+                    )
+                    self.logger.info(
+                        f"  {total_comp} of {cov['candidate_pairs']} same-type attribute pairs "
+                        f"approved as comparable, {total_incomp} explicitly rejected"
+                    )
+                    self._semantic_summary[model_spec.name] = {
+                        "source": "llm" + ("+cache" if getattr(semantic_matrix, "from_cache", False) else ""),
+                        "llm_model": sem_cfg.model,
+                        "generated_at": getattr(semantic_matrix, "generated_at", ""),
+                        "classes": n_classes,
+                        "llm_classes": cov['llm_classes'],
+                        "heuristic_classes": cov['heuristic_classes'],
+                        "incomplete_classes": cov['incomplete_classes'],
+                        "candidate_pairs": cov['candidate_pairs'],
+                        "comparable_pairs": total_comp,
+                        "explicitly_incomparable_pairs": total_incomp,
+                        # Everything not approved is not generated: rules + LLM + heuristics.
+                        "rejected_pairs": cov['candidate_pairs'] - total_comp,
+                    }
+                    if cov['incomplete_classes']:
+                        self.logger.warning(
+                            f"  Semantic matrix is incomplete for {cov['incomplete_classes']} "
+                            f"classes that need LLM analysis — heuristics decide for them"
+                        )
                 else:
                     self.logger.warning("Semantic analysis returned empty matrix — using heuristic fallback")
+                    self._semantic_summary[model_spec.name] = {"source": "heuristic", "reason": "empty_matrix"}
               except Exception as e:
                 self.logger.warning(f"LLM semantic analysis failed: {e} — using heuristic fallback")
+                self._semantic_summary[model_spec.name] = {"source": "heuristic", "reason": f"error: {e}"}
             else:
                 self.logger.info("Semantic analysis disabled in config — using heuristic fallback")
+                self._semantic_summary[model_spec.name] = {"source": "heuristic", "reason": "disabled"}
 
             # Initialize engine and verifier
             self.logger.step("Initializing generation engine...")
@@ -279,8 +337,14 @@ class EnhancedSuiteController:
                     scope_per_class=self.suite.verification.scope_per_class,
                     timeout_ms=self.suite.verification.per_constraint_timeout_ms,
                     batch_timeout_ms=self.suite.verification.batch_timeout_ms,
+                    portfolio_seeds=getattr(self.suite.verification, 'portfolio_seeds', 0),
+                    portfolio_first_try_ms=getattr(self.suite.verification, 'portfolio_first_try_ms', 60000),
                 )
-                self.logger.success("Verifier initialized")
+                self.logger.success(
+                    "Verifier initialized"
+                    + (f" (seed portfolio: {verifier.portfolio_seeds} seeds after "
+                       f"{verifier.portfolio_first_try_ms // 1000}s)" if verifier.portfolio_seeds else "")
+                )
             
             # Process each profile
             for prof_idx, prof_spec in enumerate(model_spec.profiles, 1):
@@ -317,6 +381,7 @@ class EnhancedSuiteController:
         metamodel: Metamodel
     ) -> Dict:
         """Generate constraints for a single profile with advanced features."""
+        profile_t0 = time.monotonic()
         # Set random seed
         random.seed(prof_spec.seed)
         self.logger.debug(f"Random seed set to: {prof_spec.seed}")
@@ -369,6 +434,7 @@ class EnhancedSuiteController:
                 report_obj = dict(steered_report)
                 report_obj["model"] = model_spec.name
                 report_obj["profile"] = prof_spec.name
+                report_obj["semantic_admissibility"] = self._semantic_summary.get(model_spec.name)
                 report_path = output_dir / "report.json"
                 with open(report_path, "w") as f:
                     json.dump(report_obj, f, indent=2)
@@ -422,6 +488,42 @@ class EnhancedSuiteController:
                 self.logger.success(f"Enriched {len(constraints)} constraints with complexity metrics")
                 self.logger.dedent()
 
+            # Snapshot per-class coverage BEFORE any refinement drop (VGCR / STEP
+            # 3.4 / 3.5), so the final audit (STEP 7.9) can flag classes that met
+            # the per-class minimum here but were dropped below it by refinement.
+            from collections import Counter as _Counter
+            pre_refine_counts = _Counter(
+                getattr(c, "context", None) for c in constraints
+            )
+
+            # ============================================================
+            # STEP 2.4: Structural deduplication WITH refill (pre-verification)
+            # ============================================================
+            # Deduplicating after verification silently deletes slots and breaks
+            # the tier/family quotas. Instead, near-duplicates are removed HERE
+            # and their slots are sent back through the fill loop (same family,
+            # same complexity box); VGCR then keeps later replacements distinct.
+            dedup_threshold = self._dedup_threshold(prof_spec)
+            if self.enable_research_features:
+                self.logger.step("Deduplicating candidates (tree-edit) with slot refill...")
+                self.logger.indent()
+                constraints, dedup_info = self._dedup_and_refill(
+                    constraints, engine, dedup_threshold, metamodel
+                )
+                prof_stats['dedup'] = dedup_info
+                if dedup_info['removed']:
+                    self.logger.info(
+                        f"Near-duplicates (>{dedup_threshold*100:.0f}% similar): "
+                        f"{dedup_info['removed']} removed, "
+                        f"{dedup_info['refilled']} refilled in the same family and box, "
+                        f"{len(dedup_info['unfilled'])} left unfilled (reported)"
+                    )
+                else:
+                    self.logger.success(
+                        f"No duplicates found (threshold: {dedup_threshold*100:.0f}%)"
+                    )
+                self.logger.dedent()
+
             # ============================================================
             # STEP 2.5: VGCR Refinement Loop (SAT-core construction)
             # ============================================================
@@ -467,6 +569,11 @@ class EnhancedSuiteController:
                         checker=checker,
                         metamodel=metamodel,
                         max_retries=self.suite.vgcr.max_retries,
+                        is_duplicate=(
+                            (lambda cand, suite_:
+                                self._is_near_duplicate(cand, suite_, dedup_threshold))
+                            if self.enable_research_features else None
+                        ),
                     )
 
                     # Run refinement
@@ -474,6 +581,33 @@ class EnhancedSuiteController:
                     constraints, vgcr_stats = vgcr_loop.refine_suite(
                         constraints, tc_range
                     )
+
+                    # STEP 2.6: refill classes that refinement dropped below the
+                    # per-class minimum (verified fill of an unfilled slot, else a
+                    # same-family same-box donor swap). Unrepairable classes are
+                    # reported by the final audit, never padded.
+                    _cov_msg = None
+                    _Lmin = prof_spec.per_class_min or 1
+                    _now = _Counter(getattr(c, "context", None) for c in constraints)
+                    _deficit = [
+                        cls for cls, n0 in pre_refine_counts.items()
+                        if cls is not None and n0 >= _Lmin and _now.get(cls, 0) < _Lmin
+                    ]
+                    if _deficit:
+                        constraints, _cov_log = vgcr_loop.repair_coverage(
+                            constraints, tc_range, _deficit, min_per_class=_Lmin
+                        )
+                        prof_stats['coverage_repairs'] = _cov_log
+                        vgcr_stats['unfilled_slots'] = list(vgcr_loop.unfilled_log)
+                        _fixed = [r['class'] for r in _cov_log if r['action'] != 'unrepaired']
+                        _open = [r['class'] for r in _cov_log if r['action'] == 'unrepaired']
+                        # Logged after the VGCR summary below: the repair runs
+                        # after the refinement loop, so it should read that way.
+                        _cov_msg = (
+                            f"Coverage repair: {len(_deficit)} classes below min={_Lmin} "
+                            f"after refinement; repaired {_fixed or 'none'}"
+                            + (f", unrepaired {_open}" if _open else "")
+                        )
                     after_count = len(constraints)
 
                     # VGCR may replace failed candidates with freshly-generated
@@ -499,8 +633,12 @@ class EnhancedSuiteController:
                     prof_stats['research_features_applied'].append('vgcr_refinement')
 
                     self.logger.success(
-                        f"VGCR: {after_count}/{before_count} candidates passed "
-                        f"({before_count - after_count} rejected/refined)"
+                        f"VGCR: {after_count}/{before_count} slots verified — "
+                        f"{vgcr_stats.get('passed_first_try', 0)} passed first try, "
+                        f"{vgcr_stats.get('passed_after_retry', 0)} regenerated"
+                        f"{' in their exact box' if getattr(engine, '_steered_gen', None) is not None else ''}, "
+                        f"{len(vgcr_stats.get('unfilled_slots', []))} left unfilled (reported); "
+                        f"{vgcr_stats.get('duplicates_rejected', 0)} near-duplicate candidates rejected"
                     )
                     if vgcr_stats.get('failure_breakdown'):
                         self.logger.info(
@@ -510,6 +648,8 @@ class EnhancedSuiteController:
                         f"  SMT queries: {vgcr_stats.get('total_smt_queries', 0)}, "
                         f"  SMT time: {vgcr_stats.get('total_smt_time_s', 0):.1f}s"
                     )
+                    if _cov_msg:
+                        self.logger.info(_cov_msg)
 
                 except ImportError as e:
                     self.logger.warning(f"VGCR modules not available: {e}")
@@ -614,6 +754,13 @@ class EnhancedSuiteController:
                 self.logger.info(
                     f"Total constraints: {len(all_constraints)} ({sat_count} SAT + {unsat_count} UNSAT)"
                 )
+
+                # A mutant is structurally heavier than its parent: re-measure it
+                # and give it its own tier (parent tier kept as 'slot_profile').
+                unsat_tiers = self._relabel_unsat(confirmed_unsat, engine)
+                if unsat_tiers:
+                    prof_stats['unsat_measured_tiers'] = unsat_tiers
+                    self.logger.info(f"UNSAT mutants re-measured: tiers={unsat_tiers}")
                 self.logger.dedent()
 
                 constraints = all_constraints
@@ -672,16 +819,34 @@ class EnhancedSuiteController:
                                 f"Checking {len(sat_constraints_only)} SAT constraints for global consistency"
                             )
 
-                            # Quick compatibility check (silent)
-                            compat_results = verifier.verify_batch(sat_constraints_only, silent=True)
-                            is_consistent = any(r.solver_result == 'sat' for r in compat_results)
+                            # Quick compatibility check (silent). One tracked solver call;
+                            # on UNSAT the unsat core names the conflicting constraints.
+                            if hasattr(verifier, 'check_consistency_with_core'):
+                                compat = verifier.check_consistency_with_core(sat_constraints_only)
+                                is_consistent = compat['solver_result'] == 'sat'
+                                is_inconsistent = compat['solver_result'] == 'unsat'
+                            else:
+                                compat_results = verifier.verify_batch(sat_constraints_only, silent=True)
+                                is_consistent = any(r.solver_result == 'sat' for r in compat_results)
+                                is_inconsistent = any(r.solver_result == 'unsat' for r in compat_results)
 
                             if is_consistent:
                                 self.logger.success("SAT constraint set is globally consistent")
                                 prof_stats['consistency_verified'] = True
+                            elif not is_inconsistent:
+                                # Solver timeout / unknown is NOT evidence of a conflict. Pruning
+                                # here would make the delivered suite depend on machine speed.
+                                prof_stats['consistency_verified'] = None
+                                self.logger.warning(
+                                    "SAT compatibility check was inconclusive (solver timeout) — "
+                                    "no constraints pruned; the final Phase B check decides"
+                                )
                             else:
                                 # Model UNSAT - find compatible subset using greedy algorithm
-                                compatible_sat = self._find_compatible_subset_batch(sat_constraints_only, verifier)
+                                if hasattr(verifier, 'check_consistency_with_core'):
+                                    compatible_sat = self._find_compatible_subset_by_core(sat_constraints_only, verifier)
+                                else:
+                                    compatible_sat = self._find_compatible_subset_batch(sat_constraints_only, verifier)
 
                                 if len(compatible_sat) < len(sat_constraints_only):
                                     removed = len(sat_constraints_only) - len(compatible_sat)
@@ -742,10 +907,14 @@ class EnhancedSuiteController:
                 self.logger.info("Skipping SAT compatibility pruning: framework verifier unavailable")
 
             # ============================================================
-            # STEP 4: Structural Similarity (Tree-Edit) & Deduplication
+            # STEP 4: Structural Similarity (Tree-Edit) — late safety net
             # ============================================================
+            # Deduplication proper happens in STEP 2.4 (with refill) and inside
+            # VGCR. This pass only catches SAT/SAT duplicates introduced by
+            # later steps; anything it removes is a lost slot and is reported
+            # as 'late_duplicates_removed' in the final certificate.
             if self.enable_research_features:
-                self.logger.step("Computing structural similarity (tree-edit)...")
+                self.logger.step("Checking for late structural duplicates (tree-edit)...")
                 self.logger.indent()
                 
                 before_count = len(constraints)
@@ -770,16 +939,23 @@ class EnhancedSuiteController:
                 to_remove = set()
                 for i, j, sim in similarities:
                     if sim > threshold:
-                        # Protect UNSAT constraints from deduplication
-                        if constraints[j].metadata.get('is_unsat', False):
+                        # A SAT constraint and an UNSAT mutant are never
+                        # duplicates of each other, and UNSAT is protected.
+                        if (constraints[i].metadata.get('is_unsat', False)
+                                or constraints[j].metadata.get('is_unsat', False)):
                             continue
+                        if i in to_remove:
+                            continue  # i is already gone; j duplicates nothing kept
                         to_remove.add(j)  # Keep first occurrence, remove second
                 
                 dedup_constraints = [c for idx, c in enumerate(constraints) if idx not in to_remove]
                 
                 removed = before_count - len(dedup_constraints)
                 if removed > 0:
-                    self.logger.warning(f"Removed {removed} duplicate constraints (>{threshold*100:.0f}% similar)")
+                    self.logger.warning(
+                        f"Removed {removed} late duplicate constraints "
+                        f"(>{threshold*100:.0f}% similar) — these slots are lost and reported"
+                    )
                     constraints = dedup_constraints
                     prof_stats['constraint_count'] = len(constraints)
                     prof_stats['duplicates_removed'] = removed
@@ -797,17 +973,15 @@ class EnhancedSuiteController:
                 self.logger.indent()
                 
                 try:
-                    # Compute embeddings
-                    ocl_list = [c.ocl for c in constraints]
-                    embeddings = constraint_similarity.compute_embeddings_batch(ocl_list)
-                    self.logger.debug(f"Computed {len(embeddings)} semantic embeddings")
-                    
-                    # Cluster constraints using similarity threshold
+                    # Cluster constraints by embedding similarity. The clustering
+                    # call computes the embeddings internally (a single encode pass),
+                    # and is run under a watchdog so a native torch/tokenizers stall
+                    # degrades to "skip clustering" instead of hanging the pipeline.
                     clustering_threshold = 0.75  # Constraints with >75% similarity clustered together
-                    clusters = constraint_similarity.cluster_by_semantic_similarity(
-                        constraints, threshold=clustering_threshold
+                    clusters = constraint_similarity.cluster_by_semantic_similarity_safe(
+                        constraints, threshold=clustering_threshold, timeout_s=90.0
                     )
-                    
+
                     num_clusters = len(clusters)
                     self.logger.success(f"Clustered into {num_clusters} semantic groups")
                     
@@ -996,13 +1170,32 @@ class EnhancedSuiteController:
                         f"(scope={self.suite.verification.scope_per_class} per class, "
                         f"timeout={self.suite.verification.batch_timeout_ms}ms)..."
                     )
-                    batch_results = verifier.verify_batch(individually_ok, silent=True)
-                    global_consistency = self._infer_batch_consistency(batch_results)
+                    # Tracked joint check first: one solver call with unsat-core support and,
+                    # if configured, the seed portfolio for inconclusive runs. Fall back to the
+                    # legacy batch check only when it cannot decide.
+                    batch_results = None
+                    global_consistency = None
+                    if hasattr(verifier, 'check_consistency_with_core'):
+                        tracked = verifier.check_consistency_with_core(individually_ok)
+                        if tracked['solver_result'] in ('sat', 'unsat') and not tracked['unencoded']:
+                            global_consistency = tracked['solver_result'] == 'sat'
+                            if tracked.get('seed'):
+                                self.logger.info(f"  Phase B decided by seed portfolio (seed {tracked['seed']})")
+                            if tracked['core']:
+                                prof_stats['phase_b_unsat_core'] = [individually_ok[k].pattern_id + '@' + individually_ok[k].context for k in tracked['core']]
+                    tracked_ran = hasattr(verifier, 'check_consistency_with_core') and not tracked['unencoded']
+                    if global_consistency is None and not tracked_ran:
+                        # The legacy batch check is only a fallback for constraints the tracked
+                        # path could not encode; re-running an inconclusive check just doubles the wait.
+                        batch_results = verifier.verify_batch(individually_ok, silent=True)
+                        global_consistency = self._infer_batch_consistency(batch_results)
 
                     if global_consistency is True:
                         self.logger.success("  Phase B: globally consistent ✓")
                         # Use batch results so final labels carry the SAT model
-                        verif_results = batch_results
+                        # (the tracked check keeps the Phase A labels, which are SAT).
+                        if batch_results is not None:
+                            verif_results = batch_results
                     elif global_consistency is False:
                         self.logger.error(
                             f"  Phase B: UNSAT at scope "
@@ -1139,9 +1332,25 @@ class EnhancedSuiteController:
                     desired_unsat = max(desired_unsat, 1)  # keep at least 1
 
                     if len(final_unsat) > desired_unsat:
-                        # Too many UNSAT — trim randomly
-                        trimmed = random.sample(final_unsat, desired_unsat)
+                        # Too many UNSAT — trim randomly, but never take a class
+                        # below its per-class minimum while another choice exists.
                         removed = len(final_unsat) - desired_unsat
+                        _Ltrim = prof_spec.per_class_min or 1
+                        _cnt = _Counter(c.context for c in constraints)
+                        _pool = list(final_unsat)
+                        random.shuffle(_pool)
+                        _drop = []
+                        for _pass_safe in (True, False):
+                            for _u in _pool:
+                                if len(_drop) >= removed:
+                                    break
+                                if any(_u is d for d in _drop):
+                                    continue
+                                if _pass_safe and _cnt[_u.context] <= _Ltrim:
+                                    continue
+                                _drop.append(_u)
+                                _cnt[_u.context] -= 1
+                        trimmed = [u for u in final_unsat if not any(u is d for d in _drop)]
                         constraints = final_sat + trimmed
                         prof_stats['constraint_count'] = len(constraints)
                         prof_stats['sat_count'] = len(final_sat)
@@ -1159,10 +1368,84 @@ class EnhancedSuiteController:
                         )
 
             # ============================================================
+            # STEP 7.9: Final class-coverage audit (post-refinement)
+            # ============================================================
+            # VGCR and the consistency/compatibility passes can drop constraints
+            # after RepairMinima restored the per-class minima. Re-check coverage on
+            # the final set and record any class that met the minimum before
+            # refinement but no longer does (reported, never fatal).
+            try:
+                _L = prof_spec.per_class_min or 1
+                _final_counts = _Counter(
+                    getattr(c, "context", None) for c in constraints
+                )
+                _new_deficit = {
+                    cls: _final_counts.get(cls, 0)
+                    for cls, n0 in pre_refine_counts.items()
+                    if cls is not None and n0 >= _L and _final_counts.get(cls, 0) < _L
+                }
+                prof_stats['post_refine_coverage_deficit'] = (
+                    {'min_per_class': _L, 'classes': _new_deficit}
+                    if _new_deficit else {}
+                )
+                if _new_deficit:
+                    self.logger.warning(
+                        f"Post-refinement coverage deficit (min={_L}): "
+                        + ", ".join(f"{k}={v}" for k, v in _new_deficit.items())
+                    )
+            except Exception as _e:
+                self.logger.debug(f"Coverage audit skipped: {_e}")
+
+            # ============================================================
             # STEP 8: Save Outputs
             # ============================================================
             self.logger.step("Saving outputs...")
             self.logger.indent()
+
+            # Rewrite the steered report so its certificate describes the
+            # DELIVERED suite. The generation-time fields are kept (they certify
+            # the fill), and 'final_suite' is re-measured from the saved text.
+            try:
+                final_cert = self._final_certificate(constraints, engine, prof_spec, prof_stats)
+                if final_cert is not None:
+                    report_obj = dict(getattr(engine, "steered_report", None) or {})
+                    report_obj["model"] = model_spec.name
+                    report_obj["profile"] = prof_spec.name
+                    report_obj["semantic_admissibility"] = self._semantic_summary.get(model_spec.name)
+                    report_obj["vgcr_enabled"] = bool(
+                        getattr(self.suite, 'vgcr', None) and self.suite.vgcr.enable
+                    )
+                    report_obj["report_scope"] = (
+                        "Top-level fields certify the generation phase (pre-verification "
+                        "candidates); 'final_suite' is re-measured on the delivered suite."
+                    )
+                    report_obj["final_suite"] = final_cert
+                    with open(output_dir / "report.json", "w") as f:
+                        json.dump(report_obj, f, indent=2, default=str)
+                    prof_stats['final_suite'] = final_cert
+                    _fid = final_cert['complexity_fidelity_sat']
+                    _cov = final_cert['class_coverage']
+                    self.logger.info(
+                        f"Final certificate: {final_cert['delivered']} delivered "
+                        f"({final_cert['sat']} SAT + {final_cert['unsat']} UNSAT) of "
+                        f"{final_cert['slot_accounting']['requested']} requested"
+                    )
+                    self.logger.info(
+                        f"  Slot tiers {final_cert['slot_tier_distribution']} "
+                        f"vs requested {final_cert['requested_tier_distribution']}"
+                    )
+                    self.logger.info(
+                        f"  SAT in-box: {_fid['in_box']}/{_fid['boxed_constraints']} "
+                        f"(unlabeled {_fid['unlabeled_constraints']}); "
+                        f"UNSAT measured tiers {final_cert['unsat_measured_tier_distribution']}"
+                    )
+                    self.logger.info(
+                        f"  Class coverage: {_cov['covered']}/{_cov['classes']} at min={_cov['min_per_class']}"
+                        + (f", below min: {_cov['below_min']}" if _cov['below_min'] else "")
+                    )
+                    self.logger.success("Rewrote report.json with the final-suite certificate")
+            except Exception as _e:
+                self.logger.warning(f"Final certificate could not be computed: {_e}")
 
             # Save traditional formats
             self._save_benchmark(
@@ -1233,17 +1516,241 @@ class EnhancedSuiteController:
             self.logger.dedent()
             
             prof_stats['status'] = 'success'
-            self.logger.success(f"Profile '{prof_spec.name}' complete")
-            
+            prof_stats['generation_time_s'] = round(time.monotonic() - profile_t0, 1)
+            self.logger.success(
+                f"Profile '{prof_spec.name}' complete in "
+                f"{_fmt_duration(prof_stats['generation_time_s'])}"
+            )
+
         except Exception as e:
-            self.logger.error(f"Profile generation failed: {e}")
+            prof_stats['generation_time_s'] = round(time.monotonic() - profile_t0, 1)
+            self.logger.error(
+                f"Profile generation failed after "
+                f"{_fmt_duration(prof_stats['generation_time_s'])}: {e}"
+            )
             import traceback
             self.logger.debug(traceback.format_exc())
             prof_stats['status'] = 'failed'
             prof_stats['error'] = str(e)
-        
+
         return prof_stats
     
+    # ------------------------------------------------------------------
+    # Suite-integrity helpers (dedup-with-refill, UNSAT tiers, final certificate)
+    # ------------------------------------------------------------------
+
+    @staticmethod
+    def _dedup_threshold(prof_spec: ProfileSpec) -> float:
+        # 'is not None' so an explicit 0.0 (max dedup) is honoured.
+        return (prof_spec.similarity_threshold
+                if prof_spec.similarity_threshold is not None else 0.85)
+
+    @staticmethod
+    def _is_near_duplicate(candidate, suite, threshold: float) -> bool:
+        """True when ``candidate`` is structurally > ``threshold`` similar to
+        any constraint already in ``suite`` (tree-edit similarity)."""
+        for other in suite:
+            if other is candidate:
+                continue
+            try:
+                if constraint_similarity.ast_similarity(other, candidate) > threshold:
+                    return True
+            except Exception:
+                continue
+        return False
+
+    def _dedup_and_refill(self, constraints: List, engine, threshold: float,
+                          metamodel: Metamodel) -> Tuple[List, Dict]:
+        """Structural deduplication BEFORE verification, with refill.
+
+        The first occurrence of a near-duplicate group is kept. Every removed
+        constraint's slot (its family and complexity box) is sent back through
+        the engine's fill loop, and the replacement must itself be distinct
+        from everything kept. A slot that cannot be refilled inside its box is
+        left unfilled and reported -- it is never padded.
+        """
+        kept: List = []
+        removed: List = []
+        for c in constraints:
+            (removed if self._is_near_duplicate(c, kept, threshold) else kept).append(c)
+
+        info = {'removed': len(removed), 'refilled': 0, 'unfilled': []}
+        if not removed:
+            return kept, info
+
+        state = None
+        if hasattr(engine, 'generate_refined'):
+            try:
+                from modules.generation.benchmark.vgcr_refinement import GeneratorState
+                state = GeneratorState()
+            except Exception:
+                state = None
+
+        for c in removed:
+            newc = None
+            if state is not None:
+                try:
+                    newc = engine.generate_refined(
+                        failed_constraint=c, generator_state=state,
+                        accept=lambda nc: not self._is_near_duplicate(nc, kept, threshold),
+                    )
+                except Exception as e:
+                    self.logger.debug(f"Dedup refill failed: {e}")
+                    newc = None
+            if newc is None:
+                info['unfilled'].append({
+                    'pattern': c.pattern_id, 'context': c.context,
+                    'profile': (c.metadata or {}).get('profile'),
+                })
+                continue
+            newc.metadata['refilled_after'] = 'dedup'
+            enriched = metadata_enricher.enrich_constraint_metadata(newc, metamodel=metamodel)
+            kept.append(enriched if enriched is not None else newc)
+            info['refilled'] += 1
+        return kept, info
+
+    @staticmethod
+    def _tier_of(gen, ocl: str, cls: str, preferred: Optional[str] = None):
+        """Measure a constraint and return ``(tier_label_or_None, vector)``.
+        With overlapping boxes the preferred label wins when it fits, else the
+        box whose centre is nearest."""
+        vec = gen._measure(ocl, cls)
+        fits = [b for b in gen.box_by_label.values() if b.contains(vec)]
+        if not fits:
+            return None, vec
+        for b in fits:
+            if b.label == preferred:
+                return b.label, vec
+        return min(fits, key=lambda b: gen._dist(b, vec)).label, vec
+
+    def _relabel_unsat(self, constraints: List, engine) -> Dict:
+        """Give every UNSAT mutant its OWN re-measured tier.
+
+        A mutant (e.g. ``P and not P``) is structurally heavier than its parent,
+        so inheriting the parent's tier label is wrong. The parent's tier is
+        kept as ``slot_profile`` (the slot the mutant occupies for quota
+        accounting); ``profile``/``difficulty`` become the measured tier, or
+        ``unboxed`` when the mutant lies in no requested box.
+        """
+        gen = getattr(engine, "_steered_gen", None)
+        if gen is None or not getattr(gen, "box_by_label", None):
+            return {}
+        dist: Dict[str, int] = {}
+        for c in constraints:
+            if not c.metadata.get('is_unsat', False):
+                continue
+            parent = c.metadata.get('slot_profile') or c.metadata.get('profile')
+            try:
+                tier, _ = self._tier_of(gen, c.ocl, c.context, preferred=parent)
+            except Exception:
+                tier = None
+            tier = tier or 'unboxed'
+            c.metadata['slot_profile'] = parent
+            c.metadata['profile'] = tier
+            c.metadata['difficulty'] = tier
+            dist[tier] = dist.get(tier, 0) + 1
+        return dist
+
+    def _final_certificate(self, constraints: List, engine, prof_spec: ProfileSpec,
+                           prof_stats: Dict) -> Optional[Dict]:
+        """Certificate computed on the DELIVERED suite (every constraint is
+        re-measured from its text), so report.json describes what was saved,
+        not the pre-verification candidates."""
+        gen = getattr(engine, "_steered_gen", None)
+        if gen is None or not getattr(gen, "box_by_label", None):
+            return None
+        from collections import Counter
+
+        sat = [c for c in constraints if not c.metadata.get('is_unsat', False)]
+        unsat = [c for c in constraints if c.metadata.get('is_unsat', False)]
+
+        def fam(c):
+            pid = c.metadata.get('original_pattern_id') or c.pattern_id
+            try:
+                return gen._family(pid)
+            except Exception:
+                return c.metadata.get('regen_family') or 'unknown'
+
+        in_box = 0
+        out_of_box, unlabeled = [], 0
+        for c in sat:
+            label = str(c.metadata.get('profile') or '').split('+')[0]
+            box = gen.box_by_label.get(label)
+            if box is None:
+                unlabeled += 1
+                continue
+            vec = gen._measure(c.ocl, c.context)
+            if box.contains(vec):
+                in_box += 1
+            else:
+                out_of_box.append({'pattern': c.pattern_id, 'context': c.context,
+                                   'profile': label})
+        boxed = len(sat) - unlabeled
+
+        # Slot accounting: a mutant occupies its parent's slot.
+        def slot_tier(c):
+            m = c.metadata
+            t = m.get('slot_profile') if m.get('is_unsat', False) else m.get('profile')
+            return str(t or 'unlabeled').split('+')[0]
+
+        from modules.generation.benchmark.steered_generation import _largest_remainder
+        n = gen.spec.n
+        requested_tiers = {
+            gen.spec.profiles[i][0].label: q
+            for i, q in _largest_remainder(
+                {i: pct for i, (_b, pct) in enumerate(gen.spec.profiles)}, n).items()
+        }
+        requested_fams = dict(_largest_remainder(gen.spec.family_quota, n))
+
+        L = prof_spec.per_class_min or 1
+        counts = Counter(c.context for c in constraints)
+        all_classes = list(getattr(gen, 'classes', []))
+        below = {cls: counts.get(cls, 0) for cls in all_classes if counts.get(cls, 0) < L}
+
+        vg = prof_stats.get('vgcr_stats') or {}
+        dd = prof_stats.get('dedup') or {}
+        return {
+            'delivered': len(constraints),
+            'sat': len(sat),
+            'unsat': len(unsat),
+            'slot_tier_distribution': dict(Counter(slot_tier(c) for c in constraints)),
+            'requested_tier_distribution': requested_tiers,
+            'sat_tier_distribution': dict(Counter(slot_tier(c) for c in sat)),
+            'unsat_measured_tier_distribution': dict(Counter(
+                str(c.metadata.get('profile') or 'unboxed') for c in unsat)),
+            'family_distribution': dict(Counter(fam(c) for c in constraints)),
+            'requested_family_distribution': requested_fams,
+            'complexity_fidelity_sat': {
+                'boxed_constraints': boxed,
+                'in_box': in_box,
+                'in_box_rate': round(in_box / boxed, 4) if boxed else None,
+                'unlabeled_constraints': unlabeled,
+                'out_of_box': out_of_box,
+            },
+            'class_coverage': {
+                'min_per_class': L,
+                'classes': len(all_classes),
+                'covered': sum(1 for cls in all_classes if counts.get(cls, 0) >= L),
+                'below_min': below,
+            },
+            'slot_accounting': {
+                'requested': n,
+                'generated': prof_stats.get('initial_sat_count'),
+                'generation_gaps': n - (prof_stats.get('initial_sat_count') or 0),
+                'dedup_removed': dd.get('removed', 0),
+                'dedup_refilled': dd.get('refilled', 0),
+                'dedup_unfilled': len(dd.get('unfilled', [])),
+                'vgcr_regenerated': vg.get('passed_after_retry', 0),
+                'vgcr_unfilled': len(vg.get('unfilled_slots', [])),
+                'late_duplicates_removed': prof_stats.get('duplicates_removed', 0),
+                'unsat_trimmed_for_ratio': prof_stats.get('unsat_trimmed_for_ratio', 0),
+                'delivered': len(constraints),
+            },
+            'dedup_unfilled_slots': dd.get('unfilled', []),
+            'vgcr_unfilled_slots': vg.get('unfilled_slots', []),
+            'coverage_repairs': prof_stats.get('coverage_repairs', []),
+        }
+
     def _build_profile_from_spec(self, prof_spec: ProfileSpec, metamodel: Metamodel) -> BenchmarkProfile:
         """Build BenchmarkProfile from ProfileSpec including complexity config."""
         # Get difficulty profile preset
@@ -1539,6 +2046,31 @@ class EnhancedSuiteController:
             return False
         return None
 
+    def _find_compatible_subset_by_core(self, constraints: List, verifier) -> List:
+        """Deterministic conflict removal driven by Z3 unsat cores.
+
+        Repeatedly check the whole set in one tracked call; while it is UNSAT,
+        drop the LAST (most recently generated) member of the unsat core and
+        re-check. A timeout stops the loop without dropping anything, since
+        only a proven core justifies removing a candidate. Needs at most one
+        solver call per removed constraint instead of one per constraint."""
+        kept = list(constraints)
+        for _ in range(len(constraints)):
+            res = verifier.check_consistency_with_core(kept)
+            if res['solver_result'] != 'unsat':
+                break
+            core = res['core']
+            if not core:
+                break  # UNSAT without a usable core: nothing provable to remove
+            victim = max(core)
+            if getattr(self, 'logger', None):
+                self.logger.debug(
+                    f"Unsat core {core} -> removing constraint #{victim} "
+                    f"({kept[victim].pattern_id}@{kept[victim].context})"
+                )
+            del kept[victim]
+        return kept
+
     def _find_compatible_subset_batch(self, constraints: List, verifier) -> List:
         """Find maximal compatible subset using batch greedy algorithm.
         
@@ -1564,11 +2096,13 @@ class EnhancedSuiteController:
             try:
                 # Test if adding this constraint keeps model SAT
                 results = verifier.verify_batch(test_set, silent=True)
-                is_consistent = any(r.solver_result == 'sat' for r in results)
+                is_inconsistent = any(r.solver_result == 'unsat' for r in results)
                 
-                if is_consistent:
+                if not is_inconsistent:
+                    # 'sat' keeps the constraint; 'unknown' (timeout) also keeps it,
+                    # because only a proven conflict justifies dropping a candidate.
                     compatible.append(constraint)
-                # else: skip this constraint (causes conflict)
+                # else: skip this constraint (proven conflict with the kept set)
             except Exception:
                 pass
 

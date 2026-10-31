@@ -1,0 +1,113 @@
+-- Benchmark: HospitalSystem / balanced
+-- Type: UNSAT Constraints Only
+-- Generated: 2026-10-12T20:17:19.878384
+-- Count: 18
+
+-- #1 Collection Not Empty (Simple) (UNSAT) in Department
+-- Difficulty: medium
+-- Mutation Strategy: empty_collection
+context Department
+inv: (self.nurses->notEmpty()) and (self.nurses->isEmpty())
+
+-- #2 Navigation Chain (UNSAT) in Bed
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Bed
+inv: (self.room.ward.floor <= 1000) and (not(self.room.ward.floor <= 1000))
+
+-- #3 Navigation Chain (UNSAT) in Room
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Room
+inv: ((self.type <> '') and (self.beds->forAll(v | v.isOccupied = true))) and (not((self.type <> '') and (self.beds->forAll(v | v.isOccupied = true))))
+
+-- #4 Numeric Attribute Non-Negative (UNSAT) in Ward
+-- Difficulty: unboxed
+-- Mutation Strategy: contradictory_bounds
+context Ward
+inv: ((self.floor > 0) and (self.rooms->forAll(v | v.roomNo <> ''))) and (self.floor < -5)
+
+-- #5 Collection Nested Collection Flatten (UNSAT) in Ward
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Ward
+inv: (self.rooms->collect(x | x.beds)->size() >= 1) and (not(self.rooms->collect(x | x.beds)->size() >= 1))
+
+-- #6 Navigation Chain (UNSAT) in Prescription
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Prescription
+inv: ((self.issuedAt <> '') and (self.medications->forAll(v | v.name <> ''))) and (not((self.issuedAt <> '') and (self.medications->forAll(v | v.name <> ''))))
+
+-- #7 Navigation Chain (UNSAT) in Diagnosis
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Diagnosis
+inv: (self.record.patient.isInsured <> true) and (not(self.record.patient.isInsured <> true))
+
+-- #8 Attribute Not Null (Simple) (UNSAT) in Person
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Person
+inv: (self.fullName <> null) and (not(self.fullName <> null))
+
+-- #9 Navigation Chain (UNSAT) in Bed
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Bed
+inv: (self.room.ward.floor <= 10) and (not(self.room.ward.floor <= 10))
+
+-- #10 Navigation Chain (UNSAT) in Appointment
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Appointment
+inv: (self.patient.insurance.validUntil <> '') and (not(self.patient.insurance.validUntil <> ''))
+
+-- #11 Association Exists (UNSAT) in Bed
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Bed
+inv: ((self.room <> null) and (self.isOccupied = false)) and (not((self.room <> null) and (self.isOccupied = false)))
+
+-- #12 Collection Size Constraint (UNSAT) in MedicalRecord
+-- Difficulty: medium
+-- Mutation Strategy: contradictory_bounds
+context MedicalRecord
+inv: (self.prescriptions->size() <= 1) and (self.prescriptions->size() > 1)
+
+-- #13 Flatten Operation (UNSAT) in MedicalRecord
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context MedicalRecord
+inv: (self.prescriptions->collect(x | x.medications)->flatten()->notEmpty()) and (not(self.prescriptions->collect(x | x.medications)->flatten()->notEmpty()))
+
+-- #14 Simple Navigation (UNSAT) in Admission
+-- Difficulty: medium
+-- Mutation Strategy: self_contradiction
+context Admission
+inv: (self.bed.isOccupied) and (not(self.bed.isOccupied))
+
+-- #15 Navigation Chain (UNSAT) in Ward
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Ward
+inv: (self.hospital.address <> '') and (not(self.hospital.address <> ''))
+
+-- #16 Association Exists (UNSAT) in Procedure
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Procedure
+inv: ((self.doctor <> null) and (self.record.patient.isInsured = false)) and (not((self.doctor <> null) and (self.record.patient.isInsured = false)))
+
+-- #17 Numeric Less Than Value (UNSAT) in Payment
+-- Difficulty: easy
+-- Mutation Strategy: contradictory_bounds
+context Payment
+inv: (self.amount < 15) and (self.amount > 20)
+
+-- #18 Numeric Absolute Value Bounded (UNSAT) in Payment
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Payment
+inv: (self.amount.abs() <= 8) and (not(self.amount.abs() <= 8))
+

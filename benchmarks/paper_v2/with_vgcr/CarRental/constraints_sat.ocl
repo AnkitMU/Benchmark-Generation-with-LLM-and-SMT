@@ -1,0 +1,355 @@
+-- Benchmark: CarRental / balanced
+-- Type: SAT Constraints Only
+-- Generated: 2026-10-14T19:04:40.018350
+-- Count: 70
+
+-- #1 Navigation Chain in Vehicle
+-- Difficulty: difficult
+context Vehicle
+inv: (self.horsepower > 10) and (self.rentals->forAll(v | v.mileageStart <= 10))
+
+-- #2 Collection Navigation in Customer
+-- Difficulty: difficult
+context Customer
+inv: self.rentals->exists(x | x.mileageStart >= 0)
+
+-- #3 Simple Navigation in Payment
+-- Difficulty: easy
+context Payment
+inv: self.rental.isCompleted
+
+-- #4 Simple Navigation in Reservation
+-- Difficulty: easy
+context Reservation
+inv: self.customer.isPremium
+
+-- #5 Conditional Existence in Rental
+-- Difficulty: easy
+context Rental
+inv: self.isCompleted implies self.payment <> null
+
+-- #6 Navigation Consistency in Reservation
+-- Difficulty: easy
+context Reservation
+inv: self.vehicle.branch = self.branch
+
+-- #7 Association Exists in Rental
+-- Difficulty: easy
+context Rental
+inv: self.payment <> null
+
+-- #8 Navigation Chain in Branch
+-- Difficulty: easy
+context Branch
+inv: self.company.isActive = false
+
+-- #9 Association Exists in Reservation
+-- Difficulty: easy
+context Reservation
+inv: self.vehicle <> null
+
+-- #10 Select (Filter) Operation in Vehicle
+-- Difficulty: medium
+context Vehicle
+inv: self.rentals->select(x | x.depositPaid > 2)->size() >= 1
+
+-- #11 Collect (Map) Operation in Company
+-- Difficulty: medium
+context Company
+inv: (self.branches->collect(x | x.monthlyRevenue)->notEmpty()) and (self.branches->notEmpty())
+
+-- #12 Any Operation in Branch
+-- Difficulty: medium
+context Branch
+inv: (self.reservations->any(x | x.estimatedCost <= 50) <> null) and (self.isOpen = true)
+
+-- #13 Collect (Map) Operation in Customer
+-- Difficulty: medium
+context Customer
+inv: (self.rentals->collect(x | x.lateFee)->notEmpty()) and (self.age mod 2 = 0)
+
+-- #14 Navigation Chain in Branch
+-- Difficulty: medium
+context Branch
+inv: (self.company.isActive = false) and (self.rentals->size() <= 3)
+
+-- #15 Simple Navigation in License
+-- Difficulty: medium
+context License
+inv: ((self.customer.isPremium) and (self.isValid)) and (self.number.indexOf('test') >= 0)
+
+-- #16 Navigation Chain in Payment
+-- Difficulty: medium
+context Payment
+inv: (self.rental.branch.longitude >= 1) and (self.timestamp.indexOf('test') >= 0)
+
+-- #17 Navigation Consistency in Reservation
+-- Difficulty: medium
+context Reservation
+inv: (self.vehicle.branch = self.branch) and (self.isConfirmed <> null)
+
+-- #18 Navigation Consistency in Reservation
+-- Difficulty: medium
+context Reservation
+inv: (self.vehicle.branch = self.branch) and (self.estimatedCost > 0)
+
+-- #19 Universal Quantification (forAll) in Vehicle
+-- Difficulty: difficult
+context Vehicle
+inv: self.rentals->forAll(x | x.depositPaid > 0)
+
+-- #20 Collection Size in Range in Branch
+-- Difficulty: difficult
+context Branch
+inv: (self.vehicleCount >= 1) and (self.vehicles->forAll(v | v.doors <= 1000))
+
+-- #21 Maximum Of Two Attributes in Customer
+-- Difficulty: difficult
+context Customer
+inv: (self.rentalCount <= 1000) and (self.reservations->forAll(v | v.estimatedCost < 50))
+
+-- #22 Minimum Of Two Attributes in Customer
+-- Difficulty: difficult
+context Customer
+inv: (self.rentalCount >= 5) and (self.rentals->forAll(v | v.mileageEnd >= 0))
+
+-- #23 Collection Size in Range in Customer
+-- Difficulty: difficult
+context Customer
+inv: (self.balance >= 2) and (self.rentals->forAll(v | v.mileageStart <= 100))
+
+-- #24 Maximum Of Two Attributes in Branch
+-- Difficulty: difficult
+context Branch
+inv: (self.capacity <= 10) and (self.vehicles->forAll(v | v.mileage >= 5))
+
+-- #25 Collection Nested Collection Flatten in Branch
+-- Difficulty: difficult
+context Branch
+inv: (self.vehicles->collect(x | x.rentals)->size() >= 1) and (self.vehicleCount mod 2 = 0)
+
+-- #26 XOR Condition in Branch
+-- Difficulty: difficult
+context Branch
+inv: (self.longitude < 1000) and (self.vehicles->forAll(v | v.dailyRate < 10))
+
+-- #27 Numeric Sum Constraint in Customer
+-- Difficulty: easy
+context Customer
+inv: self.depositAmount + self.balance > 17
+
+-- #28 Numeric Comparison in Payment
+-- Difficulty: easy
+context Payment
+inv: self.discount = self.tax
+
+-- #29 Numeric Sum Constraint in Vehicle
+-- Difficulty: easy
+context Vehicle
+inv: self.seats + self.doors > 4
+
+-- #30 Numeric Difference Constraint in Customer
+-- Difficulty: easy
+context Customer
+inv: self.balance - self.depositAmount >= 5
+
+-- #31 Numeric Attribute Bounded in Customer
+-- Difficulty: easy
+context Customer
+inv: self.rentalCount >= 14 and self.rentalCount <= 23
+
+-- #32 Numeric Sum Constraint in Branch
+-- Difficulty: easy
+context Branch
+inv: self.staffCount + self.capacity > 5
+
+-- #33 Numeric Difference Constraint in Branch
+-- Difficulty: easy
+context Branch
+inv: self.staffCount - self.capacity >= 2
+
+-- #34 Numeric Is Even in Rental
+-- Difficulty: easy
+context Rental
+inv: self.mileageStart mod 2 = 0
+
+-- #35 Collection Size in Range in Branch
+-- Difficulty: medium
+context Branch
+inv: self.rentals->size() >= 1 and self.rentals->size() <= 3
+
+-- #36 Minimum Of Two Attributes in Customer
+-- Difficulty: medium
+context Customer
+inv: (if self.depositAmount < self.balance then self.depositAmount else self.balance endif >= 26) and (self.age mod 2 = 0)
+
+-- #37 Three Way Comparison in Branch
+-- Difficulty: medium
+context Branch
+inv: self.capacity <= self.staffCount and self.staffCount <= self.vehicleCount
+
+-- #38 Three Way Comparison in Branch
+-- Difficulty: medium
+context Branch
+inv: self.capacity <= self.vehicleCount and self.vehicleCount <= self.staffCount
+
+-- #39 Three Way Comparison in Payment
+-- Difficulty: medium
+context Payment
+inv: self.amount <= self.tax and self.tax <= self.discount
+
+-- #40 Numeric Attribute Bounded in Customer
+-- Difficulty: medium
+context Customer
+inv: self.loyaltyPoints >= 25 and self.loyaltyPoints <= 74
+
+-- #41 Three Way Comparison in Rental
+-- Difficulty: medium
+context Rental
+inv: self.depositPaid <= self.totalAmount and self.totalAmount <= self.lateFee
+
+-- #42 Collection Size Constraint in Vehicle
+-- Difficulty: easy
+context Vehicle
+inv: self.reservations->size() = 1
+
+-- #43 Collection Has Specific Size in Branch
+-- Difficulty: easy
+context Branch
+inv: self.vehicles->size() = 3
+
+-- #44 Bi-directional Implication in Rental
+-- Difficulty: easy
+context Rental
+inv: (self.endDate <> null) = (self.startDate <> null)
+
+-- #45 Collection Minimum Size in Company
+-- Difficulty: easy
+context Company
+inv: self.branches->size() >= 2
+
+-- #46 Collection Maximum Size in Customer
+-- Difficulty: easy
+context Customer
+inv: self.reservations->size() <= 3
+
+-- #47 Bi-directional Implication in Rental
+-- Difficulty: easy
+context Rental
+inv: (self.lateFee <> null) = (self.fuelCharge <> null)
+
+-- #48 Collection Size Constraint in Customer
+-- Difficulty: easy
+context Customer
+inv: self.rentals->size() <> 1
+
+-- #49 Two Attributes Not Equal in Payment
+-- Difficulty: easy
+context Payment
+inv: self.discount <> self.amount
+
+-- #50 Collection Not Empty (Simple) in Customer
+-- Difficulty: easy
+context Customer
+inv: self.reservations->notEmpty()
+
+-- #51 Collection Has Specific Size in Company
+-- Difficulty: easy
+context Company
+inv: self.branches->size() = 2
+
+-- #52 All Attributes Defined in Payment
+-- Difficulty: medium
+context Payment
+inv: self.tax <> null and self.discount <> null
+
+-- #53 Simple Implication in Payment
+-- Difficulty: medium
+context Payment
+inv: self.amount <> null implies self.tax <> null
+
+-- #54 Reverse Implication in Rental
+-- Difficulty: medium
+context Rental
+inv: self.fuelCharge <> null implies self.depositPaid <> null
+
+-- #55 All Attributes Defined in Branch
+-- Difficulty: medium
+context Branch
+inv: self.staffCount <> null and self.vehicleCount <> null
+
+-- #56 Simple Implication in Payment
+-- Difficulty: medium
+context Payment
+inv: self.tax <> null implies self.discount <> null
+
+-- #57 Reverse Implication in Rental
+-- Difficulty: medium
+context Rental
+inv: self.depositPaid <> null implies self.fuelCharge <> null
+
+-- #58 All Attributes Defined in Payment
+-- Difficulty: medium
+context Payment
+inv: self.amount <> null and self.discount <> null
+
+-- #59 Bi-directional Implication in Payment
+-- Difficulty: medium
+context Payment
+inv: (self.amount <> null) = (self.discount <> null)
+
+-- #60 Navigation Chain in Customer
+-- Difficulty: difficult
+context Customer
+inv: (self.balance < 1000) and (self.rentals->forAll(v | v.totalAmount <= 100))
+
+-- #61 Simple Navigation in Customer
+-- Difficulty: easy
+context Customer
+inv: self.license.isValid
+
+-- #62 Simple Navigation in Rental
+-- Difficulty: easy
+context Rental
+inv: self.payment.isProcessed
+
+-- #63 One Operation in Customer
+-- Difficulty: medium
+context Customer
+inv: (self.reservations->one(x | x.estimatedCost > 1)) and (self.isPremium = true)
+
+-- #64 Any Operation in Company
+-- Difficulty: difficult
+context Company
+inv: (self.branches->any(x | x.vehicleCount >= 0) <> null) and (self.branches->collect(x | x.staffCount)->notEmpty())
+
+-- #65 Universal Quantification (forAll) in Branch
+-- Difficulty: difficult
+context Branch
+inv: self.vehicles->forAll(x | x.mileage > 10)
+
+-- #66 Existential Quantification (exists) in Company
+-- Difficulty: difficult
+context Company
+inv: self.branches->exists(x | x.staffCount > 10)
+
+-- #67 Collection As Sequence Conversion in Branch
+-- Difficulty: difficult
+context Branch
+inv: (self.capacity >= 5) and (self.rentals->forAll(v | v.daysRented <= 1000))
+
+-- #68 Collection Index Of Element in Vehicle
+-- Difficulty: difficult
+context Vehicle
+inv: (self.mileage > 1) and (self.reservations->forAll(v | v.estimatedCost < 100))
+
+-- #69 Numeric Attribute Bounded in Payment
+-- Difficulty: medium
+context Payment
+inv: self.discount >= 51 and self.discount <= 97
+
+-- #70 Numeric Multiple Of in Customer
+-- Difficulty: medium
+context Customer
+inv: (self.rentalCount mod 7 = 0) and (self.depositAmount > 0)
+

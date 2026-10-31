@@ -1,0 +1,113 @@
+-- Benchmark: UniversitySystem / balanced
+-- Type: UNSAT Constraints Only
+-- Generated: 2026-10-12T20:22:18.948504
+-- Count: 18
+
+-- #1 Simple Navigation (UNSAT) in Student
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Student
+inv: (((self.libraryAccount.isBlocked) and (self.yearOfStudy > 0)) and (self.examAttempts->size() = 1)) and (not(((self.libraryAccount.isBlocked) and (self.yearOfStudy > 0)) and (self.examAttempts->size() = 1)))
+
+-- #2 Numeric Sum Constraint (UNSAT) in Scholarship
+-- Difficulty: medium
+-- Mutation Strategy: self_contradiction
+context Scholarship
+inv: (self.startYear + self.endYear > 53) and (not(self.startYear + self.endYear > 53))
+
+-- #3 Select (Filter) Operation (UNSAT) in Exam
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Exam
+inv: (self.attempts->select(x | x.marks >= 10)->size() >= 1) and (not(self.attempts->select(x | x.marks >= 10)->size() >= 1))
+
+-- #4 Collection Maximum Size (UNSAT) in Building
+-- Difficulty: medium
+-- Mutation Strategy: contradictory_bounds
+context Building
+inv: (self.rooms->size() <= 3) and (self.rooms->size() > 3)
+
+-- #5 Select (Filter) Operation (UNSAT) in CourseOffering
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context CourseOffering
+inv: (self.exams->select(x | x.maxMarks >= 0)->size() >= 1) and (not(self.exams->select(x | x.maxMarks >= 0)->size() >= 1))
+
+-- #6 Numeric Multiple Of (UNSAT) in Course
+-- Difficulty: medium
+-- Mutation Strategy: self_contradiction
+context Course
+inv: (self.credits mod 3 = 0) and (not(self.credits mod 3 = 0))
+
+-- #7 Collection Minimum Size (UNSAT) in CourseOffering
+-- Difficulty: medium
+-- Mutation Strategy: contradictory_bounds
+context CourseOffering
+inv: (self.enrollments->size() >= 1) and (self.enrollments->size() < 1)
+
+-- #8 Association Exists (UNSAT) in Department
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Department
+inv: (self.faculty <> null) and (not(self.faculty <> null))
+
+-- #9 Collection Size Constraint (UNSAT) in CourseOffering
+-- Difficulty: medium
+-- Mutation Strategy: contradictory_bounds
+context CourseOffering
+inv: (self.exams->size() >= 1) and (self.exams->size() < 1)
+
+-- #10 Attribute Not Null (Simple) (UNSAT) in Building
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Building
+inv: ((self.code <> null) and (self.university.name <> '')) and (not((self.code <> null) and (self.university.name <> '')))
+
+-- #11 Flatten Operation (UNSAT) in CourseOffering
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context CourseOffering
+inv: (self.exams->collect(x | x.attempts)->flatten()->notEmpty()) and (not(self.exams->collect(x | x.attempts)->flatten()->notEmpty()))
+
+-- #12 Navigation Chain (UNSAT) in Department
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Department
+inv: (self.faculty.university.name <> '') and (not(self.faculty.university.name <> ''))
+
+-- #13 Collection Has Specific Size (UNSAT) in Department
+-- Difficulty: medium
+-- Mutation Strategy: self_contradiction
+context Department
+inv: (self.programs->size() = 3) and (not(self.programs->size() = 3))
+
+-- #14 Any Operation (UNSAT) in CourseOffering
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context CourseOffering
+inv: (self.enrollments->any(x | x.enrolledAt <> '') <> null) and (not(self.enrollments->any(x | x.enrolledAt <> '') <> null))
+
+-- #15 Association Exists (UNSAT) in Enrollment
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Enrollment
+inv: ((self.grade <> null) and (self.student.oclIsTypeOf(Student))) and (not((self.grade <> null) and (self.student.oclIsTypeOf(Student))))
+
+-- #16 Collection Navigation (UNSAT) in Course
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Course
+inv: (self.offerings->forAll(x | x.capacity >= 10)) and (not(self.offerings->forAll(x | x.capacity >= 10)))
+
+-- #17 Flatten Operation (UNSAT) in Department
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Department
+inv: (self.instructors->collect(x | x.offerings)->flatten()->notEmpty()) and (not(self.instructors->collect(x | x.offerings)->flatten()->notEmpty()))
+
+-- #18 Collection Size Constraint (UNSAT) in Building
+-- Difficulty: medium
+-- Mutation Strategy: contradictory_bounds
+context Building
+inv: (self.rooms->size() <= 1) and (self.rooms->size() > 1)
+

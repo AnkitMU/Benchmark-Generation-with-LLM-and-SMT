@@ -1,0 +1,258 @@
+model HospitalSystem
+
+enum Gender {Male, Female, Other}
+enum AppointmentStatus {Scheduled, Completed, Cancelled, NoShow}
+
+class Prescription
+attributes
+  prescriptionNo : String
+  issuedAt : String
+end
+
+class LabResult
+attributes
+  value : String
+  unit : String
+  reportedAt : String
+end
+
+class Procedure
+attributes
+  name : String
+  performedAt : String
+end
+
+class MedicalRecord
+attributes
+  recordNo : String
+  createdAt : String
+end
+
+class LabTest
+attributes
+  testName : String
+  orderedAt : String
+end
+
+class Admission
+attributes
+  admissionId : String
+  admitDate : String
+end
+
+class Room
+attributes
+  roomNo : String
+  type : String
+end
+
+class Bed
+attributes
+  bedNo : String
+  isOccupied : Boolean
+end
+
+class Appointment
+attributes
+  appointmentId : String
+  dateTime : String
+  status : AppointmentStatus
+end
+
+class Diagnosis
+attributes
+  code : String
+  description : String
+  diagnosedAt : String
+end
+
+class InsurancePolicy
+attributes
+  policyNo : String
+  provider : String
+  validUntil : String
+end
+
+class Medication
+attributes
+  name : String
+  dose : String
+  frequency : String
+end
+
+class Person
+attributes
+  fullName : String
+  dob : String
+  gender : Gender
+  phone : String
+end
+
+class Discharge
+attributes
+  dischargeDate : String
+  summary : String
+end
+
+class Invoice
+attributes
+  invoiceNo : String
+  totalAmount : Integer
+  issuedAt : String
+end
+
+class Hospital
+attributes
+  name : String
+  address : String
+end
+
+class Patient
+attributes
+  patientId : String
+  isInsured : Boolean
+end
+
+class Payment
+attributes
+  amount : Integer
+  paidAt : String
+  method : String
+end
+
+class Ward
+attributes
+  name : String
+  floor : Integer
+end
+
+class Department
+attributes
+  name : String
+  phone : String
+end
+
+class Doctor
+attributes
+  doctorId : String
+  specialty : String
+end
+
+class Nurse
+attributes
+  nurseId : String
+  shift : String
+end
+
+association Prescription_record between
+  Prescription[0..*] role prescriptions
+  MedicalRecord[1] role record
+end
+
+association Prescription_medications between
+  Prescription[1] role prescription
+  Medication[0..*] role medications
+end
+
+association LabResult_test between
+  LabResult[0..1] role result
+  LabTest[1] role test
+end
+
+association Procedure_record between
+  Procedure[0..*] role procedures
+  MedicalRecord[1] role record
+end
+
+association Procedure_doctor between
+  Procedure[0..*] role procedure_doctor_src
+  Doctor[0..1] role doctor
+end
+
+association MedicalRecord_patient between
+  MedicalRecord[0..*] role records
+  Patient[1] role patient
+end
+
+association MedicalRecord_diagnoses between
+  MedicalRecord[1] role record
+  Diagnosis[0..*] role diagnoses
+end
+
+association MedicalRecord_labTests between
+  MedicalRecord[1] role record
+  LabTest[0..*] role labTests
+end
+
+association Admission_patient between
+  Admission[0..*] role admissions
+  Patient[1] role patient
+end
+
+association Admission_bed between
+  Admission[0..*] role admission_bed_src
+  Bed[0..1] role bed
+end
+
+association Admission_discharge between
+  Admission[1] role admission
+  Discharge[0..1] role discharge
+end
+
+association Room_ward between
+  Room[0..*] role rooms
+  Ward[1] role ward
+end
+
+association Room_beds between
+  Room[1] role room
+  Bed[0..*] role beds
+end
+
+association Appointment_patient between
+  Appointment[0..*] role appointments
+  Patient[1] role patient
+end
+
+association Appointment_doctor between
+  Appointment[0..*] role appointments
+  Doctor[1] role doctor
+end
+
+association InsurancePolicy_patient between
+  InsurancePolicy[0..1] role insurance
+  Patient[1] role patient
+end
+
+association Invoice_patient between
+  Invoice[0..*] role invoice_patient_src
+  Patient[1] role patient
+end
+
+association Invoice_payment between
+  Invoice[1] role invoice
+  Payment[0..1] role payment
+end
+
+association Hospital_departments between
+  Hospital[1] role hospital
+  Department[0..*] role departments
+end
+
+association Hospital_wards between
+  Hospital[1] role hospital
+  Ward[0..*] role wards
+end
+
+association Department_doctors between
+  Department[1] role department
+  Doctor[0..*] role doctors
+end
+
+association Department_nurses between
+  Department[1] role department
+  Nurse[0..*] role nurses
+end
+
+constraints
+context Hospital inv c052: (self.wards->size() <= 2) and (self.address.toUpperCase() = 'TEST')

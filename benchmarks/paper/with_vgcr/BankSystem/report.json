@@ -1,0 +1,382 @@
+{
+  "target_size": 100,
+  "generated": 97,
+  "optimality": {
+    "assignment_upper_bound": 100,
+    "achieved": 97,
+    "ratio": 0.97,
+    "matching_guided": false,
+    "matching_deviations": 0
+  },
+  "complexity_fidelity": {
+    "boxed_constraints": 97,
+    "in_box": 97,
+    "in_box_rate": 1.0,
+    "mean_normalized_deviation": 0.0,
+    "max_normalized_deviation": 0.0,
+    "mean_center_offset": 0.283,
+    "out_of_box_components": {},
+    "unboxed_constraints": 0
+  },
+  "requested_sat_ratio": 1.0,
+  "realised_sat_ratio": 1.0,
+  "family_distribution": {
+    "navigation": 23,
+    "quantified": 20,
+    "arithmetic": 25,
+    "cardinality": 29
+  },
+  "profile_distribution": {
+    "easy": 37,
+    "difficult": 25,
+    "medium": 35
+  },
+  "actuator_fires": {
+    "conjoin": 14,
+    "forall": 5
+  },
+  "reachable_envelope": {
+    "nnr_c": [
+      1.0,
+      6.0
+    ],
+    "wnc": [
+      1.0,
+      5.0
+    ],
+    "dn_ca": [
+      1.0,
+      3.0
+    ],
+    "vrc": [
+      0.0,
+      1.0
+    ],
+    "wno": [
+      0.0,
+      12.5
+    ],
+    "wnm": [
+      0.0,
+      4.0
+    ],
+    "oc": [
+      0.0,
+      12.5
+    ],
+    "tcc": [
+      0.0,
+      2.0
+    ],
+    "cic": [
+      0.0,
+      3.0
+    ]
+  },
+  "reported_derived_components": {
+    "oc": [
+      0.0,
+      11.5
+    ],
+    "wnc": [
+      1.0,
+      6.0
+    ],
+    "vrc": [
+      0.0,
+      1.0
+    ],
+    "wnm": [
+      0.0,
+      3.0
+    ]
+  },
+  "unreachable_boxes": [],
+  "feasibility_gaps": [
+    {
+      "type": "unreached",
+      "info": [
+        "navigation",
+        "sat",
+        "easy"
+      ]
+    },
+    {
+      "type": "unreached",
+      "info": [
+        "navigation",
+        "sat",
+        "easy"
+      ]
+    },
+    {
+      "type": "unreached",
+      "info": [
+        "cardinality",
+        "sat",
+        "easy"
+      ]
+    }
+  ],
+  "vgcr_regenerations": [
+    {
+      "failed_pattern": "collection_navigation",
+      "failed_context": "Bank",
+      "replacement_pattern": "navigation_chain",
+      "replacement_context": "Account",
+      "requested_box": "difficult",
+      "realised_box": "difficult+forall"
+    },
+    {
+      "failed_pattern": "association_exists",
+      "failed_context": "Account",
+      "replacement_pattern": "association_exists",
+      "replacement_context": "Customer",
+      "requested_box": "easy",
+      "realised_box": "easy"
+    },
+    {
+      "failed_pattern": "association_exists",
+      "failed_context": "CreditCard",
+      "replacement_pattern": "association_exists",
+      "replacement_context": "Customer",
+      "requested_box": "easy",
+      "realised_box": "easy"
+    },
+    {
+      "failed_pattern": "navigation_chain",
+      "failed_context": "CreditCard",
+      "replacement_pattern": "simple_navigation",
+      "replacement_context": "CardTransaction",
+      "requested_box": "medium",
+      "realised_box": "medium+conjoin"
+    },
+    {
+      "failed_pattern": "navigation_chain",
+      "failed_context": "Account",
+      "replacement_pattern": "navigation_chain",
+      "replacement_context": "CardTransaction",
+      "requested_box": "medium",
+      "realised_box": "medium"
+    },
+    {
+      "failed_pattern": "navigation_chain",
+      "failed_context": "Address",
+      "replacement_pattern": "navigation_chain",
+      "replacement_context": "CardTransaction",
+      "requested_box": "medium",
+      "realised_box": "medium"
+    },
+    {
+      "failed_pattern": "navigation_chain",
+      "failed_context": "Address",
+      "replacement_pattern": "navigation_chain",
+      "replacement_context": "Customer",
+      "requested_box": "medium",
+      "realised_box": "medium"
+    },
+    {
+      "failed_pattern": "select_operation",
+      "failed_context": "Account",
+      "replacement_pattern": "any_operation",
+      "replacement_context": "Bank",
+      "requested_box": "difficult",
+      "realised_box": "difficult"
+    },
+    {
+      "failed_pattern": "exists_constraint",
+      "failed_context": "Account",
+      "replacement_pattern": "forall_nested",
+      "replacement_context": "Account",
+      "requested_box": "difficult",
+      "realised_box": "difficult"
+    },
+    {
+      "failed_pattern": "any_operation",
+      "failed_context": "Account",
+      "replacement_pattern": "association_exists",
+      "replacement_context": "Account",
+      "requested_box": "difficult",
+      "realised_box": "difficult+forall"
+    },
+    {
+      "failed_pattern": "collection_collectNested",
+      "failed_context": "Bank",
+      "replacement_pattern": "collection_indexOf",
+      "replacement_context": "Account",
+      "requested_box": "difficult",
+      "realised_box": "difficult+forall"
+    },
+    {
+      "failed_pattern": "numeric_max_of_two",
+      "failed_context": "Loan",
+      "replacement_pattern": "numeric_bounded",
+      "replacement_context": "Loan",
+      "requested_box": "medium",
+      "realised_box": "medium"
+    },
+    {
+      "failed_pattern": "numeric_max_of_two",
+      "failed_context": "Loan",
+      "replacement_pattern": "numeric_abs_bounded",
+      "replacement_context": "Loan",
+      "requested_box": "medium",
+      "realised_box": "medium"
+    },
+    {
+      "failed_pattern": "collection_size_range",
+      "failed_context": "CreditCard",
+      "replacement_pattern": "numeric_greater_than_value",
+      "replacement_context": "CreditCard",
+      "requested_box": "difficult",
+      "realised_box": "difficult+forall"
+    },
+    {
+      "failed_pattern": "collection_size_range",
+      "failed_context": "Account",
+      "replacement_pattern": "numeric_non_negative",
+      "replacement_context": "Account",
+      "requested_box": "difficult",
+      "realised_box": "difficult+forall"
+    },
+    {
+      "failed_pattern": "collection_size_range",
+      "failed_context": "Customer",
+      "replacement_pattern": "numeric_greater_than_value",
+      "replacement_context": "Account",
+      "requested_box": "difficult",
+      "realised_box": "difficult+forall"
+    },
+    {
+      "failed_pattern": "collection_size_range",
+      "failed_context": "Customer",
+      "replacement_pattern": "numeric_less_than_value",
+      "replacement_context": "Account",
+      "requested_box": "difficult",
+      "realised_box": "difficult+forall"
+    },
+    {
+      "failed_pattern": "numeric_non_negative",
+      "failed_context": "Account",
+      "replacement_pattern": "numeric_positive",
+      "replacement_context": "Account",
+      "requested_box": "easy",
+      "realised_box": "easy"
+    },
+    {
+      "failed_pattern": "numeric_bounded",
+      "failed_context": "CheckingAccount",
+      "replacement_pattern": "numeric_abs_bounded",
+      "replacement_context": "CheckingAccount",
+      "requested_box": "medium",
+      "realised_box": "medium"
+    },
+    {
+      "failed_pattern": "collection_has_size",
+      "failed_context": "Bank",
+      "replacement_pattern": "size_constraint",
+      "replacement_context": "Bank",
+      "requested_box": "easy",
+      "realised_box": "easy"
+    },
+    {
+      "failed_pattern": "collection_indexOf",
+      "failed_context": "Account",
+      "replacement_pattern": "collection_not_empty_check",
+      "replacement_context": "Account",
+      "requested_box": "difficult",
+      "realised_box": "difficult+forall"
+    },
+    {
+      "failed_pattern": "collection_not_empty_check",
+      "failed_context": "Account",
+      "replacement_pattern": "collection_asSequence",
+      "replacement_context": "Account",
+      "requested_box": "difficult",
+      "realised_box": "difficult+forall"
+    }
+  ],
+  "model": "BankSystem",
+  "profile": "balanced",
+  "semantic_admissibility": {
+    "source": "llm+cache",
+    "llm_model": "phi4-mini",
+    "generated_at": "2026-06-18T17:24:40",
+    "classes": 17,
+    "llm_classes": 8,
+    "heuristic_classes": 9,
+    "incomplete_classes": 0,
+    "candidate_pairs": 15,
+    "comparable_pairs": 3,
+    "explicitly_incomparable_pairs": 1,
+    "rejected_pairs": 12
+  },
+  "vgcr_enabled": true,
+  "report_scope": "Top-level fields certify the generation phase (pre-verification candidates); 'final_suite' is re-measured on the delivered suite.",
+  "final_suite": {
+    "delivered": 97,
+    "sat": 78,
+    "unsat": 19,
+    "slot_tier_distribution": {
+      "easy": 37,
+      "difficult": 25,
+      "medium": 35
+    },
+    "requested_tier_distribution": {
+      "easy": 40,
+      "medium": 35,
+      "difficult": 25
+    },
+    "sat_tier_distribution": {
+      "easy": 29,
+      "difficult": 20,
+      "medium": 29
+    },
+    "unsat_measured_tier_distribution": {
+      "unboxed": 14,
+      "difficult": 1,
+      "medium": 4
+    },
+    "family_distribution": {
+      "navigation": 23,
+      "quantified": 20,
+      "arithmetic": 25,
+      "cardinality": 29
+    },
+    "requested_family_distribution": {
+      "cardinality": 30,
+      "arithmetic": 25,
+      "navigation": 25,
+      "quantified": 20
+    },
+    "complexity_fidelity_sat": {
+      "boxed_constraints": 78,
+      "in_box": 78,
+      "in_box_rate": 1.0,
+      "unlabeled_constraints": 0,
+      "out_of_box": []
+    },
+    "class_coverage": {
+      "min_per_class": 1,
+      "classes": 17,
+      "covered": 17,
+      "below_min": {}
+    },
+    "slot_accounting": {
+      "requested": 100,
+      "generated": 97,
+      "generation_gaps": 3,
+      "dedup_removed": 13,
+      "dedup_refilled": 13,
+      "dedup_unfilled": 0,
+      "vgcr_regenerated": 8,
+      "vgcr_unfilled": 0,
+      "late_duplicates_removed": 0,
+      "unsat_trimmed_for_ratio": 0,
+      "delivered": 97
+    },
+    "dedup_unfilled_slots": [],
+    "vgcr_unfilled_slots": [],
+    "coverage_repairs": []
+  }
+}

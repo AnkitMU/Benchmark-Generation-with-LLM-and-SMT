@@ -36,6 +36,15 @@ logger = logging.getLogger(__name__)
 # Data types
 # ---------------------------------------------------------------------------
 
+def _verifier_accepts(verifier, kwarg: str) -> bool:
+    """True if verifier.verify() takes the keyword argument `kwarg`."""
+    import inspect
+    try:
+        return kwarg in inspect.signature(verifier.verify).parameters
+    except (TypeError, ValueError):
+        return False
+
+
 class FailureType(Enum):
     """Enumeration of VGCR property-check failure reasons."""
     TAUTOLOGY = "tautology"
@@ -299,10 +308,14 @@ class VGCRPropertyChecker:
         self, candidate: OCLConstraint
     ) -> Tuple[bool, str, float]:
         """
-        q1: Negate *candidate* and check SAT(Φ_M ∧ ¬c).
+        q1: check SAT(Φ_M ∧ ∃x∈C. ¬body(x)).
 
-        If UNSAT → the original is a tautology (always true under the
-        metamodel axioms).  Returns (passed, message, elapsed).
+        The negated body is still asserted for every context instance, so the
+        check is run with the context class bounded to exactly ONE required
+        instance (then ∀x.¬body ≡ ∃x.¬body) and with no other class forced to
+        be populated, matching the paper's definition of satisfiability.
+        If UNSAT → no model violates c → c is a tautology.
+        Returns (passed, message, elapsed).
         """
         t0 = time.time()
 
@@ -319,7 +332,13 @@ class VGCRPropertyChecker:
             # coverage of q1 separately.
             return True, "negation unsupported — q1 skipped", dt
 
-        vr = self.verifier.verify(negated)
+        ctx = candidate.context
+        if _verifier_accepts(self.verifier, 'scope_overrides'):
+            vr = self.verifier.verify(
+                negated, scope_overrides={ctx: 1}, required_classes={ctx}
+            )
+        else:  # older verifier: universal negation under the default scope
+            vr = self.verifier.verify(negated)
         dt = time.time() - t0
         self.stats.total_smt_queries += 1
         self.stats.total_smt_time += dt
@@ -434,6 +453,26 @@ class VGCRPropertyChecker:
         # SAT or unknown → not redundant ✓
         return True, "", dt
 
+    def _q4_session_for(self, current_suite: List[OCLConstraint]):
+        """Return an incremental session whose permanently asserted constraints
+        are exactly *current_suite* (in order), reusing the previous session
+        when the suite only grew; None if the verifier has no session support."""
+        if not hasattr(self.verifier, 'open_session'):
+            return None
+        ids = [id(c) for c in current_suite]
+        sess = getattr(self, '_q4_session', None)
+        have = getattr(self, '_q4_suite_ids', [])
+        if sess is None or ids[:len(have)] != have:
+            sess = self.verifier.open_session()
+            if sess is None:
+                return None
+            have = []
+            self._q4_session = sess
+        for i in range(len(have), len(ids)):
+            sess.add_permanent(self.verifier.constraint_to_dict(current_suite[i], i))
+        self._q4_suite_ids = ids
+        return sess
+
     def _check_consistency(
         self,
         candidate: OCLConstraint,
@@ -446,28 +485,48 @@ class VGCRPropertyChecker:
         Returns (passed, message, elapsed, conflicting_constraint_ids).
         """
         t0 = time.time()
-
-        # Build batch: current suite + candidate
-        batch = list(current_suite) + [candidate]
-        results = self.verifier.verify_batch(batch, silent=True)
+        global_result = None
+        core_names: List[str] = []
+        session = self._q4_session_for(current_suite)
+        if session is not None:
+            # Incremental path: the accepted suite is already asserted; only the
+            # candidate is pushed, checked and popped.
+            verdict, core_names = session.try_candidate(
+                self.verifier.constraint_to_dict(candidate, len(current_suite)))
+            if verdict not in ('sat', 'unsat') and hasattr(self.verifier, 'check_consistency_with_core'):
+                # Incremental check inconclusive: a fresh tracked single call
+                # often decides what push/pop cannot (see the hard-instance probe).
+                fresh = self.verifier.check_consistency_with_core(list(current_suite) + [candidate])
+                verdict = fresh['solver_result']
+                core_names = [f"{current_suite[i].pattern_name}__{i}" for i in fresh['core'] if i < len(current_suite)]
+            global_result = verdict if verdict in ('sat', 'unsat') else None
+        else:
+            # Fallback: rebuild from scratch (older verifiers without sessions).
+            batch = list(current_suite) + [candidate]
+            results = self.verifier.verify_batch(batch, silent=True)
+            for r in results:
+                if r.solver_result in ('sat', 'unsat'):
+                    global_result = r.solver_result
+                    break
         dt = time.time() - t0
         self.stats.total_smt_queries += 1
         self.stats.total_smt_time += dt
-
-        global_result = None
-        for r in results:
-            if r.solver_result in ('sat', 'unsat'):
-                global_result = r.solver_result
-                break
 
         if global_result == 'unsat':
             # Try to identify conflicting constraints.
             # The verifier doesn't expose unsat_core directly, so we
             # report the full suite context as the conflict set.
             # A future enhancement could use Z3's unsat_core extraction.
-            conflict_ids = [
-                f"{c.pattern_id}@{c.context}" for c in current_suite
-            ]
+            if core_names:
+                # Unsat core from the incremental session: exact conflict set.
+                by_name = {f"{c.pattern_name}__{i}": c for i, c in enumerate(current_suite)}
+                conflict_ids = [
+                    f"{by_name[n].pattern_id}@{by_name[n].context}" for n in core_names if n in by_name
+                ]
+            else:
+                conflict_ids = [
+                    f"{c.pattern_id}@{c.context}" for c in current_suite
+                ]
             # Heuristic: limit reported conflicts to keep messages useful
             reported = conflict_ids[:5]
             suffix = (

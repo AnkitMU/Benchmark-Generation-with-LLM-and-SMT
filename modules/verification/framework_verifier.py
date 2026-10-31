@@ -154,6 +154,8 @@ class FrameworkConstraintVerifier:
         scope_per_class: int = 2,
         timeout_ms: int = 15000,
         batch_timeout_ms: Optional[int] = None,
+        portfolio_seeds: int = 0,
+        portfolio_first_try_ms: int = 60000,
     ):
         """
         Initialize verifier with framework.
@@ -170,6 +172,14 @@ class FrameworkConstraintVerifier:
         self.scope_per_class = scope_per_class
         self.timeout_ms = timeout_ms
         self.batch_timeout_ms = batch_timeout_ms or timeout_ms
+        # Seed portfolio (see modules/verification/seed_portfolio.py): when > 0, a
+        # joint check first runs alone for at most portfolio_first_try_ms; if that
+        # is inconclusive, `portfolio_seeds` processes retry it under different Z3
+        # seeds and the first definite verdict wins.
+        self.portfolio_seeds = int(portfolio_seeds or 0)
+        self.portfolio_first_try_ms = int(portfolio_first_try_ms)
+        self.xmi_path = xmi_path
+        self.portfolio_stats = {'triggered': 0, 'resolved': 0, 'unresolved': 0}
         self.framework_available = False
         self.unavailable_reason: Optional[str] = None
         self.checker = None
@@ -213,7 +223,10 @@ class FrameworkConstraintVerifier:
             with contextlib.redirect_stdout(io.StringIO()):
                 self.checker = GenericGlobalConsistencyChecker(
                     xmi_file=xmi_path,
-                    rich_instances=True,  # Enable realistic values
+                    # rich_instances adds name-based value guesses (e.g. 'age' in [0,150],
+                    # 'level' in [0,100], startDate < endDate) meant for readable example
+                    # instances. Verdicts must follow the metamodel only, so it is off.
+                    rich_instances=False,
                     timeout_ms=self.timeout_ms,
                     show_raw_values=False
                 )
@@ -231,7 +244,8 @@ class FrameworkConstraintVerifier:
             print("   Falling back to basic verification")
             self.framework_available = False
     
-    def verify(self, constraint: OCLConstraint) -> FrameworkVerificationResult:
+    def verify(self, constraint: OCLConstraint, scope_overrides: Optional[Dict[str, int]] = None,
+               required_classes: Optional[set] = None) -> FrameworkVerificationResult:
         """
         Verify a single constraint.
         
@@ -268,17 +282,27 @@ class FrameworkConstraintVerifier:
                 'text': constraint.ocl
             }
             
-            # Determine scope (how many instances to check)
+            # Determine scope (how many instances to check). `scope_overrides`
+            # maps class name -> instance bound for this call only; `required_classes`
+            # restricts the "at least one instance" domain axiom to those classes
+            # (None keeps the default: every class populated).
             scope = self._get_verification_scope()
+            for cls_name, bound in (scope_overrides or {}).items():
+                scope[f'n{cls_name}'] = bound
             
             # Single-constraint checks use the tighter per-constraint timeout.
             # Always silent — model dumps are not useful in batch pipelines.
-            solver_result, model = self._run_checker(
-                constraints=[constraint_dict],
-                scope=scope,
-                silent=True,
-                timeout_ms=self.timeout_ms,
-            )
+            previous_required = getattr(self.checker, 'required_classes', None)
+            self.checker.required_classes = required_classes
+            try:
+                solver_result, model = self._run_checker(
+                    constraints=[constraint_dict],
+                    scope=scope,
+                    silent=True,
+                    timeout_ms=self.timeout_ms,
+                )
+            finally:
+                self.checker.required_classes = previous_required
 
             status = self.checker.constraint_status.get(unique_name, 'unknown')
 
@@ -434,6 +458,24 @@ class FrameworkConstraintVerifier:
         Returns:
             Consistency result dict
         """
+        # Fast path (tracked incremental session): one solver call with every
+        # constraint asserted under a tracking literal. Z3 decides instances this
+        # way that time out under plain assertions, and an UNSAT verdict comes
+        # with an unsat core. Falls back to the classic path on 'unknown'.
+        if self.framework_available and self.checker is not None and getattr(self, 'use_tracked_consistency', True):
+            try:
+                fast = self.check_consistency_with_core(constraints)
+            except Exception:
+                fast = None
+            if fast and fast['solver_result'] in ('sat', 'unsat') and not fast['unencoded']:
+                verdict = fast['solver_result']
+                return {
+                    'consistent': verdict == 'sat', 'verified': True, 'solver_result': verdict,
+                    'scope': self._get_verification_scope(), 'encoded': len(constraints), 'unencoded': [],
+                    'legacy_encoded': [], 'core': fast['core'],
+                    'message': f"Global consistency check (tracked): {verdict}"
+                               + (f"; unsat core = {fast['core']}" if verdict == 'unsat' else ''),
+                }
         if not self.framework_available:
             return {
                 'consistent': True,
@@ -460,13 +502,42 @@ class FrameworkConstraintVerifier:
                 silent=False,
                 timeout_ms=self.batch_timeout_ms,
             )
-            
-            return {
-                'consistent': solver_result == 'sat',
-                'verified': True,
+
+            status = self.checker.constraint_status
+            encoding = getattr(self.checker, 'constraint_encoding', {})
+            unencoded = [d['name'] for d in constraint_dicts if status.get(d['name']) != 'encoded']
+            legacy = [d['name'] for d in constraint_dicts
+                      if status.get(d['name']) == 'encoded' and encoding.get(d['name']) == 'legacy']
+
+            result = {
                 'solver_result': solver_result,
-                'message': f"Global consistency check: {solver_result}"
+                'scope': scope,
+                'encoded': len(constraint_dicts) - len(unencoded),
+                'unencoded': unencoded,
+                'legacy_encoded': legacy,
             }
+            if solver_result == 'unsat':
+                # A subset of the constraints is already contradictory, so the
+                # whole set is, whatever happened to the unencoded ones.
+                result.update(consistent=False, verified=True,
+                              message="Global consistency check: unsat")
+            elif solver_result == 'sat' and not unencoded:
+                result.update(consistent=True, verified=True,
+                              message="Global consistency check: sat")
+            elif solver_result == 'sat':
+                # The solver only saw the constraints that could be encoded; a
+                # model for a subset says nothing about the full set.
+                result.update(consistent=None, verified=False,
+                              message=(f"Global consistency check: sat for {result['encoded']} "
+                                       f"encoded constraints, but {len(unencoded)} constraint(s) "
+                                       f"could not be encoded: {', '.join(unencoded)}"))
+            else:
+                result.update(consistent=None, verified=False,
+                              message=f"Global consistency check: {solver_result}")
+            if legacy:
+                result['message'] += (f" ({len(legacy)} constraint(s) encoded by legacy "
+                                      f"pattern encoders, which may under-approximate)")
+            return result
             
         except Exception as e:
             return {
@@ -506,6 +577,78 @@ class FrameworkConstraintVerifier:
             if timeout_ms is not None:
                 self.checker.timeout_ms = checker_timeout
     
+    # ------------------------------------------------------------------
+    # Incremental sessions (lever 2) and unsat-core consistency (lever 3)
+    # ------------------------------------------------------------------
+    def constraint_to_dict(self, constraint: OCLConstraint, index: int) -> Dict:
+        """Checker-side dict for a constraint, with the same unique-name scheme
+        and pattern mapping as verify_batch()."""
+        return {
+            'name': f"{constraint.pattern_name}__{index}",
+            'pattern': _PATTERN_ID_TO_Z3.get(constraint.pattern_id, constraint.pattern_id),
+            'context': constraint.context,
+            'text': constraint.ocl,
+        }
+
+    def open_session(self, timeout_ms: Optional[int] = None, required_classes: Optional[set] = None,
+                     scope_overrides: Optional[Dict[str, int]] = None):
+        """Open an incremental Z3 session over this metamodel (domain axioms
+        asserted once; constraints added with push/pop or permanently)."""
+        if not self.framework_available or self.checker is None:
+            return None
+        from modules.verification.incremental_session import IncrementalConsistencySession
+        scope = self._get_verification_scope()
+        for cls_name, bound in (scope_overrides or {}).items():
+            scope[f'n{cls_name}'] = bound
+        return IncrementalConsistencySession(
+            self.checker, scope,
+            timeout_ms=timeout_ms if timeout_ms is not None else self.batch_timeout_ms,
+            required_classes=required_classes,
+        )
+
+    def check_consistency_with_core(self, constraints: List[OCLConstraint],
+                                    timeout_ms: Optional[int] = None) -> Dict:
+        """Joint consistency of *constraints* in one tracked solver call.
+
+        Returns {'solver_result': 'sat'|'unsat'|'unknown', 'core': [indices],
+                 'unencoded': [indices]}; 'core' is a Z3 unsat core mapped back
+        to positions in *constraints* (empty unless 'unsat')."""
+        full_timeout = timeout_ms if timeout_ms is not None else self.batch_timeout_ms
+        use_portfolio = self.portfolio_seeds > 0 and len(constraints) > 1
+        first_try = min(full_timeout, self.portfolio_first_try_ms) if use_portfolio else full_timeout
+        result = self._tracked_check(constraints, first_try)
+        if result['solver_result'] in ('sat', 'unsat') or not use_portfolio or result['unencoded']:
+            return result
+        # Inconclusive within the first try: race the same check under other seeds.
+        from modules.verification.seed_portfolio import run_portfolio
+        self.portfolio_stats['triggered'] += 1
+        payload = [{'ocl': c.ocl, 'pattern_id': c.pattern_id, 'pattern_name': c.pattern_name,
+                    'context': c.context} for c in constraints]
+        winner = run_portfolio(self.xmi_path, self.scope_per_class, payload,
+                               seeds=list(range(1, self.portfolio_seeds + 1)), timeout_ms=full_timeout)
+        if winner is None:
+            self.portfolio_stats['unresolved'] += 1
+            return result
+        self.portfolio_stats['resolved'] += 1
+        winner.pop('error', None)
+        return winner
+
+    def _tracked_check(self, constraints: List[OCLConstraint], timeout_ms: Optional[int]) -> Dict:
+        """One tracked solver call over *constraints* in this process."""
+        session = self.open_session(timeout_ms=timeout_ms)
+        if session is None:
+            return {'solver_result': 'unknown', 'core': [], 'unencoded': list(range(len(constraints)))}
+        names = {}
+        unencoded = []
+        for i, c in enumerate(constraints):
+            d = self.constraint_to_dict(c, i)
+            names[d['name']] = i
+            if session.add_permanent(d) == 'error':
+                unencoded.append(i)
+        verdict = session.check()
+        core = sorted(names[n] for n in session.unsat_core_names() if n in names) if verdict == 'unsat' else []
+        return {'solver_result': verdict, 'core': core, 'unencoded': unencoded}
+
     def _get_verification_scope(self) -> Dict:
         """
         Determine verification scope (how many instances of each class).

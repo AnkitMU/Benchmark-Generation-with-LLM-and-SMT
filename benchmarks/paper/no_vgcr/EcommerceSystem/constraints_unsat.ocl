@@ -1,0 +1,101 @@
+-- Benchmark: EcommerceSystem / balanced
+-- Type: UNSAT Constraints Only
+-- Generated: 2026-10-12T20:23:52.965796
+-- Count: 16
+
+-- #1 Universal Quantification (forAll) (UNSAT) in Cart
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Cart
+inv: ((self.items->forAll(x | x.quantity < 10)) and (self.customer.cart.createdAt <> '')) and (not((self.items->forAll(x | x.quantity < 10)) and (self.customer.cart.createdAt <> '')))
+
+-- #2 Numeric Attribute Bounded (UNSAT) in OrderItem
+-- Difficulty: unboxed
+-- Mutation Strategy: contradictory_bounds
+context OrderItem
+inv: (self.quantity >= 53 and self.quantity <= 80) and (self.quantity < 53)
+
+-- #3 Flatten Operation (UNSAT) in Category
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Category
+inv: (self.products->collect(x | x.variants)->flatten()->notEmpty()) and (not(self.products->collect(x | x.variants)->flatten()->notEmpty()))
+
+-- #4 Select (Filter) Operation (UNSAT) in Cart
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Cart
+inv: (self.items->select(x | x.quantity < 100)->size() >= 1) and (not(self.items->select(x | x.quantity < 100)->size() >= 1))
+
+-- #5 Numeric Absolute Value Bounded (UNSAT) in InventoryItem
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context InventoryItem
+inv: (self.quantity.abs() <= 10) and (not(self.quantity.abs() <= 10))
+
+-- #6 Association Exists (UNSAT) in OrderItem
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context OrderItem
+inv: ((self.order <> null) and (self.quantity > 0)) and (not((self.order <> null) and (self.quantity > 0)))
+
+-- #7 Collection Index Of Element (UNSAT) in Product
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Product
+inv: ((self.basePrice > 10) and (self.variants->forAll(v | v.priceDelta <= 1000))) and (not((self.basePrice > 10) and (self.variants->forAll(v | v.priceDelta <= 1000))))
+
+-- #8 Numeric Attribute Bounded (UNSAT) in InventoryItem
+-- Difficulty: unboxed
+-- Mutation Strategy: contradictory_bounds
+context InventoryItem
+inv: (self.quantity >= 76 and self.quantity <= 99) and (self.quantity < 76)
+
+-- #9 Numeric Multiple Of (UNSAT) in InventoryItem
+-- Difficulty: medium
+-- Mutation Strategy: self_contradiction
+context InventoryItem
+inv: (self.quantity mod 8 = 0) and (not(self.quantity mod 8 = 0))
+
+-- #10 Collection Must Be Empty (UNSAT) in Customer
+-- Difficulty: medium
+-- Mutation Strategy: self_contradiction
+context Customer
+inv: (self.addresses->isEmpty()) and (not(self.addresses->isEmpty()))
+
+-- #11 Collection Must Be Empty (UNSAT) in Customer
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Customer
+inv: ((self.email <> '') and (self.addresses->forAll(v | v.city <> ''))) and (not((self.email <> '') and (self.addresses->forAll(v | v.city <> ''))))
+
+-- #12 Collection Size in Range (UNSAT) in Product
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Product
+inv: ((self.basePrice <= 50) and (self.variants->forAll(v | v.priceDelta >= 10))) and (not((self.basePrice <= 50) and (self.variants->forAll(v | v.priceDelta >= 10))))
+
+-- #13 Numeric Less Than Value (UNSAT) in CartItem
+-- Difficulty: easy
+-- Mutation Strategy: contradictory_bounds
+context CartItem
+inv: (self.quantity < 7) and (self.quantity > 12)
+
+-- #14 Numeric Is Even (UNSAT) in Review
+-- Difficulty: medium
+-- Mutation Strategy: self_contradiction
+context Review
+inv: (self.rating mod 2 = 0) and (not(self.rating mod 2 = 0))
+
+-- #15 Association Exists (UNSAT) in Payment
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Payment
+inv: (self.order <> null) and (not(self.order <> null))
+
+-- #16 Numeric Attribute Non-Negative (UNSAT) in OrderItem
+-- Difficulty: medium
+-- Mutation Strategy: contradictory_bounds
+context OrderItem
+inv: ((self.quantity >= 0) and (self.quantity < 75)) and (self.quantity < 0)
+

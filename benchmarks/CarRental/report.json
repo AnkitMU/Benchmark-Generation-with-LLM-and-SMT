@@ -1,22 +1,39 @@
 {
   "target_size": 100,
-  "generated": 87,
+  "generated": 84,
+  "optimality": {
+    "assignment_upper_bound": 87,
+    "achieved": 84,
+    "ratio": 0.966,
+    "matching_guided": false,
+    "matching_deviations": 0
+  },
+  "complexity_fidelity": {
+    "boxed_constraints": 84,
+    "in_box": 84,
+    "in_box_rate": 1.0,
+    "mean_normalized_deviation": 0.0,
+    "max_normalized_deviation": 0.0,
+    "mean_center_offset": 0.276,
+    "out_of_box_components": {},
+    "unboxed_constraints": 0
+  },
   "requested_sat_ratio": 1.0,
   "realised_sat_ratio": 1.0,
   "family_distribution": {
-    "quantified": 13,
-    "navigation": 19,
+    "navigation": 23,
+    "quantified": 7,
     "arithmetic": 25,
-    "cardinality": 30
+    "cardinality": 29
   },
   "profile_distribution": {
+    "difficult": 25,
     "easy": 33,
-    "medium": 29,
-    "difficult": 25
+    "medium": 26
   },
   "actuator_fires": {
-    "conjoin": 13,
-    "forall": 6
+    "conjoin": 35,
+    "forall": 8
   },
   "reachable_envelope": {
     "nnr_c": [
@@ -37,7 +54,7 @@
     ],
     "wno": [
       0.0,
-      12.5
+      8.5
     ],
     "wnm": [
       0.0,
@@ -45,7 +62,7 @@
     ],
     "oc": [
       0.0,
-      12.5
+      8.5
     ],
     "tcc": [
       0.0,
@@ -59,11 +76,11 @@
   "reported_derived_components": {
     "oc": [
       0.0,
-      10.5
+      8.5
     ],
     "wnc": [
       1.0,
-      6.0
+      9.0
     ],
     "vrc": [
       0.0,
@@ -71,13 +88,34 @@
     ],
     "wnm": [
       0.0,
-      3.0
+      4.0
     ]
   },
-  "unreachable_boxes": [],
+  "unreachable_boxes": [
+    {
+      "box": "difficult",
+      "blocking": [
+        "cic",
+        "dn_ca",
+        "nnr_c",
+        "tcc",
+        "wno"
+      ],
+      "reason": "joint"
+    }
+  ],
   "feasibility_gaps": [
     {
-      "type": "unreached",
+      "type": "support_infeasible",
+      "info": [
+        [
+          "no SAT pattern supports family 'quantified' x profile 'easy'",
+          "no SAT pattern supports family 'quantified' x profile 'medium'"
+        ]
+      ]
+    },
+    {
+      "type": "unfilled",
       "info": [
         "quantified",
         "sat",
@@ -85,7 +123,15 @@
       ]
     },
     {
-      "type": "unreached",
+      "type": "unfilled",
+      "info": [
+        "quantified",
+        "sat",
+        "easy"
+      ]
+    },
+    {
+      "type": "unfilled",
       "info": [
         "quantified",
         "sat",
@@ -93,7 +139,15 @@
       ]
     },
     {
-      "type": "unreached",
+      "type": "unfilled",
+      "info": [
+        "quantified",
+        "sat",
+        "easy"
+      ]
+    },
+    {
+      "type": "unfilled",
       "info": [
         "quantified",
         "sat",
@@ -101,7 +155,7 @@
       ]
     },
     {
-      "type": "unreached",
+      "type": "unfilled",
       "info": [
         "quantified",
         "sat",
@@ -109,7 +163,7 @@
       ]
     },
     {
-      "type": "unreached",
+      "type": "unfilled",
       "info": [
         "quantified",
         "sat",
@@ -117,70 +171,378 @@
       ]
     },
     {
-      "type": "unreached",
+      "type": "unfilled",
       "info": [
         "quantified",
-        "sat",
-        "easy"
-      ]
-    },
-    {
-      "type": "unreached",
-      "info": [
-        "quantified",
-        "sat",
-        "easy"
-      ]
-    },
-    {
-      "type": "unreached",
-      "info": [
-        "navigation",
-        "sat",
-        "easy"
-      ]
-    },
-    {
-      "type": "unreached",
-      "info": [
-        "navigation",
-        "sat",
-        "easy"
-      ]
-    },
-    {
-      "type": "unreached",
-      "info": [
-        "navigation",
-        "sat",
-        "easy"
-      ]
-    },
-    {
-      "type": "unreached",
-      "info": [
-        "navigation",
-        "sat",
-        "easy"
-      ]
-    },
-    {
-      "type": "unreached",
-      "info": [
-        "navigation",
         "sat",
         "medium"
       ]
     },
     {
+      "type": "unfilled",
+      "info": [
+        "quantified",
+        "sat",
+        "medium"
+      ]
+    },
+    {
+      "type": "unfilled",
+      "info": [
+        "quantified",
+        "sat",
+        "medium"
+      ]
+    },
+    {
+      "type": "unfilled",
+      "info": [
+        "quantified",
+        "sat",
+        "easy"
+      ]
+    },
+    {
+      "type": "unfilled",
+      "info": [
+        "quantified",
+        "sat",
+        "medium"
+      ]
+    },
+    {
+      "type": "unfilled",
+      "info": [
+        "quantified",
+        "sat",
+        "easy"
+      ]
+    },
+    {
       "type": "unreached",
       "info": [
         "navigation",
+        "sat",
+        "easy"
+      ]
+    },
+    {
+      "type": "unreached",
+      "info": [
+        "navigation",
+        "sat",
+        "easy"
+      ]
+    },
+    {
+      "type": "unreached",
+      "info": [
+        "cardinality",
         "sat",
         "medium"
       ]
     }
   ],
+  "vgcr_regenerations": [
+    {
+      "failed_pattern": "navigation_consistency",
+      "failed_context": "Reservation",
+      "replacement_pattern": "simple_navigation",
+      "replacement_context": "Reservation",
+      "requested_box": "easy",
+      "realised_box": "easy"
+    },
+    {
+      "failed_pattern": "forall_nested",
+      "failed_context": "Vehicle",
+      "replacement_pattern": "exists_constraint",
+      "replacement_context": "Vehicle",
+      "requested_box": "difficult",
+      "realised_box": "difficult+conjoin"
+    },
+    {
+      "failed_pattern": "collection_sum",
+      "failed_context": "Vehicle",
+      "replacement_pattern": "collection_asSequence",
+      "replacement_context": "Vehicle",
+      "requested_box": "difficult",
+      "realised_box": "difficult+forall"
+    },
+    {
+      "failed_pattern": "collection_sum",
+      "failed_context": "Branch",
+      "replacement_pattern": "implies_simple",
+      "replacement_context": "Branch",
+      "requested_box": "difficult",
+      "realised_box": "difficult+forall"
+    },
+    {
+      "failed_pattern": "collection_collectNested",
+      "failed_context": "Company",
+      "replacement_pattern": "collection_indexOf",
+      "replacement_context": "Branch",
+      "requested_box": "difficult",
+      "realised_box": "difficult+forall"
+    },
+    {
+      "failed_pattern": "collection_sum",
+      "failed_context": "Customer",
+      "replacement_pattern": "xor_condition",
+      "replacement_context": "Customer",
+      "requested_box": "difficult",
+      "realised_box": "difficult+forall"
+    },
+    {
+      "failed_pattern": "numeric_min_of_two",
+      "failed_context": "Customer",
+      "replacement_pattern": "collection_size_range",
+      "replacement_context": "Customer",
+      "requested_box": "medium",
+      "realised_box": "medium"
+    },
+    {
+      "failed_pattern": "numeric_max_of_two",
+      "failed_context": "Payment",
+      "replacement_pattern": "three_way_comparison",
+      "replacement_context": "Payment",
+      "requested_box": "medium",
+      "realised_box": "medium"
+    },
+    {
+      "failed_pattern": "numeric_min_of_two",
+      "failed_context": "Payment",
+      "replacement_pattern": "numeric_positive",
+      "replacement_context": "Payment",
+      "requested_box": "medium",
+      "realised_box": "medium+conjoin"
+    },
+    {
+      "failed_pattern": "size_constraint",
+      "failed_context": "Branch",
+      "replacement_pattern": "collection_min_size",
+      "replacement_context": "Branch",
+      "requested_box": "easy",
+      "realised_box": "easy"
+    },
+    {
+      "failed_pattern": "navigation_chain",
+      "failed_context": "License",
+      "replacement_pattern": "simple_navigation",
+      "replacement_context": "License",
+      "requested_box": "medium",
+      "realised_box": "medium+conjoin+conjoin"
+    },
+    {
+      "failed_pattern": "one_operation",
+      "failed_context": "Vehicle",
+      "replacement_pattern": "exists_constraint",
+      "replacement_context": "Branch",
+      "requested_box": "difficult",
+      "realised_box": "difficult+conjoin"
+    },
+    {
+      "failed_pattern": "numeric_difference_constraint",
+      "failed_context": "Customer",
+      "replacement_pattern": "numeric_abs_bounded",
+      "replacement_context": "Customer",
+      "requested_box": "easy",
+      "realised_box": "easy"
+    },
+    {
+      "failed_pattern": "numeric_bounded",
+      "failed_context": "Customer",
+      "replacement_pattern": "numeric_greater_than_value",
+      "replacement_context": "Customer",
+      "requested_box": "easy",
+      "realised_box": "easy"
+    },
+    {
+      "failed_pattern": "numeric_bounded",
+      "failed_context": "Rental",
+      "replacement_pattern": "numeric_even",
+      "replacement_context": "Rental",
+      "requested_box": "medium",
+      "realised_box": "medium+conjoin"
+    },
+    {
+      "failed_pattern": "two_attributes_not_equal",
+      "failed_context": "Branch",
+      "replacement_pattern": "size_constraint",
+      "replacement_context": "Branch",
+      "requested_box": "easy",
+      "realised_box": "easy"
+    },
+    {
+      "failed_pattern": "collection_min_size",
+      "failed_context": "Branch",
+      "replacement_pattern": "attribute_not_null_simple",
+      "replacement_context": "Branch",
+      "requested_box": "easy",
+      "realised_box": "easy"
+    },
+    {
+      "failed_pattern": "attribute_not_null_simple",
+      "failed_context": "Branch",
+      "replacement_pattern": "collection_max_size",
+      "replacement_context": "Branch",
+      "requested_box": "easy",
+      "realised_box": "easy"
+    },
+    {
+      "failed_pattern": "two_attributes_not_equal",
+      "failed_context": "Branch",
+      "replacement_pattern": "collection_not_empty_check",
+      "replacement_context": "Branch",
+      "requested_box": "easy",
+      "realised_box": "easy"
+    },
+    {
+      "failed_pattern": "collection_has_size",
+      "failed_context": "Branch",
+      "replacement_pattern": "collection_not_empty_simple",
+      "replacement_context": "Branch",
+      "requested_box": "easy",
+      "realised_box": "easy"
+    },
+    {
+      "failed_pattern": "collection_not_empty_simple",
+      "failed_context": "Customer",
+      "replacement_pattern": "collection_has_size",
+      "replacement_context": "Customer",
+      "requested_box": "easy",
+      "realised_box": "easy"
+    },
+    {
+      "failed_pattern": "collection_has_size",
+      "failed_context": "Customer",
+      "replacement_pattern": "boolean_is_true",
+      "replacement_context": "Customer",
+      "requested_box": "easy",
+      "realised_box": "easy"
+    },
+    {
+      "failed_pattern": "not_both_defined",
+      "failed_context": "Payment",
+      "replacement_pattern": "implies_simple",
+      "replacement_context": "Payment",
+      "requested_box": "medium",
+      "realised_box": "medium"
+    },
+    {
+      "failed_pattern": "not_both_defined",
+      "failed_context": "Customer",
+      "replacement_pattern": "collection_not_empty_check",
+      "replacement_context": "Customer",
+      "requested_box": "medium",
+      "realised_box": "medium+conjoin"
+    },
+    {
+      "failed_pattern": "not_both_defined",
+      "failed_context": "Payment",
+      "replacement_pattern": "all_attributes_defined",
+      "replacement_context": "Payment",
+      "requested_box": "medium",
+      "realised_box": "medium"
+    },
+    {
+      "failed_pattern": "exists_constraint",
+      "failed_context": "Vehicle",
+      "replacement_pattern": "forall_nested",
+      "replacement_context": "Branch",
+      "requested_box": "difficult",
+      "realised_box": "difficult+conjoin"
+    },
+    {
+      "failed_pattern": "collection_min_size",
+      "failed_context": "Branch",
+      "replacement_pattern": "collection_max_size",
+      "replacement_context": "Branch",
+      "requested_box": "easy",
+      "realised_box": "easy"
+    }
+  ],
   "model": "CarRental",
-  "profile": "balanced"
+  "profile": "balanced",
+  "semantic_admissibility": {
+    "source": "llm+cache",
+    "llm_model": "phi4-mini",
+    "generated_at": "2026-05-31T20:52:44",
+    "classes": 8,
+    "llm_classes": 7,
+    "heuristic_classes": 1,
+    "incomplete_classes": 0,
+    "candidate_pairs": 56,
+    "comparable_pairs": 18,
+    "explicitly_incomparable_pairs": 4,
+    "rejected_pairs": 38
+  },
+  "vgcr_enabled": true,
+  "report_scope": "Top-level fields certify the generation phase (pre-verification candidates); 'final_suite' is re-measured on the delivered suite.",
+  "final_suite": {
+    "delivered": 81,
+    "sat": 65,
+    "unsat": 16,
+    "slot_tier_distribution": {
+      "difficult": 23,
+      "easy": 33,
+      "medium": 25
+    },
+    "requested_tier_distribution": {
+      "easy": 40,
+      "medium": 35,
+      "difficult": 25
+    },
+    "sat_tier_distribution": {
+      "difficult": 18,
+      "easy": 28,
+      "medium": 19
+    },
+    "unsat_measured_tier_distribution": {
+      "medium": 4,
+      "difficult": 2,
+      "easy": 1,
+      "unboxed": 9
+    },
+    "family_distribution": {
+      "navigation": 23,
+      "quantified": 7,
+      "arithmetic": 24,
+      "cardinality": 27
+    },
+    "requested_family_distribution": {
+      "cardinality": 30,
+      "arithmetic": 25,
+      "navigation": 25,
+      "quantified": 20
+    },
+    "complexity_fidelity_sat": {
+      "boxed_constraints": 65,
+      "in_box": 65,
+      "in_box_rate": 1.0,
+      "unlabeled_constraints": 0,
+      "out_of_box": []
+    },
+    "class_coverage": {
+      "min_per_class": 1,
+      "classes": 8,
+      "covered": 8,
+      "below_min": {}
+    },
+    "slot_accounting": {
+      "requested": 100,
+      "generated": 84,
+      "generation_gaps": 16,
+      "dedup_removed": 10,
+      "dedup_refilled": 10,
+      "dedup_unfilled": 0,
+      "vgcr_regenerated": 15,
+      "vgcr_unfilled": 0,
+      "late_duplicates_removed": 0,
+      "unsat_trimmed_for_ratio": 0,
+      "delivered": 81
+    },
+    "dedup_unfilled_slots": [],
+    "vgcr_unfilled_slots": [],
+    "coverage_repairs": []
+  }
 }

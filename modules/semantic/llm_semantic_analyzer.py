@@ -93,6 +93,7 @@ class SemanticCompatibilityMatrix:
     class_profiles: Dict[str, ClassSemanticProfile]
     generated_at: str = ""
     model_used: str = DEFAULT_MODEL
+    from_cache: bool = False   # runtime provenance only; never serialised
 
     def is_comparable(self, class_name: str, attr1: str, attr2: str) -> Optional[bool]:
         profile = self.class_profiles.get(class_name)
@@ -543,61 +544,168 @@ def _parse_batched_response(response: str,
 # Semantic domain keywords — attributes matching these patterns belong to a domain.
 # Matching is done on tokenized attribute names (camelCase / snake_case aware) to
 # avoid false positives such as "updateId" being misread as containing "date".
+# 78 fine-grained attribute domains grouped into 18 semantic families.
+# Domains identify one kind of quantity via keywords; families group the
+# domains whose quantities are mutually comparable. The DECISION rules
+# (never-cross, auto-approve, cross-family rejection) operate on families,
+# so the domain granularity refines reporting and classification without
+# changing family-level behaviour (see the family-aggregated scoring in
+# _classify_attr_domain).
 _DOMAIN_PATTERNS = {
-    "date_business": {"date", "expiry", "expires", "deadline", "birth", "due",
-                      "scheduled", "booking", "departure", "arrival",
-                      "checkin", "checkout"},
-    "date_metadata": {"created", "updated", "modified", "timestamp", "logged",
-                      "recorded", "registered", "submitted", "confirmed"},
-    "distance": {"mileage", "distance", "odometer", "mile", "km",
-                 "range", "depth", "altitude", "elevation"},
-    "money": {"price", "cost", "amount", "salary", "wage", "fee",
-              "bonus", "revenue", "budget", "balance", "payment",
-              "charge", "discount", "tax", "deposit", "rent",
-              "credit", "debit", "invoice", "rate", "value",
-              "insurance", "premium", "worth", "fare", "total"},
-    "count": {"count", "quantity", "seats", "capacity", "door",
-              "cores", "threads", "slots", "items", "points", "score", "staff"},
-    "geo": {"longitude", "latitude", "lon", "lng", "lat", "coordinate",
-            "coord", "geo", "bearing"},
-    "percentage": {"percent", "ratio", "progress",
-                   "utilization", "efficiency", "coverage", "pct"},
-    "temperature": {"temp", "temperature", "heat", "celsius", "fahrenheit"},
-    "weight": {"weight", "mass", "kg", "ton", "pound", "lb"},
-    "memory": {"memory", "ram", "cache", "storage", "byte", "bytes",
-               "kb", "mb", "gb", "tb"},
-    "unit": {"unit", "units", "uom", "measurement", "measure"},
-    "version": {"version", "revision", "build", "release", "patch"},
-    "identifier": {"id", "vin", "code", "uuid", "token", "serial", "ref",
-                   "key", "identifier"},
-    "label": {"name", "title", "label", "description", "category",
-              "status", "kind", "tag"},
-    "time": {"time", "hour", "minute", "duration", "day", "week"},
-    "level": {"level", "tank", "fuel"},
-    "power": {"horsepower", "hp", "watt", "kilowatt", "torque"},
+    # --- temporal_business (11 domains) ---
+    "calendar_date": {"date"},
+    "expiry_date": {"expiry", "expires", "deadline", "due"},
+    "birth_date": {"birth"},
+    "schedule_date": {"scheduled", "booking"},
+    "travel_time": {"departure", "arrival"},
+    "lodging_time": {"checkin", "checkout"},
+    "clock_time": {"time", "hour", "minute"},
+    "duration": {"duration"},
+    "calendar_span": {"day", "week", "month"},
+    "renewal_date": {"renewal", "anniversary"},
+    "fiscal_period": {"quarter", "semester"},
+    # --- temporal_metadata (5 domains) ---
+    "creation_meta": {"created", "registered"},
+    "modification_meta": {"updated", "modified"},
+    "event_log": {"timestamp", "logged", "recorded"},
+    "workflow_meta": {"submitted", "confirmed"},
+    "access_meta": {"accessed", "synced"},
+    # --- distance (5 domains) ---
+    "travel_distance": {"mileage", "distance", "odometer", "mile", "km"},
+    "reach_distance": {"range"},
+    "vertical_extent": {"depth", "altitude", "elevation"},
+    "spatial_dimension": {"length", "width", "height"},
+    "proximity": {"radius", "proximity"},
+    # --- money (13 domains) ---
+    "price": {"price", "cost", "fare"},
+    "compensation": {"salary", "wage", "bonus"},
+    "revenue": {"revenue", "worth"},
+    "monetary_value": {"value", "total"},
+    "budget": {"budget"},
+    "account_balance": {"balance", "credit", "debit"},
+    "payment": {"payment", "charge", "invoice"},
+    "discount": {"discount"},
+    "taxation": {"tax"},
+    "deposit_money": {"deposit", "rent"},
+    "insurance_money": {"insurance", "premium"},
+    "monetary_rate": {"rate"},
+    "fee": {"fee", "amount"},
+    # --- count (6 domains) ---
+    "tally": {"count", "quantity", "items"},
+    "seating_capacity": {"seats", "capacity", "door"},
+    "compute_units": {"cores", "threads", "slots"},
+    "scoring": {"points", "score"},
+    "headcount": {"staff", "employees"},
+    "inventory_count": {"stock", "inventory"},
+    # --- percentage (5 domains) ---
+    "percent": {"percent", "pct"},
+    "ratio": {"ratio"},
+    "progress": {"progress"},
+    "utilization": {"utilization", "efficiency", "coverage"},
+    "humidity": {"humidity"},
+    # --- temperature (3 domains) ---
+    "temperature_reading": {"temp", "temperature"},
+    "heat": {"heat"},
+    "temperature_scale": {"celsius", "fahrenheit", "kelvin"},
+    # --- weight (2 domains) ---
+    "mass": {"weight", "mass"},
+    "weight_unit": {"kg", "ton", "pound", "lb", "gram"},
+    # --- memory (4 domains) ---
+    "volatile_memory": {"memory", "ram", "cache"},
+    "persistent_storage": {"storage", "disk"},
+    "data_size": {"byte", "bytes", "kb", "mb", "gb", "tb"},
+    "data_rate": {"bandwidth", "kbps", "mbps", "throughput"},
+    # --- geo (4 domains) ---
+    "longitude": {"longitude", "lon", "lng"},
+    "latitude": {"latitude", "lat"},
+    "coordinate": {"coordinate", "coord", "geo"},
+    "bearing": {"bearing", "heading"},
+    # --- unit (2 domains) ---
+    "unit_name": {"unit", "units", "uom"},
+    "measurement": {"measurement", "measure"},
+    # --- version (2 domains) ---
+    "version_number": {"version", "revision"},
+    "build_release": {"build", "release", "patch"},
+    # --- identifier (4 domains) ---
+    "object_id": {"id", "identifier", "uuid", "guid"},
+    "code_id": {"code", "ref", "key"},
+    "serial_id": {"vin", "serial", "token"},
+    "plate_id": {"plate"},
+    # --- label (4 domains) ---
+    "naming": {"name", "title", "label"},
+    "description_text": {"description"},
+    "categorization": {"category", "kind", "tag"},
+    "status_label": {"status"},
+    # --- level (3 domains) ---
+    "fill_level": {"level"},
+    "tank_level": {"tank", "fuel"},
+    "battery_level": {"battery"},
+    # --- power (3 domains) ---
+    "engine_power": {"horsepower", "hp"},
+    "electric_power": {"watt", "kilowatt"},
+    "torque": {"torque"},
+    # --- age (1 domain) ---
     "age": {"age"},
+    # --- model_year (1 domain) ---
     "model_year": {"year"},
 }
 
 _DOMAIN_FAMILY = {
-    "date_business": "temporal_business",
-    "date_metadata": "temporal_metadata",
-    "time": "temporal_business",
-    "distance": "distance",
-    "money": "money",
-    "count": "count",
-    "percentage": "percentage",
-    "temperature": "temperature",
-    "weight": "weight",
-    "memory": "memory",
-    "geo": "geo",
-    "unit": "unit",
-    "version": "version",
-    "identifier": "identifier",
-    "label": "label",
-    "level": "level",
-    "power": "power",
+    # temporal_business
+    "calendar_date": "temporal_business", "expiry_date": "temporal_business",
+    "birth_date": "temporal_business", "schedule_date": "temporal_business",
+    "travel_time": "temporal_business", "lodging_time": "temporal_business",
+    "clock_time": "temporal_business", "duration": "temporal_business",
+    "calendar_span": "temporal_business", "renewal_date": "temporal_business",
+    "fiscal_period": "temporal_business",
+    # temporal_metadata
+    "creation_meta": "temporal_metadata", "modification_meta": "temporal_metadata",
+    "event_log": "temporal_metadata", "workflow_meta": "temporal_metadata",
+    "access_meta": "temporal_metadata",
+    # distance
+    "travel_distance": "distance", "reach_distance": "distance",
+    "vertical_extent": "distance", "spatial_dimension": "distance",
+    "proximity": "distance",
+    # money
+    "price": "money", "compensation": "money", "revenue": "money",
+    "monetary_value": "money", "budget": "money", "account_balance": "money",
+    "payment": "money", "discount": "money", "taxation": "money",
+    "deposit_money": "money", "insurance_money": "money",
+    "monetary_rate": "money", "fee": "money",
+    # count
+    "tally": "count", "seating_capacity": "count", "compute_units": "count",
+    "scoring": "count", "headcount": "count", "inventory_count": "count",
+    # percentage
+    "percent": "percentage", "ratio": "percentage", "progress": "percentage",
+    "utilization": "percentage", "humidity": "percentage",
+    # temperature
+    "temperature_reading": "temperature", "heat": "temperature",
+    "temperature_scale": "temperature",
+    # weight
+    "mass": "weight", "weight_unit": "weight", 
+    # memory
+    "volatile_memory": "memory", "persistent_storage": "memory",
+    "data_size": "memory", "data_rate": "memory",
+    # geo
+    "longitude": "geo", "latitude": "geo", "coordinate": "geo",
+    "bearing": "geo",
+    # unit
+    "unit_name": "unit", "measurement": "unit",
+    # version
+    "version_number": "version", "build_release": "version",
+    # identifier
+    "object_id": "identifier", "code_id": "identifier",
+    "serial_id": "identifier", "plate_id": "identifier",
+    # label
+    "naming": "label", "description_text": "label",
+    "categorization": "label", "status_label": "label",
+    # level
+    "fill_level": "level", "tank_level": "level", "battery_level": "level",
+    # power
+    "engine_power": "power", "electric_power": "power", "torque": "power",
+    # age
     "age": "age",
+    # model_year
     "model_year": "model_year",
 }
 
@@ -697,7 +805,20 @@ def _classify_attr_domain(attr_name: str) -> Optional[str]:
 
     if not scores:
         return None
-    return max(scores, key=scores.get)
+    # Aggregate scores at FAMILY level before choosing: the fine-grained
+    # domains partition each family's keyword set, so summing per family
+    # reproduces the score a single broad per-family domain would have
+    # had. This keeps family-level decisions independent of how finely
+    # the domains subdivide a family. The winning domain is then the
+    # best-scoring domain within the winning family.
+    fam_scores: Dict[str, int] = {}
+    for d, s in scores.items():
+        f = _DOMAIN_FAMILY.get(d, d)
+        fam_scores[f] = fam_scores.get(f, 0) + s
+    best_fam = max(fam_scores, key=fam_scores.get)
+    in_fam = {d: s for d, s in scores.items()
+              if _DOMAIN_FAMILY.get(d, d) == best_fam}
+    return max(in_fam, key=in_fam.get)
 
 
 def _extract_root_and_qualifier(attr_name: str) -> Tuple[str, Optional[str]]:
@@ -886,12 +1007,56 @@ class LLMSemanticAnalyzer:
                 with open(cache_file, 'r') as f:
                     data = json.load(f)
                 logger.info(f"Loaded semantic cache from {cache_file}")
-                return SemanticCompatibilityMatrix.from_dict(data)
+                matrix = SemanticCompatibilityMatrix.from_dict(data)
+                matrix.from_cache = True
+                return matrix
             except Exception as e:
                 logger.warning(f"Failed to load cache: {e}")
         return None
 
+    @staticmethod
+    def _class_attr_lists(metamodel) -> Dict[str, List[Dict[str, str]]]:
+        if isinstance(metamodel.classes, dict):
+            names = list(metamodel.classes.keys())
+        else:
+            names = [c.name for c in metamodel.classes]
+        return {
+            n: [{"name": a.name, "type": a.type} for a in metamodel.get_attributes_for(n)]
+            for n in names
+        }
+
+    def incomplete_classes(self, matrix: SemanticCompatibilityMatrix, metamodel) -> List[str]:
+        """Classes that REQUIRE LLM analysis (2+ same-type attributes) but are
+        missing from the matrix or marked not analysed (a failed batch). For
+        these the whitelist is silently replaced by keyword heuristics, so a
+        cache containing any of them is incomplete."""
+        missing = []
+        for name, attrs in self._class_attr_lists(metamodel).items():
+            if len(attrs) < 2 or not _needs_llm_analysis(attrs):
+                continue
+            prof = matrix.class_profiles.get(name)
+            if prof is None or not prof.analyzed:
+                missing.append(name)
+        return missing
+
+    def coverage_summary(self, matrix: SemanticCompatibilityMatrix, metamodel) -> Dict[str, int]:
+        """Counts that make a result interpretable: how many same-type attribute
+        pairs were up for judgement, and how many classes the LLM vs the
+        heuristics decided."""
+        lists = self._class_attr_lists(metamodel)
+        return {
+            "candidate_pairs": sum(_count_same_type_pairs(a) for a in lists.values()),
+            "llm_classes": sum(1 for p in matrix.class_profiles.values() if p.analyzed),
+            "heuristic_classes": sum(1 for p in matrix.class_profiles.values() if not p.analyzed),
+            "incomplete_classes": len(self.incomplete_classes(matrix, metamodel)),
+        }
+
     def _save_cache(self, matrix: SemanticCompatibilityMatrix, cache_key: str, model_name: str):
+        if not matrix.class_profiles:
+            # An empty metamodel (or a failed load) must not leave a cache file
+            # that later runs would trust.
+            logger.warning("Semantic matrix is empty — not caching it")
+            return
         self.cache_dir.mkdir(parents=True, exist_ok=True)
         cache_file = self.cache_dir / f"{model_name}_{cache_key}.json"
         try:
@@ -944,7 +1109,23 @@ class LLMSemanticAnalyzer:
         # Try cache first
         cached = self._load_cache(cache_key, model_name)
         if cached is not None:
-            return cached
+            # A cache is only trusted when every class that needs the LLM was
+            # actually analysed. A cache written after a failed batch is
+            # incomplete: re-analyse when Ollama is reachable, otherwise keep
+            # the partial cache (better than an empty matrix) and say so.
+            missing = self.incomplete_classes(cached, metamodel)
+            if not missing:
+                return cached
+            if not self._check_ollama_available():
+                logger.warning(
+                    f"Semantic cache is incomplete ({len(missing)} classes not analysed: "
+                    f"{', '.join(missing)}) and Ollama is unavailable — using the partial cache"
+                )
+                return cached
+            logger.warning(
+                f"Semantic cache is incomplete ({len(missing)} classes not analysed: "
+                f"{', '.join(missing)}) — re-running the analysis"
+            )
 
         # Check Ollama availability
         if not self._check_ollama_available():

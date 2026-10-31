@@ -1,0 +1,207 @@
+{
+  "suite_name": "OCL-Paper-v3-VGCR__UniversitySystem",
+  "version": "3.0",
+  "generated_at": "2026-10-16T01:20:08.941348",
+  "research_features_enabled": true,
+  "models": [
+    {
+      "model": "UniversitySystem",
+      "xmi": "models/university_system.xmi",
+      "profiles": [
+        {
+          "profile": "balanced",
+          "seed": 42,
+          "complexity": "standard",
+          "output_dir": "benchmarks/paper_v3/with_vgcr/UniversitySystem",
+          "research_features_applied": [
+            "metadata_enrichment",
+            "vgcr_refinement",
+            "unsat_generation",
+            "ast_similarity",
+            "semantic_similarity",
+            "implication_checking",
+            "manifest_generation"
+          ],
+          "constraint_count": 86,
+          "initial_sat_count": 88,
+          "dedup": {
+            "removed": 13,
+            "refilled": 11,
+            "unfilled": [
+              {
+                "pattern": "navigation_chain",
+                "context": "Faculty",
+                "profile": "easy"
+              },
+              {
+                "pattern": "navigation_chain",
+                "context": "Building",
+                "profile": "easy"
+              }
+            ]
+          },
+          "coverage_repairs": [
+            {
+              "class": "LibraryAccount",
+              "action": "donor_swap",
+              "donor_class": "Course",
+              "pattern": "navigation_chain",
+              "profile": "medium"
+            }
+          ],
+          "vgcr_stats": {
+            "total_candidates": 86,
+            "passed": 86,
+            "passed_first_try": 72,
+            "passed_after_retry": 14,
+            "failed": 0,
+            "pass_rate": "100.0%",
+            "total_retries": 19,
+            "failure_breakdown": {
+              "tautology": 2,
+              "contradiction": 4,
+              "inconsistent": 10
+            },
+            "total_smt_queries": 230,
+            "total_smt_time_s": 350.494,
+            "independence_checked": 0,
+            "independence_skipped": 96,
+            "total_time_s": 352.594,
+            "duplicates_rejected": 1,
+            "unfilled_slots": [],
+            "generator_refinement": {
+              "total_refinements": 16,
+              "blacklisted_pattern_contexts": 4,
+              "blacklisted_bindings": 22,
+              "weight_modifications": 8,
+              "action_breakdown": {
+                "blacklist_bindings_and_downweight": 10,
+                "blacklist_pattern_context": 4,
+                "down_weight_pattern": 2
+              }
+            }
+          },
+          "vgcr_accepted": 86,
+          "vgcr_rejected": 0,
+          "sat_count_after_mutation": 69,
+          "unsat_count_after_mutation": 17,
+          "unsat_measured_tiers": {
+            "difficult": 8,
+            "unboxed": 4,
+            "medium": 5
+          },
+          "consistency_verified": true,
+          "semantic_clusters": 12,
+          "implication_count": 57,
+          "valid_count": 69,
+          "sat_count": 69,
+          "unsat_count": 17,
+          "unknown_count": 0,
+          "verified_count": 69,
+          "fallback_unknown_count": 0,
+          "skipped_unsat_count": 17,
+          "intentional_unsat_count": 17,
+          "post_refine_coverage_deficit": {},
+          "final_suite": {
+            "delivered": 86,
+            "sat": 69,
+            "unsat": 17,
+            "slot_tier_distribution": {
+              "easy": 28,
+              "medium": 33,
+              "difficult": 25
+            },
+            "requested_tier_distribution": {
+              "easy": 40,
+              "medium": 35,
+              "difficult": 25
+            },
+            "sat_tier_distribution": {
+              "easy": 23,
+              "medium": 28,
+              "difficult": 18
+            },
+            "unsat_measured_tier_distribution": {
+              "difficult": 8,
+              "unboxed": 4,
+              "medium": 5
+            },
+            "family_distribution": {
+              "navigation": 21,
+              "quantified": 12,
+              "arithmetic": 25,
+              "cardinality": 28
+            },
+            "requested_family_distribution": {
+              "cardinality": 30,
+              "arithmetic": 25,
+              "navigation": 25,
+              "quantified": 20
+            },
+            "complexity_fidelity_sat": {
+              "boxed_constraints": 69,
+              "in_box": 69,
+              "in_box_rate": 1.0,
+              "unlabeled_constraints": 0,
+              "out_of_box": []
+            },
+            "class_coverage": {
+              "min_per_class": 1,
+              "classes": 18,
+              "covered": 18,
+              "below_min": {}
+            },
+            "slot_accounting": {
+              "requested": 100,
+              "generated": 88,
+              "generation_gaps": 12,
+              "dedup_removed": 13,
+              "dedup_refilled": 11,
+              "dedup_unfilled": 2,
+              "vgcr_regenerated": 14,
+              "vgcr_unfilled": 0,
+              "late_duplicates_removed": 0,
+              "unsat_trimmed_for_ratio": 0,
+              "delivered": 86
+            },
+            "dedup_unfilled_slots": [
+              {
+                "pattern": "navigation_chain",
+                "context": "Faculty",
+                "profile": "easy"
+              },
+              {
+                "pattern": "navigation_chain",
+                "context": "Building",
+                "profile": "easy"
+              }
+            ],
+            "vgcr_unfilled_slots": [],
+            "coverage_repairs": [
+              {
+                "class": "LibraryAccount",
+                "action": "donor_swap",
+                "donor_class": "Course",
+                "pattern": "navigation_chain",
+                "profile": "medium"
+              }
+            ]
+          },
+          "status": "success",
+          "generation_time_s": 458.3
+        }
+      ],
+      "total_constraints": 86,
+      "total_valid": 69,
+      "total_sat": 69,
+      "total_unsat": 17,
+      "total_unknown": 0
+    }
+  ],
+  "total_constraints": 86,
+  "total_sat": 69,
+  "total_unsat": 17,
+  "total_valid": 69,
+  "total_unknown": 0,
+  "total_generation_time_s": 458.4
+}

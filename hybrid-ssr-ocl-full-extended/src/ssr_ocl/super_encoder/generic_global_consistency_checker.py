@@ -7,11 +7,13 @@ try:
     from ..lowering.association_backed_encoder import XMIMetadataExtractor
     from .enhanced_smt_encoder import EnhancedSMTEncoder
     from .date_adapter import DateAdapter
+    from .generic_ocl_expression_encoder import GenericOCLEncoder, UnsupportedOCL
 except ImportError:
     sys.path.insert(0, str(Path(__file__).parent.parent.parent))
     from ssr_ocl.lowering.association_backed_encoder import XMIMetadataExtractor
     from ssr_ocl.super_encoder.enhanced_smt_encoder import EnhancedSMTEncoder
     from ssr_ocl.super_encoder.date_adapter import DateAdapter
+    from ssr_ocl.super_encoder.generic_ocl_expression_encoder import GenericOCLEncoder, UnsupportedOCL
 
 
 try:
@@ -46,9 +48,17 @@ class GenericGlobalConsistencyChecker:
         self.constraint_status = {}
         self.encoding_errors = []
         self.constraint_tags = {}  # Track constraints for UNSAT core analysis
+        # How each constraint was encoded: 'generic' (whole-expression encoder,
+        # semantics-preserving) or 'legacy' (pattern-specific regex encoder,
+        # may under-approximate).  Fallback reasons are kept for diagnostics.
+        self.constraint_encoding = {}
+        self.generic_fallbacks = {}
         
         # Initialize date adapter for date field handling
         self.date_adapter = DateAdapter(strategy='symbolic')
+
+        # Whole-expression OCL encoder (tried first for every constraint)
+        self.generic_encoder = GenericOCLEncoder(self)
         
         # Initialize PatternMapperV2 for universal→canonical pattern mapping with rewriting
         if PATTERN_MAPPER_AVAILABLE:
@@ -97,6 +107,8 @@ class GenericGlobalConsistencyChecker:
         self.constraint_status = {}
         self.encoding_errors = []
         self.constraint_tags = {}
+        self.constraint_encoding = {}
+        self.generic_fallbacks = {}
 
         # Create unified solver
         solver = Solver()
@@ -129,7 +141,12 @@ class GenericGlobalConsistencyChecker:
                     name, pattern, context, text
                 )
                 
-                print(f"       Encoded using pattern '{pattern}'")
+                mode = self.constraint_encoding.get(name, 'legacy')
+                if mode == 'generic':
+                    print(f"       Encoded (generic whole-expression encoder)")
+                else:
+                    print(f"       Encoded using pattern '{pattern}' (legacy encoder; "
+                          f"generic encoder declined: {self.generic_fallbacks.get(name, '?')})")
                 self.constraint_status[name] = 'encoded'
                 success_count += 1
                 
@@ -138,7 +155,10 @@ class GenericGlobalConsistencyChecker:
                 self.constraint_status[name] = 'error'
                 self.encoding_errors.append({'name': name, 'error': str(e)})
         
-        print(f"\n Encoded {success_count}/{len(constraints)} constraints successfully")
+        n_generic = sum(1 for v in self.constraint_encoding.values() if v == 'generic')
+        n_legacy = sum(1 for v in self.constraint_encoding.values() if v == 'legacy')
+        print(f"\n Encoded {success_count}/{len(constraints)} constraints successfully "
+              f"({n_generic} generic, {n_legacy} legacy pattern encoders)")
         if self.encoding_errors:
             print(f"     {len(self.encoding_errors)} constraints had encoding errors")
             for err in self.encoding_errors:
@@ -293,8 +313,14 @@ class GenericGlobalConsistencyChecker:
         """Add domain constraints: presence, bounds, referent totality"""
         print("\n🔧 Adding domain constraints (generic)...")
 
-        # At least one instance of each class should exist
+        # At least one instance of each class should exist, unless the caller
+        # restricted the requirement via `required_classes` (the VGCR
+        # non-triviality check only requires an instance of the context class,
+        # which matches the paper's definition of satisfiability).
+        required = getattr(self, 'required_classes', None)
         for class_name in self.classes:
+            if required is not None and class_name not in required:
+                continue
             presence = shared_vars[f'{class_name}_presence']
             solver.add(Or(presence))
 
@@ -309,28 +335,25 @@ class GenericGlobalConsistencyChecker:
         if len(type_constants) > 1:
             solver.add(Distinct(list(type_constants.values())))
         
-        # Attribute bounds (generic heuristics)
+        # Attribute domains. Integer and Real attributes are unbounded: the
+        # metamodel states no range, so the encoding must not invent one
+        # (earlier versions forced Real >= 0 and Integer >= -1000, which made
+        # e.g. `self.balance < 0` look contradictory). Enumeration-typed
+        # attributes range exactly over their literals.
+        enum_literals = self._enum_literals()
         for attr in self.attributes:
-            class_name = attr.class_name
-            attr_name = attr.attr_name
-            n = scope.get(f'n{class_name}', 5)
-            presence = shared_vars[f'{class_name}_presence']
-            attr_vars = shared_vars[f'{class_name}.{attr_name}']
-            
-            # Add sensible bounds based on type
-            if 'Int' in attr.attr_type or 'EInt' in attr.attr_type:
-                for i in range(n):
-                    solver.add(Implies(presence[i], And(
-                        attr_vars[i] >= -1000,
-                        attr_vars[i] <= 1000000
-                    )))
-            elif 'Real' in attr.attr_type or 'Float' in attr.attr_type or 'Double' in attr.attr_type:
-                for i in range(n):
-                    solver.add(Implies(presence[i], And(
-                        attr_vars[i] >= 0,
-                        attr_vars[i] <= 1000000
-                    )))
-        
+            literals = enum_literals.get(attr.attr_type)
+            if not literals:
+                continue
+            n = scope.get(f'n{attr.class_name}', 5)
+            presence = shared_vars[f'{attr.class_name}_presence']
+            attr_vars = shared_vars[f'{attr.class_name}.{attr.attr_name}']
+            if not attr_vars or attr_vars[0].sort() != IntSort():
+                continue
+            codes = [self._string_to_int(lit) for lit in literals]
+            for i in range(n):
+                solver.add(Implies(presence[i], Or([attr_vars[i] == c for c in codes])))
+
         # Association bounds and referent totality
         for assoc in self.associations:
             source = assoc.source_class
@@ -373,11 +396,123 @@ class GenericGlobalConsistencyChecker:
                                 target_presence[j]
                             ))
         
-        print(f"    Added presence, bounds, and totality constraints")
+        n_assoc_axioms = self._add_association_axioms(solver, shared_vars, scope)
+        print(f"    Added presence, bounds, and totality constraints "
+              f"(+{n_assoc_axioms} association axioms: edge presence, eOpposite coupling, "
+              f"collection multiplicities)")
         
         # Add rich instance constraints if requested
         if self.rich_instances:
             self._add_rich_instance_constraints(solver, shared_vars, scope)
+
+    @staticmethod
+    def _parse_opposite_ref(opposite: str):
+        """'#//Branch/company' -> ('Branch', 'company'); '' -> None."""
+        if not opposite:
+            return None
+        tail = opposite.split('#//')[-1] if '#//' in opposite else opposite
+        parts = [p for p in tail.split('/') if p]
+        if len(parts) < 2:
+            return None
+        return parts[-2], parts[-1]
+
+    def _link_guard(self, shared_vars: Dict, assoc, i: int, j: int):
+        """Z3 Bool: slot *i* of assoc.source_class is linked to slot *j* of
+        assoc.target_class through *assoc* (ignoring presence)."""
+        key = f'{assoc.source_class}.{assoc.ref_name}'
+        if assoc.is_collection:
+            return shared_vars[key][i][j]
+        ref_vars = shared_vars[key]
+        ref_present = shared_vars.get(f'{key}_present')
+        if ref_present is not None:
+            return And(ref_present[i], ref_vars[i] == j)
+        return ref_vars[i] == j
+
+    def _add_association_axioms(self, solver: Solver, shared_vars: Dict, scope: Dict) -> int:
+        """Structural axioms every instance of the metamodel satisfies.
+
+        1. Edge presence: a link in a relation matrix only exists between two
+           present objects (R[i][j] -> present_src[i] and present_tgt[j]).
+        2. eOpposite coupling: for a bidirectional association, the forward
+           link from i to j holds iff the backward link from j to i holds.
+           Collection ends are relation matrices, single-valued ends are
+           functional variables (presence-guarded when optional):
+               R_A_r[i][j]  <->  (B_j.opp == i [and B_j.opp_present])
+           Without this the two ends are independent free variables and a
+           reservation can sit in a branch's ``reservations`` while its own
+           ``branch`` points elsewhere, which is exactly the unsound witness
+           reported for Branch/Customer on car_rental.
+        3. Collection-end multiplicities: lower/upper bounds of ``*``-ends
+           (``Sum_j R[i][j]`` within [lower, upper]) for present sources.
+        Returns the number of axioms added.
+        """
+        count = 0
+        assoc_by_key = {(a.source_class, a.ref_name): a for a in self.associations}
+
+        # 1. edge presence for relation matrices
+        for assoc in self.associations:
+            if not assoc.is_collection:
+                continue
+            src, tgt = assoc.source_class, assoc.target_class
+            R = shared_vars[f'{src}.{assoc.ref_name}']
+            sp, tp = shared_vars[f'{src}_presence'], shared_vars[f'{tgt}_presence']
+            for i in range(scope.get(f'n{src}', 5)):
+                for j in range(scope.get(f'n{tgt}', 5)):
+                    solver.add(Implies(R[i][j], And(sp[i], tp[j])))
+                    count += 1
+
+        # 2. eOpposite coupling (each unordered pair once)
+        done = set()
+        for assoc in self.associations:
+            opp = self._parse_opposite_ref(assoc.opposite_ref)
+            if opp is None:
+                continue
+            back = assoc_by_key.get(opp)
+            if back is None or back.target_class != assoc.source_class \
+                    or assoc.target_class != back.source_class:
+                continue
+            pair = frozenset([(assoc.source_class, assoc.ref_name), (back.source_class, back.ref_name)])
+            if pair in done:
+                continue
+            done.add(pair)
+            src, tgt = assoc.source_class, assoc.target_class
+            sp, tp = shared_vars[f'{src}_presence'], shared_vars[f'{tgt}_presence']
+            for i in range(scope.get(f'n{src}', 5)):
+                for j in range(scope.get(f'n{tgt}', 5)):
+                    fwd = self._link_guard(shared_vars, assoc, i, j)
+                    bwd = self._link_guard(shared_vars, back, j, i)
+                    # Both objects present: the two ends agree.  (Absent
+                    # objects carry no links: matrices via axiom 1, functional
+                    # ends via referent totality + presence guards.)
+                    solver.add(Implies(And(sp[i], tp[j]), fwd == bwd))
+                    count += 1
+
+        # 3. collection-end multiplicities
+        for assoc in self.associations:
+            if not assoc.is_collection:
+                continue
+            if assoc.lower_bound <= 0 and assoc.upper_bound is None:
+                continue
+            src, tgt = assoc.source_class, assoc.target_class
+            R = shared_vars[f'{src}.{assoc.ref_name}']
+            sp = shared_vars[f'{src}_presence']
+            n_t = scope.get(f'n{tgt}', 5)
+            for i in range(scope.get(f'n{src}', 5)):
+                links = [R[i][j] for j in range(n_t)]
+                if assoc.lower_bound > 0:
+                    lo = assoc.lower_bound
+                    solver.add(Implies(sp[i], BoolVal(False) if lo > n_t
+                                       else (AtLeast(*links, lo) if n_t > 1 else links[0])))
+                    count += 1
+                if assoc.upper_bound is not None and assoc.upper_bound < n_t:
+                    solver.add(Implies(sp[i], AtMost(*links, assoc.upper_bound) if n_t > 1 else Not(links[0])))
+                    count += 1
+
+        # Note: no "single container" axiom for containment references.  USE's
+        # Model Validator does not enforce one, and several bundled metamodels
+        # (e.g. flight_booking: Flight.bookings and Passenger.bookings are both
+        # containments with required opposites) would be unsatisfiable under it.
+        return count
     
     def _add_rich_instance_constraints(self, solver: Solver, shared_vars: Dict, scope: Dict):
         """Add semantic constraints for realistic instance values"""
@@ -489,14 +624,42 @@ class GenericGlobalConsistencyChecker:
     
     def _encode_constraint_by_pattern_tracked(self, solver: Solver, shared_vars: Dict, scope: Dict,
                                                name: str, pattern: str, context: str, text: str):
-        """Encode constraint with tracking tag for UNSAT core analysis"""
-        # Simply encode the constraint directly - tracking disabled for now
-        # Z3's assert_and_track interferes with complex pattern encodings
-        # TODO: Implement per-pattern tracking in future version
+        """Encode one constraint into *solver*.
+
+        The whole-expression encoder is tried first: it parses the complete
+        invariant and encodes every sub-expression (quantifier bodies included)
+        against the shared variables, so the solver is asked exactly the
+        question the OCL text states.  Only when it reports a construct it
+        cannot encode do we fall back to the pattern-specific encoders, and
+        the fallback is recorded in ``constraint_encoding`` / ``generic_fallbacks``
+        because those encoders may under-approximate the constraint.
+        """
+        if self._encode_generic(solver, shared_vars, scope, name, context, text):
+            self.constraint_encoding[name] = 'generic'
+            return
         self._encode_constraint_by_pattern(
             solver, shared_vars, scope,
             name, pattern, context, text
         )
+        self.constraint_encoding[name] = 'legacy'
+
+    def _encode_generic(self, solver: Solver, shared_vars: Dict, scope: Dict,
+                        name: str, context: str, text: str) -> bool:
+        """Try the whole-expression encoder.  Returns True when the constraint
+        was fully encoded; False (with the reason recorded) otherwise.  Nothing
+        is added to *solver* unless the whole invariant could be encoded."""
+        try:
+            formulas = self.generic_encoder.encode_invariant(
+                context, text, shared_vars, scope, solver)
+        except UnsupportedOCL as e:
+            self.generic_fallbacks[name] = str(e)
+            return False
+        except Exception as e:  # defensive: never let an encoder bug mask a constraint
+            self.generic_fallbacks[name] = f"{type(e).__name__}: {e}"
+            return False
+        for f in formulas:
+            solver.add(f)
+        return True
     
     def _print_unsat_core(self, solver: Solver):
         """Extract and print UNSAT core (conflicting constraints)"""
@@ -4752,8 +4915,37 @@ class GenericGlobalConsistencyChecker:
             return Int  # Default to Int
 
     def _string_to_int(self, value: str) -> int:
-        """Encode a string literal as an Int (consistent with other string encodings)."""
-        return hash(value) % 1000000
+        """Encode a string literal as an Int (consistent with other string encodings).
+
+        Uses CRC32 rather than Python's salted hash() so the code of a literal
+        is the same in every process (reproducible models and verdicts)."""
+        import zlib
+        return zlib.crc32(value.encode('utf-8')) % 1000000
+
+    def _enum_literals(self) -> Dict[str, List[str]]:
+        """Map each EEnum name in the XMI to its literal names (cached)."""
+        cached = getattr(self, '_enum_literal_cache', None)
+        if cached is not None:
+            return cached
+        import re as _re
+        enums: Dict[str, List[str]] = {}
+        current = None
+        try:
+            with open(self.xmi_file) as fh:
+                for line in fh:
+                    m = _re.search(r'xsi:type="ecore:EEnum"[^>]*\bname="(\w+)"', line) or \
+                        _re.search(r'\bname="(\w+)"[^>]*xsi:type="ecore:EEnum"', line)
+                    if m:
+                        current = m.group(1)
+                        enums[current] = []
+                        continue
+                    m = _re.search(r'<eLiterals\b[^>]*\bname="(\w+)"', line)
+                    if m and current:
+                        enums[current].append(m.group(1))
+        except OSError:
+            pass
+        self._enum_literal_cache = {k: v for k, v in enums.items() if v}
+        return self._enum_literal_cache
     
     def _print_example_instance(self, model, shared_vars: Dict, scope: Dict):
         """Print example instance with meaningful values (generic)"""

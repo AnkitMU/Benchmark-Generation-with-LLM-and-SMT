@@ -1,0 +1,1103 @@
+{
+  "metadata": {
+    "type": "UNSAT",
+    "model": "EcommerceSystem",
+    "profile": "balanced",
+    "generated_at": "2026-10-16T01:17:17.737867",
+    "constraint_count": 18
+  },
+  "constraints": [
+    {
+      "ocl": "context Coupon\ninv: (self.orders->collect(x | x.items)->flatten()->notEmpty()) and (not(self.orders->collect(x | x.items)->flatten()->notEmpty()))",
+      "pattern_id": "flatten_operation_unsat",
+      "pattern_name": "Flatten Operation (UNSAT)",
+      "context": "Coupon",
+      "parameters": {
+        "collection": "orders",
+        "iterator": "x",
+        "nested_collection": "items"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-16T01:03:39.693561",
+      "metadata": {
+        "category": "set_operations",
+        "complexity": 3,
+        "generation_number": 4793,
+        "profile": "unboxed",
+        "operators_used": [
+          "-",
+          ">",
+          "collect",
+          "flatten",
+          "notEmpty"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "unboxed",
+        "operator_count": 5,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 3.0,
+            "wnc": 5.0,
+            "tnc": 4.0,
+            "vrc": 1,
+            "wno": 4.0,
+            "wnm": 3.0,
+            "total": 12.0
+          },
+          "computational": {
+            "oc": 4.0,
+            "tcc": 2.0,
+            "cic": 2.0,
+            "total": 8.0
+          },
+          "dependency": {
+            "ruc": 7,
+            "total": 7.0
+          },
+          "tc": 27.0
+        },
+        "is_unsat": true,
+        "mutation": "self_contradiction",
+        "original_pattern_id": "flatten_operation",
+        "slot_profile": "difficult",
+        "semantic_cluster": 9,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context DiscountRule\ninv: (self.minOrderTotal < 88) and (self.minOrderTotal > 93)",
+      "pattern_id": "numeric_less_than_value_unsat",
+      "pattern_name": "Numeric Less Than Value (UNSAT)",
+      "context": "DiscountRule",
+      "parameters": {
+        "numeric_attribute": "minOrderTotal",
+        "value": 88
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-16T01:03:39.693721",
+      "metadata": {
+        "category": "arithmetic",
+        "complexity": 1,
+        "generation_number": 4778,
+        "profile": "easy",
+        "operators_used": [
+          "<"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 1,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 1.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.0,
+            "vrc": 0,
+            "wno": 1.0,
+            "wnm": 0.0,
+            "total": 2.0
+          },
+          "computational": {
+            "oc": 1.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 1.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 3.0
+        },
+        "is_unsat": true,
+        "mutation": "contradictory_bounds",
+        "original_pattern_id": "numeric_less_than_value",
+        "contradiction_ocl": "context DiscountRule\ninv: self.minOrderTotal > 93",
+        "slot_profile": "easy",
+        "semantic_cluster": 16,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Store\ninv: (self.products->select(x | x.basePrice >= 10)->size() >= 1) and (not(self.products->select(x | x.basePrice >= 10)->size() >= 1))",
+      "pattern_id": "select_operation_unsat",
+      "pattern_name": "Select (Filter) Operation (UNSAT)",
+      "context": "Store",
+      "parameters": {
+        "collection": "products",
+        "iterator": "x",
+        "condition": "x.basePrice >= 10",
+        "result_operation": "->size() >= 1"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-16T01:03:40.834554",
+      "metadata": {
+        "category": "collection",
+        "complexity": 2,
+        "generation_number": 4735,
+        "profile": "difficult",
+        "operators_used": [
+          "-",
+          "=",
+          ">",
+          ">=",
+          "select",
+          "size"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "difficult",
+        "operator_count": 6,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 3.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 3.0,
+            "wnc": 5.0,
+            "tnc": 3.6,
+            "vrc": 1,
+            "wno": 4.0,
+            "wnm": 2.0,
+            "total": 10.6
+          },
+          "computational": {
+            "oc": 4.0,
+            "tcc": 0.0,
+            "cic": 2.0,
+            "total": 6.0
+          },
+          "dependency": {
+            "ruc": 5,
+            "total": 5.0
+          },
+          "tc": 21.6
+        },
+        "is_unsat": true,
+        "mutation": "self_contradiction",
+        "original_pattern_id": "select_operation",
+        "slot_profile": "medium",
+        "semantic_cluster": 2,
+        "implies": [
+          "exists_constraint_Store"
+        ]
+      }
+    },
+    {
+      "ocl": "context Store\ninv: (self.products->forAll(x | x.basePrice < 50)) and (self.products->exists(x | not(x.basePrice < 50)))",
+      "pattern_id": "forall_nested_unsat",
+      "pattern_name": "Universal Quantification (forAll) (UNSAT)",
+      "context": "Store",
+      "parameters": {
+        "collection": "products",
+        "iterator": "x",
+        "condition": "x.basePrice < 50"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-16T01:03:41.294504",
+      "metadata": {
+        "category": "collection",
+        "complexity": 2,
+        "generation_number": 4763,
+        "profile": "difficult",
+        "operators_used": [
+          "-",
+          "<",
+          ">",
+          "forAll"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "difficult",
+        "operator_count": 4,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 3.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 3.0,
+            "wnc": 5.0,
+            "tnc": 3.6,
+            "vrc": 1,
+            "wno": 4.0,
+            "wnm": 1.0,
+            "total": 9.6
+          },
+          "computational": {
+            "oc": 4.0,
+            "tcc": 0.0,
+            "cic": 3.0,
+            "total": 7.0
+          },
+          "dependency": {
+            "ruc": 5,
+            "total": 5.0
+          },
+          "tc": 21.6
+        },
+        "is_unsat": true,
+        "mutation": "universal_negation",
+        "original_pattern_id": "forall_nested",
+        "contradiction_ocl": "context Store\ninv: self.products->exists(x | not(x.basePrice < 50))",
+        "contradiction_pattern_id": "exists_nested",
+        "slot_profile": "difficult",
+        "semantic_cluster": 4,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Store\ninv: ((self.coupons->collect(x | x.orders)->size() >= 2) and (self.products->size() = 3)) and (self.products->size() <> 3)",
+      "pattern_id": "collection_collectNested_unsat",
+      "pattern_name": "Collection Nested Collection Flatten (UNSAT)",
+      "context": "Store",
+      "parameters": {
+        "collection": "coupons",
+        "nested_collection": "orders",
+        "min_size": 2
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-16T01:03:41.739880",
+      "metadata": {
+        "category": "collection",
+        "complexity": 4,
+        "generation_number": 4804,
+        "profile": "unboxed",
+        "operators_used": [
+          "-",
+          "=",
+          ">",
+          ">=",
+          "and",
+          "collect",
+          "size"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "unboxed",
+        "operator_count": 7,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 6.0,
+            "nnc_plus": 4.0,
+            "dn_ca": 3.0,
+            "wnc": 6.0,
+            "tnc": 5.1,
+            "vrc": 1,
+            "wno": 5.5,
+            "wnm": 3.0,
+            "total": 14.6
+          },
+          "computational": {
+            "oc": 5.5,
+            "tcc": 0.0,
+            "cic": 2.0,
+            "total": 7.5
+          },
+          "dependency": {
+            "ruc": 5,
+            "total": 5.0
+          },
+          "tc": 27.1
+        },
+        "is_unsat": true,
+        "mutation": "contradictory_bounds",
+        "original_pattern_id": "collection_collectNested",
+        "contradiction_ocl": "context Store\ninv: self.products->size() <> 3",
+        "slot_profile": "difficult",
+        "semantic_cluster": 2,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Coupon\ninv: (self.orders->size() > 0) and (self.orders->size() < -5)",
+      "pattern_id": "collection_not_empty_check_unsat",
+      "pattern_name": "Collection Not Empty Check (UNSAT)",
+      "context": "Coupon",
+      "parameters": {
+        "collection": "orders"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-16T01:03:42.281972",
+      "metadata": {
+        "category": "collection",
+        "complexity": 1,
+        "generation_number": 4833,
+        "profile": "medium",
+        "operators_used": [
+          "-",
+          ">",
+          "size"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.4,
+            "vrc": 0,
+            "wno": 1.0,
+            "wnm": 1.0,
+            "total": 3.4
+          },
+          "computational": {
+            "oc": 1.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 1.0
+          },
+          "dependency": {
+            "ruc": 7,
+            "total": 7.0
+          },
+          "tc": 11.4
+        },
+        "is_unsat": true,
+        "mutation": "contradictory_bounds",
+        "original_pattern_id": "collection_not_empty_check",
+        "contradiction_ocl": "context Coupon\ninv: self.orders->size() < -5",
+        "slot_profile": "easy",
+        "semantic_cluster": 2,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Review\ninv: (self.rating mod 2 = 0) and (not(self.rating mod 2 = 0))",
+      "pattern_id": "numeric_even_unsat",
+      "pattern_name": "Numeric Is Even (UNSAT)",
+      "context": "Review",
+      "parameters": {
+        "numeric_attribute": "rating"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-16T01:03:43.179213",
+      "metadata": {
+        "category": "arithmetic",
+        "complexity": 2,
+        "generation_number": 4769,
+        "profile": "medium",
+        "operators_used": [
+          "=",
+          "mod"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 2,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 1.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.0,
+            "vrc": 0,
+            "wno": 2.0,
+            "wnm": 0.0,
+            "total": 3.0
+          },
+          "computational": {
+            "oc": 1.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 1.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 4.0
+        },
+        "is_unsat": true,
+        "mutation": "self_contradiction",
+        "original_pattern_id": "numeric_even",
+        "slot_profile": "easy",
+        "semantic_cluster": 13,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context CartItem\ninv: (((self.quantity > 34) and (self.variant.oclIsTypeOf(ProductVariant))) and (self.quantity >= 17 and self.quantity <= 87)) and (self.quantity < 29)",
+      "pattern_id": "numeric_greater_than_value_unsat",
+      "pattern_name": "Numeric Greater Than Value (UNSAT)",
+      "context": "CartItem",
+      "parameters": {
+        "numeric_attribute": "quantity",
+        "value": 34
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-16T01:03:43.179257",
+      "metadata": {
+        "category": "arithmetic",
+        "complexity": 1,
+        "generation_number": 5295,
+        "profile": "unboxed",
+        "regenerated_from": "numeric_bounded",
+        "regen_box": "medium+conjoin+conjoin",
+        "regen_family": "arithmetic",
+        "operators_used": [
+          "<",
+          "<=",
+          "=",
+          ">",
+          ">=",
+          "and",
+          "oclIsTypeOf"
+        ],
+        "navigation_depth": 3,
+        "quantifier_depth": 0,
+        "difficulty": "unboxed",
+        "operator_count": 7,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 4.0,
+            "dn_ca": 1,
+            "wnc": 4.0,
+            "tnc": 3.1,
+            "vrc": 0,
+            "wno": 7.5,
+            "wnm": 1.0,
+            "total": 11.6
+          },
+          "computational": {
+            "oc": 7.5,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 7.5
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 19.1
+        },
+        "is_unsat": true,
+        "mutation": "contradictory_bounds",
+        "original_pattern_id": "numeric_greater_than_value",
+        "contradiction_ocl": "context CartItem\ninv: self.quantity < 29",
+        "slot_profile": "medium",
+        "semantic_cluster": 10,
+        "implies": [
+          "numeric_non_negative_CartItem",
+          "numeric_bounded_unsat_CartItem"
+        ]
+      }
+    },
+    {
+      "ocl": "context CartItem\ninv: (self.quantity >= 11 and self.quantity <= 88) and (self.quantity < 11)",
+      "pattern_id": "numeric_bounded_unsat",
+      "pattern_name": "Numeric Attribute Bounded (UNSAT)",
+      "context": "CartItem",
+      "parameters": {
+        "numeric_attribute": "quantity",
+        "min_value": 11,
+        "max_value": 88
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-16T01:03:43.591910",
+      "metadata": {
+        "category": "arithmetic",
+        "complexity": 2,
+        "generation_number": 4780,
+        "profile": "medium",
+        "operators_used": [
+          "<",
+          "<=",
+          "=",
+          ">",
+          ">=",
+          "and"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 6,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 1,
+            "wnc": 2.0,
+            "tnc": 1.7,
+            "vrc": 0,
+            "wno": 3.5,
+            "wnm": 0.0,
+            "total": 5.2
+          },
+          "computational": {
+            "oc": 3.5,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.5
+          },
+          "dependency": {
+            "ruc": 6,
+            "total": 6.0
+          },
+          "tc": 14.7
+        },
+        "is_unsat": true,
+        "mutation": "contradictory_bounds",
+        "original_pattern_id": "numeric_bounded",
+        "contradiction_ocl": "context CartItem\ninv: self.quantity < 11",
+        "slot_profile": "medium",
+        "semantic_cluster": 10,
+        "implies": [
+          "numeric_non_negative_CartItem"
+        ]
+      }
+    },
+    {
+      "ocl": "context Coupon\ninv: (self.orders->exists(x | x.placedAt <> '')) and (not(self.orders->exists(x | x.placedAt <> '')))",
+      "pattern_id": "collection_navigation_unsat",
+      "pattern_name": "Collection Navigation (UNSAT)",
+      "context": "Coupon",
+      "parameters": {
+        "collection": "orders",
+        "operation": "exists",
+        "iterator": "x",
+        "nested": "placedAt <> ''"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-16T01:03:44.034423",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 3,
+        "generation_number": 4700,
+        "profile": "difficult",
+        "operators_used": [
+          "-",
+          "<",
+          "<>",
+          ">",
+          "exists"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "difficult",
+        "operator_count": 5,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 3.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 3.0,
+            "wnc": 5.0,
+            "tnc": 3.6,
+            "vrc": 1,
+            "wno": 4.0,
+            "wnm": 1.0,
+            "total": 9.6
+          },
+          "computational": {
+            "oc": 4.0,
+            "tcc": 0.0,
+            "cic": 3.0,
+            "total": 7.0
+          },
+          "dependency": {
+            "ruc": 7,
+            "total": 7.0
+          },
+          "tc": 23.6
+        },
+        "is_unsat": true,
+        "mutation": "self_contradiction",
+        "original_pattern_id": "collection_navigation",
+        "slot_profile": "difficult",
+        "semantic_cluster": 14,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Category\ninv: ((self.title <> '') and (self.products->forAll(v | v.basePrice > 5))) and (self.products->exists(v | not(v.basePrice > 5)))",
+      "pattern_id": "collection_size_range_unsat",
+      "pattern_name": "Collection Size in Range (UNSAT)",
+      "context": "Category",
+      "parameters": {
+        "collection": "products",
+        "min_size": 1,
+        "max_size": 2
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-16T01:03:44.493273",
+      "metadata": {
+        "category": "collection",
+        "complexity": 2,
+        "generation_number": 4695,
+        "profile": "unboxed",
+        "operators_used": [
+          "-",
+          "<",
+          "<>",
+          ">",
+          "and",
+          "forAll"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "unboxed",
+        "operator_count": 6,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 4.0,
+            "dn_ca": 3.0,
+            "wnc": 6.0,
+            "tnc": 4.3,
+            "vrc": 1,
+            "wno": 6.5,
+            "wnm": 1.0,
+            "total": 12.8
+          },
+          "computational": {
+            "oc": 6.5,
+            "tcc": 0.0,
+            "cic": 3.0,
+            "total": 9.5
+          },
+          "dependency": {
+            "ruc": 8,
+            "total": 8.0
+          },
+          "tc": 30.3
+        },
+        "is_unsat": true,
+        "mutation": "universal_negation",
+        "original_pattern_id": "collection_size_range",
+        "contradiction_ocl": "context Category\ninv: self.products->exists(v | not(v.basePrice > 5))",
+        "contradiction_pattern_id": "exists_nested",
+        "slot_profile": "difficult",
+        "semantic_cluster": 4,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Payment\ninv: ((self.order.customer.email <> '') and (self.amount > 0)) and (self.amount < -5)",
+      "pattern_id": "navigation_chain_unsat",
+      "pattern_name": "Navigation Chain (UNSAT)",
+      "context": "Payment",
+      "parameters": {
+        "navigation_path": "self.order.customer.email <> ''"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-16T01:03:44.972330",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 2,
+        "generation_number": 4708,
+        "profile": "medium",
+        "operators_used": [
+          "<",
+          "<>",
+          ">",
+          "and"
+        ],
+        "navigation_depth": 4,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 4,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 4.0,
+            "dn_ca": 3,
+            "wnc": 4.0,
+            "tnc": 3.7,
+            "vrc": 0,
+            "wno": 3.5,
+            "wnm": 0.0,
+            "total": 7.2
+          },
+          "computational": {
+            "oc": 3.5,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.5
+          },
+          "dependency": {
+            "ruc": 3,
+            "total": 3.0
+          },
+          "tc": 13.7
+        },
+        "is_unsat": true,
+        "mutation": "contradictory_bounds",
+        "original_pattern_id": "navigation_chain",
+        "contradiction_ocl": "context Payment\ninv: self.amount < -5",
+        "slot_profile": "medium",
+        "semantic_cluster": 3,
+        "implies": [
+          "numeric_positive_Payment"
+        ]
+      }
+    },
+    {
+      "ocl": "context OrderItem\ninv: (self.quantity mod 9 = 0) and (not(self.quantity mod 9 = 0))",
+      "pattern_id": "numeric_multiple_of_unsat",
+      "pattern_name": "Numeric Multiple Of (UNSAT)",
+      "context": "OrderItem",
+      "parameters": {
+        "numeric_attribute": "quantity",
+        "divisor": 9
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-16T01:03:45.993975",
+      "metadata": {
+        "category": "arithmetic",
+        "complexity": 2,
+        "generation_number": 5283,
+        "profile": "medium",
+        "regenerated_from": "numeric_positive",
+        "regen_box": "easy",
+        "regen_family": "arithmetic",
+        "operators_used": [
+          "=",
+          "mod"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 2,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 1.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.0,
+            "vrc": 0,
+            "wno": 2.0,
+            "wnm": 0.0,
+            "total": 3.0
+          },
+          "computational": {
+            "oc": 1.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 1.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 4.0
+        },
+        "is_unsat": true,
+        "mutation": "self_contradiction",
+        "original_pattern_id": "numeric_multiple_of",
+        "slot_profile": "easy",
+        "semantic_cluster": 10,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Customer\ninv: ((self.customerId <> '') and (self.addresses->forAll(v | v.line1 <> ''))) and (not((self.customerId <> '') and (self.addresses->forAll(v | v.line1 <> ''))))",
+      "pattern_id": "collection_not_empty_check_unsat",
+      "pattern_name": "Collection Not Empty Check (UNSAT)",
+      "context": "Customer",
+      "parameters": {
+        "collection": "orders"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-16T01:03:45.994046",
+      "metadata": {
+        "category": "collection",
+        "complexity": 1,
+        "generation_number": 5122,
+        "profile": "unboxed",
+        "regenerated_from": "collection_collectNested",
+        "regen_box": "difficult+forall",
+        "regen_family": "cardinality",
+        "refilled_after": "dedup",
+        "operators_used": [
+          "-",
+          "<",
+          "<>",
+          ">",
+          "and",
+          "forAll"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "unboxed",
+        "operator_count": 6,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 4.0,
+            "dn_ca": 3.0,
+            "wnc": 6.0,
+            "tnc": 4.3,
+            "vrc": 1,
+            "wno": 6.5,
+            "wnm": 1.0,
+            "total": 12.8
+          },
+          "computational": {
+            "oc": 6.5,
+            "tcc": 0.0,
+            "cic": 3.0,
+            "total": 9.5
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 22.3
+        },
+        "is_unsat": true,
+        "mutation": "self_contradiction",
+        "original_pattern_id": "collection_not_empty_check",
+        "slot_profile": "difficult",
+        "semantic_cluster": 3,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Product\ninv: (self.category.store = self.store) and (not(self.category.store = self.store))",
+      "pattern_id": "navigation_consistency_unsat",
+      "pattern_name": "Navigation Consistency (UNSAT)",
+      "context": "Product",
+      "parameters": {
+        "assoc_a": "category",
+        "assoc_b": "store",
+        "assoc_c": "store"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-16T01:03:45.994060",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 1,
+        "generation_number": 4658,
+        "profile": "unboxed",
+        "operators_used": [
+          "="
+        ],
+        "navigation_depth": 3,
+        "quantifier_depth": 0,
+        "difficulty": "unboxed",
+        "operator_count": 1,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 3.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 2,
+            "wnc": 3.0,
+            "tnc": 2.7,
+            "vrc": 0,
+            "wno": 1.0,
+            "wnm": 0.0,
+            "total": 3.7
+          },
+          "computational": {
+            "oc": 1.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 1.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 4.7
+        },
+        "is_unsat": true,
+        "mutation": "self_contradiction",
+        "original_pattern_id": "navigation_consistency",
+        "slot_profile": "easy",
+        "semantic_cluster": 1,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context CartItem\ninv: ((self.quantity mod 9 = 0) and (self.cart.customer.customerId <> '')) and (not((self.quantity mod 9 = 0) and (self.cart.customer.customerId <> '')))",
+      "pattern_id": "numeric_multiple_of_unsat",
+      "pattern_name": "Numeric Multiple Of (UNSAT)",
+      "context": "CartItem",
+      "parameters": {
+        "numeric_attribute": "quantity",
+        "divisor": 9
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-16T01:03:46.561599",
+      "metadata": {
+        "category": "arithmetic",
+        "complexity": 2,
+        "generation_number": 4782,
+        "profile": "unboxed",
+        "operators_used": [
+          "<",
+          "<>",
+          "=",
+          ">",
+          "and",
+          "mod"
+        ],
+        "navigation_depth": 4,
+        "quantifier_depth": 0,
+        "difficulty": "unboxed",
+        "operator_count": 6,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 4.0,
+            "dn_ca": 3,
+            "wnc": 4.0,
+            "tnc": 3.7,
+            "vrc": 0,
+            "wno": 4.5,
+            "wnm": 0.0,
+            "total": 8.2
+          },
+          "computational": {
+            "oc": 3.5,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.5
+          },
+          "dependency": {
+            "ruc": 6,
+            "total": 6.0
+          },
+          "tc": 17.7
+        },
+        "is_unsat": true,
+        "mutation": "self_contradiction",
+        "original_pattern_id": "numeric_multiple_of",
+        "slot_profile": "medium",
+        "semantic_cluster": 17,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Order\ninv: (self.shipment <> null) and (not(self.shipment <> null))",
+      "pattern_id": "association_exists_unsat",
+      "pattern_name": "Association Exists (UNSAT)",
+      "context": "Order",
+      "parameters": {
+        "association": "shipment"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-16T01:03:46.561648",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 1,
+        "generation_number": 4660,
+        "profile": "medium",
+        "operators_used": [
+          "<",
+          "<>",
+          ">"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 1.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.0,
+            "vrc": 0,
+            "wno": 1.0,
+            "wnm": 0.0,
+            "total": 2.0
+          },
+          "computational": {
+            "oc": 1.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 1.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 3.0
+        },
+        "is_unsat": true,
+        "mutation": "self_contradiction",
+        "original_pattern_id": "association_exists",
+        "slot_profile": "easy",
+        "semantic_cluster": 0,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Product\ninv: ((self.basePrice < 100) and (self.variants->forAll(v | v.priceDelta <= 100))) and (self.basePrice > 105)",
+      "pattern_id": "collection_has_size_unsat",
+      "pattern_name": "Collection Has Specific Size (UNSAT)",
+      "context": "Product",
+      "parameters": {
+        "collection": "reviews",
+        "size": 2
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-16T01:03:46.561680",
+      "metadata": {
+        "category": "collection",
+        "complexity": 1,
+        "generation_number": 5247,
+        "profile": "difficult",
+        "regenerated_from": "collection_sum",
+        "regen_box": "difficult+forall",
+        "regen_family": "cardinality",
+        "refilled_after": "dedup",
+        "operators_used": [
+          "-",
+          "<",
+          "<=",
+          "=",
+          ">",
+          "and",
+          "forAll"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "difficult",
+        "operator_count": 7,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 4.0,
+            "dn_ca": 3.0,
+            "wnc": 6.0,
+            "tnc": 4.3,
+            "vrc": 1,
+            "wno": 6.5,
+            "wnm": 1.0,
+            "total": 12.8
+          },
+          "computational": {
+            "oc": 6.5,
+            "tcc": 0.0,
+            "cic": 3.0,
+            "total": 9.5
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 22.3
+        },
+        "is_unsat": true,
+        "mutation": "contradictory_bounds",
+        "original_pattern_id": "collection_has_size",
+        "contradiction_ocl": "context Product\ninv: self.basePrice > 105",
+        "slot_profile": "difficult",
+        "semantic_cluster": 4,
+        "implies": []
+      }
+    }
+  ]
+}

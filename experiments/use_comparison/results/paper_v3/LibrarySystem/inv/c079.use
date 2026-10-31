@@ -1,0 +1,221 @@
+model LibrarySystem
+
+enum CopyStatus {Available, Loaned, Lost}
+
+class Staff
+attributes
+  staffId : String
+  name : String
+  email : String
+end
+
+class Publisher
+attributes
+  name : String
+end
+
+class Library
+attributes
+  name : String
+  maxLoanDays : Integer
+end
+
+class Librarian
+attributes
+  level : String
+end
+
+class Branch
+attributes
+  name : String
+  code : String
+  phone : String
+end
+
+class Copy
+attributes
+  barcode : String
+  status : CopyStatus
+end
+
+class Book
+attributes
+  isbn : String
+  title : String
+  publishYear : Integer
+  pages : Integer
+end
+
+class Author
+attributes
+  name : String
+end
+
+class Category
+attributes
+  name : String
+end
+
+class Loan
+attributes
+  startDate : String
+  dueDate : String
+  returnDate : String
+end
+
+class Reservation
+attributes
+  requestDate : String
+  expiryDate : String
+end
+
+class Address
+attributes
+  line1 : String
+  city : String
+  country : String
+end
+
+class Member
+attributes
+  memberId : String
+  name : String
+  email : String
+  joinDate : String
+end
+
+class Payment
+attributes
+  amount : Integer
+  timestamp : String
+  isProcessed : Boolean
+end
+
+class Fine
+attributes
+  amount : Integer
+  reason : String
+end
+
+association Staff_branch between
+  Staff[0..*] role staff
+  Branch[1] role branch
+end
+
+association Publisher_books between
+  Publisher[0..1] role publisher
+  Book[0..*] role books
+end
+
+association Library_branches between
+  Library[1] role library
+  Branch[0..*] role branches
+end
+
+association Library_members between
+  Library[1] role library
+  Member[0..*] role members
+end
+
+association Library_books between
+  Library[1] role library
+  Book[0..*] role books
+end
+
+association Librarian_managedBranch between
+  Librarian[0..1] role manager
+  Branch[0..1] role managedBranch
+end
+
+association Branch_address between
+  Branch[0..1] role branch
+  Address[0..1] role address
+end
+
+association Branch_copies between
+  Branch[1] role branch
+  Copy[0..*] role copies
+end
+
+association Branch_loans between
+  Branch[1] role branch
+  Loan[0..*] role loans
+end
+
+association Branch_reservations between
+  Branch[1] role branch
+  Reservation[0..*] role reservations
+end
+
+association Copy_book between
+  Copy[0..*] role copies
+  Book[1] role book
+end
+
+association Copy_loans between
+  Copy[1] role copy
+  Loan[0..*] role loans
+end
+
+association Copy_reservations between
+  Copy[0..1] role copy
+  Reservation[0..*] role reservations
+end
+
+association Book_authors between
+  Book[0..*] role books
+  Author[0..*] role authors
+end
+
+association Book_category between
+  Book[0..*] role books
+  Category[0..1] role category
+end
+
+association Book_reservations between
+  Book[1] role book
+  Reservation[0..*] role reservations
+end
+
+association Loan_member between
+  Loan[0..*] role loans
+  Member[1] role member
+end
+
+association Loan_fine between
+  Loan[1] role loan
+  Fine[0..1] role fine
+end
+
+association Loan_payment between
+  Loan[0..1] role loan
+  Payment[0..1] role payment
+end
+
+association Reservation_member between
+  Reservation[0..*] role reservations
+  Member[1] role member
+end
+
+association Address_member between
+  Address[0..1] role homeAddress
+  Member[0..1] role member
+end
+
+association Member_fines between
+  Member[1] role member
+  Fine[0..*] role fines
+end
+
+association Member_payments between
+  Member[1] role member
+  Payment[0..*] role payments
+end
+
+association Payment_fine between
+  Payment[0..*] role payments
+  Fine[0..1] role fine
+end
+
+constraints
+context Author inv c079: (self.books->select(x | x.pages > 1)->size() >= 1) and (not(self.books->select(x | x.pages > 1)->size() >= 1))

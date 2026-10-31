@@ -1,0 +1,290 @@
+-- Benchmark: HospitalSystem / balanced
+-- Type: SAT Constraints Only
+-- Generated: 2026-10-15T04:24:08.679428
+-- Count: 57
+
+-- #1 Navigation Chain in Department
+-- Difficulty: easy
+context Department
+inv: self.hospital.address <> ''
+
+-- #2 Conditional Existence in Patient
+-- Difficulty: easy
+context Patient
+inv: self.isInsured implies self.insurance <> null
+
+-- #3 Association Exists in LabTest
+-- Difficulty: easy
+context LabTest
+inv: self.result <> null
+
+-- #4 Navigation Chain in Ward
+-- Difficulty: easy
+context Ward
+inv: self.hospital.name <> ''
+
+-- #5 Association Exists in Invoice
+-- Difficulty: easy
+context Invoice
+inv: self.payment <> null
+
+-- #6 Association Exists in Procedure
+-- Difficulty: easy
+context Procedure
+inv: self.doctor <> null
+
+-- #7 Simple Navigation in Admission
+-- Difficulty: easy
+context Admission
+inv: self.bed.isOccupied
+
+-- #8 Collection Size in Range in Doctor
+-- Difficulty: difficult
+context Doctor
+inv: (self.specialty <> '') and (self.appointments->forAll(v | v.appointmentId <> ''))
+
+-- #9 Collection Size in Range in Prescription
+-- Difficulty: difficult
+context Prescription
+inv: (self.issuedAt <> '') and (self.medications->forAll(v | v.name <> ''))
+
+-- #10 Collection Size in Range in MedicalRecord
+-- Difficulty: difficult
+context MedicalRecord
+inv: (self.createdAt <> '') and (self.procedures->forAll(v | v.performedAt <> ''))
+
+-- #11 Numeric Attribute Bounded in Ward
+-- Difficulty: difficult
+context Ward
+inv: (self.floor <= 50) and (self.rooms->forAll(v | v.roomNo <> ''))
+
+-- #12 Numeric Absolute Value Bounded in Ward
+-- Difficulty: difficult
+context Ward
+inv: (self.floor > 0) and (self.rooms->forAll(v | v.roomNo <> ''))
+
+-- #13 Numeric Is Even in Ward
+-- Difficulty: difficult
+context Ward
+inv: (self.floor < 50) and (self.rooms->forAll(v | v.roomNo <> ''))
+
+-- #14 Collection Navigation in Hospital
+-- Difficulty: difficult
+context Hospital
+inv: self.departments->forAll(x | x.name <> '')
+
+-- #15 Collection Navigation in Doctor
+-- Difficulty: difficult
+context Doctor
+inv: self.appointments->exists(x | x.appointmentId <> '')
+
+-- #16 Collection Navigation in Department
+-- Difficulty: difficult
+context Department
+inv: self.doctors->exists(x | x.specialty <> '')
+
+-- #17 Collection Navigation in MedicalRecord
+-- Difficulty: difficult
+context MedicalRecord
+inv: self.procedures->exists(x | x.performedAt <> '')
+
+-- #18 Any Operation in Hospital
+-- Difficulty: medium
+context Hospital
+inv: (self.departments->any(x | x.name <> '') <> null) and (self.departments->size() = 3)
+
+-- #19 Collect (Map) Operation in Doctor
+-- Difficulty: medium
+context Doctor
+inv: (self.appointments->collect(x | x.appointmentId)->notEmpty()) and (self.specialty.size() = 21)
+
+-- #20 Collect (Map) Operation in Hospital
+-- Difficulty: medium
+context Hospital
+inv: (self.departments->collect(x | x.phone)->notEmpty()) and (self.address.toUpperCase() = 'TEST')
+
+-- #21 Select (Filter) Operation in Hospital
+-- Difficulty: medium
+context Hospital
+inv: self.wards->select(x | x.floor >= 2)->size() >= 1
+
+-- #22 One Operation in Hospital
+-- Difficulty: medium
+context Hospital
+inv: (self.departments->one(x | x.phone <> '')) and (self.name.size() = 17)
+
+-- #23 Any Operation in Hospital
+-- Difficulty: medium
+context Hospital
+inv: self.wards->any(x | x.floor >= 5) <> null
+
+-- #24 Collect (Map) Operation in Hospital
+-- Difficulty: medium
+context Hospital
+inv: (self.wards->collect(x | x.name)->notEmpty()) and (self.address <> '' and self.address.size() > 0)
+
+-- #25 Numeric Attribute Bounded in Invoice
+-- Difficulty: easy
+context Invoice
+inv: self.totalAmount >= 6 and self.totalAmount <= 65
+
+-- #26 Numeric Attribute Bounded in Invoice
+-- Difficulty: medium
+context Invoice
+inv: self.totalAmount >= 4 and self.totalAmount <= 6
+
+-- #27 Numeric Attribute Non-Negative in Ward
+-- Difficulty: medium
+context Ward
+inv: (self.floor >= 0) and (self.floor < 64)
+
+-- #28 Collection Size in Range in Department
+-- Difficulty: medium
+context Department
+inv: self.nurses->size() >= 2 and self.nurses->size() <= 3
+
+-- #29 Numeric Less Than Value in Ward
+-- Difficulty: easy
+context Ward
+inv: self.floor < 72
+
+-- #30 Numeric Attribute Bounded in Ward
+-- Difficulty: medium
+context Ward
+inv: self.floor >= 32 and self.floor <= 89
+
+-- #31 Numeric Multiple Of in Ward
+-- Difficulty: easy
+context Ward
+inv: self.floor mod 9 = 0
+
+-- #32 Numeric Is Odd in Ward
+-- Difficulty: easy
+context Ward
+inv: self.floor mod 2 = 1
+
+-- #33 Numeric Attribute Non-Negative in Ward
+-- Difficulty: easy
+context Ward
+inv: self.floor >= 0
+
+-- #34 Numeric Is Odd in Ward
+-- Difficulty: medium
+context Ward
+inv: (self.floor mod 2 = 1) and (self.rooms->size() > 0)
+
+-- #35 Navigation Chain in Diagnosis
+-- Difficulty: medium
+context Diagnosis
+inv: (self.record.patient.isInsured <> true) and (self.code.toLowerCase() = 'test')
+
+-- #36 Navigation Chain in LabResult
+-- Difficulty: medium
+context LabResult
+inv: (self.test.record.createdAt <> '') and (self.value.toUpperCase() = 'TEST')
+
+-- #37 Navigation Chain in Discharge
+-- Difficulty: medium
+context Discharge
+inv: (self.admission.patient.isInsured = true) and (self.summary.toUpperCase() = 'TEST')
+
+-- #38 Navigation Chain in Nurse
+-- Difficulty: medium
+context Nurse
+inv: (self.department.hospital.name <> '') and (self.shift.indexOf('test') >= 0)
+
+-- #39 Navigation Chain in Medication
+-- Difficulty: medium
+context Medication
+inv: (self.prescription.record.createdAt <> '') and (self.name.size() <= 85)
+
+-- #40 Existential Quantification (exists) in MedicalRecord
+-- Difficulty: difficult
+context MedicalRecord
+inv: self.prescriptions->exists(x | x.issuedAt <> '')
+
+-- #41 Attribute Not Null (Simple) in Person
+-- Difficulty: easy
+context Person
+inv: self.dob <> null
+
+-- #42 Collection Has Specific Size in Hospital
+-- Difficulty: easy
+context Hospital
+inv: self.wards->size() = 1
+
+-- #43 Collection Minimum Size in MedicalRecord
+-- Difficulty: easy
+context MedicalRecord
+inv: self.labTests->size() >= 2
+
+-- #44 Collection Not Empty (Simple) in MedicalRecord
+-- Difficulty: easy
+context MedicalRecord
+inv: self.procedures->notEmpty()
+
+-- #45 Collection Has Specific Size in Doctor
+-- Difficulty: easy
+context Doctor
+inv: self.appointments->size() = 2
+
+-- #46 Collection Nested Collection Flatten in Patient
+-- Difficulty: medium
+context Patient
+inv: self.records->collect(x | x.prescriptions)->size() >= 3
+
+-- #47 Collection Nested Collection Flatten in Ward
+-- Difficulty: medium
+context Ward
+inv: self.rooms->collect(x | x.beds)->size() >= 1
+
+-- #48 Collection Minimum Size in Hospital
+-- Difficulty: medium
+context Hospital
+inv: (self.wards->size() >= 1) and (self.address.toUpperCase() = 'TEST')
+
+-- #49 Collection Maximum Size in Hospital
+-- Difficulty: medium
+context Hospital
+inv: (self.wards->size() <= 2) and (self.address.toUpperCase() = 'TEST')
+
+-- #50 Attribute Not Null (Simple) in Ward
+-- Difficulty: medium
+context Ward
+inv: (self.name <> null) and (self.rooms->any(x | x.roomNo <> '') <> null)
+
+-- #51 Association Exists in Admission
+-- Difficulty: easy
+context Admission
+inv: self.bed <> null
+
+-- #52 Association Exists in Patient
+-- Difficulty: easy
+context Patient
+inv: self.insurance <> null
+
+-- #53 Collect (Map) Operation in Department
+-- Difficulty: difficult
+context Department
+inv: (self.nurses->collect(x | x.shift)->notEmpty()) and (self.doctors->size() > 0)
+
+-- #54 Collection Maximum Size in Patient
+-- Difficulty: medium
+context Patient
+inv: (self.admissions->size() <= 3) and (self.admissions->size() >= 1)
+
+-- #55 Collection Not Empty Check in Hospital
+-- Difficulty: medium
+context Hospital
+inv: (self.departments->size() > 0) and (self.departments->one(x | x.phone <> ''))
+
+-- #56 Collection As Sequence Conversion in Ward
+-- Difficulty: difficult
+context Ward
+inv: (self.floor >= 0) and (self.rooms->forAll(v | v.roomNo <> ''))
+
+-- #57 Collection Index Of Element in Department
+-- Difficulty: difficult
+context Department
+inv: (self.name <> '') and (self.doctors->forAll(v | v.specialty <> ''))
+

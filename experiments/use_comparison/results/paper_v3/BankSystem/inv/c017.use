@@ -1,0 +1,167 @@
+model BankSystem
+
+enum AccountStatus {Active, Frozen, Closed}
+enum LoanStatus {Requested, Approved, Rejected, Closed}
+
+class Payment
+attributes
+  method : String
+  isConfirmed : Boolean
+end
+
+class CardTransaction
+attributes
+  merchant : String
+end
+
+class KYCRecord
+attributes
+  idNumber : String
+  verifiedAt : String
+  isVerified : Boolean
+end
+
+class Account
+attributes
+  accountNo : String
+  balance : Integer
+  status : AccountStatus
+end
+
+class Employee
+attributes
+  employeeId : String
+  name : String
+end
+
+class Customer
+attributes
+  customerId : String
+  fullName : String
+  email : String
+end
+
+class Bank
+attributes
+  name : String
+  swiftCode : String
+end
+
+class SavingsAccount
+attributes
+  interestRate : Integer
+end
+
+class CheckingAccount
+attributes
+  overdraftLimit : Integer
+end
+
+class Loan
+attributes
+  loanId : String
+  principal : Integer
+  interestRate : Integer
+  status : LoanStatus
+end
+
+class Manager
+attributes
+  level : String
+end
+
+class AccountTransaction
+attributes
+  type : String
+end
+
+class Transaction
+attributes
+  txnId : String
+  amount : Integer
+  timestamp : String
+end
+
+class Branch
+attributes
+  branchCode : String
+  city : String
+end
+
+class CreditCard
+attributes
+  cardNo : String
+  limit : Integer
+  isActive : Boolean
+end
+
+class Address
+attributes
+  line1 : String
+  city : String
+  country : String
+  postalCode : String
+end
+
+class Teller
+attributes
+  counterNo : Integer
+end
+
+association Payment_transaction between
+  Payment[0..1] role payment
+  Transaction[1] role transaction
+end
+
+association CardTransaction_card between
+  CardTransaction[0..*] role cardTransactions
+  CreditCard[1] role card
+end
+
+association KYCRecord_customer between
+  KYCRecord[0..1] role kyc
+  Customer[1] role customer
+end
+
+association Account_customer between
+  Account[0..*] role accounts
+  Customer[1] role customer
+end
+
+association Account_transactions between
+  Account[0..1] role account
+  Transaction[0..*] role transactions
+end
+
+association Employee_branch between
+  Employee[0..*] role employees
+  Branch[1] role branch
+end
+
+association Customer_branch between
+  Customer[0..*] role customers
+  Branch[1] role branch
+end
+
+association Customer_address between
+  Customer[1] role customer
+  Address[0..1] role address
+end
+
+association Customer_loans between
+  Customer[1] role customer
+  Loan[0..*] role loans
+end
+
+association Customer_cards between
+  Customer[1] role customer
+  CreditCard[0..*] role cards
+end
+
+association Bank_branches between
+  Bank[1] role bank
+  Branch[0..*] role branches
+end
+
+constraints
+context Customer inv c017: (self.address <> null) and (self.fullName <> '' and self.fullName.size() > 0)

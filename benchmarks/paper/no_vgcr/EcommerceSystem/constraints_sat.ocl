@@ -1,0 +1,325 @@
+-- Benchmark: EcommerceSystem / balanced
+-- Type: SAT Constraints Only
+-- Generated: 2026-10-12T20:23:52.961784
+-- Count: 64
+
+-- #1 Navigation Chain in Category
+-- Difficulty: easy
+context Category
+inv: self.store.name <> ''
+
+-- #2 Navigation Chain in Category
+-- Difficulty: easy
+context Category
+inv: self.store.currency <> ''
+
+-- #3 Navigation Chain in Cart
+-- Difficulty: difficult
+context Cart
+inv: (self.createdAt <> '') and (self.items->forAll(v | v.quantity >= 5))
+
+-- #4 Navigation Chain in Customer
+-- Difficulty: difficult
+context Customer
+inv: (self.customerId <> '') and (self.tickets->forAll(v | v.subject <> ''))
+
+-- #5 Collection Navigation in Store
+-- Difficulty: difficult
+context Store
+inv: self.categories->forAll(x | x.title <> '')
+
+-- #6 Collection Navigation in Supplier
+-- Difficulty: difficult
+context Supplier
+inv: self.inventoryItems->exists(x | x.quantity <= 100)
+
+-- #7 Collection Navigation in Category
+-- Difficulty: difficult
+context Category
+inv: self.products->forAll(x | x.basePrice <= 50)
+
+-- #8 Association Exists in CartItem
+-- Difficulty: easy
+context CartItem
+inv: self.cart <> null
+
+-- #9 Navigation Chain in Address
+-- Difficulty: medium
+context Address
+inv: self.customer.cart.createdAt <> ''
+
+-- #10 Association Exists in InventoryItem
+-- Difficulty: medium
+context InventoryItem
+inv: (self.variant <> null) and (self.warehouseCode.toLowerCase() = 'test')
+
+-- #11 Association Exists in DiscountRule
+-- Difficulty: easy
+context DiscountRule
+inv: self.coupon <> null
+
+-- #12 Navigation Chain in Shipment
+-- Difficulty: medium
+context Shipment
+inv: self.order.customer.customerId <> ''
+
+-- #13 Association Exists in ProductVariant
+-- Difficulty: easy
+context ProductVariant
+inv: self.product <> null
+
+-- #14 Association Exists in ReturnRequest
+-- Difficulty: medium
+context ReturnRequest
+inv: (self.item <> null) and (self.order.customer.fullName <> '')
+
+-- #15 Navigation Chain in Review
+-- Difficulty: medium
+context Review
+inv: self.product.store.currency <> ''
+
+-- #16 Association Exists in Category
+-- Difficulty: medium
+context Category
+inv: (self.store <> null) and (self.store.oclIsTypeOf(Store))
+
+-- #17 Navigation Chain in Coupon
+-- Difficulty: medium
+context Coupon
+inv: self.rule.coupon.code <> ''
+
+-- #18 Association Exists in Cart
+-- Difficulty: medium
+context Cart
+inv: (self.customer <> null) and (self.customer.oclIsTypeOf(Customer))
+
+-- #19 Association Exists in Cart
+-- Difficulty: medium
+context Cart
+inv: (self.customer <> null) and (self.items->notEmpty())
+
+-- #20 Association Exists in Customer
+-- Difficulty: medium
+context Customer
+inv: (self.cart <> null) and (self.customerId <> null)
+
+-- #21 Association Exists in Category
+-- Difficulty: easy
+context Category
+inv: self.store <> null
+
+-- #22 Association Exists in Cart
+-- Difficulty: easy
+context Cart
+inv: self.customer <> null
+
+-- #23 Navigation Chain in CartItem
+-- Difficulty: medium
+context CartItem
+inv: self.cart.customer.customerId <> ''
+
+-- #24 Any Operation in Cart
+-- Difficulty: difficult
+context Cart
+inv: (self.items->any(x | x.quantity < 10) <> null) and (self.customer <> null)
+
+-- #25 Any Operation in Category
+-- Difficulty: difficult
+context Category
+inv: self.products->any(x | x.basePrice <= 100) <> null
+
+-- #26 Universal Quantification (forAll) in Product
+-- Difficulty: difficult
+context Product
+inv: (self.reviews->forAll(x | x.rating < 50)) and (self.basePrice > 19)
+
+-- #27 Existential Quantification (exists) in Coupon
+-- Difficulty: difficult
+context Coupon
+inv: self.orders->exists(x | x.placedAt <> '')
+
+-- #28 Numeric Absolute Value Bounded in CartItem
+-- Difficulty: medium
+context CartItem
+inv: self.quantity.abs() <= 9
+
+-- #29 Numeric Is Odd in CartItem
+-- Difficulty: easy
+context CartItem
+inv: self.quantity mod 2 = 1
+
+-- #30 Numeric Is Even in InventoryItem
+-- Difficulty: easy
+context InventoryItem
+inv: self.quantity mod 2 = 0
+
+-- #31 Numeric Absolute Value Bounded in CartItem
+-- Difficulty: medium
+context CartItem
+inv: self.quantity.abs() <= 3
+
+-- #32 Numeric Absolute Value Bounded in InventoryItem
+-- Difficulty: medium
+context InventoryItem
+inv: self.quantity.abs() <= 6
+
+-- #33 Numeric Absolute Value Bounded in CartItem
+-- Difficulty: medium
+context CartItem
+inv: self.quantity.abs() <= 2
+
+-- #34 Numeric Multiple Of in Review
+-- Difficulty: easy
+context Review
+inv: self.rating mod 9 = 0
+
+-- #35 Numeric Attribute Positive in OrderItem
+-- Difficulty: easy
+context OrderItem
+inv: self.quantity > 0
+
+-- #36 Numeric Attribute Bounded in OrderItem
+-- Difficulty: medium
+context OrderItem
+inv: self.unitPrice >= 72 and self.unitPrice <= 93
+
+-- #37 Numeric Attribute Non-Negative in DiscountRule
+-- Difficulty: easy
+context DiscountRule
+inv: self.minOrderTotal >= 0
+
+-- #38 Numeric Greater Than Value in InventoryItem
+-- Difficulty: easy
+context InventoryItem
+inv: self.quantity > 84
+
+-- #39 Numeric Less Than Value in DiscountRule
+-- Difficulty: easy
+context DiscountRule
+inv: self.minOrderTotal < 85
+
+-- #40 Numeric Absolute Value Bounded in CartItem
+-- Difficulty: medium
+context CartItem
+inv: self.quantity.abs() <= 1
+
+-- #41 Numeric Attribute Positive in DiscountRule
+-- Difficulty: easy
+context DiscountRule
+inv: self.percentOff > 0
+
+-- #42 Flatten Operation in Coupon
+-- Difficulty: difficult
+context Coupon
+inv: self.orders->collect(x | x.items)->flatten()->notEmpty()
+
+-- #43 Collection Sum in Product
+-- Difficulty: difficult
+context Product
+inv: self.reviews->collect(x | x.rating)->sum() >= 1
+
+-- #44 Collection Size Constraint in Category
+-- Difficulty: easy
+context Category
+inv: self.products->size() <= 1
+
+-- #45 Collection Has Specific Size in Coupon
+-- Difficulty: easy
+context Coupon
+inv: self.orders->size() = 3
+
+-- #46 Collection Maximum Size in Customer
+-- Difficulty: medium
+context Customer
+inv: self.addresses->size() <= 2
+
+-- #47 Collection Size Constraint in Order
+-- Difficulty: medium
+context Order
+inv: (self.items->size() > 1) and (self.orderNo.toUpperCase() = 'TEST')
+
+-- #48 Collection Minimum Size in Cart
+-- Difficulty: medium
+context Cart
+inv: self.items->size() >= 2
+
+-- #49 Collection Sum in Product
+-- Difficulty: difficult
+context Product
+inv: self.variants->collect(x | x.priceDelta)->sum() >= 7
+
+-- #50 Collection Not Empty Check in Customer
+-- Difficulty: easy
+context Customer
+inv: self.tickets->size() > 0
+
+-- #51 Collection Not Empty (Simple) in Cart
+-- Difficulty: easy
+context Cart
+inv: self.items->notEmpty()
+
+-- #52 Collection Size Constraint in Order
+-- Difficulty: medium
+context Order
+inv: self.items->size() >= 1
+
+-- #53 Collection Maximum Size in Customer
+-- Difficulty: medium
+context Customer
+inv: self.addresses->size() <= 3
+
+-- #54 Collection Has Specific Size in Order
+-- Difficulty: easy
+context Order
+inv: self.items->size() = 3
+
+-- #55 Attribute Not Null (Simple) in CartItem
+-- Difficulty: medium
+context CartItem
+inv: (self.quantity <> null) and (self.cart.customer.email <> '')
+
+-- #56 Collection Size Constraint in Category
+-- Difficulty: medium
+context Category
+inv: self.products->size() >= 1
+
+-- #57 Collection Not Empty Check in Cart
+-- Difficulty: medium
+context Cart
+inv: (self.items->size() > 0) and (self.items->size() >= 3)
+
+-- #58 Collection Has Specific Size in Cart
+-- Difficulty: easy
+context Cart
+inv: self.items->size() = 2
+
+-- #59 Navigation Chain in CartItem
+-- Difficulty: medium
+context CartItem
+inv: self.cart.customer.fullName <> ''
+
+-- #60 Navigation Chain in CartItem
+-- Difficulty: medium
+context CartItem
+inv: self.cart.customer.email <> ''
+
+-- #61 Existential Quantification (exists) in Cart
+-- Difficulty: difficult
+context Cart
+inv: self.items->exists(x | x.quantity >= 10)
+
+-- #62 Collection As Sequence Conversion in Customer
+-- Difficulty: difficult
+context Customer
+inv: (self.email <> '') and (self.orders->forAll(v | v.orderNo <> ''))
+
+-- #63 Collection Not Empty Check in Order
+-- Difficulty: easy
+context Order
+inv: self.items->size() > 0
+
+-- #64 Attribute Not Null (Simple) in Customer
+-- Difficulty: difficult
+context Customer
+inv: (self.customerId <> '') and (self.orders->forAll(v | v.placedAt <> ''))
+

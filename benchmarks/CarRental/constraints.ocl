@@ -1,445 +1,493 @@
 -- Benchmark: CarRental / balanced
--- Generated: 2026-06-18T17:11:29.890720
+-- Generated: 2026-10-15T11:48:10.112888
 -- Seed: 42
 -- Complexity: standard
--- Count: 73
+-- Count: 81
 -- Advanced Features: ENABLED
 
--- #1 Association Exists in Customer
--- Difficulty: easy
+-- #1 Collection Navigation in Customer
+-- Difficulty: difficult
 -- Type: SAT
 context Customer
-inv: self.license <> null
+inv: (self.rentals->forAll(x | x.depositPaid <= 50)) and (self.rentals->size() = 1)
 
--- #2 Association Exists in Payment
--- Difficulty: medium
+-- #2 Simple Navigation in Vehicle
+-- Difficulty: difficult
+-- Type: SAT
+context Vehicle
+inv: (self.dailyRate < 50) and (self.rentals->forAll(v | v.totalAmount > 10))
+
+-- #3 Collection Navigation in Company
+-- Difficulty: difficult
+-- Type: SAT
+context Company
+inv: (self.branches->exists(x | x.longitude <= 1000)) and (self.name.toUpperCase() = 'TEST')
+
+-- #4 Navigation Chain in Customer
+-- Difficulty: difficult
+-- Type: SAT
+context Customer
+inv: (self.balance <= 10) and (self.rentals->forAll(v | v.lateFee < 50))
+
+-- #5 Simple Navigation in Payment
+-- Difficulty: easy
 -- Type: SAT
 context Payment
-inv: (self.rental <> null) and (if self.amount > self.tax then self.amount else self.tax endif > 46)
+inv: self.rental.isCompleted
 
--- #3 Association Exists in Rental
+-- #6 Conditional Existence in Reservation
+-- Difficulty: easy
+-- Type: SAT
+context Reservation
+inv: self.isConfirmed implies self.vehicle <> null
+
+-- #7 Simple Navigation in License
+-- Difficulty: easy
+-- Type: SAT
+context License
+inv: self.customer.isPremium
+
+-- #8 Navigation Consistency in Rental
 -- Difficulty: easy
 -- Type: SAT
 context Rental
+inv: self.vehicle.branch = self.branch
+
+-- #9 Navigation Chain in Branch
+-- Difficulty: easy
+-- Type: SAT
+context Branch
+inv: self.company.isActive = true
+
+-- #10 Simple Navigation in Branch
+-- Difficulty: easy
+-- Type: SAT
+context Branch
+inv: self.company.isActive
+
+-- #11 Association Exists in Reservation
+-- Difficulty: easy
+-- Type: SAT
+context Reservation
 inv: self.vehicle <> null
 
--- #4 Association Exists in Reservation
+-- #12 Conditional Existence in Rental
+-- Difficulty: easy
+-- Type: SAT
+context Rental
+inv: self.isCompleted implies self.payment <> null
+
+-- #13 Navigation Consistency in Reservation
 -- Difficulty: medium
 -- Type: SAT
 context Reservation
-inv: (self.customer <> null) and (self.vehicle <> null)
+inv: (self.vehicle.branch = self.branch) and (self.dateTo.concat(self.dateFrom).size() >= 2)
 
--- #5 Association Exists in Reservation
--- Difficulty: easy
+-- #14 Navigation Consistency in Rental
+-- Difficulty: medium
+-- Type: SAT
+context Rental
+inv: (self.vehicle.branch = self.branch) and (self.endDate.concat(self.startDate).size() >= 5)
+
+-- #15 Navigation Chain in License
+-- Difficulty: medium
+-- Type: SAT
+context License
+inv: (self.customer.license.isValid = true) and (self.expiry.indexOf('test') >= 0)
+
+-- #16 Navigation Consistency in Reservation
+-- Difficulty: medium
 -- Type: SAT
 context Reservation
-inv: self.branch <> null
+inv: (self.vehicle.branch = self.branch) and (self.createdAt.size() >= 4 implies self.createdAt.substring(1, 4) = 'AB')
 
--- #6 Association Exists in License
--- Difficulty: easy
+-- #17 Simple Navigation in License
+-- Difficulty: medium
 -- Type: SAT
 context License
-inv: self.customer <> null
+inv: ((self.customer.isPremium) and (self.customer.oclIsTypeOf(Customer))) and (self.number.indexOf('test') >= 0)
 
--- #7 Association Exists in Rental
+-- #18 Navigation Consistency in Reservation
 -- Difficulty: medium
 -- Type: SAT
-context Rental
-inv: (self.payment <> null) and (self.branch.isOpen)
+context Reservation
+inv: (self.vehicle.branch = self.branch) and (self.estimatedCost.abs() <= 5)
 
--- #8 Association Exists in Vehicle
--- Difficulty: medium
--- Type: SAT
-context Vehicle
-inv: (self.branch <> null) and (self.reservations->isEmpty())
-
--- #9 Navigation Chain in Customer
--- Difficulty: medium
--- Type: SAT
-context Customer
-inv: self.license.customer.depositAmount <= 100
-
--- #10 Navigation Chain in Branch
--- Difficulty: easy
--- Type: SAT
-context Branch
-inv: self.company.isActive = false
-
--- #11 Navigation Chain in License
--- Difficulty: easy
--- Type: SAT
-context License
-inv: self.customer.license.isValid = true
-
--- #12 Navigation Chain in Branch
--- Difficulty: easy
--- Type: SAT
-context Branch
-inv: self.company.isActive <> true
-
--- #13 Navigation Chain in Vehicle
--- Difficulty: medium
--- Type: SAT
-context Vehicle
-inv: self.branch.company.isActive <> false
-
--- #14 Collection Navigation in Branch
+-- #19 Select (Filter) Operation in Branch
 -- Difficulty: difficult
 -- Type: SAT
 context Branch
-inv: self.vehicles->exists(x | x.horsepower <= 10)
+inv: (self.reservations->select(x | x.estimatedCost <= 50)->size() >= 1) and (self.monthlyRevenue <> null)
 
--- #15 Collection Navigation in Vehicle
+-- #20 Select (Filter) Operation in Vehicle
 -- Difficulty: difficult
 -- Type: SAT
 context Vehicle
-inv: self.rentals->forAll(x | x.lateFee >= 1)
+inv: (self.rentals->select(x | x.mileageStart <= 10)->size() >= 1) and (self.rentals->size() > 0)
 
--- #16 Navigation Chain in Customer
--- Difficulty: easy
--- Type: SAT
-context Customer
-inv: self.license.customer.age < 100
-
--- #17 Collection Navigation in Company
+-- #21 Collect (Map) Operation in Vehicle
 -- Difficulty: difficult
--- Type: SAT
-context Company
-inv: self.branches->exists(x | x.staffCount >= 5)
-
--- #18 Navigation Chain in Payment
--- Difficulty: medium
--- Type: SAT
-context Payment
-inv: self.rental.branch.capacity <= 50
-
--- #19 Simple Navigation in Rental
--- Difficulty: medium
--- Type: SAT
-context Rental
-inv: ((self.vehicle.isAvailable) and (self.branch.oclIsTypeOf(Branch))) and (self.mileageStart < 7)
-
--- #20 Select (Filter) Operation in Company
--- Difficulty: difficult
--- Type: SAT
-context Company
-inv: self.branches->select(x | x.capacity > 0)->size() >= 1
-
--- #21 Any Operation in Customer
--- Difficulty: difficult
--- Type: SAT
-context Customer
-inv: self.rentals->any(x | x.daysRented <= 1000) <> null
-
--- #22 Universal Quantification (forAll) in Branch
--- Difficulty: difficult
--- Type: SAT
-context Branch
-inv: self.reservations->forAll(x | x.estimatedCost < 1000)
-
--- #23 Maximum Of Two Attributes in Customer
--- Difficulty: easy
--- Type: SAT
-context Customer
-inv: if self.balance > self.depositAmount then self.balance else self.depositAmount endif > 6
-
--- #24 Numeric Attribute Positive in Customer
--- Difficulty: easy
--- Type: SAT
-context Customer
-inv: self.balance > 0
-
--- #25 Three Way Comparison in Branch
--- Difficulty: difficult
--- Type: SAT
-context Branch
-inv: (self.staffCount < 10) and (self.vehicles->forAll(v | v.weightKg > 5))
-
--- #26 Numeric Greater Than Value in Customer
--- Difficulty: easy
--- Type: SAT
-context Customer
-inv: self.age > 85
-
--- #27 Numeric Multiple Of in Vehicle
--- Difficulty: easy
 -- Type: SAT
 context Vehicle
-inv: self.year mod 7 = 0
+inv: ((self.rentals->collect(x | x.fuelCharge)->notEmpty()) and (self.category.size() <= 68)) and (self.isAvailable = true)
 
--- #28 Collection Sum in Customer
+-- #22 Any Operation in Branch
+-- Difficulty: difficult
+-- Type: SAT
+context Branch
+inv: ((self.rentals->any(x | x.depositPaid > 5) <> null) and (self.name.indexOf('test') >= 0)) and (self.isOpen = true)
+
+-- #23 Existential Quantification (exists) in Branch
+-- Difficulty: difficult
+-- Type: SAT
+context Branch
+inv: (self.reservations->exists(x | x.estimatedCost < 1000)) and (self.vehicles->size() = 2)
+
+-- #24 Existential Quantification (exists) in Customer
 -- Difficulty: difficult
 -- Type: SAT
 context Customer
-inv: self.rentals->collect(x | x.mileageEnd)->sum() >= 8
+inv: (self.rentals->exists(x | x.fuelCharge > 0)) and (self.isPremium = true)
 
--- #29 Collection Nested Collection Flatten in Company
--- Difficulty: difficult
--- Type: SAT
-context Company
-inv: self.branches->collect(x | x.reservations)->size() >= 3
-
--- #30 Collection Excluding Element in Branch
+-- #25 Maximum Of Two Attributes in Branch
 -- Difficulty: difficult
 -- Type: SAT
 context Branch
-inv: self.reservations->excluding(self.reservations->any(true))->size() < self.reservations->size()
+inv: (self.vehicleCount >= 1) and (self.reservations->forAll(v | v.estimatedCost <= 50))
 
--- #31 Collection Excluding Element in Company
--- Difficulty: difficult
--- Type: SAT
-context Company
-inv: self.branches->excluding(self.branches->any(true))->size() < self.branches->size()
-
--- #32 Collection Nested Collection Flatten in Branch
+-- #26 Minimum Of Two Attributes in Branch
 -- Difficulty: difficult
 -- Type: SAT
 context Branch
-inv: self.vehicles->collect(x | x.reservations)->size() >= 3
+inv: (self.vehicleCount <= 50) and (self.reservations->forAll(v | v.estimatedCost < 50))
 
--- #33 Collection As Sequence Conversion in Branch
--- Difficulty: medium
--- Type: SAT
-context Branch
-inv: self.rentals->asSequence()->notEmpty()
-
--- #34 Numeric Sum Constraint in Customer
--- Difficulty: easy
--- Type: SAT
-context Customer
-inv: self.balance + self.depositAmount > 15
-
--- #35 Numeric Comparison in Branch
--- Difficulty: easy
--- Type: SAT
-context Branch
-inv: self.capacity < self.vehicleCount
-
--- #36 Numeric Sum Constraint in Vehicle
--- Difficulty: easy
+-- #27 Collection Size in Range in Vehicle
+-- Difficulty: difficult
 -- Type: SAT
 context Vehicle
-inv: self.seats + self.doors > 27
+inv: (self.weightKg < 1000) and (self.reservations->forAll(v | v.estimatedCost <= 50))
 
--- #37 Numeric Difference Constraint in Branch
--- Difficulty: easy
+-- #28 Collection Size in Range in Branch
+-- Difficulty: difficult
 -- Type: SAT
 context Branch
-inv: self.capacity - self.staffCount >= 6
+inv: (self.capacity > 5) and (self.reservations->forAll(v | v.estimatedCost < 1000))
 
--- #38 Numeric Comparison in Branch
--- Difficulty: easy
+-- #29 Flatten Operation in Branch
+-- Difficulty: difficult
 -- Type: SAT
 context Branch
-inv: self.capacity >= self.staffCount
+inv: (self.vehicles->collect(x | x.rentals)->flatten()->notEmpty()) and (self.address.size() = 23)
 
--- #39 Numeric Difference Constraint in Payment
+-- #30 Numeric Sum Constraint in Payment
 -- Difficulty: easy
 -- Type: SAT
 context Payment
-inv: self.discount - self.tax >= 10
+inv: self.tax + self.discount > 48
 
--- #40 Numeric Is Odd in Branch
--- Difficulty: easy
--- Type: SAT
-context Branch
-inv: self.capacity mod 2 = 1
-
--- #41 Numeric Is Even in Vehicle
--- Difficulty: easy
--- Type: SAT
-context Vehicle
-inv: self.seats mod 2 = 0
-
--- #42 Numeric Multiple Of in Branch
--- Difficulty: easy
--- Type: SAT
-context Branch
-inv: self.staffCount mod 5 = 0
-
--- #43 Collection Size Constraint in Customer
+-- #31 Numeric Comparison in Customer
 -- Difficulty: easy
 -- Type: SAT
 context Customer
-inv: self.reservations->size() = 1
+inv: self.depositAmount <= self.balance
 
--- #44 Collection Not Empty Check in Branch
+-- #32 Numeric Sum Constraint in Branch
 -- Difficulty: easy
 -- Type: SAT
 context Branch
-inv: self.rentals->size() > 0
+inv: self.capacity + self.staffCount > 46
 
--- #45 Collection Size Constraint in Vehicle
+-- #33 Numeric Absolute Value Bounded in Customer
 -- Difficulty: easy
 -- Type: SAT
-context Vehicle
-inv: self.reservations->size() <= 1
+context Customer
+inv: self.rentalCount.abs() <= 4
 
--- #46 Collection Not Empty Check in Branch
+-- #34 Numeric Comparison in Payment
+-- Difficulty: easy
+-- Type: SAT
+context Payment
+inv: self.tax >= self.amount
+
+-- #35 Numeric Sum Constraint in Payment
+-- Difficulty: easy
+-- Type: SAT
+context Payment
+inv: self.tax + self.discount > 42
+
+-- #36 Numeric Difference Constraint in Payment
+-- Difficulty: easy
+-- Type: SAT
+context Payment
+inv: self.amount - self.discount >= 7
+
+-- #37 Numeric Is Odd in Branch
+-- Difficulty: easy
+-- Type: SAT
+context Branch
+inv: self.vehicleCount mod 2 = 1
+
+-- #38 Three Way Comparison in Branch
+-- Difficulty: medium
+-- Type: SAT
+context Branch
+inv: self.vehicleCount <= self.staffCount and self.staffCount <= self.capacity
+
+-- #39 Three Way Comparison in Branch
+-- Difficulty: medium
+-- Type: SAT
+context Branch
+inv: self.capacity <= self.vehicleCount and self.vehicleCount <= self.staffCount
+
+-- #40 Three Way Comparison in Rental
+-- Difficulty: medium
+-- Type: SAT
+context Rental
+inv: self.lateFee <= self.depositPaid and self.depositPaid <= self.fuelCharge
+
+-- #41 Maximum Of Two Attributes in Payment
+-- Difficulty: medium
+-- Type: SAT
+context Payment
+inv: (if self.amount > self.discount then self.amount else self.discount endif > 18) and (self.isProcessed)
+
+-- #42 Numeric Attribute Bounded in Branch
+-- Difficulty: medium
+-- Type: SAT
+context Branch
+inv: self.longitude >= 6 and self.longitude <= 100
+
+-- #43 Collection Size in Range in Branch
+-- Difficulty: medium
+-- Type: SAT
+context Branch
+inv: self.rentals->size() >= 1 and self.rentals->size() <= 2
+
+-- #44 Three Way Comparison in Rental
+-- Difficulty: medium
+-- Type: SAT
+context Rental
+inv: self.fuelCharge <= self.totalAmount and self.totalAmount <= self.lateFee
+
+-- #45 Numeric Is Even in Rental
+-- Difficulty: medium
+-- Type: SAT
+context Rental
+inv: (self.mileageStart mod 2 = 0) and ((self.mileageStart <> null) = (self.mileageEnd <> null))
+
+-- #46 Collection Has Specific Size in Company
+-- Difficulty: easy
+-- Type: SAT
+context Company
+inv: self.branches->size() = 3
+
+-- #47 Collection Not Empty Check in Branch
 -- Difficulty: easy
 -- Type: SAT
 context Branch
 inv: self.reservations->size() > 0
 
--- #47 Collection Must Be Empty in Vehicle
--- Difficulty: easy
--- Type: SAT
-context Vehicle
-inv: self.reservations->isEmpty()
-
--- #48 Numeric Absolute Value Bounded in Branch
--- Difficulty: medium
--- Type: SAT
-context Branch
-inv: self.longitude.abs() <= 4
-
--- #49 Numeric Absolute Value Bounded in Payment
--- Difficulty: medium
--- Type: SAT
-context Payment
-inv: self.discount.abs() <= 10
-
--- #50 Numeric Absolute Value Bounded in Branch
--- Difficulty: medium
--- Type: SAT
-context Branch
-inv: self.longitude.abs() <= 1
-
--- #51 Collection Minimum Size in Company
--- Difficulty: medium
--- Type: SAT
-context Company
-inv: self.branches->size() >= 1
-
--- #52 Collection Has Specific Size in Branch
+-- #48 Collection Size Constraint in Branch
 -- Difficulty: easy
 -- Type: SAT
 context Branch
-inv: self.vehicles->size() = 1
+inv: self.reservations->size() <= 1
 
--- #53 All Attributes Defined in Payment
--- Difficulty: medium
+-- #49 Collection Maximum Size in Branch
+-- Difficulty: easy
 -- Type: SAT
-context Payment
-inv: self.tax <> null and self.discount <> null
+context Branch
+inv: self.reservations->size() <= 2
 
--- #54 Collection Minimum Size in Customer
--- Difficulty: medium
+-- #50 Collection Maximum Size in Branch
+-- Difficulty: easy
 -- Type: SAT
-context Customer
-inv: self.rentals->size() >= 1
-
--- #55 Simple Implication in Payment
--- Difficulty: medium
--- Type: SAT
-context Payment
-inv: self.amount <> null implies self.tax <> null
-
--- #56 Collection Maximum Size in Vehicle
--- Difficulty: medium
--- Type: SAT
-context Vehicle
+context Branch
 inv: self.rentals->size() <= 2
 
--- #57 Bi-directional Implication in Branch
+-- #51 Bi-directional Implication in Rental
+-- Difficulty: easy
+-- Type: SAT
+context Rental
+inv: (self.fuelCharge <> null) = (self.totalAmount <> null)
+
+-- #52 All Attributes Defined in Payment
+-- Difficulty: easy
+-- Type: SAT
+context Payment
+inv: self.discount <> null and self.amount <> null
+
+-- #53 Collection Not Empty Check in Branch
+-- Difficulty: easy
+-- Type: SAT
+context Branch
+inv: self.vehicles->size() > 0
+
+-- #54 Simple Implication in Branch
+-- Difficulty: easy
+-- Type: SAT
+context Branch
+inv: self.staffCount <> null implies self.capacity <> null
+
+-- #55 Boolean Is True in Customer
+-- Difficulty: easy
+-- Type: SAT
+context Customer
+inv: self.isPremium = true
+
+-- #56 Simple Implication in Payment
+-- Difficulty: medium
+-- Type: SAT
+context Payment
+inv: self.discount <> null implies self.amount <> null
+
+-- #57 Reverse Implication in Rental
+-- Difficulty: medium
+-- Type: SAT
+context Rental
+inv: self.totalAmount <> null implies self.fuelCharge <> null
+
+-- #58 Reverse Implication in Customer
+-- Difficulty: medium
+-- Type: SAT
+context Customer
+inv: self.depositAmount <> null implies self.balance <> null
+
+-- #59 All Attributes Defined in Payment
+-- Difficulty: medium
+-- Type: SAT
+context Payment
+inv: self.amount <> null and self.tax <> null
+
+-- #60 Simple Implication in Branch
 -- Difficulty: medium
 -- Type: SAT
 context Branch
-inv: (self.vehicleCount <> null) = (self.staffCount <> null)
+inv: self.vehicleCount <> null implies self.capacity <> null
 
--- #58 All Attributes Defined in Payment
--- Difficulty: medium
+-- #61 Simple Navigation in Reservation
+-- Difficulty: easy
 -- Type: SAT
-context Payment
-inv: self.discount <> null and self.tax <> null
-
--- #59 Navigation Chain (UNSAT) in Payment
--- Difficulty: easy
--- Type: UNSAT
-context Payment
-inv: (self.rental.branch.staffCount > 10) and (not(self.rental.branch.staffCount > 10))
-
--- #60 Simple Navigation (UNSAT) in Reservation
--- Difficulty: medium
--- Type: UNSAT
 context Reservation
-inv: (((self.customer.isPremium) and (self.estimatedCost < 90)) and (self.dateTo < self.dateFrom)) and (not(((self.customer.isPremium) and (self.estimatedCost < 90)) and (self.dateTo < self.dateFrom)))
+inv: self.vehicle.isAvailable
 
--- #61 Association Exists (UNSAT) in Reservation
--- Difficulty: easy
--- Type: UNSAT
-context Reservation
-inv: (self.vehicle <> null) and (not(self.vehicle <> null))
-
--- #62 Collection Has Specific Size (UNSAT) in Branch
--- Difficulty: easy
--- Type: UNSAT
+-- #62 Universal Quantification (forAll) in Branch
+-- Difficulty: difficult
+-- Type: SAT
 context Branch
-inv: (self.rentals->size() = 3) and (not(self.rentals->size() = 3))
+inv: (self.vehicles->forAll(x | x.mileage < 50)) and (self.capacity <> null implies self.staffCount <> null)
 
--- #63 Numeric Absolute Value Bounded (UNSAT) in Customer
+-- #63 Collection As Sequence Conversion in Vehicle
+-- Difficulty: difficult
+-- Type: SAT
+context Vehicle
+inv: (self.doors <= 1000) and (self.rentals->forAll(v | v.mileageEnd >= 1))
+
+-- #64 Simple Implication in Branch
+-- Difficulty: difficult
+-- Type: SAT
+context Branch
+inv: (self.vehicleCount <= 100) and (self.rentals->forAll(v | v.mileageEnd < 1000))
+
+-- #65 Collection Maximum Size in Branch
 -- Difficulty: easy
--- Type: UNSAT
-context Customer
-inv: (self.depositAmount.abs() <= 8) and (not(self.depositAmount.abs() <= 8))
+-- Type: SAT
+context Branch
+inv: self.reservations->size() <= 3
 
--- #64 Reverse Implication (UNSAT) in Payment
+-- #66 Numeric Attribute Positive (UNSAT) in Payment
 -- Difficulty: medium
 -- Type: UNSAT
 context Payment
-inv: (self.tax <> null implies self.discount <> null) and (not(self.tax <> null implies self.discount <> null))
+inv: ((self.amount > 0) and (self.amount <> self.discount)) and (self.amount < -5)
 
--- #65 Two Attributes Not Equal (UNSAT) in Customer
--- Difficulty: easy
--- Type: UNSAT
-context Customer
-inv: (self.depositAmount <> self.balance) and (not(self.depositAmount <> self.balance))
-
--- #66 Numeric Comparison (UNSAT) in Customer
--- Difficulty: easy
--- Type: UNSAT
-context Customer
-inv: (self.balance <= self.depositAmount) and (not(self.balance <= self.depositAmount))
-
--- #67 Navigation Chain (UNSAT) in Payment
--- Difficulty: medium
--- Type: UNSAT
-context Payment
-inv: ((self.rental.branch.vehicleCount > 5) and (self.tax < 11)) and (not((self.rental.branch.vehicleCount > 5) and (self.tax < 11)))
-
--- #68 Bi-directional Implication (UNSAT) in Rental
--- Difficulty: medium
--- Type: UNSAT
-context Rental
-inv: ((self.fuelCharge <> null) = (self.totalAmount <> null)) and (not((self.fuelCharge <> null) = (self.totalAmount <> null)))
-
--- #69 Numeric Sum Constraint (UNSAT) in Rental
--- Difficulty: easy
--- Type: UNSAT
-context Rental
-inv: (self.mileageEnd + self.mileageStart > 70) and (not(self.mileageEnd + self.mileageStart > 70))
-
--- #70 Navigation Chain (UNSAT) in License
--- Difficulty: medium
--- Type: UNSAT
-context License
-inv: ((self.customer.license.isValid = false) and (self.expiry.size() <= 20)) and (not((self.customer.license.isValid = false) and (self.expiry.size() <= 20)))
-
--- #71 Collection Navigation (UNSAT) in Company
+-- #67 XOR Condition (UNSAT) in Branch
 -- Difficulty: difficult
 -- Type: UNSAT
-context Company
-inv: (self.branches->exists(x | x.vehicleCount >= 0)) and (not(self.branches->exists(x | x.vehicleCount >= 0)))
+context Branch
+inv: ((self.vehicleCount <= 50) and (self.rentals->forAll(v | v.totalAmount > 2))) and (self.vehicleCount > 50)
 
--- #72 Two Attributes Not Equal (UNSAT) in Rental
+-- #68 Navigation Chain (UNSAT) in Branch
+-- Difficulty: medium
+-- Type: UNSAT
+context Branch
+inv: (self.company.isActive <> false) and (not(self.company.isActive <> false))
+
+-- #69 Collection Size Constraint (UNSAT) in Customer
+-- Difficulty: medium
+-- Type: UNSAT
+context Customer
+inv: (self.rentals->size() <= 1) and (self.rentals->size() > 1)
+
+-- #70 Numeric Greater Than Value (UNSAT) in Customer
 -- Difficulty: easy
+-- Type: UNSAT
+context Customer
+inv: (self.rentalCount > 2) and (self.rentalCount < -3)
+
+-- #71 Association Exists (UNSAT) in Rental
+-- Difficulty: medium
 -- Type: UNSAT
 context Rental
-inv: (self.depositPaid <> self.lateFee) and (not(self.depositPaid <> self.lateFee))
+inv: (self.payment <> null) and (not(self.payment <> null))
 
--- #73 Collection Not Empty (Simple) (UNSAT) in Vehicle
--- Difficulty: easy
+-- #72 Navigation Consistency (UNSAT) in Reservation
+-- Difficulty: unboxed
 -- Type: UNSAT
-context Vehicle
-inv: (self.rentals->notEmpty()) and (self.rentals->isEmpty())
+context Reservation
+inv: ((self.vehicle.branch = self.branch) and (self.isConfirmed = true)) and (not((self.vehicle.branch = self.branch) and (self.isConfirmed = true)))
+
+-- #73 Bi-directional Implication (UNSAT) in Branch
+-- Difficulty: unboxed
+-- Type: UNSAT
+context Branch
+inv: ((self.capacity <> null) = (self.vehicleCount <> null)) and (not((self.capacity <> null) = (self.vehicleCount <> null)))
+
+-- #74 Collection Not Empty (Simple) (UNSAT) in Branch
+-- Difficulty: unboxed
+-- Type: UNSAT
+context Branch
+inv: (self.reservations->notEmpty()) and (self.reservations->isEmpty())
+
+-- #75 All Attributes Defined (UNSAT) in Payment
+-- Difficulty: unboxed
+-- Type: UNSAT
+context Payment
+inv: (self.tax <> null and self.amount <> null) and (not(self.tax <> null and self.amount <> null))
+
+-- #76 Three Way Comparison (UNSAT) in Payment
+-- Difficulty: unboxed
+-- Type: UNSAT
+context Payment
+inv: (self.discount <= self.tax and self.tax <= self.amount) and (not(self.discount <= self.tax and self.tax <= self.amount))
+
+-- #77 Collection Navigation (UNSAT) in Branch
+-- Difficulty: unboxed
+-- Type: UNSAT
+context Branch
+inv: ((self.reservations->forAll(x | x.estimatedCost > 0)) and (self.address.indexOf('test') >= 0)) and (self.reservations->exists(x | not(x.estimatedCost > 0)))
+
+-- #78 Collection Size in Range (UNSAT) in Customer
+-- Difficulty: unboxed
+-- Type: UNSAT
+context Customer
+inv: (self.reservations->size() >= 3 and self.reservations->size() <= 3) and (self.reservations->size() < 3)
+
+-- #79 Collection Sum (UNSAT) in Branch
+-- Difficulty: unboxed
+-- Type: UNSAT
+context Branch
+inv: (((self.reservations->collect(x | x.estimatedCost)->sum() >= 5) and (self.company.isActive)) and (self.vehicles->size() = 2)) and (self.vehicles->size() <> 2)
+
+-- #80 Flatten Operation (UNSAT) in Company
+-- Difficulty: unboxed
+-- Type: UNSAT
+context Company
+inv: ((self.branches->collect(x | x.rentals)->flatten()->notEmpty()) and (self.branches->size() >= 1)) and (self.branches->size() < 1)
+
+-- #81 Collection Index Of Element (UNSAT) in Branch
+-- Difficulty: difficult
+-- Type: UNSAT
+context Branch
+inv: ((self.monthlyRevenue >= 0) and (self.rentals->forAll(v | v.mileageStart < 50))) and (self.monthlyRevenue < 0)
 

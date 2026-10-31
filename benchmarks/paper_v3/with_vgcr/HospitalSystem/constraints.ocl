@@ -1,0 +1,475 @@
+-- Benchmark: HospitalSystem / balanced
+-- Generated: 2026-10-16T01:09:10.497423
+-- Seed: 42
+-- Complexity: standard
+-- Count: 78
+-- Advanced Features: ENABLED
+
+-- #1 Navigation Chain in Department
+-- Difficulty: easy
+-- Type: SAT
+context Department
+inv: self.hospital.address <> ''
+
+-- #2 Conditional Existence in Patient
+-- Difficulty: easy
+-- Type: SAT
+context Patient
+inv: self.isInsured implies self.insurance <> null
+
+-- #3 Navigation Chain in Ward
+-- Difficulty: easy
+-- Type: SAT
+context Ward
+inv: self.hospital.name <> ''
+
+-- #4 Association Exists in Invoice
+-- Difficulty: easy
+-- Type: SAT
+context Invoice
+inv: self.payment <> null
+
+-- #5 Association Exists in Procedure
+-- Difficulty: easy
+-- Type: SAT
+context Procedure
+inv: self.doctor <> null
+
+-- #6 Simple Navigation in Admission
+-- Difficulty: easy
+-- Type: SAT
+context Admission
+inv: self.bed.isOccupied
+
+-- #7 Collection Size in Range in Prescription
+-- Difficulty: difficult
+-- Type: SAT
+context Prescription
+inv: (self.issuedAt <> '') and (self.medications->forAll(v | v.name <> ''))
+
+-- #8 Collection Size in Range in Department
+-- Difficulty: difficult
+-- Type: SAT
+context Department
+inv: (self.phone <> '') and (self.doctors->forAll(v | v.doctorId <> ''))
+
+-- #9 Numeric Attribute Bounded in Ward
+-- Difficulty: difficult
+-- Type: SAT
+context Ward
+inv: (self.floor <= 50) and (self.rooms->forAll(v | v.roomNo <> ''))
+
+-- #10 Collection Navigation in Hospital
+-- Difficulty: difficult
+-- Type: SAT
+context Hospital
+inv: self.departments->exists(x | x.name <> '')
+
+-- #11 Collection Navigation in Doctor
+-- Difficulty: difficult
+-- Type: SAT
+context Doctor
+inv: self.appointments->exists(x | x.appointmentId <> '')
+
+-- #12 Collection Navigation in Department
+-- Difficulty: difficult
+-- Type: SAT
+context Department
+inv: self.doctors->exists(x | x.specialty <> '')
+
+-- #13 Collection Navigation in MedicalRecord
+-- Difficulty: difficult
+-- Type: SAT
+context MedicalRecord
+inv: self.procedures->exists(x | x.performedAt <> '')
+
+-- #14 Collection Navigation in Department
+-- Difficulty: difficult
+-- Type: SAT
+context Department
+inv: self.doctors->forAll(x | x.specialty <> '')
+
+-- #15 Any Operation in Hospital
+-- Difficulty: medium
+-- Type: SAT
+context Hospital
+inv: (self.departments->any(x | x.name <> '') <> null) and (self.departments->size() = 3)
+
+-- #16 Collect (Map) Operation in Doctor
+-- Difficulty: medium
+-- Type: SAT
+context Doctor
+inv: (self.appointments->collect(x | x.appointmentId)->notEmpty()) and (self.specialty.size() = 21)
+
+-- #17 Collect (Map) Operation in Hospital
+-- Difficulty: medium
+-- Type: SAT
+context Hospital
+inv: (self.departments->collect(x | x.phone)->notEmpty()) and (self.address.toUpperCase() = 'TEST')
+
+-- #18 Select (Filter) Operation in Hospital
+-- Difficulty: medium
+-- Type: SAT
+context Hospital
+inv: self.wards->select(x | x.floor >= 2)->size() >= 1
+
+-- #19 Any Operation in Hospital
+-- Difficulty: medium
+-- Type: SAT
+context Hospital
+inv: self.wards->any(x | x.floor > 2) <> null
+
+-- #20 Collect (Map) Operation in Department
+-- Difficulty: medium
+-- Type: SAT
+context Department
+inv: (self.nurses->collect(x | x.nurseId)->notEmpty()) and (self.doctors->notEmpty())
+
+-- #21 Collection Size in Range in Doctor
+-- Difficulty: medium
+-- Type: SAT
+context Doctor
+inv: self.appointments->size() >= 1 and self.appointments->size() <= 2
+
+-- #22 Numeric Attribute Positive in Ward
+-- Difficulty: easy
+-- Type: SAT
+context Ward
+inv: self.floor > 0
+
+-- #23 Numeric Less Than Value in Ward
+-- Difficulty: easy
+-- Type: SAT
+context Ward
+inv: self.floor < 72
+
+-- #24 Numeric Attribute Non-Negative in Invoice
+-- Difficulty: medium
+-- Type: SAT
+context Invoice
+inv: (self.totalAmount >= 0) and (self.totalAmount.abs() <= 8)
+
+-- #25 Numeric Attribute Non-Negative in Invoice
+-- Difficulty: easy
+-- Type: SAT
+context Invoice
+inv: self.totalAmount >= 0
+
+-- #26 Numeric Less Than Value in Ward
+-- Difficulty: easy
+-- Type: SAT
+context Ward
+inv: self.floor < 11
+
+-- #27 Numeric Attribute Non-Negative in Ward
+-- Difficulty: easy
+-- Type: SAT
+context Ward
+inv: self.floor >= 0
+
+-- #28 Numeric Attribute Non-Negative in Invoice
+-- Difficulty: medium
+-- Type: SAT
+context Invoice
+inv: (self.totalAmount >= 0) and (self.totalAmount > 0)
+
+-- #29 Numeric Less Than Value in Ward
+-- Difficulty: easy
+-- Type: SAT
+context Ward
+inv: self.floor < 95
+
+-- #30 Numeric Less Than Value in Ward
+-- Difficulty: easy
+-- Type: SAT
+context Ward
+inv: self.floor < 29
+
+-- #31 Numeric Attribute Positive in Ward
+-- Difficulty: medium
+-- Type: SAT
+context Ward
+inv: (self.floor > 0) and (self.rooms->size() = 1)
+
+-- #32 Navigation Chain in Diagnosis
+-- Difficulty: medium
+-- Type: SAT
+context Diagnosis
+inv: (self.record.patient.isInsured <> true) and (self.code.toLowerCase() = 'test')
+
+-- #33 Navigation Chain in LabResult
+-- Difficulty: medium
+-- Type: SAT
+context LabResult
+inv: (self.test.record.createdAt <> '') and (self.value.toUpperCase() = 'TEST')
+
+-- #34 Simple Navigation in InsurancePolicy
+-- Difficulty: medium
+-- Type: SAT
+context InsurancePolicy
+inv: (self.patient.isInsured) and (self.provider.size() >= 5 implies self.provider.substring(1, 5) = 'AB')
+
+-- #35 Navigation Chain in Discharge
+-- Difficulty: medium
+-- Type: SAT
+context Discharge
+inv: (self.admission.patient.isInsured = true) and (self.summary.toUpperCase() = 'TEST')
+
+-- #36 Navigation Chain in Nurse
+-- Difficulty: medium
+-- Type: SAT
+context Nurse
+inv: (self.department.hospital.name <> '') and (self.shift.indexOf('test') >= 0)
+
+-- #37 Navigation Chain in Medication
+-- Difficulty: medium
+-- Type: SAT
+context Medication
+inv: (self.prescription.record.createdAt <> '') and (self.name.size() <= 85)
+
+-- #38 Existential Quantification (exists) in Department
+-- Difficulty: difficult
+-- Type: SAT
+context Department
+inv: self.nurses->exists(x | x.nurseId <> '')
+
+-- #39 Universal Quantification (forAll) in Hospital
+-- Difficulty: difficult
+-- Type: SAT
+context Hospital
+inv: self.wards->forAll(x | x.floor < 50)
+
+-- #40 Existential Quantification (exists) in MedicalRecord
+-- Difficulty: difficult
+-- Type: SAT
+context MedicalRecord
+inv: self.prescriptions->exists(x | x.issuedAt <> '')
+
+-- #41 Collection Has Specific Size in Department
+-- Difficulty: easy
+-- Type: SAT
+context Department
+inv: self.doctors->size() = 2
+
+-- #42 Collection Has Specific Size in Hospital
+-- Difficulty: easy
+-- Type: SAT
+context Hospital
+inv: self.wards->size() = 1
+
+-- #43 Collection Not Empty Check in MedicalRecord
+-- Difficulty: easy
+-- Type: SAT
+context MedicalRecord
+inv: self.procedures->size() > 0
+
+-- #44 Collection Minimum Size in MedicalRecord
+-- Difficulty: easy
+-- Type: SAT
+context MedicalRecord
+inv: self.labTests->size() >= 2
+
+-- #45 Collection Maximum Size in Doctor
+-- Difficulty: easy
+-- Type: SAT
+context Doctor
+inv: self.appointments->size() <= 3
+
+-- #46 Collection Size Constraint in MedicalRecord
+-- Difficulty: easy
+-- Type: SAT
+context MedicalRecord
+inv: self.prescriptions->size() <> 1
+
+-- #47 Collection Not Empty (Simple) in MedicalRecord
+-- Difficulty: easy
+-- Type: SAT
+context MedicalRecord
+inv: self.procedures->notEmpty()
+
+-- #48 Collection Nested Collection Flatten in Patient
+-- Difficulty: medium
+-- Type: SAT
+context Patient
+inv: self.records->collect(x | x.prescriptions)->size() >= 3
+
+-- #49 Collection Nested Collection Flatten in Ward
+-- Difficulty: medium
+-- Type: SAT
+context Ward
+inv: self.rooms->collect(x | x.beds)->size() >= 1
+
+-- #50 Collection Minimum Size in Patient
+-- Difficulty: medium
+-- Type: SAT
+context Patient
+inv: (self.appointments->size() >= 2) and (self.patientId.indexOf('test') >= 0)
+
+-- #51 Collection Not Empty Check in Department
+-- Difficulty: medium
+-- Type: SAT
+context Department
+inv: (self.nurses->size() > 0) and (self.phone.toUpperCase() = 'TEST')
+
+-- #52 Collection Minimum Size in Hospital
+-- Difficulty: medium
+-- Type: SAT
+context Hospital
+inv: (self.wards->size() >= 1) and (self.address.toUpperCase() = 'TEST')
+
+-- #53 Collection Maximum Size in Hospital
+-- Difficulty: medium
+-- Type: SAT
+context Hospital
+inv: (self.wards->size() <= 2) and (self.address.toUpperCase() = 'TEST')
+
+-- #54 Collection Not Empty (Simple) in Ward
+-- Difficulty: medium
+-- Type: SAT
+context Ward
+inv: (self.rooms->notEmpty()) and (self.floor.abs() <= 8)
+
+-- #55 Collection Nested Collection Flatten in MedicalRecord
+-- Difficulty: medium
+-- Type: SAT
+context MedicalRecord
+inv: self.prescriptions->collect(x | x.medications)->size() >= 2
+
+-- #56 Association Exists in Admission
+-- Difficulty: easy
+-- Type: SAT
+context Admission
+inv: self.bed <> null
+
+-- #57 Existential Quantification (exists) in Hospital
+-- Difficulty: difficult
+-- Type: SAT
+context Hospital
+inv: self.wards->exists(x | x.floor <= 10)
+
+-- #58 Any Operation in Department
+-- Difficulty: difficult
+-- Type: SAT
+context Department
+inv: (self.nurses->any(x | x.nurseId <> '') <> null) and (self.nurses->exists(x | x.shift <> ''))
+
+-- #59 Collection Maximum Size in Patient
+-- Difficulty: medium
+-- Type: SAT
+context Patient
+inv: (self.admissions->size() <= 3) and (self.admissions->size() >= 1)
+
+-- #60 Collection Must Be Empty in Department
+-- Difficulty: difficult
+-- Type: SAT
+context Department
+inv: (self.name <> '') and (self.nurses->forAll(v | v.nurseId <> ''))
+
+-- #61 Collection As Sequence Conversion in Ward
+-- Difficulty: difficult
+-- Type: SAT
+context Ward
+inv: (self.floor >= 0) and (self.rooms->forAll(v | v.roomNo <> ''))
+
+-- #62 Collection Index Of Element in Department
+-- Difficulty: difficult
+-- Type: SAT
+context Department
+inv: (self.name <> '') and (self.doctors->forAll(v | v.specialty <> ''))
+
+-- #63 Collection Size in Range (UNSAT) in MedicalRecord
+-- Difficulty: unboxed
+-- Type: UNSAT
+context MedicalRecord
+inv: ((self.createdAt <> '') and (self.procedures->forAll(v | v.performedAt <> ''))) and (self.procedures->exists(v | not(v.performedAt <> '')))
+
+-- #64 Collect (Map) Operation (UNSAT) in Hospital
+-- Difficulty: difficult
+-- Type: UNSAT
+context Hospital
+inv: (self.wards->collect(x | x.floor)->notEmpty()) and (not(self.wards->collect(x | x.floor)->notEmpty()))
+
+-- #65 Association Exists (UNSAT) in Admission
+-- Difficulty: medium
+-- Type: UNSAT
+context Admission
+inv: (self.discharge <> null) and (not(self.discharge <> null))
+
+-- #66 Numeric Attribute Bounded (UNSAT) in Invoice
+-- Difficulty: medium
+-- Type: UNSAT
+context Invoice
+inv: (self.totalAmount >= 4 and self.totalAmount <= 6) and (self.totalAmount < 4)
+
+-- #67 Association Exists (UNSAT) in LabTest
+-- Difficulty: medium
+-- Type: UNSAT
+context LabTest
+inv: (self.result <> null) and (not(self.result <> null))
+
+-- #68 Collection Size in Range (UNSAT) in Department
+-- Difficulty: medium
+-- Type: UNSAT
+context Department
+inv: ((self.nurses->size() <= 1)) and (self.nurses->size() > 1)
+
+-- #69 Simple Navigation (UNSAT) in Appointment
+-- Difficulty: medium
+-- Type: UNSAT
+context Appointment
+inv: (self.patient.isInsured) and (not(self.patient.isInsured))
+
+-- #70 Numeric Attribute Bounded (UNSAT) in Invoice
+-- Difficulty: medium
+-- Type: UNSAT
+context Invoice
+inv: (self.totalAmount >= 6 and self.totalAmount <= 65) and (self.totalAmount < 6)
+
+-- #71 Numeric Absolute Value Bounded (UNSAT) in Ward
+-- Difficulty: unboxed
+-- Type: UNSAT
+context Ward
+inv: ((self.floor.abs() <= 4) and (self.floor.abs() <= 3)) and (not((self.floor.abs() <= 4) and (self.floor.abs() <= 3)))
+
+-- #72 Numeric Attribute Positive (UNSAT) in Invoice
+-- Difficulty: easy
+-- Type: UNSAT
+context Invoice
+inv: (self.totalAmount > 0) and (self.totalAmount < -5)
+
+-- #73 Numeric Less Than Value (UNSAT) in Payment
+-- Difficulty: easy
+-- Type: UNSAT
+context Payment
+inv: (self.amount < 41) and (self.amount > 46)
+
+-- #74 Collection Navigation (UNSAT) in Room
+-- Difficulty: difficult
+-- Type: UNSAT
+context Room
+inv: (self.beds->exists(x | x.isOccupied <> true)) and (not(self.beds->exists(x | x.isOccupied <> true)))
+
+-- #75 Numeric Absolute Value Bounded (UNSAT) in Ward
+-- Difficulty: difficult
+-- Type: UNSAT
+context Ward
+inv: ((self.floor > 0) and (self.rooms->forAll(v | v.roomNo <> ''))) and (self.floor < -5)
+
+-- #76 Numeric Is Even (UNSAT) in Ward
+-- Difficulty: difficult
+-- Type: UNSAT
+context Ward
+inv: ((self.floor < 50) and (self.rooms->forAll(v | v.roomNo <> ''))) and (self.floor > 55)
+
+-- #77 Collection Size in Range (UNSAT) in Doctor
+-- Difficulty: unboxed
+-- Type: UNSAT
+context Doctor
+inv: ((self.specialty <> '') and (self.appointments->forAll(v | v.appointmentId <> ''))) and (self.appointments->exists(v | not(v.appointmentId <> '')))
+
+-- #78 Collection Not Empty Check (UNSAT) in Department
+-- Difficulty: medium
+-- Type: UNSAT
+context Department
+inv: ((self.doctors->size() > 0) and (self.name <> null)) and (self.doctors->size() < -5)
+

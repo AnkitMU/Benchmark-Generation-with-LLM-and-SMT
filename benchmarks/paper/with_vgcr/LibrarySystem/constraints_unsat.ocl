@@ -1,0 +1,119 @@
+-- Benchmark: LibrarySystem / balanced
+-- Type: UNSAT Constraints Only
+-- Generated: 2026-10-12T20:19:53.683454
+-- Count: 19
+
+-- #1 Navigation Chain (UNSAT) in Address
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Address
+inv: (self.branch.library.maxLoanDays >= 2) and (not(self.branch.library.maxLoanDays >= 2))
+
+-- #2 Navigation Chain (UNSAT) in Branch
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Branch
+inv: (self.address.branch.name <> '') and (not(self.address.branch.name <> ''))
+
+-- #3 Collection Navigation (UNSAT) in Book
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Book
+inv: (self.copies->exists(x | x.barcode <> '')) and (not(self.copies->exists(x | x.barcode <> '')))
+
+-- #4 Collection Nested Collection Flatten (UNSAT) in Book
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Book
+inv: (self.copies->collect(x | x.loans)->size() >= 3) and (not(self.copies->collect(x | x.loans)->size() >= 3))
+
+-- #5 Numeric Attribute Bounded (UNSAT) in Book
+-- Difficulty: unboxed
+-- Mutation Strategy: contradictory_bounds
+context Book
+inv: (self.publishYear >= 2 and self.publishYear <= 15) and (self.publishYear < 2)
+
+-- #6 Association Exists (UNSAT) in Copy
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Copy
+inv: ((self.book <> null) and (self.barcode.toUpperCase() = 'TEST')) and (not((self.book <> null) and (self.barcode.toUpperCase() = 'TEST')))
+
+-- #7 Collection Has Specific Size (UNSAT) in Category
+-- Difficulty: medium
+-- Mutation Strategy: self_contradiction
+context Category
+inv: (self.books->size() = 1) and (not(self.books->size() = 1))
+
+-- #8 Numeric Multiple Of (UNSAT) in Book
+-- Difficulty: medium
+-- Mutation Strategy: self_contradiction
+context Book
+inv: (self.publishYear mod 6 = 0) and (not(self.publishYear mod 6 = 0))
+
+-- #9 Association Exists (UNSAT) in Branch
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Branch
+inv: (self.address <> null) and (not(self.address <> null))
+
+-- #10 Association Exists (UNSAT) in Copy
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Copy
+inv: ((self.book <> null) and (self.loans->isEmpty())) and (not((self.book <> null) and (self.loans->isEmpty())))
+
+-- #11 Collection Not Empty Check (UNSAT) in Branch
+-- Difficulty: medium
+-- Mutation Strategy: empty_collection
+context Branch
+inv: (self.reservations->size() > 0) and (self.reservations->size() <= 0)
+
+-- #12 Simple Implication (UNSAT) in Loan
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Loan
+inv: (self.dueDate <> null implies self.returnDate <> null) and (not(self.dueDate <> null implies self.returnDate <> null))
+
+-- #13 Numeric Is Odd (UNSAT) in Book
+-- Difficulty: medium
+-- Mutation Strategy: self_contradiction
+context Book
+inv: (self.pages mod 2 = 1) and (not(self.pages mod 2 = 1))
+
+-- #14 Collection Navigation (UNSAT) in Publisher
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Publisher
+inv: ((self.books->exists(x | x.pages < 100)) and (self.books->size() >= 1)) and (not((self.books->exists(x | x.pages < 100)) and (self.books->size() >= 1)))
+
+-- #15 Collection Not Empty (Simple) (UNSAT) in Book
+-- Difficulty: medium
+-- Mutation Strategy: empty_collection
+context Book
+inv: (self.copies->notEmpty()) and (self.copies->isEmpty())
+
+-- #16 Collection Size Constraint (UNSAT) in Author
+-- Difficulty: medium
+-- Mutation Strategy: contradictory_bounds
+context Author
+inv: (self.books->size() <= 1) and (self.books->size() > 1)
+
+-- #17 Numeric Absolute Value Bounded (UNSAT) in Book
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Book
+inv: (self.publishYear.abs() <= 4) and (not(self.publishYear.abs() <= 4))
+
+-- #18 Association Exists (UNSAT) in Librarian
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Librarian
+inv: (self.managedBranch <> null) and (not(self.managedBranch <> null))
+
+-- #19 Association Exists (UNSAT) in Copy
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Copy
+inv: (self.branch <> null) and (not(self.branch <> null))
+

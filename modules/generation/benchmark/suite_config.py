@@ -24,6 +24,8 @@ class VerificationSpec:
     check_global_consistency: bool = True
     implication_use_z3: bool = False
     scope_per_class: int = 4  # Bounded scope: max instances per class for Z3
+    portfolio_seeds: int = 0           # >0: race inconclusive joint checks under N extra Z3 seeds
+    portfolio_first_try_ms: int = 60000  # single-seed budget before the portfolio starts
 
 
 @dataclass
@@ -252,7 +254,9 @@ class BenchmarkSuite:
                 'objective': self.verification.objective,
                 'per_constraint_timeout_ms': self.verification.per_constraint_timeout_ms,
                 'batch_timeout_ms': self.verification.batch_timeout_ms,
-                'scope_per_class': self.verification.scope_per_class
+                'scope_per_class': self.verification.scope_per_class,
+                'portfolio_seeds': self.verification.portfolio_seeds,
+                'portfolio_first_try_ms': self.verification.portfolio_first_try_ms
             },
             'output_root': self.output_root,
             'generation_mode': self.generation_mode,

@@ -1,0 +1,493 @@
+-- Benchmark: FlightBooking / balanced
+-- Generated: 2026-10-16T03:06:46.205016
+-- Seed: 42
+-- Complexity: standard
+-- Count: 81
+-- Advanced Features: ENABLED
+
+-- #1 Collection Size in Range in Flight
+-- Difficulty: difficult
+-- Type: SAT
+context Flight
+inv: (self.flightNo <> '') and (self.bookings->forAll(v | v.createdAt <> ''))
+
+-- #2 Collection Size in Range in Booking
+-- Difficulty: difficult
+-- Type: SAT
+context Booking
+inv: (self.bookingRef <> '') and (self.baggages->forAll(v | v.weightKg < 50))
+
+-- #3 Collection Size in Range in Aircraft
+-- Difficulty: difficult
+-- Type: SAT
+context Aircraft
+inv: (self.model <> '') and (self.seats->forAll(v | v.seatNo <> ''))
+
+-- #4 Collection Size in Range in Flight
+-- Difficulty: difficult
+-- Type: SAT
+context Flight
+inv: (self.departureTime <> '') and (self.bookings->forAll(v | v.bookingRef <> ''))
+
+-- #5 Simple Navigation in BoardingPass
+-- Difficulty: easy
+-- Type: SAT
+context BoardingPass
+inv: self.checkIn.isOnline
+
+-- #6 Conditional Existence in CheckIn
+-- Difficulty: easy
+-- Type: SAT
+context CheckIn
+inv: self.isOnline implies self.boardingPass <> null
+
+-- #7 Association Exists in Booking
+-- Difficulty: easy
+-- Type: SAT
+context Booking
+inv: self.ticket <> null
+
+-- #8 Navigation Chain in Aircraft
+-- Difficulty: easy
+-- Type: SAT
+context Aircraft
+inv: self.airline.code <> ''
+
+-- #9 Navigation Consistency in Flight
+-- Difficulty: easy
+-- Type: SAT
+context Flight
+inv: self.aircraft.airline = self.airline
+
+-- #10 Navigation Chain in Aircraft
+-- Difficulty: easy
+-- Type: SAT
+context Aircraft
+inv: self.airline.name <> ''
+
+-- #11 Association Exists in CheckIn
+-- Difficulty: easy
+-- Type: SAT
+context CheckIn
+inv: self.boardingPass <> null
+
+-- #12 Collection Navigation in Airline
+-- Difficulty: difficult
+-- Type: SAT
+context Airline
+inv: self.flights->exists(x | x.departureTime <> '')
+
+-- #13 Collection Navigation in Airport
+-- Difficulty: difficult
+-- Type: SAT
+context Airport
+inv: self.departingFlights->exists(x | x.arrivalTime <> '')
+
+-- #14 Collection Navigation in Booking
+-- Difficulty: difficult
+-- Type: SAT
+context Booking
+inv: self.baggages->exists(x | x.weightKg <= 50)
+
+-- #15 Collection Navigation in Aircraft
+-- Difficulty: difficult
+-- Type: SAT
+context Aircraft
+inv: self.seats->forAll(x | x.seatNo <> '')
+
+-- #16 Navigation Chain in Payment
+-- Difficulty: medium
+-- Type: SAT
+context Payment
+inv: (self.booking.flight.departureTime <> '') and (self.amount.abs() <= 6)
+
+-- #17 Navigation Chain in Ticket
+-- Difficulty: medium
+-- Type: SAT
+context Ticket
+inv: (self.booking.flight.departureTime <> '') and (self.ticketNo <> null)
+
+-- #18 Navigation Chain in Baggage
+-- Difficulty: medium
+-- Type: SAT
+context Baggage
+inv: (self.booking.flight.flightNo <> '') and (self.tagNo <> null)
+
+-- #19 Association Exists in BoardingPass
+-- Difficulty: medium
+-- Type: SAT
+context BoardingPass
+inv: ((self.seat <> null) and (self.seat.oclIsTypeOf(Seat))) and (self.checkIn.booking.createdAt <> '')
+
+-- #20 Association Exists in BoardingPass
+-- Difficulty: medium
+-- Type: SAT
+context BoardingPass
+inv: (self.seat <> null) and (self.barcode.indexOf('test') >= 0)
+
+-- #21 Navigation Chain in Aircraft
+-- Difficulty: medium
+-- Type: SAT
+context Aircraft
+inv: (self.airline.code <> '') and (self.seats->size() > 0)
+
+-- #22 Navigation Chain in Baggage
+-- Difficulty: medium
+-- Type: SAT
+context Baggage
+inv: (self.booking.flight.departureTime <> '') and (self.weightKg.abs() <= 4)
+
+-- #23 Association Exists in BoardingPass
+-- Difficulty: medium
+-- Type: SAT
+context BoardingPass
+inv: (self.seat <> null) and (self.gate <> null)
+
+-- #24 Numeric Attribute Bounded in Baggage
+-- Difficulty: medium
+-- Type: SAT
+context Baggage
+inv: self.weightKg >= 4 and self.weightKg <= 56
+
+-- #25 Numeric Less Than Value in Baggage
+-- Difficulty: easy
+-- Type: SAT
+context Baggage
+inv: self.weightKg < 41
+
+-- #26 Numeric Attribute Non-Negative in Baggage
+-- Difficulty: easy
+-- Type: SAT
+context Baggage
+inv: self.weightKg >= 0
+
+-- #27 Numeric Less Than Value in Baggage
+-- Difficulty: medium
+-- Type: SAT
+context Baggage
+inv: (self.weightKg < 66) and (self.tagNo.indexOf('test') >= 0)
+
+-- #28 Numeric Attribute Positive in Payment
+-- Difficulty: medium
+-- Type: SAT
+context Payment
+inv: (self.amount > 0) and (self.method.indexOf('test') >= 0)
+
+-- #29 Numeric Attribute Non-Negative in Payment
+-- Difficulty: easy
+-- Type: SAT
+context Payment
+inv: self.amount >= 0
+
+-- #30 Numeric Absolute Value Bounded in Payment
+-- Difficulty: easy
+-- Type: SAT
+context Payment
+inv: self.amount.abs() <= 8
+
+-- #31 Numeric Less Than Value in Payment
+-- Difficulty: easy
+-- Type: SAT
+context Payment
+inv: self.amount < 63
+
+-- #32 Collection Size in Range in Aircraft
+-- Difficulty: easy
+-- Type: SAT
+context Aircraft
+inv: (self.seats->size() <= 2)
+
+-- #33 Numeric Attribute Non-Negative in Baggage
+-- Difficulty: medium
+-- Type: SAT
+context Baggage
+inv: (self.weightKg >= 0) and (self.weightKg <> null)
+
+-- #34 Numeric Less Than Value in Payment
+-- Difficulty: easy
+-- Type: SAT
+context Payment
+inv: self.amount < 37
+
+-- #35 Collection Size in Range in Aircraft
+-- Difficulty: medium
+-- Type: SAT
+context Aircraft
+inv: self.seats->size() >= 1 and self.seats->size() <= 3
+
+-- #36 Collection Size in Range in Aircraft
+-- Difficulty: medium
+-- Type: SAT
+context Aircraft
+inv: self.seats->size() >= 2 and self.seats->size() <= 2
+
+-- #37 Collection Size in Range in Airline
+-- Difficulty: medium
+-- Type: SAT
+context Airline
+inv: self.flights->size() >= 1 and self.flights->size() <= 1
+
+-- #38 Numeric Attribute Non-Negative in Baggage
+-- Difficulty: medium
+-- Type: SAT
+context Baggage
+inv: (self.weightKg >= 0) and (self.tagNo <> null)
+
+-- #39 Collection Size in Range in Airline
+-- Difficulty: medium
+-- Type: SAT
+context Airline
+inv: self.aircrafts->size() >= 3 and self.aircrafts->size() <= 3
+
+-- #40 Any Operation in Aircraft
+-- Difficulty: medium
+-- Type: SAT
+context Aircraft
+inv: (self.seats->any(x | x.seatNo <> '') <> null) and (self.airline.oclIsTypeOf(Airline))
+
+-- #41 Select (Filter) Operation in Booking
+-- Difficulty: medium
+-- Type: SAT
+context Booking
+inv: self.baggages->select(x | x.weightKg < 100)->size() >= 1
+
+-- #42 One Operation in Airport
+-- Difficulty: medium
+-- Type: SAT
+context Airport
+inv: (self.arrivingFlights->one(x | x.departureTime <> '')) and (self.city.size() >= 5 implies self.city.substring(1, 5) = 'AB')
+
+-- #43 Collect (Map) Operation in Booking
+-- Difficulty: medium
+-- Type: SAT
+context Booking
+inv: (self.baggages->collect(x | x.weightKg)->notEmpty()) and (self.bookingRef <> '' and self.bookingRef.size() > 0)
+
+-- #44 Existential Quantification (exists) in Airport
+-- Difficulty: difficult
+-- Type: SAT
+context Airport
+inv: self.arrivingFlights->exists(x | x.arrivalTime <> '')
+
+-- #45 Existential Quantification (exists) in Aircraft
+-- Difficulty: difficult
+-- Type: SAT
+context Aircraft
+inv: self.seats->exists(x | x.seatNo <> '')
+
+-- #46 Collection Nested Collection Flatten in Passenger
+-- Difficulty: difficult
+-- Type: SAT
+context Passenger
+inv: (self.bookings->collect(x | x.baggages)->size() >= 2) and (self.fullName.indexOf('test') >= 0)
+
+-- #47 Collection Size Constraint in Booking
+-- Difficulty: easy
+-- Type: SAT
+context Booking
+inv: self.baggages->size() >= 1
+
+-- #48 Collection Maximum Size in Airport
+-- Difficulty: easy
+-- Type: SAT
+context Airport
+inv: self.departingFlights->size() <= 2
+
+-- #49 Collection Not Empty Check in Airline
+-- Difficulty: easy
+-- Type: SAT
+context Airline
+inv: self.aircrafts->size() > 0
+
+-- #50 Collection Minimum Size in Aircraft
+-- Difficulty: easy
+-- Type: SAT
+context Aircraft
+inv: self.seats->size() >= 2
+
+-- #51 Two Attributes Not Equal in Flight
+-- Difficulty: easy
+-- Type: SAT
+context Flight
+inv: self.departureTime <> self.arrivalTime
+
+-- #52 Collection Has Specific Size in Aircraft
+-- Difficulty: easy
+-- Type: SAT
+context Aircraft
+inv: self.seats->size() = 2
+
+-- #53 Collection Not Empty (Simple) in Airline
+-- Difficulty: easy
+-- Type: SAT
+context Airline
+inv: self.aircrafts->notEmpty()
+
+-- #54 Collection Not Empty (Simple) in Aircraft
+-- Difficulty: easy
+-- Type: SAT
+context Aircraft
+inv: self.seats->notEmpty()
+
+-- #55 Bi-directional Implication in Flight
+-- Difficulty: easy
+-- Type: SAT
+context Flight
+inv: (self.departureTime <> null) = (self.arrivalTime <> null)
+
+-- #56 Collection Not Empty Check in Aircraft
+-- Difficulty: easy
+-- Type: SAT
+context Aircraft
+inv: self.seats->size() > 0
+
+-- #57 All Attributes Defined in Flight
+-- Difficulty: medium
+-- Type: SAT
+context Flight
+inv: self.arrivalTime <> null and self.departureTime <> null
+
+-- #58 All Attributes Defined in Flight
+-- Difficulty: medium
+-- Type: SAT
+context Flight
+inv: self.departureTime <> null and self.arrivalTime <> null
+
+-- #59 Two Attributes Not Equal in Flight
+-- Difficulty: medium
+-- Type: SAT
+context Flight
+inv: (self.arrivalTime <> self.departureTime) and (self.flightNo.toLowerCase() = 'test')
+
+-- #60 Bi-directional Implication in Flight
+-- Difficulty: medium
+-- Type: SAT
+context Flight
+inv: (self.arrivalTime <> null) = (self.departureTime <> null)
+
+-- #61 Collection Maximum Size in Airline
+-- Difficulty: medium
+-- Type: SAT
+context Airline
+inv: (self.flights->size() <= 2) and (self.flights->collect(x | x.flightNo)->notEmpty())
+
+-- #62 Collection Maximum Size in Aircraft
+-- Difficulty: medium
+-- Type: SAT
+context Aircraft
+inv: (self.seats->size() <= 3) and (self.airline.code <> '')
+
+-- #63 Association Exists in Booking
+-- Difficulty: easy
+-- Type: SAT
+context Booking
+inv: self.payment <> null
+
+-- #64 Universal Quantification (forAll) in Booking
+-- Difficulty: difficult
+-- Type: SAT
+context Booking
+inv: self.baggages->forAll(x | x.weightKg > 0)
+
+-- #65 Flatten Operation in Airport
+-- Difficulty: difficult
+-- Type: SAT
+context Airport
+inv: self.departingFlights->collect(x | x.bookings)->flatten()->notEmpty()
+
+-- #66 Flatten Operation (UNSAT) in Airport
+-- Difficulty: unboxed
+-- Type: UNSAT
+context Airport
+inv: (self.arrivingFlights->collect(x | x.bookings)->flatten()->notEmpty()) and (not(self.arrivingFlights->collect(x | x.bookings)->flatten()->notEmpty()))
+
+-- #67 Collection Size in Range (UNSAT) in Flight
+-- Difficulty: unboxed
+-- Type: UNSAT
+context Flight
+inv: ((self.arrivalTime <> '') and (self.bookings->forAll(v | v.bookingRef <> ''))) and (self.bookings->exists(v | not(v.bookingRef <> '')))
+
+-- #68 Collection Size Constraint (UNSAT) in Flight
+-- Difficulty: medium
+-- Type: UNSAT
+context Flight
+inv: (self.bookings->size() <> 1) and (not(self.bookings->size() <> 1))
+
+-- #69 Collection Size in Range (UNSAT) in Aircraft
+-- Difficulty: unboxed
+-- Type: UNSAT
+context Aircraft
+inv: ((self.registrationNo <> '') and (self.seats->forAll(v | v.seatNo <> ''))) and (self.seats->exists(v | not(v.seatNo <> '')))
+
+-- #70 Association Exists (UNSAT) in BoardingPass
+-- Difficulty: unboxed
+-- Type: UNSAT
+context BoardingPass
+inv: ((self.seat <> null) and (self.barcode.size() >= 19)) and (not((self.seat <> null) and (self.barcode.size() >= 19)))
+
+-- #71 Simple Implication (UNSAT) in Flight
+-- Difficulty: unboxed
+-- Type: UNSAT
+context Flight
+inv: (self.departureTime <> null implies self.arrivalTime <> null) and (not(self.departureTime <> null implies self.arrivalTime <> null))
+
+-- #72 Simple Implication (UNSAT) in Flight
+-- Difficulty: unboxed
+-- Type: UNSAT
+context Flight
+inv: (self.arrivalTime <> null implies self.departureTime <> null) and (not(self.arrivalTime <> null implies self.departureTime <> null))
+
+-- #73 Collection Maximum Size (UNSAT) in Booking
+-- Difficulty: unboxed
+-- Type: UNSAT
+context Booking
+inv: ((self.createdAt <> '') and (self.baggages->forAll(v | v.weightKg <= 100))) and (self.baggages->exists(v | not(v.weightKg <= 100)))
+
+-- #74 Collection Nested Collection Flatten (UNSAT) in Airline
+-- Difficulty: unboxed
+-- Type: UNSAT
+context Airline
+inv: ((self.flights->collect(x | x.bookings)->size() >= 3) and (self.aircrafts->notEmpty())) and (not((self.flights->collect(x | x.bookings)->size() >= 3) and (self.aircrafts->notEmpty())))
+
+-- #75 Collection Navigation (UNSAT) in Airline
+-- Difficulty: difficult
+-- Type: UNSAT
+context Airline
+inv: (self.flights->forAll(x | x.departureTime <> '')) and (self.flights->exists(x | not(x.departureTime <> '')))
+
+-- #76 Numeric Less Than Value (UNSAT) in Payment
+-- Difficulty: medium
+-- Type: UNSAT
+context Payment
+inv: ((self.amount < 12) and (self.amount > 0)) and (self.amount > 17)
+
+-- #77 One Operation (UNSAT) in Airline
+-- Difficulty: unboxed
+-- Type: UNSAT
+context Airline
+inv: ((self.aircrafts->one(x | x.registrationNo <> '')) and (self.flights->size() >= 2 and self.flights->size() <= 3)) and (self.flights->size() < 2)
+
+-- #78 Numeric Less Than Value (UNSAT) in Baggage
+-- Difficulty: easy
+-- Type: UNSAT
+context Baggage
+inv: (self.weightKg < 66) and (self.weightKg > 71)
+
+-- #79 Collection Navigation (UNSAT) in Passenger
+-- Difficulty: difficult
+-- Type: UNSAT
+context Passenger
+inv: (self.bookings->exists(x | x.bookingRef <> '')) and (not(self.bookings->exists(x | x.bookingRef <> '')))
+
+-- #80 Navigation Chain (UNSAT) in Seat
+-- Difficulty: unboxed
+-- Type: UNSAT
+context Seat
+inv: ((self.aircraft.airline.code <> '') and (self.seatNo.size() = 19)) and (not((self.aircraft.airline.code <> '') and (self.seatNo.size() = 19)))
+
+-- #81 Collect (Map) Operation (UNSAT) in Airline
+-- Difficulty: unboxed
+-- Type: UNSAT
+context Airline
+inv: ((self.aircrafts->collect(x | x.model)->notEmpty()) and (self.name.toUpperCase() = 'TEST')) and (not((self.aircrafts->collect(x | x.model)->notEmpty()) and (self.name.toUpperCase() = 'TEST')))
+

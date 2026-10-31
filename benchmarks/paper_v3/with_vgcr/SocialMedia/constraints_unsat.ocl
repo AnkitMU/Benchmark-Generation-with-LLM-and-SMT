@@ -1,0 +1,95 @@
+-- Benchmark: SocialMedia / balanced
+-- Type: UNSAT Constraints Only
+-- Generated: 2026-10-16T06:22:31.321543
+-- Count: 15
+
+-- #1 Collection Navigation (UNSAT) in Conversation
+-- Difficulty: difficult
+-- Mutation Strategy: self_contradiction
+context Conversation
+inv: (self.participants->exists(x | x.createdAt <> '')) and (not(self.participants->exists(x | x.createdAt <> '')))
+
+-- #2 Collection Navigation (UNSAT) in User
+-- Difficulty: difficult
+-- Mutation Strategy: self_contradiction
+context User
+inv: (self.posts->exists(x | x.isPublic = true)) and (not(self.posts->exists(x | x.isPublic = true)))
+
+-- #3 Collection Maximum Size (UNSAT) in Conversation
+-- Difficulty: difficult
+-- Mutation Strategy: contradictory_bounds
+context Conversation
+inv: ((self.participants->size() <= 2) and (self.participants->any(x | x.username <> '') <> null)) and (self.participants->size() > 2)
+
+-- #4 Navigation Chain (UNSAT) in Message
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Message
+inv: ((self.sender.profile.bio <> '') and (self.body.size() <= 74)) and (not((self.sender.profile.bio <> '') and (self.body.size() <= 74)))
+
+-- #5 Collection Has Specific Size (UNSAT) in Post
+-- Difficulty: medium
+-- Mutation Strategy: contradictory_bounds
+context Post
+inv: (self.comments->size() = 1) and (self.comments->size() <> 1)
+
+-- #6 Collect (Map) Operation (UNSAT) in Group
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Group
+inv: ((self.memberships->collect(x | x.role)->notEmpty()) and (self.name.size() <= 26)) and (not((self.memberships->collect(x | x.role)->notEmpty()) and (self.name.size() <= 26)))
+
+-- #7 Collection Size in Range (UNSAT) in Post
+-- Difficulty: medium
+-- Mutation Strategy: contradictory_bounds
+context Post
+inv: ((self.reactions->size() <= 2)) and (self.reactions->size() > 2)
+
+-- #8 Navigation Consistency (UNSAT) in Comment
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Comment
+inv: (self.post.author = self.author) and (not(self.post.author = self.author))
+
+-- #9 One Operation (UNSAT) in Post
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Post
+inv: (((self.reactions->one(x | x.createdAt <> '')) and (self.isPublic)) and (self.content.size() <= 60)) and (not(((self.reactions->one(x | x.createdAt <> '')) and (self.isPublic)) and (self.content.size() <= 60)))
+
+-- #10 Simple Navigation (UNSAT) in Media
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Media
+inv: (((self.post.isPublic) and (self.url.size() = 40)) and (self.url.size() >= 17)) and (not(((self.post.isPublic) and (self.url.size() = 40)) and (self.url.size() >= 17)))
+
+-- #11 Collection Navigation (UNSAT) in Conversation
+-- Difficulty: difficult
+-- Mutation Strategy: self_contradiction
+context Conversation
+inv: (self.messages->exists(x | x.isRead = true)) and (not(self.messages->exists(x | x.isRead = true)))
+
+-- #12 Collection Minimum Size (UNSAT) in Conversation
+-- Difficulty: medium
+-- Mutation Strategy: contradictory_bounds
+context Conversation
+inv: (self.participants->size() >= 1) and (self.participants->size() < 1)
+
+-- #13 Flatten Operation (UNSAT) in Tag
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Tag
+inv: (self.posts->collect(x | x.reactions)->flatten()->notEmpty()) and (not(self.posts->collect(x | x.reactions)->flatten()->notEmpty()))
+
+-- #14 Collection Size in Range (UNSAT) in User
+-- Difficulty: unboxed
+-- Mutation Strategy: universal_negation
+context User
+inv: ((self.email <> '') and (self.notifications->forAll(v | v.isSeen = false))) and (self.notifications->exists(v | not(v.isSeen = false)))
+
+-- #15 Simple Navigation (UNSAT) in Comment
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Comment
+inv: ((self.post.isPublic) and (self.createdAt.size() >= 8 implies self.createdAt.substring(1, 8) = 'AB')) and (not((self.post.isPublic) and (self.createdAt.size() >= 8 implies self.createdAt.substring(1, 8) = 'AB')))
+

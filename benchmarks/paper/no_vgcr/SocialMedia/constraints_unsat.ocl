@@ -1,0 +1,89 @@
+-- Benchmark: SocialMedia / balanced
+-- Type: UNSAT Constraints Only
+-- Generated: 2026-10-12T20:26:41.494106
+-- Count: 14
+
+-- #1 Collection Must Be Empty (UNSAT) in Tag
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Tag
+inv: ((self.posts->isEmpty()) and (self.posts->size() >= 2)) and (not((self.posts->isEmpty()) and (self.posts->size() >= 2)))
+
+-- #2 Collection Has Specific Size (UNSAT) in User
+-- Difficulty: medium
+-- Mutation Strategy: self_contradiction
+context User
+inv: (self.posts->size() = 1) and (not(self.posts->size() = 1))
+
+-- #3 Navigation Chain (UNSAT) in FriendRequest
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context FriendRequest
+inv: (self.fromUser.profile.birthDate <> '') and (not(self.fromUser.profile.birthDate <> ''))
+
+-- #4 Flatten Operation (UNSAT) in User
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context User
+inv: (self.posts->collect(x | x.comments)->flatten()->notEmpty()) and (not(self.posts->collect(x | x.comments)->flatten()->notEmpty()))
+
+-- #5 Association Exists (UNSAT) in Profile
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Profile
+inv: ((self.user <> null) and (self.bio.size() <= 65)) and (not((self.user <> null) and (self.bio.size() <= 65)))
+
+-- #6 Collection Navigation (UNSAT) in Group
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Group
+inv: (self.memberships->exists(x | x.role <> '')) and (not(self.memberships->exists(x | x.role <> '')))
+
+-- #7 Collection Size in Range (UNSAT) in Post
+-- Difficulty: medium
+-- Mutation Strategy: contradictory_bounds
+context Post
+inv: ((self.comments->size() <= 2)) and (self.comments->size() > 2)
+
+-- #8 Association Exists (UNSAT) in Membership
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Membership
+inv: ((self.group <> null) and (self.user <> null)) and (not((self.group <> null) and (self.user <> null)))
+
+-- #9 Navigation Chain (UNSAT) in Comment
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Comment
+inv: (self.post.author.email <> '') and (not(self.post.author.email <> ''))
+
+-- #10 Simple Navigation (UNSAT) in Reaction
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Reaction
+inv: ((self.post.isPublic) and (self.type <> null)) and (not((self.post.isPublic) and (self.type <> null)))
+
+-- #11 Collection Size Constraint (UNSAT) in User
+-- Difficulty: medium
+-- Mutation Strategy: contradictory_bounds
+context User
+inv: (self.posts->size() >= 1) and (self.posts->size() < 1)
+
+-- #12 Attribute Not Null (Simple) (UNSAT) in FriendRequest
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context FriendRequest
+inv: ((self.createdAt <> null) and (self.isAccepted = true)) and (not((self.createdAt <> null) and (self.isAccepted = true)))
+
+-- #13 Any Operation (UNSAT) in Conversation
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Conversation
+inv: (self.participants->any(x | x.createdAt <> '') <> null) and (not(self.participants->any(x | x.createdAt <> '') <> null))
+
+-- #14 Simple Navigation (UNSAT) in Media
+-- Difficulty: medium
+-- Mutation Strategy: self_contradiction
+context Media
+inv: (self.post.isPublic) and (not(self.post.isPublic))
+

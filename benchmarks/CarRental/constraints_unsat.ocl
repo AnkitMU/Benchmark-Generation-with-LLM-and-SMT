@@ -1,95 +1,101 @@
 -- Benchmark: CarRental / balanced
 -- Type: UNSAT Constraints Only
--- Generated: 2026-06-18T17:11:29.897967
--- Count: 15
+-- Generated: 2026-10-15T11:48:10.126154
+-- Count: 16
 
--- #1 Navigation Chain (UNSAT) in Payment
--- Difficulty: easy
--- Mutation Strategy: self_contradiction
-context Payment
-inv: (self.rental.branch.staffCount > 10) and (not(self.rental.branch.staffCount > 10))
-
--- #2 Simple Navigation (UNSAT) in Reservation
+-- #1 Numeric Attribute Positive (UNSAT) in Payment
 -- Difficulty: medium
--- Mutation Strategy: self_contradiction
-context Reservation
-inv: (((self.customer.isPremium) and (self.estimatedCost < 90)) and (self.dateTo < self.dateFrom)) and (not(((self.customer.isPremium) and (self.estimatedCost < 90)) and (self.dateTo < self.dateFrom)))
+-- Mutation Strategy: contradictory_bounds
+context Payment
+inv: ((self.amount > 0) and (self.amount <> self.discount)) and (self.amount < -5)
 
--- #3 Association Exists (UNSAT) in Reservation
--- Difficulty: easy
--- Mutation Strategy: self_contradiction
-context Reservation
-inv: (self.vehicle <> null) and (not(self.vehicle <> null))
+-- #2 XOR Condition (UNSAT) in Branch
+-- Difficulty: difficult
+-- Mutation Strategy: contradictory_bounds
+context Branch
+inv: ((self.vehicleCount <= 50) and (self.rentals->forAll(v | v.totalAmount > 2))) and (self.vehicleCount > 50)
 
--- #4 Collection Has Specific Size (UNSAT) in Branch
--- Difficulty: easy
+-- #3 Navigation Chain (UNSAT) in Branch
+-- Difficulty: medium
 -- Mutation Strategy: self_contradiction
 context Branch
-inv: (self.rentals->size() = 3) and (not(self.rentals->size() = 3))
+inv: (self.company.isActive <> false) and (not(self.company.isActive <> false))
 
--- #5 Numeric Absolute Value Bounded (UNSAT) in Customer
--- Difficulty: easy
--- Mutation Strategy: self_contradiction
-context Customer
-inv: (self.depositAmount.abs() <= 8) and (not(self.depositAmount.abs() <= 8))
-
--- #6 Reverse Implication (UNSAT) in Payment
+-- #4 Collection Size Constraint (UNSAT) in Customer
 -- Difficulty: medium
--- Mutation Strategy: self_contradiction
-context Payment
-inv: (self.tax <> null implies self.discount <> null) and (not(self.tax <> null implies self.discount <> null))
-
--- #7 Two Attributes Not Equal (UNSAT) in Customer
--- Difficulty: easy
--- Mutation Strategy: self_contradiction
+-- Mutation Strategy: contradictory_bounds
 context Customer
-inv: (self.depositAmount <> self.balance) and (not(self.depositAmount <> self.balance))
+inv: (self.rentals->size() <= 1) and (self.rentals->size() > 1)
 
--- #8 Numeric Comparison (UNSAT) in Customer
+-- #5 Numeric Greater Than Value (UNSAT) in Customer
 -- Difficulty: easy
--- Mutation Strategy: self_contradiction
+-- Mutation Strategy: contradictory_bounds
 context Customer
-inv: (self.balance <= self.depositAmount) and (not(self.balance <= self.depositAmount))
+inv: (self.rentalCount > 2) and (self.rentalCount < -3)
 
--- #9 Navigation Chain (UNSAT) in Payment
--- Difficulty: medium
--- Mutation Strategy: self_contradiction
-context Payment
-inv: ((self.rental.branch.vehicleCount > 5) and (self.tax < 11)) and (not((self.rental.branch.vehicleCount > 5) and (self.tax < 11)))
-
--- #10 Bi-directional Implication (UNSAT) in Rental
+-- #6 Association Exists (UNSAT) in Rental
 -- Difficulty: medium
 -- Mutation Strategy: self_contradiction
 context Rental
-inv: ((self.fuelCharge <> null) = (self.totalAmount <> null)) and (not((self.fuelCharge <> null) = (self.totalAmount <> null)))
+inv: (self.payment <> null) and (not(self.payment <> null))
 
--- #11 Numeric Sum Constraint (UNSAT) in Rental
--- Difficulty: easy
+-- #7 Navigation Consistency (UNSAT) in Reservation
+-- Difficulty: unboxed
 -- Mutation Strategy: self_contradiction
-context Rental
-inv: (self.mileageEnd + self.mileageStart > 70) and (not(self.mileageEnd + self.mileageStart > 70))
+context Reservation
+inv: ((self.vehicle.branch = self.branch) and (self.isConfirmed = true)) and (not((self.vehicle.branch = self.branch) and (self.isConfirmed = true)))
 
--- #12 Navigation Chain (UNSAT) in License
--- Difficulty: medium
+-- #8 Bi-directional Implication (UNSAT) in Branch
+-- Difficulty: unboxed
 -- Mutation Strategy: self_contradiction
-context License
-inv: ((self.customer.license.isValid = false) and (self.expiry.size() <= 20)) and (not((self.customer.license.isValid = false) and (self.expiry.size() <= 20)))
+context Branch
+inv: ((self.capacity <> null) = (self.vehicleCount <> null)) and (not((self.capacity <> null) = (self.vehicleCount <> null)))
 
--- #13 Collection Navigation (UNSAT) in Company
--- Difficulty: difficult
--- Mutation Strategy: self_contradiction
-context Company
-inv: (self.branches->exists(x | x.vehicleCount >= 0)) and (not(self.branches->exists(x | x.vehicleCount >= 0)))
-
--- #14 Two Attributes Not Equal (UNSAT) in Rental
--- Difficulty: easy
--- Mutation Strategy: self_contradiction
-context Rental
-inv: (self.depositPaid <> self.lateFee) and (not(self.depositPaid <> self.lateFee))
-
--- #15 Collection Not Empty (Simple) (UNSAT) in Vehicle
--- Difficulty: easy
+-- #9 Collection Not Empty (Simple) (UNSAT) in Branch
+-- Difficulty: unboxed
 -- Mutation Strategy: empty_collection
-context Vehicle
-inv: (self.rentals->notEmpty()) and (self.rentals->isEmpty())
+context Branch
+inv: (self.reservations->notEmpty()) and (self.reservations->isEmpty())
+
+-- #10 All Attributes Defined (UNSAT) in Payment
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Payment
+inv: (self.tax <> null and self.amount <> null) and (not(self.tax <> null and self.amount <> null))
+
+-- #11 Three Way Comparison (UNSAT) in Payment
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Payment
+inv: (self.discount <= self.tax and self.tax <= self.amount) and (not(self.discount <= self.tax and self.tax <= self.amount))
+
+-- #12 Collection Navigation (UNSAT) in Branch
+-- Difficulty: unboxed
+-- Mutation Strategy: universal_negation
+context Branch
+inv: ((self.reservations->forAll(x | x.estimatedCost > 0)) and (self.address.indexOf('test') >= 0)) and (self.reservations->exists(x | not(x.estimatedCost > 0)))
+
+-- #13 Collection Size in Range (UNSAT) in Customer
+-- Difficulty: unboxed
+-- Mutation Strategy: contradictory_bounds
+context Customer
+inv: (self.reservations->size() >= 3 and self.reservations->size() <= 3) and (self.reservations->size() < 3)
+
+-- #14 Collection Sum (UNSAT) in Branch
+-- Difficulty: unboxed
+-- Mutation Strategy: contradictory_bounds
+context Branch
+inv: (((self.reservations->collect(x | x.estimatedCost)->sum() >= 5) and (self.company.isActive)) and (self.vehicles->size() = 2)) and (self.vehicles->size() <> 2)
+
+-- #15 Flatten Operation (UNSAT) in Company
+-- Difficulty: unboxed
+-- Mutation Strategy: contradictory_bounds
+context Company
+inv: ((self.branches->collect(x | x.rentals)->flatten()->notEmpty()) and (self.branches->size() >= 1)) and (self.branches->size() < 1)
+
+-- #16 Collection Index Of Element (UNSAT) in Branch
+-- Difficulty: difficult
+-- Mutation Strategy: contradictory_bounds
+context Branch
+inv: ((self.monthlyRevenue >= 0) and (self.rentals->forAll(v | v.mileageStart < 50))) and (self.monthlyRevenue < 0)
 

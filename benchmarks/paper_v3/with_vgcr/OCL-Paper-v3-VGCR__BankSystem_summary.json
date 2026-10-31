@@ -1,0 +1,236 @@
+{
+  "suite_name": "OCL-Paper-v3-VGCR__BankSystem",
+  "version": "3.0",
+  "generated_at": "2026-10-16T00:58:50.010671",
+  "research_features_enabled": true,
+  "models": [
+    {
+      "model": "BankSystem",
+      "xmi": "models/bank.xmi",
+      "profiles": [
+        {
+          "profile": "balanced",
+          "seed": 42,
+          "complexity": "standard",
+          "output_dir": "benchmarks/paper_v3/with_vgcr/BankSystem",
+          "research_features_applied": [
+            "metadata_enrichment",
+            "vgcr_refinement",
+            "unsat_generation",
+            "ast_similarity",
+            "semantic_similarity",
+            "implication_checking",
+            "manifest_generation"
+          ],
+          "constraint_count": 80,
+          "initial_sat_count": 91,
+          "dedup": {
+            "removed": 15,
+            "refilled": 15,
+            "unfilled": []
+          },
+          "coverage_repairs": [
+            {
+              "class": "Payment",
+              "action": "donor_swap",
+              "donor_class": "Account",
+              "pattern": "boolean_is_false",
+              "profile": "easy"
+            },
+            {
+              "class": "KYCRecord",
+              "action": "donor_swap",
+              "donor_class": "Loan",
+              "pattern": "navigation_chain",
+              "profile": "medium"
+            },
+            {
+              "class": "Manager",
+              "action": "unrepaired",
+              "have": 0,
+              "min": 1
+            },
+            {
+              "class": "AccountTransaction",
+              "action": "unrepaired",
+              "have": 0,
+              "min": 1
+            }
+          ],
+          "vgcr_stats": {
+            "total_candidates": 91,
+            "passed": 91,
+            "passed_first_try": 77,
+            "passed_after_retry": 14,
+            "failed": 0,
+            "pass_rate": "100.0%",
+            "total_retries": 17,
+            "failure_breakdown": {
+              "tautology": 2,
+              "contradiction": 4,
+              "inconsistent": 6
+            },
+            "total_smt_queries": 232,
+            "total_smt_time_s": 186.532,
+            "independence_checked": 0,
+            "independence_skipped": 97,
+            "total_time_s": 187.15,
+            "duplicates_rejected": 0,
+            "unfilled_slots": [],
+            "generator_refinement": {
+              "total_refinements": 12,
+              "blacklisted_pattern_contexts": 4,
+              "blacklisted_bindings": 14,
+              "weight_modifications": 7,
+              "action_breakdown": {
+                "blacklist_pattern_context": 4,
+                "blacklist_bindings_and_downweight": 6,
+                "down_weight_pattern": 2
+              }
+            }
+          },
+          "vgcr_accepted": 91,
+          "vgcr_rejected": 0,
+          "sat_count_after_mutation": 73,
+          "unsat_count_after_mutation": 18,
+          "unsat_measured_tiers": {
+            "difficult": 4,
+            "medium": 4,
+            "unboxed": 10
+          },
+          "conflicts_removed": 9,
+          "consistency_verified": true,
+          "semantic_clusters": 17,
+          "implication_count": 41,
+          "valid_count": 64,
+          "sat_count": 64,
+          "unsat_count": 16,
+          "unknown_count": 0,
+          "verified_count": 64,
+          "fallback_unknown_count": 0,
+          "skipped_unsat_count": 18,
+          "intentional_unsat_count": 18,
+          "unsat_trimmed_for_ratio": 2,
+          "post_refine_coverage_deficit": {
+            "min_per_class": 1,
+            "classes": {
+              "Payment": 0,
+              "Manager": 0,
+              "AccountTransaction": 0
+            }
+          },
+          "final_suite": {
+            "delivered": 80,
+            "sat": 64,
+            "unsat": 16,
+            "slot_tier_distribution": {
+              "easy": 28,
+              "difficult": 23,
+              "medium": 29
+            },
+            "requested_tier_distribution": {
+              "easy": 40,
+              "medium": 35,
+              "difficult": 25
+            },
+            "sat_tier_distribution": {
+              "easy": 24,
+              "difficult": 18,
+              "medium": 22
+            },
+            "unsat_measured_tier_distribution": {
+              "difficult": 4,
+              "medium": 4,
+              "unboxed": 8
+            },
+            "family_distribution": {
+              "navigation": 23,
+              "arithmetic": 21,
+              "quantified": 12,
+              "cardinality": 24
+            },
+            "requested_family_distribution": {
+              "cardinality": 30,
+              "arithmetic": 25,
+              "navigation": 25,
+              "quantified": 20
+            },
+            "complexity_fidelity_sat": {
+              "boxed_constraints": 64,
+              "in_box": 64,
+              "in_box_rate": 1.0,
+              "unlabeled_constraints": 0,
+              "out_of_box": []
+            },
+            "class_coverage": {
+              "min_per_class": 1,
+              "classes": 17,
+              "covered": 14,
+              "below_min": {
+                "AccountTransaction": 0,
+                "Manager": 0,
+                "Payment": 0
+              }
+            },
+            "slot_accounting": {
+              "requested": 100,
+              "generated": 91,
+              "generation_gaps": 9,
+              "dedup_removed": 15,
+              "dedup_refilled": 15,
+              "dedup_unfilled": 0,
+              "vgcr_regenerated": 14,
+              "vgcr_unfilled": 0,
+              "late_duplicates_removed": 0,
+              "unsat_trimmed_for_ratio": 2,
+              "delivered": 80
+            },
+            "dedup_unfilled_slots": [],
+            "vgcr_unfilled_slots": [],
+            "coverage_repairs": [
+              {
+                "class": "Payment",
+                "action": "donor_swap",
+                "donor_class": "Account",
+                "pattern": "boolean_is_false",
+                "profile": "easy"
+              },
+              {
+                "class": "KYCRecord",
+                "action": "donor_swap",
+                "donor_class": "Loan",
+                "pattern": "navigation_chain",
+                "profile": "medium"
+              },
+              {
+                "class": "Manager",
+                "action": "unrepaired",
+                "have": 0,
+                "min": 1
+              },
+              {
+                "class": "AccountTransaction",
+                "action": "unrepaired",
+                "have": 0,
+                "min": 1
+              }
+            ]
+          },
+          "status": "success",
+          "generation_time_s": 455.2
+        }
+      ],
+      "total_constraints": 80,
+      "total_valid": 64,
+      "total_sat": 64,
+      "total_unsat": 16,
+      "total_unknown": 0
+    }
+  ],
+  "total_constraints": 80,
+  "total_sat": 64,
+  "total_unsat": 16,
+  "total_valid": 64,
+  "total_unknown": 0,
+  "total_generation_time_s": 455.2
+}

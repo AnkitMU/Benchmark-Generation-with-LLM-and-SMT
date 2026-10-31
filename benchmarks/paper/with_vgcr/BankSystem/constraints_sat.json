@@ -1,0 +1,4338 @@
+{
+  "metadata": {
+    "type": "SAT",
+    "model": "BankSystem",
+    "profile": "balanced",
+    "generated_at": "2026-10-12T20:14:18.596716",
+    "constraint_count": 78
+  },
+  "constraints": [
+    {
+      "ocl": "context Customer\ninv: self.kyc.isVerified",
+      "pattern_id": "simple_navigation",
+      "pattern_name": "Simple Navigation",
+      "context": "Customer",
+      "parameters": {
+        "association": "kyc",
+        "attribute": "isVerified"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:13:28.640731",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 1,
+        "generation_number": 3754,
+        "profile": "easy",
+        "operators_used": [],
+        "navigation_depth": 3,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 0,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 2,
+            "wnc": 2.0,
+            "tnc": 2.0,
+            "vrc": 0,
+            "wno": 0.0,
+            "wnm": 0.0,
+            "total": 2.0
+          },
+          "computational": {
+            "oc": 0.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 0.0
+          },
+          "dependency": {
+            "ruc": 2,
+            "total": 2.0
+          },
+          "tc": 4.0
+        },
+        "semantic_cluster": 0,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Transaction\ninv: self.payment.isConfirmed",
+      "pattern_id": "simple_navigation",
+      "pattern_name": "Simple Navigation",
+      "context": "Transaction",
+      "parameters": {
+        "association": "payment",
+        "attribute": "isConfirmed"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:13:28.641658",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 1,
+        "generation_number": 3755,
+        "profile": "easy",
+        "operators_used": [],
+        "navigation_depth": 3,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 0,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 2,
+            "wnc": 2.0,
+            "tnc": 2.0,
+            "vrc": 0,
+            "wno": 0.0,
+            "wnm": 0.0,
+            "total": 2.0
+          },
+          "computational": {
+            "oc": 0.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 0.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 2.0
+        },
+        "semantic_cluster": 1,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Branch\ninv: self.bank.swiftCode <> ''",
+      "pattern_id": "navigation_chain",
+      "pattern_name": "Navigation Chain",
+      "context": "Branch",
+      "parameters": {
+        "navigation_path": "self.bank.swiftCode <> ''"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:13:28.642176",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 2,
+        "generation_number": 3756,
+        "profile": "easy",
+        "operators_used": [
+          "<",
+          "<>",
+          ">"
+        ],
+        "navigation_depth": 3,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 2,
+            "wnc": 2.0,
+            "tnc": 2.0,
+            "vrc": 0,
+            "wno": 3.0,
+            "wnm": 0.0,
+            "total": 5.0
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 8.0
+        },
+        "semantic_cluster": 2,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context CreditCard\ninv: self.cardTransactions->forAll(x | x.merchant <> '')",
+      "pattern_id": "collection_navigation",
+      "pattern_name": "Collection Navigation",
+      "context": "CreditCard",
+      "parameters": {
+        "collection": "cardTransactions",
+        "operation": "forAll",
+        "iterator": "x",
+        "nested": "merchant <> ''"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:13:28.647400",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 3,
+        "generation_number": 3798,
+        "profile": "difficult",
+        "operators_used": [
+          "-",
+          "<",
+          "<>",
+          ">",
+          "forAll"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "difficult",
+        "operator_count": 5,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 3.0,
+            "wnc": 5.0,
+            "tnc": 4.0,
+            "vrc": 1,
+            "wno": 7.0,
+            "wnm": 1.0,
+            "total": 13.0
+          },
+          "computational": {
+            "oc": 7.0,
+            "tcc": 0.0,
+            "cic": 3.0,
+            "total": 10.0
+          },
+          "dependency": {
+            "ruc": 8,
+            "total": 8.0
+          },
+          "tc": 31.0
+        },
+        "semantic_cluster": 3,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Branch\ninv: self.employees->forAll(x | x.name <> '')",
+      "pattern_id": "collection_navigation",
+      "pattern_name": "Collection Navigation",
+      "context": "Branch",
+      "parameters": {
+        "collection": "employees",
+        "operation": "forAll",
+        "iterator": "x",
+        "nested": "name <> ''"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:13:28.648647",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 3,
+        "generation_number": 3801,
+        "profile": "difficult",
+        "operators_used": [
+          "-",
+          "<",
+          "<>",
+          ">",
+          "forAll"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "difficult",
+        "operator_count": 5,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 3.0,
+            "wnc": 5.0,
+            "tnc": 4.0,
+            "vrc": 1,
+            "wno": 7.0,
+            "wnm": 1.0,
+            "total": 13.0
+          },
+          "computational": {
+            "oc": 7.0,
+            "tcc": 0.0,
+            "cic": 3.0,
+            "total": 10.0
+          },
+          "dependency": {
+            "ruc": 3,
+            "total": 3.0
+          },
+          "tc": 26.0
+        },
+        "semantic_cluster": 4,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Customer\ninv: self.loans->exists(x | x.interestRate <= 50)",
+      "pattern_id": "collection_navigation",
+      "pattern_name": "Collection Navigation",
+      "context": "Customer",
+      "parameters": {
+        "collection": "loans",
+        "operation": "exists",
+        "iterator": "x",
+        "nested": "interestRate <= 50"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:13:28.649308",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 3,
+        "generation_number": 3803,
+        "profile": "difficult",
+        "operators_used": [
+          "-",
+          "<",
+          "<=",
+          "=",
+          ">",
+          "exists"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "difficult",
+        "operator_count": 6,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 3.0,
+            "wnc": 5.0,
+            "tnc": 4.0,
+            "vrc": 1,
+            "wno": 7.0,
+            "wnm": 1.0,
+            "total": 13.0
+          },
+          "computational": {
+            "oc": 7.0,
+            "tcc": 0.0,
+            "cic": 3.0,
+            "total": 10.0
+          },
+          "dependency": {
+            "ruc": 2,
+            "total": 2.0
+          },
+          "tc": 25.0
+        },
+        "semantic_cluster": 5,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Loan\ninv: (self.customer <> null) and (self.customer.oclIsTypeOf(Customer))",
+      "pattern_id": "association_exists",
+      "pattern_name": "Association Exists",
+      "context": "Loan",
+      "parameters": {
+        "association": "customer"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:13:28.651271",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 1,
+        "generation_number": 3807,
+        "profile": "medium",
+        "operators_used": [
+          "<",
+          "<>",
+          ">",
+          "and",
+          "oclIsTypeOf"
+        ],
+        "navigation_depth": 3,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 5,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 3.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 2,
+            "wnc": 3.0,
+            "tnc": 2.7,
+            "vrc": 0,
+            "wno": 4.5,
+            "wnm": 1.0,
+            "total": 8.2
+          },
+          "computational": {
+            "oc": 4.5,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 4.5
+          },
+          "dependency": {
+            "ruc": 1,
+            "total": 1.0
+          },
+          "tc": 13.7
+        },
+        "semantic_cluster": 2,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Payment\ninv: (self.transaction <> null) and (self.method.size() = 25)",
+      "pattern_id": "association_exists",
+      "pattern_name": "Association Exists",
+      "context": "Payment",
+      "parameters": {
+        "association": "transaction"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:13:28.652627",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 1,
+        "generation_number": 3809,
+        "profile": "medium",
+        "operators_used": [
+          "<",
+          "<>",
+          "=",
+          ">",
+          "and",
+          "size"
+        ],
+        "navigation_depth": 3,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 6,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 3.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 2,
+            "wnc": 3.0,
+            "tnc": 2.7,
+            "vrc": 0,
+            "wno": 5.5,
+            "wnm": 1.0,
+            "total": 9.2
+          },
+          "computational": {
+            "oc": 5.5,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 5.5
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 14.7
+        },
+        "semantic_cluster": 6,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Employee\ninv: self.branch <> null",
+      "pattern_id": "association_exists",
+      "pattern_name": "Association Exists",
+      "context": "Employee",
+      "parameters": {
+        "association": "branch"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:13:28.653902",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 1,
+        "generation_number": 3812,
+        "profile": "easy",
+        "operators_used": [
+          "<",
+          "<>",
+          ">"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 1.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.0,
+            "vrc": 0,
+            "wno": 3.0,
+            "wnm": 0.0,
+            "total": 4.0
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 7.0
+        },
+        "semantic_cluster": 2,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Address\ninv: (self.customer <> null) and (self.line1.toLowerCase() = 'test')",
+      "pattern_id": "association_exists",
+      "pattern_name": "Association Exists",
+      "context": "Address",
+      "parameters": {
+        "association": "customer"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:13:28.654549",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 1,
+        "generation_number": 3813,
+        "profile": "medium",
+        "operators_used": [
+          "<",
+          "<>",
+          "=",
+          ">",
+          "and"
+        ],
+        "navigation_depth": 3,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 5,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 3.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 2,
+            "wnc": 3.0,
+            "tnc": 2.7,
+            "vrc": 0,
+            "wno": 5.5,
+            "wnm": 1.0,
+            "total": 9.2
+          },
+          "computational": {
+            "oc": 5.5,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 5.5
+          },
+          "dependency": {
+            "ruc": 2,
+            "total": 2.0
+          },
+          "tc": 16.7
+        },
+        "semantic_cluster": 7,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context CreditCard\ninv: (self.customer <> null) and (self.cardTransactions->size() > 0)",
+      "pattern_id": "association_exists",
+      "pattern_name": "Association Exists",
+      "context": "CreditCard",
+      "parameters": {
+        "association": "customer"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:13:28.655827",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 1,
+        "generation_number": 3815,
+        "profile": "medium",
+        "operators_used": [
+          "-",
+          "<",
+          "<>",
+          ">",
+          "and",
+          "size"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 6,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 3.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 1,
+            "wnc": 2.0,
+            "tnc": 2.1,
+            "vrc": 0,
+            "wno": 6.5,
+            "wnm": 1.0,
+            "total": 9.6
+          },
+          "computational": {
+            "oc": 6.5,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 6.5
+          },
+          "dependency": {
+            "ruc": 9,
+            "total": 9.0
+          },
+          "tc": 25.1
+        },
+        "semantic_cluster": 2,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Branch\ninv: self.bank <> null",
+      "pattern_id": "association_exists",
+      "pattern_name": "Association Exists",
+      "context": "Branch",
+      "parameters": {
+        "association": "bank"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:13:28.657077",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 1,
+        "generation_number": 3817,
+        "profile": "easy",
+        "operators_used": [
+          "<",
+          "<>",
+          ">"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 1.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.0,
+            "vrc": 0,
+            "wno": 3.0,
+            "wnm": 0.0,
+            "total": 4.0
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 1,
+            "total": 1.0
+          },
+          "tc": 8.0
+        },
+        "semantic_cluster": 2,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Address\ninv: (self.customer <> null) and (self.postalCode <> null)",
+      "pattern_id": "association_exists",
+      "pattern_name": "Association Exists",
+      "context": "Address",
+      "parameters": {
+        "association": "customer"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:13:28.658876",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 1,
+        "generation_number": 3820,
+        "profile": "medium",
+        "operators_used": [
+          "<",
+          "<>",
+          ">",
+          "and"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 4,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 1,
+            "wnc": 2.0,
+            "tnc": 1.7,
+            "vrc": 0,
+            "wno": 7.5,
+            "wnm": 0.0,
+            "total": 9.2
+          },
+          "computational": {
+            "oc": 7.5,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 7.5
+          },
+          "dependency": {
+            "ruc": 2,
+            "total": 2.0
+          },
+          "tc": 18.7
+        },
+        "semantic_cluster": 2,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context CardTransaction\ninv: self.card <> null",
+      "pattern_id": "association_exists",
+      "pattern_name": "Association Exists",
+      "context": "CardTransaction",
+      "parameters": {
+        "association": "card"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:13:28.659985",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 1,
+        "generation_number": 3822,
+        "profile": "easy",
+        "operators_used": [
+          "<",
+          "<>",
+          ">"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 1.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.0,
+            "vrc": 0,
+            "wno": 3.0,
+            "wnm": 0.0,
+            "total": 4.0
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 1,
+            "total": 1.0
+          },
+          "tc": 8.0
+        },
+        "semantic_cluster": 2,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context CardTransaction\ninv: self.card.customer.fullName <> ''",
+      "pattern_id": "navigation_chain",
+      "pattern_name": "Navigation Chain",
+      "context": "CardTransaction",
+      "parameters": {
+        "navigation_path": "self.card.customer.fullName <> ''"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:13:28.664766",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 2,
+        "generation_number": 3831,
+        "profile": "medium",
+        "operators_used": [
+          "<",
+          "<>",
+          ">"
+        ],
+        "navigation_depth": 4,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 3.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 3,
+            "wnc": 3.0,
+            "tnc": 3.0,
+            "vrc": 0,
+            "wno": 3.0,
+            "wnm": 0.0,
+            "total": 6.0
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 9.0
+        },
+        "semantic_cluster": 3,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Account\ninv: self.customer.branch.city <> ''",
+      "pattern_id": "navigation_chain",
+      "pattern_name": "Navigation Chain",
+      "context": "Account",
+      "parameters": {
+        "navigation_path": "self.customer.branch.city <> ''"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:13:28.665601",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 2,
+        "generation_number": 3842,
+        "profile": "medium",
+        "operators_used": [
+          "<",
+          "<>",
+          ">"
+        ],
+        "navigation_depth": 4,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 3.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 3,
+            "wnc": 3.0,
+            "tnc": 3.0,
+            "vrc": 0,
+            "wno": 3.0,
+            "wnm": 0.0,
+            "total": 6.0
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 9.0
+        },
+        "semantic_cluster": 8,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Customer\ninv: (self.kyc.isVerified) and (self.email <> null)",
+      "pattern_id": "simple_navigation",
+      "pattern_name": "Simple Navigation",
+      "context": "Customer",
+      "parameters": {
+        "association": "kyc",
+        "attribute": "isVerified"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:13:28.666302",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 1,
+        "generation_number": 3844,
+        "profile": "medium",
+        "operators_used": [
+          "<",
+          "<>",
+          ">",
+          "and"
+        ],
+        "navigation_depth": 3,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 4,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 3.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 2,
+            "wnc": 3.0,
+            "tnc": 2.7,
+            "vrc": 0,
+            "wno": 4.5,
+            "wnm": 0.0,
+            "total": 7.2
+          },
+          "computational": {
+            "oc": 4.5,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 4.5
+          },
+          "dependency": {
+            "ruc": 4,
+            "total": 4.0
+          },
+          "tc": 15.7
+        },
+        "semantic_cluster": 0,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context CreditCard\ninv: self.customer.branch.branchCode <> ''",
+      "pattern_id": "navigation_chain",
+      "pattern_name": "Navigation Chain",
+      "context": "CreditCard",
+      "parameters": {
+        "navigation_path": "self.customer.branch.branchCode <> ''"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:13:28.667334",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 2,
+        "generation_number": 3846,
+        "profile": "medium",
+        "operators_used": [
+          "<",
+          "<>",
+          ">"
+        ],
+        "navigation_depth": 4,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 3.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 3,
+            "wnc": 3.0,
+            "tnc": 3.0,
+            "vrc": 0,
+            "wno": 3.0,
+            "wnm": 0.0,
+            "total": 6.0
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 9.0
+        },
+        "semantic_cluster": 8,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context CardTransaction\ninv: (self.card.isActive) and (self.merchant <> '' and self.merchant.size() > 0)",
+      "pattern_id": "simple_navigation",
+      "pattern_name": "Simple Navigation",
+      "context": "CardTransaction",
+      "parameters": {
+        "association": "card",
+        "attribute": "isActive"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:13:28.667681",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 1,
+        "generation_number": 3847,
+        "profile": "medium",
+        "operators_used": [
+          "<",
+          "<>",
+          ">",
+          "and",
+          "size"
+        ],
+        "navigation_depth": 3,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 5,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 5.0,
+            "nnc_plus": 5.0,
+            "dn_ca": 2,
+            "wnc": 5.0,
+            "tnc": 4.1,
+            "vrc": 0,
+            "wno": 7.0,
+            "wnm": 1.0,
+            "total": 12.1
+          },
+          "computational": {
+            "oc": 7.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 7.0
+          },
+          "dependency": {
+            "ruc": 1,
+            "total": 1.0
+          },
+          "tc": 20.1
+        },
+        "semantic_cluster": 3,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Customer\ninv: (self.kyc.isVerified) and (self.email.size() <= 43)",
+      "pattern_id": "simple_navigation",
+      "pattern_name": "Simple Navigation",
+      "context": "Customer",
+      "parameters": {
+        "association": "kyc",
+        "attribute": "isVerified"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:13:28.673320",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 1,
+        "generation_number": 3889,
+        "profile": "medium",
+        "operators_used": [
+          "<",
+          "<=",
+          "=",
+          "and",
+          "size"
+        ],
+        "navigation_depth": 3,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 5,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 4.0,
+            "dn_ca": 2,
+            "wnc": 4.0,
+            "tnc": 3.4,
+            "vrc": 0,
+            "wno": 4.5,
+            "wnm": 1.0,
+            "total": 8.9
+          },
+          "computational": {
+            "oc": 4.5,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 4.5
+          },
+          "dependency": {
+            "ruc": 2,
+            "total": 2.0
+          },
+          "tc": 15.4
+        },
+        "semantic_cluster": 0,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context CreditCard\ninv: (self.limit > 1) and (self.cardTransactions->forAll(v | v.merchant <> ''))",
+      "pattern_id": "numeric_greater_than_value",
+      "pattern_name": "Numeric Greater Than Value",
+      "context": "CreditCard",
+      "parameters": {
+        "numeric_attribute": "limit",
+        "value": 54
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:13:34.796879",
+      "metadata": {
+        "category": "arithmetic",
+        "complexity": 1,
+        "generation_number": 4320,
+        "profile": "difficult",
+        "regenerated_from": "collection_size_range",
+        "regen_box": "difficult+forall",
+        "regen_family": "arithmetic",
+        "operators_used": [
+          "-",
+          "<",
+          "<>",
+          ">",
+          "and",
+          "forAll"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "difficult",
+        "operator_count": 6,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 5.0,
+            "nnc_plus": 4.0,
+            "dn_ca": 3.0,
+            "wnc": 6.0,
+            "tnc": 4.7,
+            "vrc": 1,
+            "wno": 9.5,
+            "wnm": 1.0,
+            "total": 16.2
+          },
+          "computational": {
+            "oc": 9.5,
+            "tcc": 0.0,
+            "cic": 3.0,
+            "total": 12.5
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 28.7
+        },
+        "semantic_cluster": 3,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Account\ninv: (self.balance < 1000) and (self.transactions->forAll(v | v.amount >= 2))",
+      "pattern_id": "numeric_non_negative",
+      "pattern_name": "Numeric Attribute Non-Negative",
+      "context": "Account",
+      "parameters": {
+        "numeric_attribute": "balance"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:13:35.125697",
+      "metadata": {
+        "category": "arithmetic",
+        "complexity": 1,
+        "generation_number": 4321,
+        "profile": "difficult",
+        "regenerated_from": "collection_size_range",
+        "regen_box": "difficult+forall",
+        "regen_family": "arithmetic",
+        "operators_used": [
+          "-",
+          "<",
+          "=",
+          ">",
+          ">=",
+          "and",
+          "forAll"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "difficult",
+        "operator_count": 7,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 5.0,
+            "nnc_plus": 4.0,
+            "dn_ca": 3.0,
+            "wnc": 6.0,
+            "tnc": 4.7,
+            "vrc": 1,
+            "wno": 9.5,
+            "wnm": 1.0,
+            "total": 16.2
+          },
+          "computational": {
+            "oc": 9.5,
+            "tcc": 0.0,
+            "cic": 3.0,
+            "total": 12.5
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 28.7
+        },
+        "semantic_cluster": 6,
+        "implies": [
+          "navigation_chain_Account"
+        ]
+      }
+    },
+    {
+      "ocl": "context Account\ninv: (self.balance < 100) and (self.transactions->forAll(v | v.amount > 2))",
+      "pattern_id": "numeric_bounded",
+      "pattern_name": "Numeric Attribute Bounded",
+      "context": "Account",
+      "parameters": {
+        "numeric_attribute": "balance",
+        "min_value": 14,
+        "max_value": 78
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:13:28.677504",
+      "metadata": {
+        "category": "arithmetic",
+        "complexity": 2,
+        "generation_number": 3893,
+        "profile": "difficult",
+        "operators_used": [
+          "-",
+          "<",
+          ">",
+          "and",
+          "forAll"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "difficult",
+        "operator_count": 5,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 5.0,
+            "nnc_plus": 4.0,
+            "dn_ca": 3.0,
+            "wnc": 6.0,
+            "tnc": 4.7,
+            "vrc": 1,
+            "wno": 7.5,
+            "wnm": 1.0,
+            "total": 14.2
+          },
+          "computational": {
+            "oc": 7.5,
+            "tcc": 0.0,
+            "cic": 3.0,
+            "total": 10.5
+          },
+          "dependency": {
+            "ruc": 10,
+            "total": 10.0
+          },
+          "tc": 34.7
+        },
+        "semantic_cluster": 6,
+        "implies": [
+          "numeric_non_negative_Account",
+          "navigation_chain_Account"
+        ]
+      }
+    },
+    {
+      "ocl": "context Account\ninv: (self.balance <= 10) and (self.transactions->forAll(v | v.amount >= 10))",
+      "pattern_id": "numeric_greater_than_value",
+      "pattern_name": "Numeric Greater Than Value",
+      "context": "Account",
+      "parameters": {
+        "numeric_attribute": "balance",
+        "value": 8
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:13:35.710834",
+      "metadata": {
+        "category": "arithmetic",
+        "complexity": 1,
+        "generation_number": 4328,
+        "profile": "difficult",
+        "regenerated_from": "collection_size_range",
+        "regen_box": "difficult+forall",
+        "regen_family": "arithmetic",
+        "operators_used": [
+          "-",
+          "<",
+          "<=",
+          "=",
+          ">",
+          ">=",
+          "and",
+          "forAll"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "difficult",
+        "operator_count": 8,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 5.0,
+            "nnc_plus": 4.0,
+            "dn_ca": 3.0,
+            "wnc": 6.0,
+            "tnc": 4.7,
+            "vrc": 1,
+            "wno": 11.5,
+            "wnm": 1.0,
+            "total": 18.2
+          },
+          "computational": {
+            "oc": 11.5,
+            "tcc": 0.0,
+            "cic": 3.0,
+            "total": 14.5
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 32.7
+        },
+        "semantic_cluster": 6,
+        "implies": [
+          "numeric_non_negative_Account",
+          "numeric_bounded_Account",
+          "navigation_chain_Account",
+          "numeric_less_than_value_unsat_Account"
+        ]
+      }
+    },
+    {
+      "ocl": "context Account\ninv: self.transactions->any(x | x.amount >= 10) <> null",
+      "pattern_id": "any_operation",
+      "pattern_name": "Any Operation",
+      "context": "Account",
+      "parameters": {
+        "collection": "transactions",
+        "iterator": "x",
+        "condition": "x.amount >= 10"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:13:28.681274",
+      "metadata": {
+        "category": "collection",
+        "complexity": 2,
+        "generation_number": 3898,
+        "profile": "difficult",
+        "operators_used": [
+          "-",
+          "<",
+          "<>",
+          "=",
+          ">",
+          ">=",
+          "any"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "difficult",
+        "operator_count": 7,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 3.0,
+            "wnc": 5.0,
+            "tnc": 4.0,
+            "vrc": 1,
+            "wno": 7.0,
+            "wnm": 1.0,
+            "total": 13.0
+          },
+          "computational": {
+            "oc": 7.0,
+            "tcc": 0.0,
+            "cic": 2.0,
+            "total": 9.0
+          },
+          "dependency": {
+            "ruc": 9,
+            "total": 9.0
+          },
+          "tc": 31.0
+        },
+        "semantic_cluster": 6,
+        "implies": [
+          "select_operation_Account"
+        ]
+      }
+    },
+    {
+      "ocl": "context Branch\ninv: self.employees->any(x | x.name <> '') <> null",
+      "pattern_id": "any_operation",
+      "pattern_name": "Any Operation",
+      "context": "Branch",
+      "parameters": {
+        "collection": "employees",
+        "iterator": "x",
+        "condition": "x.name <> ''"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:13:28.681752",
+      "metadata": {
+        "category": "collection",
+        "complexity": 2,
+        "generation_number": 3899,
+        "profile": "difficult",
+        "operators_used": [
+          "-",
+          "<",
+          "<>",
+          ">",
+          "any"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "difficult",
+        "operator_count": 5,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 3.0,
+            "wnc": 5.0,
+            "tnc": 4.0,
+            "vrc": 1,
+            "wno": 7.0,
+            "wnm": 1.0,
+            "total": 13.0
+          },
+          "computational": {
+            "oc": 7.0,
+            "tcc": 0.0,
+            "cic": 2.0,
+            "total": 9.0
+          },
+          "dependency": {
+            "ruc": 3,
+            "total": 3.0
+          },
+          "tc": 25.0
+        },
+        "semantic_cluster": 4,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Account\ninv: self.transactions->select(x | x.amount >= 10)->size() >= 1",
+      "pattern_id": "select_operation",
+      "pattern_name": "Select (Filter) Operation",
+      "context": "Account",
+      "parameters": {
+        "collection": "transactions",
+        "iterator": "x",
+        "condition": "x.amount >= 10",
+        "result_operation": "->size() >= 1"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:13:28.682230",
+      "metadata": {
+        "category": "collection",
+        "complexity": 2,
+        "generation_number": 3900,
+        "profile": "difficult",
+        "operators_used": [
+          "-",
+          "=",
+          ">",
+          ">=",
+          "select",
+          "size"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "difficult",
+        "operator_count": 6,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 3.0,
+            "wnc": 5.0,
+            "tnc": 4.0,
+            "vrc": 1,
+            "wno": 10.0,
+            "wnm": 2.0,
+            "total": 17.0
+          },
+          "computational": {
+            "oc": 10.0,
+            "tcc": 0.0,
+            "cic": 2.0,
+            "total": 12.0
+          },
+          "dependency": {
+            "ruc": 9,
+            "total": 9.0
+          },
+          "tc": 38.0
+        },
+        "semantic_cluster": 6,
+        "implies": [
+          "any_operation_Account"
+        ]
+      }
+    },
+    {
+      "ocl": "context Teller\ninv: self.counterNo mod 2 = 1",
+      "pattern_id": "numeric_odd",
+      "pattern_name": "Numeric Is Odd",
+      "context": "Teller",
+      "parameters": {
+        "numeric_attribute": "counterNo"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:13:28.685107",
+      "metadata": {
+        "category": "arithmetic",
+        "complexity": 2,
+        "generation_number": 3905,
+        "profile": "easy",
+        "operators_used": [
+          "=",
+          "mod"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 2,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 1.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.0,
+            "vrc": 0,
+            "wno": 2.0,
+            "wnm": 0.0,
+            "total": 3.0
+          },
+          "computational": {
+            "oc": 1.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 1.0
+          },
+          "dependency": {
+            "ruc": 1,
+            "total": 1.0
+          },
+          "tc": 5.0
+        },
+        "semantic_cluster": 9,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context SavingsAccount\ninv: self.interestRate > 0",
+      "pattern_id": "numeric_positive",
+      "pattern_name": "Numeric Attribute Positive",
+      "context": "SavingsAccount",
+      "parameters": {
+        "numeric_attribute": "interestRate"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:13:28.685889",
+      "metadata": {
+        "category": "arithmetic",
+        "complexity": 1,
+        "generation_number": 3906,
+        "profile": "easy",
+        "operators_used": [
+          ">"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 1,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 1.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.0,
+            "vrc": 0,
+            "wno": 1.0,
+            "wnm": 0.0,
+            "total": 2.0
+          },
+          "computational": {
+            "oc": 1.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 1.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 3.0
+        },
+        "semantic_cluster": 5,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context CheckingAccount\ninv: self.overdraftLimit < 11",
+      "pattern_id": "numeric_less_than_value",
+      "pattern_name": "Numeric Less Than Value",
+      "context": "CheckingAccount",
+      "parameters": {
+        "numeric_attribute": "overdraftLimit",
+        "value": 11
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:13:28.686636",
+      "metadata": {
+        "category": "arithmetic",
+        "complexity": 1,
+        "generation_number": 3907,
+        "profile": "easy",
+        "operators_used": [
+          "<"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 1,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 1.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.0,
+            "vrc": 0,
+            "wno": 1.0,
+            "wnm": 0.0,
+            "total": 2.0
+          },
+          "computational": {
+            "oc": 1.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 1.0
+          },
+          "dependency": {
+            "ruc": 1,
+            "total": 1.0
+          },
+          "tc": 4.0
+        },
+        "semantic_cluster": 10,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Teller\ninv: self.counterNo mod 5 = 0",
+      "pattern_id": "numeric_multiple_of",
+      "pattern_name": "Numeric Multiple Of",
+      "context": "Teller",
+      "parameters": {
+        "numeric_attribute": "counterNo",
+        "divisor": 5
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:13:28.688280",
+      "metadata": {
+        "category": "arithmetic",
+        "complexity": 2,
+        "generation_number": 3916,
+        "profile": "easy",
+        "operators_used": [
+          "=",
+          "mod"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 2,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 1.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.0,
+            "vrc": 0,
+            "wno": 2.0,
+            "wnm": 0.0,
+            "total": 3.0
+          },
+          "computational": {
+            "oc": 1.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 1.0
+          },
+          "dependency": {
+            "ruc": 1,
+            "total": 1.0
+          },
+          "tc": 5.0
+        },
+        "semantic_cluster": 9,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Loan\ninv: self.interestRate + self.principal > 83",
+      "pattern_id": "numeric_sum_constraint",
+      "pattern_name": "Numeric Sum Constraint",
+      "context": "Loan",
+      "parameters": {
+        "first_numeric": "interestRate",
+        "second_numeric": "principal",
+        "threshold": 83
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:13:28.689051",
+      "metadata": {
+        "category": "arithmetic",
+        "complexity": 2,
+        "generation_number": 3917,
+        "profile": "easy",
+        "operators_used": [
+          "+",
+          ">"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 2,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 1,
+            "wnc": 2.0,
+            "tnc": 1.7,
+            "vrc": 0,
+            "wno": 2.0,
+            "wnm": 0.0,
+            "total": 3.7
+          },
+          "computational": {
+            "oc": 1.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 1.0
+          },
+          "dependency": {
+            "ruc": 11,
+            "total": 11.0
+          },
+          "tc": 15.7
+        },
+        "semantic_cluster": 5,
+        "implies": [
+          "numeric_bounded_Loan"
+        ]
+      }
+    },
+    {
+      "ocl": "context Loan\ninv: self.principal - self.interestRate >= 0",
+      "pattern_id": "numeric_difference_constraint",
+      "pattern_name": "Numeric Difference Constraint",
+      "context": "Loan",
+      "parameters": {
+        "first_numeric": "principal",
+        "second_numeric": "interestRate",
+        "min_diff": 0
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:13:28.689869",
+      "metadata": {
+        "category": "arithmetic",
+        "complexity": 2,
+        "generation_number": 3918,
+        "profile": "easy",
+        "operators_used": [
+          "-",
+          "=",
+          ">",
+          ">="
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 4,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 1,
+            "wnc": 2.0,
+            "tnc": 1.7,
+            "vrc": 0,
+            "wno": 3.0,
+            "wnm": 0.0,
+            "total": 4.7
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 11,
+            "total": 11.0
+          },
+          "tc": 18.7
+        },
+        "semantic_cluster": 5,
+        "implies": [
+          "numeric_difference_constraint_Loan"
+        ]
+      }
+    },
+    {
+      "ocl": "context Loan\ninv: self.principal - self.interestRate >= 8",
+      "pattern_id": "numeric_difference_constraint",
+      "pattern_name": "Numeric Difference Constraint",
+      "context": "Loan",
+      "parameters": {
+        "first_numeric": "principal",
+        "second_numeric": "interestRate",
+        "min_diff": 8
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:13:28.690914",
+      "metadata": {
+        "category": "arithmetic",
+        "complexity": 2,
+        "generation_number": 3920,
+        "profile": "easy",
+        "operators_used": [
+          "-",
+          "=",
+          ">",
+          ">="
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 4,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 1,
+            "wnc": 2.0,
+            "tnc": 1.7,
+            "vrc": 0,
+            "wno": 3.0,
+            "wnm": 0.0,
+            "total": 4.7
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 11,
+            "total": 11.0
+          },
+          "tc": 18.7
+        },
+        "semantic_cluster": 5,
+        "implies": [
+          "numeric_difference_constraint_Loan"
+        ]
+      }
+    },
+    {
+      "ocl": "context CheckingAccount\ninv: self.overdraftLimit.abs() <= 8",
+      "pattern_id": "numeric_abs_bounded",
+      "pattern_name": "Numeric Absolute Value Bounded",
+      "context": "CheckingAccount",
+      "parameters": {
+        "numeric_attribute": "overdraftLimit",
+        "max_abs": 8
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:13:28.691687",
+      "metadata": {
+        "category": "arithmetic",
+        "complexity": 2,
+        "generation_number": 3921,
+        "profile": "easy",
+        "operators_used": [
+          "<",
+          "<=",
+          "=",
+          "abs"
+        ],
+        "navigation_depth": 3,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 4,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 2,
+            "wnc": 2.0,
+            "tnc": 2.0,
+            "vrc": 0,
+            "wno": 4.0,
+            "wnm": 1.0,
+            "total": 7.0
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 10.0
+        },
+        "semantic_cluster": 10,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Loan\ninv: self.principal > self.interestRate",
+      "pattern_id": "numeric_comparison",
+      "pattern_name": "Numeric Comparison",
+      "context": "Loan",
+      "parameters": {
+        "attr1": "principal",
+        "operator": ">",
+        "attr2": "interestRate"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:13:28.693542",
+      "metadata": {
+        "category": "basic",
+        "complexity": 1,
+        "generation_number": 3930,
+        "profile": "easy",
+        "operators_used": [
+          ">"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 1,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 1,
+            "wnc": 2.0,
+            "tnc": 1.7,
+            "vrc": 0,
+            "wno": 1.0,
+            "wnm": 0.0,
+            "total": 2.7
+          },
+          "computational": {
+            "oc": 1.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 1.0
+          },
+          "dependency": {
+            "ruc": 11,
+            "total": 11.0
+          },
+          "tc": 14.7
+        },
+        "semantic_cluster": 5,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Loan\ninv: self.principal >= self.interestRate",
+      "pattern_id": "numeric_comparison",
+      "pattern_name": "Numeric Comparison",
+      "context": "Loan",
+      "parameters": {
+        "attr1": "principal",
+        "operator": ">=",
+        "attr2": "interestRate"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:13:28.694409",
+      "metadata": {
+        "category": "basic",
+        "complexity": 1,
+        "generation_number": 3931,
+        "profile": "easy",
+        "operators_used": [
+          "=",
+          ">",
+          ">="
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 1,
+            "wnc": 2.0,
+            "tnc": 1.7,
+            "vrc": 0,
+            "wno": 3.0,
+            "wnm": 0.0,
+            "total": 4.7
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 11,
+            "total": 11.0
+          },
+          "tc": 18.7
+        },
+        "semantic_cluster": 5,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Account\ninv: self.balance > 0",
+      "pattern_id": "numeric_positive",
+      "pattern_name": "Numeric Attribute Positive",
+      "context": "Account",
+      "parameters": {
+        "numeric_attribute": "balance"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:13:39.058659",
+      "metadata": {
+        "category": "arithmetic",
+        "complexity": 1,
+        "generation_number": 4338,
+        "profile": "easy",
+        "regenerated_from": "numeric_non_negative",
+        "regen_box": "easy",
+        "regen_family": "arithmetic",
+        "operators_used": [
+          ">"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 1,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 1.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.0,
+            "vrc": 0,
+            "wno": 1.0,
+            "wnm": 0.0,
+            "total": 2.0
+          },
+          "computational": {
+            "oc": 1.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 1.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 3.0
+        },
+        "semantic_cluster": 10,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Customer\ninv: self.cards->collect(x | x.cardTransactions)->flatten()->notEmpty()",
+      "pattern_id": "flatten_operation",
+      "pattern_name": "Flatten Operation",
+      "context": "Customer",
+      "parameters": {
+        "collection": "cards",
+        "iterator": "x",
+        "nested_collection": "cardTransactions"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:13:28.698611",
+      "metadata": {
+        "category": "set_operations",
+        "complexity": 3,
+        "generation_number": 3949,
+        "profile": "difficult",
+        "operators_used": [
+          "-",
+          ">",
+          "collect",
+          "flatten",
+          "notEmpty"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "difficult",
+        "operator_count": 5,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 3.0,
+            "wnc": 5.0,
+            "tnc": 4.0,
+            "vrc": 1,
+            "wno": 7.0,
+            "wnm": 3.0,
+            "total": 15.0
+          },
+          "computational": {
+            "oc": 7.0,
+            "tcc": 2.0,
+            "cic": 2.0,
+            "total": 11.0
+          },
+          "dependency": {
+            "ruc": 1,
+            "total": 1.0
+          },
+          "tc": 27.0
+        },
+        "semantic_cluster": 3,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Customer\ninv: self.accounts->collect(x | x.transactions)->size() >= 1",
+      "pattern_id": "collection_collectNested",
+      "pattern_name": "Collection Nested Collection Flatten",
+      "context": "Customer",
+      "parameters": {
+        "collection": "accounts",
+        "nested_collection": "transactions",
+        "min_size": 1
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:13:28.699423",
+      "metadata": {
+        "category": "collection",
+        "complexity": 4,
+        "generation_number": 3950,
+        "profile": "difficult",
+        "operators_used": [
+          "-",
+          "=",
+          ">",
+          ">=",
+          "collect",
+          "size"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "difficult",
+        "operator_count": 6,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 3.0,
+            "wnc": 5.0,
+            "tnc": 4.0,
+            "vrc": 1,
+            "wno": 7.0,
+            "wnm": 2.0,
+            "total": 14.0
+          },
+          "computational": {
+            "oc": 7.0,
+            "tcc": 0.0,
+            "cic": 2.0,
+            "total": 9.0
+          },
+          "dependency": {
+            "ruc": 2,
+            "total": 2.0
+          },
+          "tc": 25.0
+        },
+        "semantic_cluster": 6,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Bank\ninv: self.branches->collect(x | x.employees)->flatten()->notEmpty()",
+      "pattern_id": "flatten_operation",
+      "pattern_name": "Flatten Operation",
+      "context": "Bank",
+      "parameters": {
+        "collection": "branches",
+        "iterator": "x",
+        "nested_collection": "employees"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:13:28.700204",
+      "metadata": {
+        "category": "set_operations",
+        "complexity": 3,
+        "generation_number": 3951,
+        "profile": "difficult",
+        "operators_used": [
+          "-",
+          ">",
+          "collect",
+          "flatten",
+          "notEmpty"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "difficult",
+        "operator_count": 5,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 3.0,
+            "wnc": 5.0,
+            "tnc": 4.0,
+            "vrc": 1,
+            "wno": 7.0,
+            "wnm": 3.0,
+            "total": 15.0
+          },
+          "computational": {
+            "oc": 7.0,
+            "tcc": 2.0,
+            "cic": 2.0,
+            "total": 11.0
+          },
+          "dependency": {
+            "ruc": 7,
+            "total": 7.0
+          },
+          "tc": 33.0
+        },
+        "semantic_cluster": 11,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Account\ninv: self.transactions->collect(x | x.amount)->sum() >= 1",
+      "pattern_id": "collection_sum",
+      "pattern_name": "Collection Sum",
+      "context": "Account",
+      "parameters": {
+        "collection": "transactions",
+        "numeric_attribute": "amount",
+        "min_sum": 1
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:13:28.701002",
+      "metadata": {
+        "category": "collection",
+        "complexity": 3,
+        "generation_number": 3952,
+        "profile": "difficult",
+        "operators_used": [
+          "-",
+          "=",
+          ">",
+          ">=",
+          "collect",
+          "sum"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "difficult",
+        "operator_count": 6,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 3.0,
+            "wnc": 5.0,
+            "tnc": 4.0,
+            "vrc": 1,
+            "wno": 7.0,
+            "wnm": 2.0,
+            "total": 14.0
+          },
+          "computational": {
+            "oc": 7.0,
+            "tcc": 0.0,
+            "cic": 2.0,
+            "total": 9.0
+          },
+          "dependency": {
+            "ruc": 9,
+            "total": 9.0
+          },
+          "tc": 32.0
+        },
+        "semantic_cluster": 6,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Branch\ninv: self.customers->collect(x | x.loans)->flatten()->notEmpty()",
+      "pattern_id": "flatten_operation",
+      "pattern_name": "Flatten Operation",
+      "context": "Branch",
+      "parameters": {
+        "collection": "customers",
+        "iterator": "x",
+        "nested_collection": "loans"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:13:28.702585",
+      "metadata": {
+        "category": "set_operations",
+        "complexity": 3,
+        "generation_number": 3954,
+        "profile": "difficult",
+        "operators_used": [
+          "-",
+          ">",
+          "collect",
+          "flatten",
+          "notEmpty"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "difficult",
+        "operator_count": 5,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 3.0,
+            "wnc": 5.0,
+            "tnc": 4.0,
+            "vrc": 1,
+            "wno": 7.0,
+            "wnm": 3.0,
+            "total": 15.0
+          },
+          "computational": {
+            "oc": 7.0,
+            "tcc": 2.0,
+            "cic": 2.0,
+            "total": 11.0
+          },
+          "dependency": {
+            "ruc": 1,
+            "total": 1.0
+          },
+          "tc": 27.0
+        },
+        "semantic_cluster": 11,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Loan\ninv: self.interestRate.abs() <= 4",
+      "pattern_id": "numeric_abs_bounded",
+      "pattern_name": "Numeric Absolute Value Bounded",
+      "context": "Loan",
+      "parameters": {
+        "numeric_attribute": "interestRate",
+        "max_abs": 4
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:13:28.703343",
+      "metadata": {
+        "category": "arithmetic",
+        "complexity": 2,
+        "generation_number": 3955,
+        "profile": "medium",
+        "operators_used": [
+          "<",
+          "<=",
+          "=",
+          "abs"
+        ],
+        "navigation_depth": 3,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 4,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 2,
+            "wnc": 2.0,
+            "tnc": 2.0,
+            "vrc": 0,
+            "wno": 4.0,
+            "wnm": 1.0,
+            "total": 7.0
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 1,
+            "total": 1.0
+          },
+          "tc": 11.0
+        },
+        "semantic_cluster": 5,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Loan\ninv: self.interestRate.abs() <= 1",
+      "pattern_id": "numeric_abs_bounded",
+      "pattern_name": "Numeric Absolute Value Bounded",
+      "context": "Loan",
+      "parameters": {
+        "numeric_attribute": "interestRate",
+        "max_abs": 1
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:13:28.704056",
+      "metadata": {
+        "category": "arithmetic",
+        "complexity": 2,
+        "generation_number": 3956,
+        "profile": "medium",
+        "operators_used": [
+          "<",
+          "<=",
+          "=",
+          "abs"
+        ],
+        "navigation_depth": 3,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 4,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 2,
+            "wnc": 2.0,
+            "tnc": 2.0,
+            "vrc": 0,
+            "wno": 4.0,
+            "wnm": 1.0,
+            "total": 7.0
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 1,
+            "total": 1.0
+          },
+          "tc": 11.0
+        },
+        "semantic_cluster": 5,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context CreditCard\ninv: self.limit.abs() <= 3",
+      "pattern_id": "numeric_abs_bounded",
+      "pattern_name": "Numeric Absolute Value Bounded",
+      "context": "CreditCard",
+      "parameters": {
+        "numeric_attribute": "limit",
+        "max_abs": 3
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:13:28.705594",
+      "metadata": {
+        "category": "arithmetic",
+        "complexity": 2,
+        "generation_number": 3958,
+        "profile": "medium",
+        "operators_used": [
+          "<",
+          "<=",
+          "=",
+          "abs"
+        ],
+        "navigation_depth": 3,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 4,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 2,
+            "wnc": 2.0,
+            "tnc": 2.0,
+            "vrc": 0,
+            "wno": 4.0,
+            "wnm": 1.0,
+            "total": 7.0
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 10.0
+        },
+        "semantic_cluster": 10,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context CheckingAccount\ninv: self.overdraftLimit.abs() <= 7",
+      "pattern_id": "numeric_abs_bounded",
+      "pattern_name": "Numeric Absolute Value Bounded",
+      "context": "CheckingAccount",
+      "parameters": {
+        "numeric_attribute": "overdraftLimit",
+        "max_abs": 7
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:13:41.101851",
+      "metadata": {
+        "category": "arithmetic",
+        "complexity": 2,
+        "generation_number": 4341,
+        "profile": "medium",
+        "regenerated_from": "numeric_bounded",
+        "regen_box": "medium",
+        "regen_family": "arithmetic",
+        "operators_used": [
+          "<",
+          "<=",
+          "=",
+          "abs"
+        ],
+        "navigation_depth": 3,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 4,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 2,
+            "wnc": 2.0,
+            "tnc": 2.0,
+            "vrc": 0,
+            "wno": 4.0,
+            "wnm": 1.0,
+            "total": 7.0
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 10.0
+        },
+        "semantic_cluster": 10,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Account\ninv: self.balance.abs() <= 9",
+      "pattern_id": "numeric_abs_bounded",
+      "pattern_name": "Numeric Absolute Value Bounded",
+      "context": "Account",
+      "parameters": {
+        "numeric_attribute": "balance",
+        "max_abs": 9
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:13:28.710107",
+      "metadata": {
+        "category": "arithmetic",
+        "complexity": 2,
+        "generation_number": 3964,
+        "profile": "medium",
+        "operators_used": [
+          "<",
+          "<=",
+          "=",
+          "abs"
+        ],
+        "navigation_depth": 3,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 4,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 2,
+            "wnc": 2.0,
+            "tnc": 2.0,
+            "vrc": 0,
+            "wno": 4.0,
+            "wnm": 1.0,
+            "total": 7.0
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 10.0
+        },
+        "semantic_cluster": 10,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Manager\ninv: self.level <> null",
+      "pattern_id": "attribute_not_null_simple",
+      "pattern_name": "Attribute Not Null (Simple)",
+      "context": "Manager",
+      "parameters": {
+        "attribute": "level"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:13:28.710893",
+      "metadata": {
+        "category": "basic",
+        "complexity": 1,
+        "generation_number": 3965,
+        "profile": "easy",
+        "operators_used": [
+          "<",
+          "<>",
+          ">"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 1.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.0,
+            "vrc": 0,
+            "wno": 3.0,
+            "wnm": 0.0,
+            "total": 4.0
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 7.0
+        },
+        "semantic_cluster": 2,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Bank\ninv: self.branches->size() <> 1",
+      "pattern_id": "size_constraint",
+      "pattern_name": "Collection Size Constraint",
+      "context": "Bank",
+      "parameters": {
+        "collection": "branches",
+        "operator": "<>",
+        "value": 1
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:13:42.377803",
+      "metadata": {
+        "category": "basic",
+        "complexity": 1,
+        "generation_number": 4349,
+        "profile": "easy",
+        "regenerated_from": "collection_has_size",
+        "regen_box": "easy",
+        "regen_family": "cardinality",
+        "operators_used": [
+          "-",
+          "<",
+          "<>",
+          ">",
+          "size"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 5,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.4,
+            "vrc": 0,
+            "wno": 4.0,
+            "wnm": 1.0,
+            "total": 6.4
+          },
+          "computational": {
+            "oc": 4.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 4.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 10.4
+        },
+        "semantic_cluster": 12,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Bank\ninv: self.branches->size() > 0",
+      "pattern_id": "collection_not_empty_check",
+      "pattern_name": "Collection Not Empty Check",
+      "context": "Bank",
+      "parameters": {
+        "collection": "branches"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:13:28.714342",
+      "metadata": {
+        "category": "collection",
+        "complexity": 1,
+        "generation_number": 3970,
+        "profile": "easy",
+        "operators_used": [
+          "-",
+          ">",
+          "size"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.4,
+            "vrc": 0,
+            "wno": 2.0,
+            "wnm": 1.0,
+            "total": 4.4
+          },
+          "computational": {
+            "oc": 2.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 2.0
+          },
+          "dependency": {
+            "ruc": 7,
+            "total": 7.0
+          },
+          "tc": 13.4
+        },
+        "semantic_cluster": 12,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Branch\ninv: self.employees->size() = 1",
+      "pattern_id": "size_constraint",
+      "pattern_name": "Collection Size Constraint",
+      "context": "Branch",
+      "parameters": {
+        "collection": "employees",
+        "operator": "=",
+        "value": 1
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:13:28.715116",
+      "metadata": {
+        "category": "basic",
+        "complexity": 1,
+        "generation_number": 3971,
+        "profile": "easy",
+        "operators_used": [
+          "-",
+          "=",
+          ">",
+          "size"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 4,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.4,
+            "vrc": 0,
+            "wno": 2.0,
+            "wnm": 1.0,
+            "total": 4.4
+          },
+          "computational": {
+            "oc": 2.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 2.0
+          },
+          "dependency": {
+            "ruc": 3,
+            "total": 3.0
+          },
+          "tc": 9.4
+        },
+        "semantic_cluster": 4,
+        "implies": [
+          "association_exists_unsat_Branch"
+        ]
+      }
+    },
+    {
+      "ocl": "context Address\ninv: self.city <> self.line1",
+      "pattern_id": "two_attributes_not_equal",
+      "pattern_name": "Two Attributes Not Equal",
+      "context": "Address",
+      "parameters": {
+        "first_attribute": "city",
+        "second_attribute": "line1"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:13:28.715914",
+      "metadata": {
+        "category": "basic",
+        "complexity": 1,
+        "generation_number": 3972,
+        "profile": "easy",
+        "operators_used": [
+          "<",
+          "<>",
+          ">"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 1,
+            "wnc": 2.0,
+            "tnc": 1.7,
+            "vrc": 0,
+            "wno": 3.0,
+            "wnm": 0.0,
+            "total": 4.7
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 4,
+            "total": 4.0
+          },
+          "tc": 11.7
+        },
+        "semantic_cluster": 13,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context CreditCard\ninv: self.cardTransactions->notEmpty()",
+      "pattern_id": "collection_not_empty_simple",
+      "pattern_name": "Collection Not Empty (Simple)",
+      "context": "CreditCard",
+      "parameters": {
+        "collection": "cardTransactions"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:13:28.716695",
+      "metadata": {
+        "category": "collection",
+        "complexity": 1,
+        "generation_number": 3973,
+        "profile": "easy",
+        "operators_used": [
+          "-",
+          ">",
+          "notEmpty"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.4,
+            "vrc": 0,
+            "wno": 1.0,
+            "wnm": 1.0,
+            "total": 3.4
+          },
+          "computational": {
+            "oc": 1.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 1.0
+          },
+          "dependency": {
+            "ruc": 8,
+            "total": 8.0
+          },
+          "tc": 12.4
+        },
+        "semantic_cluster": 3,
+        "implies": [
+          "association_exists_CreditCard",
+          "collection_min_size_CreditCard"
+        ]
+      }
+    },
+    {
+      "ocl": "context Customer\ninv: self.loans->size() > 0",
+      "pattern_id": "collection_not_empty_check",
+      "pattern_name": "Collection Not Empty Check",
+      "context": "Customer",
+      "parameters": {
+        "collection": "loans"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:13:28.719091",
+      "metadata": {
+        "category": "collection",
+        "complexity": 1,
+        "generation_number": 3982,
+        "profile": "easy",
+        "operators_used": [
+          "-",
+          ">",
+          "size"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.4,
+            "vrc": 0,
+            "wno": 2.0,
+            "wnm": 1.0,
+            "total": 4.4
+          },
+          "computational": {
+            "oc": 2.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 2.0
+          },
+          "dependency": {
+            "ruc": 2,
+            "total": 2.0
+          },
+          "tc": 8.4
+        },
+        "semantic_cluster": 12,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Customer\ninv: self.cards->isEmpty()",
+      "pattern_id": "collection_empty_check",
+      "pattern_name": "Collection Must Be Empty",
+      "context": "Customer",
+      "parameters": {
+        "collection": "cards"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:13:28.723984",
+      "metadata": {
+        "category": "collection",
+        "complexity": 1,
+        "generation_number": 4008,
+        "profile": "easy",
+        "operators_used": [
+          "-",
+          ">",
+          "isEmpty"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.4,
+            "vrc": 0,
+            "wno": 1.0,
+            "wnm": 1.0,
+            "total": 3.4
+          },
+          "computational": {
+            "oc": 1.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 1.0
+          },
+          "dependency": {
+            "ruc": 1,
+            "total": 1.0
+          },
+          "tc": 5.4
+        },
+        "semantic_cluster": 3,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context CreditCard\ninv: self.cardTransactions->size() <= 1",
+      "pattern_id": "size_constraint",
+      "pattern_name": "Collection Size Constraint",
+      "context": "CreditCard",
+      "parameters": {
+        "collection": "cardTransactions",
+        "operator": "<=",
+        "value": 1
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:13:28.724755",
+      "metadata": {
+        "category": "basic",
+        "complexity": 1,
+        "generation_number": 4009,
+        "profile": "easy",
+        "operators_used": [
+          "-",
+          "<",
+          "<=",
+          "=",
+          ">",
+          "size"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 6,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.4,
+            "vrc": 0,
+            "wno": 4.0,
+            "wnm": 1.0,
+            "total": 6.4
+          },
+          "computational": {
+            "oc": 4.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 4.0
+          },
+          "dependency": {
+            "ruc": 8,
+            "total": 8.0
+          },
+          "tc": 18.4
+        },
+        "semantic_cluster": 3,
+        "implies": [
+          "collection_max_size_CreditCard",
+          "collection_max_size_CreditCard"
+        ]
+      }
+    },
+    {
+      "ocl": "context Loan\ninv: self.interestRate <> self.principal",
+      "pattern_id": "two_attributes_not_equal",
+      "pattern_name": "Two Attributes Not Equal",
+      "context": "Loan",
+      "parameters": {
+        "first_attribute": "interestRate",
+        "second_attribute": "principal"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:13:28.726334",
+      "metadata": {
+        "category": "basic",
+        "complexity": 1,
+        "generation_number": 4011,
+        "profile": "easy",
+        "operators_used": [
+          "<",
+          "<>",
+          ">"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 1,
+            "wnc": 2.0,
+            "tnc": 1.7,
+            "vrc": 0,
+            "wno": 3.0,
+            "wnm": 0.0,
+            "total": 4.7
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 11,
+            "total": 11.0
+          },
+          "tc": 18.7
+        },
+        "semantic_cluster": 5,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context CreditCard\ninv: self.cardTransactions->size() >= 1",
+      "pattern_id": "collection_min_size",
+      "pattern_name": "Collection Minimum Size",
+      "context": "CreditCard",
+      "parameters": {
+        "collection": "cardTransactions",
+        "min_size": 1
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:13:28.727135",
+      "metadata": {
+        "category": "collection",
+        "complexity": 1,
+        "generation_number": 4012,
+        "profile": "medium",
+        "operators_used": [
+          "-",
+          "=",
+          ">",
+          ">=",
+          "size"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 5,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.4,
+            "vrc": 0,
+            "wno": 4.0,
+            "wnm": 1.0,
+            "total": 6.4
+          },
+          "computational": {
+            "oc": 4.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 4.0
+          },
+          "dependency": {
+            "ruc": 8,
+            "total": 8.0
+          },
+          "tc": 18.4
+        },
+        "semantic_cluster": 3,
+        "implies": [
+          "association_exists_CreditCard",
+          "collection_not_empty_simple_CreditCard"
+        ]
+      }
+    },
+    {
+      "ocl": "context CreditCard\ninv: self.cardTransactions->size() <= 2",
+      "pattern_id": "collection_max_size",
+      "pattern_name": "Collection Maximum Size",
+      "context": "CreditCard",
+      "parameters": {
+        "collection": "cardTransactions",
+        "max_size": 2
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:13:28.727935",
+      "metadata": {
+        "category": "collection",
+        "complexity": 1,
+        "generation_number": 4013,
+        "profile": "medium",
+        "operators_used": [
+          "-",
+          "<",
+          "<=",
+          "=",
+          ">",
+          "size"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 6,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.4,
+            "vrc": 0,
+            "wno": 4.0,
+            "wnm": 1.0,
+            "total": 6.4
+          },
+          "computational": {
+            "oc": 4.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 4.0
+          },
+          "dependency": {
+            "ruc": 8,
+            "total": 8.0
+          },
+          "tc": 18.4
+        },
+        "semantic_cluster": 3,
+        "implies": [
+          "collection_max_size_CreditCard"
+        ]
+      }
+    },
+    {
+      "ocl": "context Loan\ninv: self.interestRate <> null and self.principal <> null",
+      "pattern_id": "all_attributes_defined",
+      "pattern_name": "All Attributes Defined",
+      "context": "Loan",
+      "parameters": {
+        "first_attribute": "interestRate",
+        "second_attribute": "principal"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:13:28.729468",
+      "metadata": {
+        "category": "advanced",
+        "complexity": 1,
+        "generation_number": 4014,
+        "profile": "medium",
+        "operators_used": [
+          "<",
+          "<>",
+          ">",
+          "and"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 4,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 1,
+            "wnc": 2.0,
+            "tnc": 1.7,
+            "vrc": 0,
+            "wno": 7.5,
+            "wnm": 0.0,
+            "total": 9.2
+          },
+          "computational": {
+            "oc": 7.5,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 7.5
+          },
+          "dependency": {
+            "ruc": 11,
+            "total": 11.0
+          },
+          "tc": 27.7
+        },
+        "semantic_cluster": 5,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Loan\ninv: (self.principal <> null) = (self.interestRate <> null)",
+      "pattern_id": "bi_implication",
+      "pattern_name": "Bi-directional Implication",
+      "context": "Loan",
+      "parameters": {
+        "first_attribute": "principal",
+        "second_attribute": "interestRate"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:13:28.730289",
+      "metadata": {
+        "category": "advanced",
+        "complexity": 2,
+        "generation_number": 4015,
+        "profile": "medium",
+        "operators_used": [
+          "<",
+          "<>",
+          "=",
+          ">"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 4,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 1,
+            "wnc": 2.0,
+            "tnc": 1.7,
+            "vrc": 0,
+            "wno": 7.0,
+            "wnm": 0.0,
+            "total": 8.7
+          },
+          "computational": {
+            "oc": 7.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 7.0
+          },
+          "dependency": {
+            "ruc": 11,
+            "total": 11.0
+          },
+          "tc": 26.7
+        },
+        "semantic_cluster": 5,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Address\ninv: self.line1 <> null implies self.city <> null",
+      "pattern_id": "implies_simple",
+      "pattern_name": "Simple Implication",
+      "context": "Address",
+      "parameters": {
+        "first_attribute": "line1",
+        "second_attribute": "city"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:13:28.731143",
+      "metadata": {
+        "category": "advanced",
+        "complexity": 2,
+        "generation_number": 4016,
+        "profile": "medium",
+        "operators_used": [
+          "<",
+          "<>",
+          ">",
+          "implies"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 4,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 1,
+            "wnc": 2.0,
+            "tnc": 1.7,
+            "vrc": 0,
+            "wno": 8.0,
+            "wnm": 0.0,
+            "total": 9.7
+          },
+          "computational": {
+            "oc": 8.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 8.0
+          },
+          "dependency": {
+            "ruc": 4,
+            "total": 4.0
+          },
+          "tc": 21.7
+        },
+        "semantic_cluster": 2,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Account\ninv: self.transactions->size() >= 2",
+      "pattern_id": "collection_min_size",
+      "pattern_name": "Collection Minimum Size",
+      "context": "Account",
+      "parameters": {
+        "collection": "transactions",
+        "min_size": 2
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:13:28.731956",
+      "metadata": {
+        "category": "collection",
+        "complexity": 1,
+        "generation_number": 4017,
+        "profile": "medium",
+        "operators_used": [
+          "-",
+          "=",
+          ">",
+          ">=",
+          "size"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 5,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.4,
+            "vrc": 0,
+            "wno": 4.0,
+            "wnm": 1.0,
+            "total": 6.4
+          },
+          "computational": {
+            "oc": 4.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 4.0
+          },
+          "dependency": {
+            "ruc": 9,
+            "total": 9.0
+          },
+          "tc": 19.4
+        },
+        "semantic_cluster": 3,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Address\ninv: self.country <> null implies self.line1 <> null",
+      "pattern_id": "implies_reverse",
+      "pattern_name": "Reverse Implication",
+      "context": "Address",
+      "parameters": {
+        "first_attribute": "line1",
+        "second_attribute": "country"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:13:28.732922",
+      "metadata": {
+        "category": "advanced",
+        "complexity": 2,
+        "generation_number": 4019,
+        "profile": "medium",
+        "operators_used": [
+          "<",
+          "<>",
+          ">",
+          "implies"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 4,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 1,
+            "wnc": 2.0,
+            "tnc": 1.7,
+            "vrc": 0,
+            "wno": 8.0,
+            "wnm": 0.0,
+            "total": 9.7
+          },
+          "computational": {
+            "oc": 8.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 8.0
+          },
+          "dependency": {
+            "ruc": 4,
+            "total": 4.0
+          },
+          "tc": 21.7
+        },
+        "semantic_cluster": 2,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context CreditCard\ninv: self.cardTransactions->size() <= 3",
+      "pattern_id": "collection_max_size",
+      "pattern_name": "Collection Maximum Size",
+      "context": "CreditCard",
+      "parameters": {
+        "collection": "cardTransactions",
+        "max_size": 3
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:13:28.733981",
+      "metadata": {
+        "category": "collection",
+        "complexity": 1,
+        "generation_number": 4025,
+        "profile": "medium",
+        "operators_used": [
+          "-",
+          "<",
+          "<=",
+          "=",
+          ">",
+          "size"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 6,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.4,
+            "vrc": 0,
+            "wno": 4.0,
+            "wnm": 1.0,
+            "total": 6.4
+          },
+          "computational": {
+            "oc": 4.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 4.0
+          },
+          "dependency": {
+            "ruc": 8,
+            "total": 8.0
+          },
+          "tc": 18.4
+        },
+        "semantic_cluster": 3,
+        "implies": [
+          "collection_max_size_CreditCard"
+        ]
+      }
+    },
+    {
+      "ocl": "context Account\ninv: (self.balance <= 1000) and (self.transactions->forAll(v | v.amount < 100))",
+      "pattern_id": "navigation_chain",
+      "pattern_name": "Navigation Chain",
+      "context": "Account",
+      "parameters": {
+        "navigation_path": "self.customer.branch.city <> ''"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:13:28.973933",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 2,
+        "generation_number": 4033,
+        "profile": "difficult",
+        "regenerated_from": "collection_navigation",
+        "regen_box": "difficult+forall",
+        "regen_family": "navigation",
+        "refilled_after": "dedup",
+        "operators_used": [
+          "-",
+          "<",
+          "<=",
+          "=",
+          ">",
+          "and",
+          "forAll"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "difficult",
+        "operator_count": 7,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 5.0,
+            "nnc_plus": 4.0,
+            "dn_ca": 3.0,
+            "wnc": 6.0,
+            "tnc": 4.7,
+            "vrc": 1,
+            "wno": 9.5,
+            "wnm": 1.0,
+            "total": 16.2
+          },
+          "computational": {
+            "oc": 9.5,
+            "tcc": 0.0,
+            "cic": 3.0,
+            "total": 12.5
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 28.7
+        },
+        "semantic_cluster": 6,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Customer\ninv: self.kyc <> null",
+      "pattern_id": "association_exists",
+      "pattern_name": "Association Exists",
+      "context": "Customer",
+      "parameters": {
+        "association": "kyc"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:13:28.983015",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 1,
+        "generation_number": 4068,
+        "profile": "easy",
+        "regenerated_from": "association_exists",
+        "regen_box": "easy",
+        "regen_family": "quantified",
+        "refilled_after": "dedup",
+        "operators_used": [
+          "<",
+          "<>",
+          ">"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 1.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.0,
+            "vrc": 0,
+            "wno": 3.0,
+            "wnm": 0.0,
+            "total": 4.0
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 7.0
+        },
+        "semantic_cluster": 0,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Customer\ninv: self.address <> null",
+      "pattern_id": "association_exists",
+      "pattern_name": "Association Exists",
+      "context": "Customer",
+      "parameters": {
+        "association": "address"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:13:28.989346",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 1,
+        "generation_number": 4104,
+        "profile": "easy",
+        "regenerated_from": "association_exists",
+        "regen_box": "easy",
+        "regen_family": "quantified",
+        "refilled_after": "dedup",
+        "operators_used": [
+          "<",
+          "<>",
+          ">"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 1.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.0,
+            "vrc": 0,
+            "wno": 3.0,
+            "wnm": 0.0,
+            "total": 4.0
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 7.0
+        },
+        "semantic_cluster": 2,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context CardTransaction\ninv: self.card.customer.customerId <> ''",
+      "pattern_id": "navigation_chain",
+      "pattern_name": "Navigation Chain",
+      "context": "CardTransaction",
+      "parameters": {
+        "navigation_path": "self.card.customer.customerId <> ''"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:13:29.002671",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 2,
+        "generation_number": 4165,
+        "profile": "medium",
+        "regenerated_from": "navigation_chain",
+        "regen_box": "medium",
+        "regen_family": "navigation",
+        "refilled_after": "dedup",
+        "operators_used": [
+          "<",
+          "<>",
+          ">"
+        ],
+        "navigation_depth": 4,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 3.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 3,
+            "wnc": 3.0,
+            "tnc": 3.0,
+            "vrc": 0,
+            "wno": 3.0,
+            "wnm": 0.0,
+            "total": 6.0
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 9.0
+        },
+        "semantic_cluster": 7,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context CardTransaction\ninv: self.card.customer.email <> ''",
+      "pattern_id": "navigation_chain",
+      "pattern_name": "Navigation Chain",
+      "context": "CardTransaction",
+      "parameters": {
+        "navigation_path": "self.card.customer.email <> ''"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:13:29.008462",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 2,
+        "generation_number": 4198,
+        "profile": "medium",
+        "regenerated_from": "navigation_chain",
+        "regen_box": "medium",
+        "regen_family": "navigation",
+        "refilled_after": "dedup",
+        "operators_used": [
+          "<",
+          "<>",
+          ">"
+        ],
+        "navigation_depth": 4,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 3.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 3,
+            "wnc": 3.0,
+            "tnc": 3.0,
+            "vrc": 0,
+            "wno": 3.0,
+            "wnm": 0.0,
+            "total": 6.0
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 9.0
+        },
+        "semantic_cluster": 7,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Customer\ninv: self.branch.bank.swiftCode <> ''",
+      "pattern_id": "navigation_chain",
+      "pattern_name": "Navigation Chain",
+      "context": "Customer",
+      "parameters": {
+        "navigation_path": "self.branch.bank.swiftCode <> ''"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:13:29.015518",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 2,
+        "generation_number": 4241,
+        "profile": "medium",
+        "regenerated_from": "navigation_chain",
+        "regen_box": "medium",
+        "regen_family": "navigation",
+        "refilled_after": "dedup",
+        "operators_used": [
+          "<",
+          "<>",
+          ">"
+        ],
+        "navigation_depth": 4,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 3.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 3,
+            "wnc": 3.0,
+            "tnc": 3.0,
+            "vrc": 0,
+            "wno": 3.0,
+            "wnm": 0.0,
+            "total": 6.0
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 9.0
+        },
+        "semantic_cluster": 8,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Bank\ninv: self.branches->any(x | x.city <> '') <> null",
+      "pattern_id": "any_operation",
+      "pattern_name": "Any Operation",
+      "context": "Bank",
+      "parameters": {
+        "collection": "branches",
+        "iterator": "x",
+        "condition": "x.city <> ''"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:13:29.027725",
+      "metadata": {
+        "category": "collection",
+        "complexity": 2,
+        "generation_number": 4272,
+        "profile": "difficult",
+        "regenerated_from": "select_operation",
+        "regen_box": "difficult",
+        "regen_family": "quantified",
+        "refilled_after": "dedup",
+        "operators_used": [
+          "-",
+          "<",
+          "<>",
+          ">",
+          "any"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "difficult",
+        "operator_count": 5,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 3.0,
+            "wnc": 5.0,
+            "tnc": 4.0,
+            "vrc": 1,
+            "wno": 7.0,
+            "wnm": 1.0,
+            "total": 13.0
+          },
+          "computational": {
+            "oc": 7.0,
+            "tcc": 0.0,
+            "cic": 2.0,
+            "total": 9.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 22.0
+        },
+        "semantic_cluster": 12,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Account\ninv: self.transactions->forAll(x | x.amount <= 100)",
+      "pattern_id": "forall_nested",
+      "pattern_name": "Universal Quantification (forAll)",
+      "context": "Account",
+      "parameters": {
+        "collection": "transactions",
+        "iterator": "x",
+        "condition": "x.amount <= 100"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:13:29.036654",
+      "metadata": {
+        "category": "collection",
+        "complexity": 2,
+        "generation_number": 4278,
+        "profile": "difficult",
+        "regenerated_from": "exists_constraint",
+        "regen_box": "difficult",
+        "regen_family": "quantified",
+        "refilled_after": "dedup",
+        "operators_used": [
+          "-",
+          "<",
+          "<=",
+          "=",
+          ">",
+          "forAll"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "difficult",
+        "operator_count": 6,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 3.0,
+            "wnc": 5.0,
+            "tnc": 4.0,
+            "vrc": 1,
+            "wno": 7.0,
+            "wnm": 1.0,
+            "total": 13.0
+          },
+          "computational": {
+            "oc": 7.0,
+            "tcc": 0.0,
+            "cic": 3.0,
+            "total": 10.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 23.0
+        },
+        "semantic_cluster": 6,
+        "implies": [
+          "collection_navigation_unsat_Account"
+        ]
+      }
+    },
+    {
+      "ocl": "context Account\ninv: (self.balance < 10) and (self.transactions->forAll(v | v.amount < 100))",
+      "pattern_id": "association_exists",
+      "pattern_name": "Association Exists",
+      "context": "Account",
+      "parameters": {
+        "association": "customer"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:13:29.046190",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 1,
+        "generation_number": 4290,
+        "profile": "difficult",
+        "regenerated_from": "any_operation",
+        "regen_box": "difficult+forall",
+        "regen_family": "quantified",
+        "refilled_after": "dedup",
+        "operators_used": [
+          "-",
+          "<",
+          ">",
+          "and",
+          "forAll"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "difficult",
+        "operator_count": 5,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 5.0,
+            "nnc_plus": 4.0,
+            "dn_ca": 3.0,
+            "wnc": 6.0,
+            "tnc": 4.7,
+            "vrc": 1,
+            "wno": 7.5,
+            "wnm": 1.0,
+            "total": 14.2
+          },
+          "computational": {
+            "oc": 7.5,
+            "tcc": 0.0,
+            "cic": 3.0,
+            "total": 10.5
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 24.7
+        },
+        "semantic_cluster": 6,
+        "implies": [
+          "numeric_non_negative_Account",
+          "numeric_bounded_Account",
+          "numeric_greater_than_value_Account",
+          "navigation_chain_Account",
+          "numeric_less_than_value_unsat_Account"
+        ]
+      }
+    },
+    {
+      "ocl": "context Account\ninv: (self.balance >= 2) and (self.transactions->forAll(v | v.amount > 5))",
+      "pattern_id": "collection_asSequence",
+      "pattern_name": "Collection As Sequence Conversion",
+      "context": "Account",
+      "parameters": {
+        "collection": "transactions"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:13:50.067907",
+      "metadata": {
+        "category": "collection",
+        "complexity": 2,
+        "generation_number": 4375,
+        "profile": "difficult",
+        "regenerated_from": "collection_not_empty_check",
+        "regen_box": "difficult+forall",
+        "regen_family": "cardinality",
+        "operators_used": [
+          "-",
+          "=",
+          ">",
+          ">=",
+          "and",
+          "forAll"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "difficult",
+        "operator_count": 6,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 5.0,
+            "nnc_plus": 4.0,
+            "dn_ca": 3.0,
+            "wnc": 6.0,
+            "tnc": 4.7,
+            "vrc": 1,
+            "wno": 9.5,
+            "wnm": 1.0,
+            "total": 16.2
+          },
+          "computational": {
+            "oc": 9.5,
+            "tcc": 0.0,
+            "cic": 3.0,
+            "total": 12.5
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 28.7
+        },
+        "semantic_cluster": 6,
+        "implies": [
+          "numeric_positive_Account"
+        ]
+      }
+    },
+    {
+      "ocl": "context Loan\ninv: self.principal >= 41 and self.principal <= 63",
+      "pattern_id": "numeric_bounded",
+      "pattern_name": "Numeric Attribute Bounded",
+      "context": "Loan",
+      "parameters": {
+        "numeric_attribute": "principal",
+        "min_value": 41,
+        "max_value": 63
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:13:29.068748",
+      "metadata": {
+        "category": "arithmetic",
+        "complexity": 2,
+        "generation_number": 4312,
+        "profile": "medium",
+        "regenerated_from": "numeric_max_of_two",
+        "regen_box": "medium",
+        "regen_family": "arithmetic",
+        "refilled_after": "dedup",
+        "operators_used": [
+          "<",
+          "<=",
+          "=",
+          ">",
+          ">=",
+          "and"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 6,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 1,
+            "wnc": 2.0,
+            "tnc": 1.7,
+            "vrc": 0,
+            "wno": 7.5,
+            "wnm": 0.0,
+            "total": 9.2
+          },
+          "computational": {
+            "oc": 7.5,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 7.5
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 16.7
+        },
+        "semantic_cluster": 5,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Loan\ninv: self.interestRate.abs() <= 3",
+      "pattern_id": "numeric_abs_bounded",
+      "pattern_name": "Numeric Absolute Value Bounded",
+      "context": "Loan",
+      "parameters": {
+        "numeric_attribute": "interestRate",
+        "max_abs": 3
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:13:29.076691",
+      "metadata": {
+        "category": "arithmetic",
+        "complexity": 2,
+        "generation_number": 4319,
+        "profile": "medium",
+        "regenerated_from": "numeric_max_of_two",
+        "regen_box": "medium",
+        "regen_family": "arithmetic",
+        "refilled_after": "dedup",
+        "operators_used": [
+          "<",
+          "<=",
+          "=",
+          "abs"
+        ],
+        "navigation_depth": 3,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 4,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 2,
+            "wnc": 2.0,
+            "tnc": 2.0,
+            "vrc": 0,
+            "wno": 4.0,
+            "wnm": 1.0,
+            "total": 7.0
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 10.0
+        },
+        "semantic_cluster": 5,
+        "implies": []
+      }
+    }
+  ]
+}

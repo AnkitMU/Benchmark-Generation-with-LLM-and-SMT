@@ -1,0 +1,487 @@
+-- Benchmark: BankSystem / balanced
+-- Generated: 2026-10-16T01:06:25.207315
+-- Seed: 42
+-- Complexity: standard
+-- Count: 80
+-- Advanced Features: ENABLED
+
+-- #1 Simple Navigation in Customer
+-- Difficulty: easy
+-- Type: SAT
+context Customer
+inv: self.kyc.isVerified
+
+-- #2 Association Exists in Transaction
+-- Difficulty: easy
+-- Type: SAT
+context Transaction
+inv: self.payment <> null
+
+-- #3 Navigation Chain in Branch
+-- Difficulty: easy
+-- Type: SAT
+context Branch
+inv: self.bank.name <> ''
+
+-- #4 Simple Navigation in CardTransaction
+-- Difficulty: easy
+-- Type: SAT
+context CardTransaction
+inv: self.card.isActive
+
+-- #5 Simple Navigation in Transaction
+-- Difficulty: easy
+-- Type: SAT
+context Transaction
+inv: self.payment.isConfirmed
+
+-- #6 Association Exists in Customer
+-- Difficulty: easy
+-- Type: SAT
+context Customer
+inv: self.kyc <> null
+
+-- #7 Navigation Chain in Branch
+-- Difficulty: easy
+-- Type: SAT
+context Branch
+inv: self.bank.swiftCode <> ''
+
+-- #8 Collection Navigation in Bank
+-- Difficulty: difficult
+-- Type: SAT
+context Bank
+inv: self.branches->forAll(x | x.city <> '')
+
+-- #9 Collection Navigation in Account
+-- Difficulty: difficult
+-- Type: SAT
+context Account
+inv: self.transactions->forAll(x | x.amount <= 10)
+
+-- #10 Navigation Chain in CreditCard
+-- Difficulty: difficult
+-- Type: SAT
+context CreditCard
+inv: (self.limit <= 50) and (self.cardTransactions->forAll(v | v.merchant <> ''))
+
+-- #11 Collection Navigation in Customer
+-- Difficulty: difficult
+-- Type: SAT
+context Customer
+inv: self.loans->exists(x | x.principal >= 1)
+
+-- #12 Collection Navigation in Bank
+-- Difficulty: difficult
+-- Type: SAT
+context Bank
+inv: self.branches->exists(x | x.branchCode <> '')
+
+-- #13 Navigation Chain in Address
+-- Difficulty: medium
+-- Type: SAT
+context Address
+inv: (self.customer.branch.branchCode <> '') and (self.country = self.line1)
+
+-- #14 Navigation Chain in KYCRecord
+-- Difficulty: medium
+-- Type: SAT
+context KYCRecord
+inv: (self.customer.branch.city <> '') and (self.idNumber <> null)
+
+-- #15 Navigation Chain in Employee
+-- Difficulty: medium
+-- Type: SAT
+context Employee
+inv: ((self.branch.bank.swiftCode <> '') and (self.branch.oclIsTypeOf(Branch))) and (self.name.toLowerCase() = 'test')
+
+-- #16 Association Exists in Transaction
+-- Difficulty: medium
+-- Type: SAT
+context Transaction
+inv: (self.account <> null) and (self.txnId.toUpperCase() = 'TEST')
+
+-- #17 Simple Navigation in Customer
+-- Difficulty: medium
+-- Type: SAT
+context Customer
+inv: (self.kyc.isVerified) and (self.loans->select(x | x.principal < 50)->size() >= 1)
+
+-- #18 Association Exists in Customer
+-- Difficulty: medium
+-- Type: SAT
+context Customer
+inv: (self.address <> null) and (self.fullName <> '' and self.fullName.size() > 0)
+
+-- #19 Simple Navigation in CardTransaction
+-- Difficulty: medium
+-- Type: SAT
+context CardTransaction
+inv: ((self.card.isActive) and (self.merchant.toUpperCase() = 'TEST')) and (self.card.oclIsTypeOf(CreditCard))
+
+-- #20 Numeric Attribute Bounded in CreditCard
+-- Difficulty: difficult
+-- Type: SAT
+context CreditCard
+inv: (self.limit > 2) and (self.cardTransactions->forAll(v | v.merchant <> ''))
+
+-- #21 Numeric Attribute Bounded in CreditCard
+-- Difficulty: difficult
+-- Type: SAT
+context CreditCard
+inv: (self.limit <= 1000) and (self.cardTransactions->forAll(v | v.merchant <> ''))
+
+-- #22 Numeric Absolute Value Bounded in Account
+-- Difficulty: difficult
+-- Type: SAT
+context Account
+inv: (self.balance <= 10) and (self.transactions->forAll(v | v.amount >= 10))
+
+-- #23 Select (Filter) Operation in Customer
+-- Difficulty: medium
+-- Type: SAT
+context Customer
+inv: self.cards->select(x | x.limit < 50)->size() >= 1
+
+-- #24 Collect (Map) Operation in Account
+-- Difficulty: medium
+-- Type: SAT
+context Account
+inv: (self.transactions->collect(x | x.timestamp)->notEmpty()) and (self.transactions->size() = 2)
+
+-- #25 Select (Filter) Operation in Customer
+-- Difficulty: medium
+-- Type: SAT
+context Customer
+inv: self.loans->select(x | x.interestRate < 1000)->size() >= 1
+
+-- #26 Any Operation in Customer
+-- Difficulty: medium
+-- Type: SAT
+context Customer
+inv: (self.cards->any(x | x.limit <= 50) <> null) and (self.address <> null)
+
+-- #27 One Operation in Bank
+-- Difficulty: medium
+-- Type: SAT
+context Bank
+inv: (self.branches->one(x | x.branchCode <> '')) and (self.name.indexOf('test') >= 0)
+
+-- #28 Universal Quantification (forAll) in Customer
+-- Difficulty: difficult
+-- Type: SAT
+context Customer
+inv: self.loans->forAll(x | x.principal <= 50)
+
+-- #29 Existential Quantification (exists) in Branch
+-- Difficulty: difficult
+-- Type: SAT
+context Branch
+inv: self.employees->exists(x | x.name <> '')
+
+-- #30 Existential Quantification (exists) in Account
+-- Difficulty: difficult
+-- Type: SAT
+context Account
+inv: self.transactions->exists(x | x.amount <= 10)
+
+-- #31 Existential Quantification (exists) in Branch
+-- Difficulty: difficult
+-- Type: SAT
+context Branch
+inv: self.customers->exists(x | x.fullName <> '')
+
+-- #32 Numeric Attribute Positive in CheckingAccount
+-- Difficulty: easy
+-- Type: SAT
+context CheckingAccount
+inv: self.overdraftLimit > 0
+
+-- #33 Numeric Multiple Of in Teller
+-- Difficulty: easy
+-- Type: SAT
+context Teller
+inv: self.counterNo mod 8 = 0
+
+-- #34 Numeric Greater Than Value in SavingsAccount
+-- Difficulty: easy
+-- Type: SAT
+context SavingsAccount
+inv: self.interestRate > 32
+
+-- #35 Numeric Comparison in Loan
+-- Difficulty: easy
+-- Type: SAT
+context Loan
+inv: self.principal = self.interestRate
+
+-- #36 Numeric Attribute Non-Negative in CheckingAccount
+-- Difficulty: easy
+-- Type: SAT
+context CheckingAccount
+inv: self.overdraftLimit >= 0
+
+-- #37 Numeric Is Even in Teller
+-- Difficulty: easy
+-- Type: SAT
+context Teller
+inv: self.counterNo mod 2 = 0
+
+-- #38 Numeric Difference Constraint in Loan
+-- Difficulty: easy
+-- Type: SAT
+context Loan
+inv: self.principal - self.interestRate >= 0
+
+-- #39 Numeric Less Than Value in Account
+-- Difficulty: easy
+-- Type: SAT
+context Account
+inv: self.balance < 69
+
+-- #40 Collection Nested Collection Flatten in Bank
+-- Difficulty: difficult
+-- Type: SAT
+context Bank
+inv: (self.branches->collect(x | x.customers)->size() >= 3) and (self.swiftCode.toLowerCase() = 'test')
+
+-- #41 Flatten Operation in Customer
+-- Difficulty: difficult
+-- Type: SAT
+context Customer
+inv: self.accounts->collect(x | x.transactions)->flatten()->notEmpty()
+
+-- #42 Maximum Of Two Attributes in Loan
+-- Difficulty: medium
+-- Type: SAT
+context Loan
+inv: (if self.principal > self.interestRate then self.principal else self.interestRate endif > 45) and (self.customer.oclIsTypeOf(Customer))
+
+-- #43 Numeric Attribute Bounded in CheckingAccount
+-- Difficulty: medium
+-- Type: SAT
+context CheckingAccount
+inv: self.overdraftLimit >= 19 and self.overdraftLimit <= 31
+
+-- #44 Collection Size in Range in Account
+-- Difficulty: medium
+-- Type: SAT
+context Account
+inv: self.transactions->size() >= 1 and self.transactions->size() <= 2
+
+-- #45 Numeric Absolute Value Bounded in Teller
+-- Difficulty: medium
+-- Type: SAT
+context Teller
+inv: (self.counterNo.abs() <= 2) and (self.counterNo mod 2 = 0)
+
+-- #46 Numeric Less Than Value in CheckingAccount
+-- Difficulty: medium
+-- Type: SAT
+context CheckingAccount
+inv: (self.overdraftLimit < 80) and (self.overdraftLimit > 0)
+
+-- #47 Collection Size Constraint in Customer
+-- Difficulty: easy
+-- Type: SAT
+context Customer
+inv: self.loans->size() = 1
+
+-- #48 Collection Not Empty Check in CreditCard
+-- Difficulty: easy
+-- Type: SAT
+context CreditCard
+inv: self.cardTransactions->size() > 0
+
+-- #49 Collection Maximum Size in Account
+-- Difficulty: easy
+-- Type: SAT
+context Account
+inv: self.transactions->size() <= 3
+
+-- #50 All Attributes Defined in Address
+-- Difficulty: easy
+-- Type: SAT
+context Address
+inv: self.city <> null and self.line1 <> null
+
+-- #51 Collection Not Empty (Simple) in Account
+-- Difficulty: easy
+-- Type: SAT
+context Account
+inv: self.transactions->notEmpty()
+
+-- #52 Two Attributes Not Equal in Address
+-- Difficulty: easy
+-- Type: SAT
+context Address
+inv: self.city <> self.line1
+
+-- #53 Bi-directional Implication in Address
+-- Difficulty: easy
+-- Type: SAT
+context Address
+inv: (self.line1 <> null) = (self.country <> null)
+
+-- #54 Collection Not Empty (Simple) in Branch
+-- Difficulty: easy
+-- Type: SAT
+context Branch
+inv: self.employees->notEmpty()
+
+-- #55 Collection Has Specific Size in Branch
+-- Difficulty: easy
+-- Type: SAT
+context Branch
+inv: self.employees->size() = 3
+
+-- #56 Reverse Implication in Address
+-- Difficulty: medium
+-- Type: SAT
+context Address
+inv: self.country <> null implies self.line1 <> null
+
+-- #57 All Attributes Defined in Address
+-- Difficulty: medium
+-- Type: SAT
+context Address
+inv: self.line1 <> null and self.city <> null
+
+-- #58 Bi-directional Implication in Address
+-- Difficulty: medium
+-- Type: SAT
+context Address
+inv: (self.city <> null) = (self.line1 <> null)
+
+-- #59 Simple Implication in Address
+-- Difficulty: medium
+-- Type: SAT
+context Address
+inv: self.line1 <> null implies self.country <> null
+
+-- #60 Reverse Implication in Address
+-- Difficulty: medium
+-- Type: SAT
+context Address
+inv: self.line1 <> null implies self.city <> null
+
+-- #61 Universal Quantification (forAll) in Customer
+-- Difficulty: difficult
+-- Type: SAT
+context Customer
+inv: self.cards->forAll(x | x.limit >= 0)
+
+-- #62 Collection Must Be Empty in Account
+-- Difficulty: difficult
+-- Type: SAT
+context Account
+inv: (self.balance > 5) and (self.transactions->forAll(v | v.amount >= 1))
+
+-- #63 Collection As Sequence Conversion in Branch
+-- Difficulty: difficult
+-- Type: SAT
+context Branch
+inv: (self.city <> '') and (self.employees->forAll(v | v.name <> ''))
+
+-- #64 Collection Index Of Element in Account
+-- Difficulty: difficult
+-- Type: SAT
+context Account
+inv: (self.balance < 1000) and (self.transactions->forAll(v | v.amount >= 2))
+
+-- #65 Collection Size in Range (UNSAT) in CreditCard
+-- Difficulty: difficult
+-- Type: UNSAT
+context CreditCard
+inv: ((self.limit <= 10) and (self.cardTransactions->forAll(v | v.merchant <> ''))) and (self.limit > 10)
+
+-- #66 Collection Size Constraint (UNSAT) in Account
+-- Difficulty: medium
+-- Type: UNSAT
+context Account
+inv: (self.transactions->size() <= 1) and (self.transactions->size() > 1)
+
+-- #67 All Attributes Defined (UNSAT) in Address
+-- Difficulty: unboxed
+-- Type: UNSAT
+context Address
+inv: (self.country <> null and self.line1 <> null) and (not(self.country <> null and self.line1 <> null))
+
+-- #68 Collection Size in Range (UNSAT) in Account
+-- Difficulty: difficult
+-- Type: UNSAT
+context Account
+inv: ((self.balance >= 5) and (self.transactions->forAll(v | v.amount <= 1000))) and (self.balance < 5)
+
+-- #69 Collection Maximum Size (UNSAT) in Account
+-- Difficulty: unboxed
+-- Type: UNSAT
+context Account
+inv: ((self.transactions->size() <= 3) and (self.balance >= 74 and self.balance <= 94)) and (self.transactions->size() > 3)
+
+-- #70 Numeric Comparison (UNSAT) in Loan
+-- Difficulty: medium
+-- Type: UNSAT
+context Loan
+inv: (self.interestRate = self.principal) and (not(self.interestRate = self.principal))
+
+-- #71 Collect (Map) Operation (UNSAT) in Branch
+-- Difficulty: unboxed
+-- Type: UNSAT
+context Branch
+inv: ((self.customers->collect(x | x.customerId)->notEmpty()) and (self.city <> null)) and (not((self.customers->collect(x | x.customerId)->notEmpty()) and (self.city <> null)))
+
+-- #72 Numeric Absolute Value Bounded (UNSAT) in Account
+-- Difficulty: difficult
+-- Type: UNSAT
+context Account
+inv: ((self.balance <= 100) and (self.transactions->forAll(v | v.amount >= 2))) and (self.balance > 100)
+
+-- #73 Navigation Chain (UNSAT) in Branch
+-- Difficulty: unboxed
+-- Type: UNSAT
+context Branch
+inv: ((self.bank.swiftCode <> '') and (self.customers->collect(x | x.fullName)->notEmpty())) and (not((self.bank.swiftCode <> '') and (self.customers->collect(x | x.fullName)->notEmpty())))
+
+-- #74 Any Operation (UNSAT) in Account
+-- Difficulty: unboxed
+-- Type: UNSAT
+context Account
+inv: ((self.transactions->any(x | x.amount > 2) <> null) and (self.transactions->size() >= 1 and self.transactions->size() <= 2)) and (self.transactions->size() < 1)
+
+-- #75 Navigation Chain (UNSAT) in Account
+-- Difficulty: unboxed
+-- Type: UNSAT
+context Account
+inv: ((self.customer.branch.city <> '') and (self.accountNo.indexOf('test') >= 0)) and (not((self.customer.branch.city <> '') and (self.accountNo.indexOf('test') >= 0)))
+
+-- #76 Reverse Implication (UNSAT) in Address
+-- Difficulty: unboxed
+-- Type: UNSAT
+context Address
+inv: (self.city <> null implies self.line1 <> null) and (not(self.city <> null implies self.line1 <> null))
+
+-- #77 Association Exists (UNSAT) in Customer
+-- Difficulty: medium
+-- Type: UNSAT
+context Customer
+inv: (self.address <> null) and (not(self.address <> null))
+
+-- #78 Numeric Attribute Positive (UNSAT) in Loan
+-- Difficulty: unboxed
+-- Type: UNSAT
+context Loan
+inv: ((self.principal > 0) and (if self.interestRate > self.principal then self.interestRate else self.principal endif >= 16)) and (self.principal < -5)
+
+-- #79 Navigation Chain (UNSAT) in Account
+-- Difficulty: difficult
+-- Type: UNSAT
+context Account
+inv: ((self.balance > 1) and (self.transactions->forAll(v | v.amount > 5))) and (self.balance < -4)
+
+-- #80 Collection Maximum Size (UNSAT) in Branch
+-- Difficulty: medium
+-- Type: UNSAT
+context Branch
+inv: (self.customers->size() <= 2) and (self.customers->size() > 2)
+

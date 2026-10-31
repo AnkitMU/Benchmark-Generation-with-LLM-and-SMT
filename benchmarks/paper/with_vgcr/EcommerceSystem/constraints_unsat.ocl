@@ -1,0 +1,107 @@
+-- Benchmark: EcommerceSystem / balanced
+-- Type: UNSAT Constraints Only
+-- Generated: 2026-10-12T20:15:55.243284
+-- Count: 17
+
+-- #1 Collection Sum (UNSAT) in Product
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Product
+inv: (self.variants->collect(x | x.priceDelta)->sum() >= 7) and (not(self.variants->collect(x | x.priceDelta)->sum() >= 7))
+
+-- #2 Collection Maximum Size (UNSAT) in Customer
+-- Difficulty: medium
+-- Mutation Strategy: contradictory_bounds
+context Customer
+inv: (self.addresses->size() <= 2) and (self.addresses->size() > 2)
+
+-- #3 Association Exists (UNSAT) in ProductVariant
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context ProductVariant
+inv: (self.product <> null) and (not(self.product <> null))
+
+-- #4 Numeric Absolute Value Bounded (UNSAT) in CartItem
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context CartItem
+inv: (self.quantity.abs() <= 2) and (not(self.quantity.abs() <= 2))
+
+-- #5 Attribute Not Null (Simple) (UNSAT) in Customer
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Customer
+inv: ((self.customerId <> '') and (self.addresses->forAll(v | v.postalCode <> ''))) and (not((self.customerId <> '') and (self.addresses->forAll(v | v.postalCode <> ''))))
+
+-- #6 Attribute Not Null (Simple) (UNSAT) in CartItem
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context CartItem
+inv: ((self.quantity <> null) and (self.cart.customer.email <> '')) and (not((self.quantity <> null) and (self.cart.customer.email <> '')))
+
+-- #7 Numeric Attribute Bounded (UNSAT) in OrderItem
+-- Difficulty: unboxed
+-- Mutation Strategy: contradictory_bounds
+context OrderItem
+inv: (self.unitPrice >= 72 and self.unitPrice <= 93) and (self.unitPrice < 72)
+
+-- #8 Numeric Greater Than Value (UNSAT) in DiscountRule
+-- Difficulty: easy
+-- Mutation Strategy: contradictory_bounds
+context DiscountRule
+inv: (self.percentOff > 58) and (self.percentOff < 53)
+
+-- #9 Collection Not Empty (Simple) (UNSAT) in Cart
+-- Difficulty: medium
+-- Mutation Strategy: empty_collection
+context Cart
+inv: (self.items->notEmpty()) and (self.items->isEmpty())
+
+-- #10 Collection Not Empty Check (UNSAT) in Customer
+-- Difficulty: medium
+-- Mutation Strategy: empty_collection
+context Customer
+inv: (self.tickets->size() > 0) and (self.tickets->size() <= 0)
+
+-- #11 Association Exists (UNSAT) in ReturnRequest
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context ReturnRequest
+inv: ((self.item <> null) and (self.order.customer.fullName <> '')) and (not((self.item <> null) and (self.order.customer.fullName <> '')))
+
+-- #12 Numeric Less Than Value (UNSAT) in CartItem
+-- Difficulty: easy
+-- Mutation Strategy: contradictory_bounds
+context CartItem
+inv: (self.quantity < 7) and (self.quantity > 12)
+
+-- #13 Navigation Chain (UNSAT) in Category
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Category
+inv: (self.store.currency <> '') and (not(self.store.currency <> ''))
+
+-- #14 Numeric Attribute Positive (UNSAT) in OrderItem
+-- Difficulty: easy
+-- Mutation Strategy: contradictory_bounds
+context OrderItem
+inv: (self.quantity > 0) and (self.quantity < -5)
+
+-- #15 Any Operation (UNSAT) in Cart
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Cart
+inv: ((self.items->any(x | x.quantity < 10) <> null) and (self.customer <> null)) and (not((self.items->any(x | x.quantity < 10) <> null) and (self.customer <> null)))
+
+-- #16 Navigation Chain (UNSAT) in Coupon
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Coupon
+inv: (self.rule.coupon.code <> '') and (not(self.rule.coupon.code <> ''))
+
+-- #17 Collection Sum (UNSAT) in Product
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Product
+inv: (self.reviews->collect(x | x.rating)->sum() >= 1) and (not(self.reviews->collect(x | x.rating)->sum() >= 1))
+

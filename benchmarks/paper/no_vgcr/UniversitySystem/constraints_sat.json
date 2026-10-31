@@ -1,0 +1,3707 @@
+{
+  "metadata": {
+    "type": "SAT",
+    "model": "UniversitySystem",
+    "profile": "balanced",
+    "generated_at": "2026-10-12T20:27:11.115944",
+    "constraint_count": 67
+  },
+  "constraints": [
+    {
+      "ocl": "context Faculty\ninv: self.university.name <> ''",
+      "pattern_id": "navigation_chain",
+      "pattern_name": "Navigation Chain",
+      "context": "Faculty",
+      "parameters": {
+        "navigation_path": "self.university.name <> ''"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:26:42.137361",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 2,
+        "generation_number": 6366,
+        "profile": "easy",
+        "operators_used": [
+          "<",
+          "<>",
+          ">"
+        ],
+        "navigation_depth": 3,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 2,
+            "wnc": 2.0,
+            "tnc": 2.0,
+            "vrc": 0,
+            "wno": 3.0,
+            "wnm": 0.0,
+            "total": 5.0
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 8.0
+        },
+        "semantic_cluster": 0,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Faculty\ninv: self.university.code <> ''",
+      "pattern_id": "navigation_chain",
+      "pattern_name": "Navigation Chain",
+      "context": "Faculty",
+      "parameters": {
+        "navigation_path": "self.university.code <> ''"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:26:42.140137",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 2,
+        "generation_number": 6369,
+        "profile": "easy",
+        "operators_used": [
+          "<",
+          "<>",
+          ">"
+        ],
+        "navigation_depth": 3,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 2,
+            "wnc": 2.0,
+            "tnc": 2.0,
+            "vrc": 0,
+            "wno": 3.0,
+            "wnm": 0.0,
+            "total": 5.0
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 8.0
+        },
+        "semantic_cluster": 0,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Course\ninv: self.department <> null",
+      "pattern_id": "association_exists",
+      "pattern_name": "Association Exists",
+      "context": "Course",
+      "parameters": {
+        "association": "department"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:26:42.165847",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 1,
+        "generation_number": 6497,
+        "profile": "easy",
+        "operators_used": [
+          "<",
+          "<>",
+          ">"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 1.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.0,
+            "vrc": 0,
+            "wno": 3.0,
+            "wnm": 0.0,
+            "total": 4.0
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 7.0
+        },
+        "semantic_cluster": 0,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context GradeRecord\ninv: (self.enrollment <> null) and (self.enrollment.student.yearOfStudy >= 0)",
+      "pattern_id": "association_exists",
+      "pattern_name": "Association Exists",
+      "context": "GradeRecord",
+      "parameters": {
+        "association": "enrollment"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:26:42.174193",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 1,
+        "generation_number": 6502,
+        "profile": "medium",
+        "operators_used": [
+          "<",
+          "<>",
+          "=",
+          ">",
+          ">=",
+          "and"
+        ],
+        "navigation_depth": 4,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 6,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 4.0,
+            "dn_ca": 3,
+            "wnc": 4.0,
+            "tnc": 3.7,
+            "vrc": 0,
+            "wno": 7.5,
+            "wnm": 0.0,
+            "total": 11.2
+          },
+          "computational": {
+            "oc": 7.5,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 7.5
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 18.7
+        },
+        "semantic_cluster": 0,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Exam\ninv: (self.offering <> null) and (self.offering.oclIsTypeOf(CourseOffering))",
+      "pattern_id": "association_exists",
+      "pattern_name": "Association Exists",
+      "context": "Exam",
+      "parameters": {
+        "association": "offering"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:26:42.185776",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 1,
+        "generation_number": 6509,
+        "profile": "medium",
+        "operators_used": [
+          "<",
+          "<>",
+          ">",
+          "and",
+          "oclIsTypeOf"
+        ],
+        "navigation_depth": 3,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 5,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 3.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 2,
+            "wnc": 3.0,
+            "tnc": 2.7,
+            "vrc": 0,
+            "wno": 4.5,
+            "wnm": 1.0,
+            "total": 8.2
+          },
+          "computational": {
+            "oc": 4.5,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 4.5
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 12.7
+        },
+        "semantic_cluster": 0,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context CourseOffering\ninv: self.semester <> null",
+      "pattern_id": "association_exists",
+      "pattern_name": "Association Exists",
+      "context": "CourseOffering",
+      "parameters": {
+        "association": "semester"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:26:42.188660",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 1,
+        "generation_number": 6511,
+        "profile": "easy",
+        "operators_used": [
+          "<",
+          "<>",
+          ">"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 1.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.0,
+            "vrc": 0,
+            "wno": 3.0,
+            "wnm": 0.0,
+            "total": 4.0
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 7.0
+        },
+        "semantic_cluster": 0,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Room\ninv: (self.building <> null) and (self.offerings->size() = 3)",
+      "pattern_id": "association_exists",
+      "pattern_name": "Association Exists",
+      "context": "Room",
+      "parameters": {
+        "association": "building"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:26:42.193114",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 1,
+        "generation_number": 6513,
+        "profile": "medium",
+        "operators_used": [
+          "-",
+          "<",
+          "<>",
+          "=",
+          ">",
+          "and",
+          "size"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 7,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 3.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 1,
+            "wnc": 2.0,
+            "tnc": 2.1,
+            "vrc": 0,
+            "wno": 6.5,
+            "wnm": 1.0,
+            "total": 9.6
+          },
+          "computational": {
+            "oc": 6.5,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 6.5
+          },
+          "dependency": {
+            "ruc": 1,
+            "total": 1.0
+          },
+          "tc": 17.1
+        },
+        "semantic_cluster": 1,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Department\ninv: self.faculty <> null",
+      "pattern_id": "association_exists",
+      "pattern_name": "Association Exists",
+      "context": "Department",
+      "parameters": {
+        "association": "faculty"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:26:42.198591",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 1,
+        "generation_number": 6516,
+        "profile": "easy",
+        "operators_used": [
+          "<",
+          "<>",
+          ">"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 1.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.0,
+            "vrc": 0,
+            "wno": 3.0,
+            "wnm": 0.0,
+            "total": 4.0
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 7.0
+        },
+        "semantic_cluster": 0,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Enrollment\ninv: (self.offering <> null) and (self.enrolledAt.size() >= 5)",
+      "pattern_id": "association_exists",
+      "pattern_name": "Association Exists",
+      "context": "Enrollment",
+      "parameters": {
+        "association": "offering"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:26:42.200777",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 1,
+        "generation_number": 6517,
+        "profile": "medium",
+        "operators_used": [
+          "<",
+          "<>",
+          "=",
+          ">",
+          ">=",
+          "and",
+          "size"
+        ],
+        "navigation_depth": 3,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 7,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 3.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 2,
+            "wnc": 3.0,
+            "tnc": 2.7,
+            "vrc": 0,
+            "wno": 7.5,
+            "wnm": 1.0,
+            "total": 11.2
+          },
+          "computational": {
+            "oc": 7.5,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 7.5
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 18.7
+        },
+        "semantic_cluster": 0,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Building\ninv: (self.university <> null) and (self.university.code <> '')",
+      "pattern_id": "association_exists",
+      "pattern_name": "Association Exists",
+      "context": "Building",
+      "parameters": {
+        "association": "university"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:26:42.211281",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 1,
+        "generation_number": 6527,
+        "profile": "medium",
+        "operators_used": [
+          "<",
+          "<>",
+          ">",
+          "and"
+        ],
+        "navigation_depth": 3,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 4,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 3.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 2,
+            "wnc": 3.0,
+            "tnc": 2.7,
+            "vrc": 0,
+            "wno": 7.5,
+            "wnm": 0.0,
+            "total": 10.2
+          },
+          "computational": {
+            "oc": 7.5,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 7.5
+          },
+          "dependency": {
+            "ruc": 1,
+            "total": 1.0
+          },
+          "tc": 18.7
+        },
+        "semantic_cluster": 0,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Enrollment\ninv: (self.grade <> null) and (self.student.oclIsTypeOf(Student))",
+      "pattern_id": "association_exists",
+      "pattern_name": "Association Exists",
+      "context": "Enrollment",
+      "parameters": {
+        "association": "grade"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:26:42.219464",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 1,
+        "generation_number": 6532,
+        "profile": "medium",
+        "operators_used": [
+          "<",
+          "<>",
+          ">",
+          "and",
+          "oclIsTypeOf"
+        ],
+        "navigation_depth": 3,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 5,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 3.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 2,
+            "wnc": 3.0,
+            "tnc": 2.7,
+            "vrc": 0,
+            "wno": 4.5,
+            "wnm": 1.0,
+            "total": 8.2
+          },
+          "computational": {
+            "oc": 4.5,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 4.5
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 12.7
+        },
+        "semantic_cluster": 0,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context CourseOffering\ninv: self.course.department.name <> ''",
+      "pattern_id": "navigation_chain",
+      "pattern_name": "Navigation Chain",
+      "context": "CourseOffering",
+      "parameters": {
+        "navigation_path": "self.course.department.name <> ''"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:26:42.221010",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 2,
+        "generation_number": 6534,
+        "profile": "medium",
+        "operators_used": [
+          "<",
+          "<>",
+          ">"
+        ],
+        "navigation_depth": 4,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 3.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 3,
+            "wnc": 3.0,
+            "tnc": 3.0,
+            "vrc": 0,
+            "wno": 3.0,
+            "wnm": 0.0,
+            "total": 6.0
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 9.0
+        },
+        "semantic_cluster": 0,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Course\ninv: self.department.faculty.name <> ''",
+      "pattern_id": "navigation_chain",
+      "pattern_name": "Navigation Chain",
+      "context": "Course",
+      "parameters": {
+        "navigation_path": "self.department.faculty.name <> ''"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:26:42.224173",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 2,
+        "generation_number": 6546,
+        "profile": "medium",
+        "operators_used": [
+          "<",
+          "<>",
+          ">"
+        ],
+        "navigation_depth": 4,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 3.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 3,
+            "wnc": 3.0,
+            "tnc": 3.0,
+            "vrc": 0,
+            "wno": 3.0,
+            "wnm": 0.0,
+            "total": 6.0
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 9.0
+        },
+        "semantic_cluster": 0,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context CourseOffering\ninv: self.course.department.code <> ''",
+      "pattern_id": "navigation_chain",
+      "pattern_name": "Navigation Chain",
+      "context": "CourseOffering",
+      "parameters": {
+        "navigation_path": "self.course.department.code <> ''"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:26:42.225225",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 2,
+        "generation_number": 6553,
+        "profile": "medium",
+        "operators_used": [
+          "<",
+          "<>",
+          ">"
+        ],
+        "navigation_depth": 4,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 3.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 3,
+            "wnc": 3.0,
+            "tnc": 3.0,
+            "vrc": 0,
+            "wno": 3.0,
+            "wnm": 0.0,
+            "total": 6.0
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 9.0
+        },
+        "semantic_cluster": 0,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Department\ninv: self.faculty.university.name <> ''",
+      "pattern_id": "navigation_chain",
+      "pattern_name": "Navigation Chain",
+      "context": "Department",
+      "parameters": {
+        "navigation_path": "self.faculty.university.name <> ''"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:26:42.227081",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 2,
+        "generation_number": 6561,
+        "profile": "medium",
+        "operators_used": [
+          "<",
+          "<>",
+          ">"
+        ],
+        "navigation_depth": 4,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 3.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 3,
+            "wnc": 3.0,
+            "tnc": 3.0,
+            "vrc": 0,
+            "wno": 3.0,
+            "wnm": 0.0,
+            "total": 6.0
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 9.0
+        },
+        "semantic_cluster": 0,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Student\ninv: ((self.libraryAccount.isBlocked) and (self.yearOfStudy > 0)) and (self.examAttempts->size() = 1)",
+      "pattern_id": "simple_navigation",
+      "pattern_name": "Simple Navigation",
+      "context": "Student",
+      "parameters": {
+        "association": "libraryAccount",
+        "attribute": "isBlocked"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:26:42.228009",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 1,
+        "generation_number": 6562,
+        "profile": "medium",
+        "operators_used": [
+          "-",
+          "=",
+          ">",
+          "and",
+          "size"
+        ],
+        "navigation_depth": 3,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 5,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 5.0,
+            "nnc_plus": 4.0,
+            "dn_ca": 2,
+            "wnc": 4.0,
+            "tnc": 3.8,
+            "vrc": 0,
+            "wno": 6.0,
+            "wnm": 1.0,
+            "total": 10.8
+          },
+          "computational": {
+            "oc": 6.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 6.0
+          },
+          "dependency": {
+            "ruc": 1,
+            "total": 1.0
+          },
+          "tc": 17.8
+        },
+        "semantic_cluster": 2,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Department\ninv: self.faculty.university.code <> ''",
+      "pattern_id": "navigation_chain",
+      "pattern_name": "Navigation Chain",
+      "context": "Department",
+      "parameters": {
+        "navigation_path": "self.faculty.university.code <> ''"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:26:42.234333",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 2,
+        "generation_number": 6589,
+        "profile": "medium",
+        "operators_used": [
+          "<",
+          "<>",
+          ">"
+        ],
+        "navigation_depth": 4,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 3.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 3,
+            "wnc": 3.0,
+            "tnc": 3.0,
+            "vrc": 0,
+            "wno": 3.0,
+            "wnm": 0.0,
+            "total": 6.0
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 9.0
+        },
+        "semantic_cluster": 0,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Enrollment\ninv: self.student.program.durationYears >= 0",
+      "pattern_id": "navigation_chain",
+      "pattern_name": "Navigation Chain",
+      "context": "Enrollment",
+      "parameters": {
+        "navigation_path": "self.student.program.durationYears >= 0"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:26:42.237437",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 2,
+        "generation_number": 6600,
+        "profile": "medium",
+        "operators_used": [
+          "=",
+          ">",
+          ">="
+        ],
+        "navigation_depth": 4,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 3.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 3,
+            "wnc": 3.0,
+            "tnc": 3.0,
+            "vrc": 0,
+            "wno": 3.0,
+            "wnm": 0.0,
+            "total": 6.0
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 9.0
+        },
+        "semantic_cluster": 3,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Semester\ninv: self.offerings->exists(x | x.capacity >= 1)",
+      "pattern_id": "collection_navigation",
+      "pattern_name": "Collection Navigation",
+      "context": "Semester",
+      "parameters": {
+        "collection": "offerings",
+        "operation": "exists",
+        "iterator": "x",
+        "nested": "capacity >= 1"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:26:42.242357",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 3,
+        "generation_number": 6626,
+        "profile": "difficult",
+        "operators_used": [
+          "-",
+          "=",
+          ">",
+          ">=",
+          "exists"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "difficult",
+        "operator_count": 5,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 3.0,
+            "wnc": 5.0,
+            "tnc": 4.0,
+            "vrc": 1,
+            "wno": 7.0,
+            "wnm": 1.0,
+            "total": 13.0
+          },
+          "computational": {
+            "oc": 7.0,
+            "tcc": 0.0,
+            "cic": 3.0,
+            "total": 10.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 23.0
+        },
+        "semantic_cluster": 1,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context University\ninv: self.buildings->exists(x | x.name <> '')",
+      "pattern_id": "collection_navigation",
+      "pattern_name": "Collection Navigation",
+      "context": "University",
+      "parameters": {
+        "collection": "buildings",
+        "operation": "exists",
+        "iterator": "x",
+        "nested": "name <> ''"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:26:42.243083",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 3,
+        "generation_number": 6627,
+        "profile": "difficult",
+        "operators_used": [
+          "-",
+          "<",
+          "<>",
+          ">",
+          "exists"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "difficult",
+        "operator_count": 5,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 3.0,
+            "wnc": 5.0,
+            "tnc": 4.0,
+            "vrc": 1,
+            "wno": 7.0,
+            "wnm": 1.0,
+            "total": 13.0
+          },
+          "computational": {
+            "oc": 7.0,
+            "tcc": 0.0,
+            "cic": 3.0,
+            "total": 10.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 23.0
+        },
+        "semantic_cluster": 4,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Department\ninv: self.programs->forAll(x | x.durationYears >= 0)",
+      "pattern_id": "collection_navigation",
+      "pattern_name": "Collection Navigation",
+      "context": "Department",
+      "parameters": {
+        "collection": "programs",
+        "operation": "forAll",
+        "iterator": "x",
+        "nested": "durationYears >= 0"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:26:42.243856",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 3,
+        "generation_number": 6628,
+        "profile": "difficult",
+        "operators_used": [
+          "-",
+          "=",
+          ">",
+          ">=",
+          "forAll"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "difficult",
+        "operator_count": 5,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 3.0,
+            "wnc": 5.0,
+            "tnc": 4.0,
+            "vrc": 1,
+            "wno": 7.0,
+            "wnm": 1.0,
+            "total": 13.0
+          },
+          "computational": {
+            "oc": 7.0,
+            "tcc": 0.0,
+            "cic": 3.0,
+            "total": 10.0
+          },
+          "dependency": {
+            "ruc": 2,
+            "total": 2.0
+          },
+          "tc": 25.0
+        },
+        "semantic_cluster": 3,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context CourseOffering\ninv: self.enrollments->forAll(x | x.enrolledAt <> '')",
+      "pattern_id": "collection_navigation",
+      "pattern_name": "Collection Navigation",
+      "context": "CourseOffering",
+      "parameters": {
+        "collection": "enrollments",
+        "operation": "forAll",
+        "iterator": "x",
+        "nested": "enrolledAt <> ''"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:26:42.244594",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 3,
+        "generation_number": 6629,
+        "profile": "difficult",
+        "operators_used": [
+          "-",
+          "<",
+          "<>",
+          ">",
+          "forAll"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "difficult",
+        "operator_count": 5,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 3.0,
+            "wnc": 5.0,
+            "tnc": 4.0,
+            "vrc": 1,
+            "wno": 7.0,
+            "wnm": 1.0,
+            "total": 13.0
+          },
+          "computational": {
+            "oc": 7.0,
+            "tcc": 0.0,
+            "cic": 3.0,
+            "total": 10.0
+          },
+          "dependency": {
+            "ruc": 3,
+            "total": 3.0
+          },
+          "tc": 26.0
+        },
+        "semantic_cluster": 5,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Exam\ninv: (self.attempts->forAll(x | x.marks > 5)) and (self.maxMarks >= 0)",
+      "pattern_id": "collection_navigation",
+      "pattern_name": "Collection Navigation",
+      "context": "Exam",
+      "parameters": {
+        "collection": "attempts",
+        "operation": "forAll",
+        "iterator": "x",
+        "nested": "marks > 5"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:26:42.246031",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 3,
+        "generation_number": 6632,
+        "profile": "difficult",
+        "operators_used": [
+          "-",
+          "=",
+          ">",
+          ">=",
+          "and",
+          "forAll"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "difficult",
+        "operator_count": 6,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 5.0,
+            "nnc_plus": 4.0,
+            "dn_ca": 3.0,
+            "wnc": 6.0,
+            "tnc": 4.7,
+            "vrc": 1,
+            "wno": 9.5,
+            "wnm": 1.0,
+            "total": 16.2
+          },
+          "computational": {
+            "oc": 9.5,
+            "tcc": 0.0,
+            "cic": 3.0,
+            "total": 12.5
+          },
+          "dependency": {
+            "ruc": 4,
+            "total": 4.0
+          },
+          "tc": 32.7
+        },
+        "semantic_cluster": 2,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context CourseOffering\ninv: (self.capacity <= 100) and (self.exams->forAll(v | v.maxMarks <= 10))",
+      "pattern_id": "numeric_abs_bounded",
+      "pattern_name": "Numeric Absolute Value Bounded",
+      "context": "CourseOffering",
+      "parameters": {
+        "numeric_attribute": "capacity",
+        "max_abs": 2
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:26:42.260169",
+      "metadata": {
+        "category": "arithmetic",
+        "complexity": 2,
+        "generation_number": 6640,
+        "profile": "difficult",
+        "operators_used": [
+          "-",
+          "<",
+          "<=",
+          "=",
+          ">",
+          "and",
+          "forAll"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "difficult",
+        "operator_count": 7,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 5.0,
+            "nnc_plus": 4.0,
+            "dn_ca": 3.0,
+            "wnc": 6.0,
+            "tnc": 4.7,
+            "vrc": 1,
+            "wno": 11.5,
+            "wnm": 1.0,
+            "total": 18.2
+          },
+          "computational": {
+            "oc": 11.5,
+            "tcc": 0.0,
+            "cic": 3.0,
+            "total": 14.5
+          },
+          "dependency": {
+            "ruc": 8,
+            "total": 8.0
+          },
+          "tc": 40.7
+        },
+        "semantic_cluster": 1,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Department\ninv: self.programs->select(x | x.durationYears <= 50)->size() >= 1",
+      "pattern_id": "select_operation",
+      "pattern_name": "Select (Filter) Operation",
+      "context": "Department",
+      "parameters": {
+        "collection": "programs",
+        "iterator": "x",
+        "condition": "x.durationYears <= 50",
+        "result_operation": "->size() >= 1"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:26:42.262066",
+      "metadata": {
+        "category": "collection",
+        "complexity": 2,
+        "generation_number": 6641,
+        "profile": "difficult",
+        "operators_used": [
+          "-",
+          "<",
+          "<=",
+          "=",
+          ">",
+          ">=",
+          "select",
+          "size"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "difficult",
+        "operator_count": 8,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 3.0,
+            "wnc": 5.0,
+            "tnc": 4.0,
+            "vrc": 1,
+            "wno": 10.0,
+            "wnm": 2.0,
+            "total": 17.0
+          },
+          "computational": {
+            "oc": 10.0,
+            "tcc": 0.0,
+            "cic": 2.0,
+            "total": 12.0
+          },
+          "dependency": {
+            "ruc": 2,
+            "total": 2.0
+          },
+          "tc": 31.0
+        },
+        "semantic_cluster": 3,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context CourseOffering\ninv: self.enrollments->any(x | x.enrolledAt <> '') <> null",
+      "pattern_id": "any_operation",
+      "pattern_name": "Any Operation",
+      "context": "CourseOffering",
+      "parameters": {
+        "collection": "enrollments",
+        "iterator": "x",
+        "condition": "x.enrolledAt <> ''"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:26:42.263506",
+      "metadata": {
+        "category": "collection",
+        "complexity": 2,
+        "generation_number": 6642,
+        "profile": "difficult",
+        "operators_used": [
+          "-",
+          "<",
+          "<>",
+          ">",
+          "any"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "difficult",
+        "operator_count": 5,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 3.0,
+            "wnc": 5.0,
+            "tnc": 4.0,
+            "vrc": 1,
+            "wno": 7.0,
+            "wnm": 1.0,
+            "total": 13.0
+          },
+          "computational": {
+            "oc": 7.0,
+            "tcc": 0.0,
+            "cic": 2.0,
+            "total": 9.0
+          },
+          "dependency": {
+            "ruc": 3,
+            "total": 3.0
+          },
+          "tc": 25.0
+        },
+        "semantic_cluster": 0,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context CourseOffering\ninv: self.exams->select(x | x.maxMarks >= 0)->size() >= 1",
+      "pattern_id": "select_operation",
+      "pattern_name": "Select (Filter) Operation",
+      "context": "CourseOffering",
+      "parameters": {
+        "collection": "exams",
+        "iterator": "x",
+        "condition": "x.maxMarks >= 0",
+        "result_operation": "->size() >= 1"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:26:42.264896",
+      "metadata": {
+        "category": "collection",
+        "complexity": 2,
+        "generation_number": 6643,
+        "profile": "difficult",
+        "operators_used": [
+          "-",
+          "=",
+          ">",
+          ">=",
+          "select",
+          "size"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "difficult",
+        "operator_count": 6,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 3.0,
+            "wnc": 5.0,
+            "tnc": 4.0,
+            "vrc": 1,
+            "wno": 10.0,
+            "wnm": 2.0,
+            "total": 17.0
+          },
+          "computational": {
+            "oc": 10.0,
+            "tcc": 0.0,
+            "cic": 2.0,
+            "total": 12.0
+          },
+          "dependency": {
+            "ruc": 5,
+            "total": 5.0
+          },
+          "tc": 34.0
+        },
+        "semantic_cluster": 2,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Exam\ninv: self.attempts->select(x | x.marks >= 10)->size() >= 1",
+      "pattern_id": "select_operation",
+      "pattern_name": "Select (Filter) Operation",
+      "context": "Exam",
+      "parameters": {
+        "collection": "attempts",
+        "iterator": "x",
+        "condition": "x.marks >= 10",
+        "result_operation": "->size() >= 1"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:26:42.267461",
+      "metadata": {
+        "category": "collection",
+        "complexity": 2,
+        "generation_number": 6645,
+        "profile": "difficult",
+        "operators_used": [
+          "-",
+          "=",
+          ">",
+          ">=",
+          "select",
+          "size"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "difficult",
+        "operator_count": 6,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 3.0,
+            "wnc": 5.0,
+            "tnc": 4.0,
+            "vrc": 1,
+            "wno": 10.0,
+            "wnm": 2.0,
+            "total": 17.0
+          },
+          "computational": {
+            "oc": 10.0,
+            "tcc": 0.0,
+            "cic": 2.0,
+            "total": 12.0
+          },
+          "dependency": {
+            "ruc": 4,
+            "total": 4.0
+          },
+          "tc": 33.0
+        },
+        "semantic_cluster": 2,
+        "implies": [
+          "collection_navigation_Exam"
+        ]
+      }
+    },
+    {
+      "ocl": "context CourseOffering\ninv: self.capacity mod 2 = 1",
+      "pattern_id": "numeric_odd",
+      "pattern_name": "Numeric Is Odd",
+      "context": "CourseOffering",
+      "parameters": {
+        "numeric_attribute": "capacity"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:26:42.271857",
+      "metadata": {
+        "category": "arithmetic",
+        "complexity": 2,
+        "generation_number": 6648,
+        "profile": "easy",
+        "operators_used": [
+          "=",
+          "mod"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 2,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 1.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.0,
+            "vrc": 0,
+            "wno": 2.0,
+            "wnm": 0.0,
+            "total": 3.0
+          },
+          "computational": {
+            "oc": 1.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 1.0
+          },
+          "dependency": {
+            "ruc": 4,
+            "total": 4.0
+          },
+          "tc": 8.0
+        },
+        "semantic_cluster": 6,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Scholarship\ninv: self.startYear + self.endYear > 29",
+      "pattern_id": "numeric_sum_constraint",
+      "pattern_name": "Numeric Sum Constraint",
+      "context": "Scholarship",
+      "parameters": {
+        "first_numeric": "startYear",
+        "second_numeric": "endYear",
+        "threshold": 29
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:26:42.274678",
+      "metadata": {
+        "category": "arithmetic",
+        "complexity": 2,
+        "generation_number": 6650,
+        "profile": "easy",
+        "operators_used": [
+          "+",
+          ">"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 2,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 1,
+            "wnc": 2.0,
+            "tnc": 1.7,
+            "vrc": 0,
+            "wno": 2.0,
+            "wnm": 0.0,
+            "total": 3.7
+          },
+          "computational": {
+            "oc": 1.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 1.0
+          },
+          "dependency": {
+            "ruc": 9,
+            "total": 9.0
+          },
+          "tc": 13.7
+        },
+        "semantic_cluster": 3,
+        "implies": [
+          "numeric_sum_constraint_Scholarship",
+          "numeric_difference_constraint_Scholarship",
+          "numeric_difference_constraint_Scholarship"
+        ]
+      }
+    },
+    {
+      "ocl": "context Scholarship\ninv: self.startYear + self.endYear > 53",
+      "pattern_id": "numeric_sum_constraint",
+      "pattern_name": "Numeric Sum Constraint",
+      "context": "Scholarship",
+      "parameters": {
+        "first_numeric": "startYear",
+        "second_numeric": "endYear",
+        "threshold": 53
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:26:42.276089",
+      "metadata": {
+        "category": "arithmetic",
+        "complexity": 2,
+        "generation_number": 6651,
+        "profile": "easy",
+        "operators_used": [
+          "+",
+          ">"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 2,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 1,
+            "wnc": 2.0,
+            "tnc": 1.7,
+            "vrc": 0,
+            "wno": 2.0,
+            "wnm": 0.0,
+            "total": 3.7
+          },
+          "computational": {
+            "oc": 1.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 1.0
+          },
+          "dependency": {
+            "ruc": 9,
+            "total": 9.0
+          },
+          "tc": 13.7
+        },
+        "semantic_cluster": 3,
+        "implies": [
+          "numeric_sum_constraint_Scholarship",
+          "numeric_difference_constraint_Scholarship",
+          "numeric_difference_constraint_Scholarship"
+        ]
+      }
+    },
+    {
+      "ocl": "context Scholarship\ninv: self.startYear - self.endYear >= 0",
+      "pattern_id": "numeric_difference_constraint",
+      "pattern_name": "Numeric Difference Constraint",
+      "context": "Scholarship",
+      "parameters": {
+        "first_numeric": "startYear",
+        "second_numeric": "endYear",
+        "min_diff": 0
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:26:42.277914",
+      "metadata": {
+        "category": "arithmetic",
+        "complexity": 2,
+        "generation_number": 6653,
+        "profile": "easy",
+        "operators_used": [
+          "-",
+          "=",
+          ">",
+          ">="
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 4,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 1,
+            "wnc": 2.0,
+            "tnc": 1.7,
+            "vrc": 0,
+            "wno": 3.0,
+            "wnm": 0.0,
+            "total": 4.7
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 9,
+            "total": 9.0
+          },
+          "tc": 16.7
+        },
+        "semantic_cluster": 3,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Scholarship\ninv: self.endYear + self.startYear > 26",
+      "pattern_id": "numeric_sum_constraint",
+      "pattern_name": "Numeric Sum Constraint",
+      "context": "Scholarship",
+      "parameters": {
+        "first_numeric": "endYear",
+        "second_numeric": "startYear",
+        "threshold": 26
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:26:42.279344",
+      "metadata": {
+        "category": "arithmetic",
+        "complexity": 2,
+        "generation_number": 6654,
+        "profile": "easy",
+        "operators_used": [
+          "+",
+          ">"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 2,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 1,
+            "wnc": 2.0,
+            "tnc": 1.7,
+            "vrc": 0,
+            "wno": 2.0,
+            "wnm": 0.0,
+            "total": 3.7
+          },
+          "computational": {
+            "oc": 1.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 1.0
+          },
+          "dependency": {
+            "ruc": 9,
+            "total": 9.0
+          },
+          "tc": 13.7
+        },
+        "semantic_cluster": 3,
+        "implies": [
+          "numeric_sum_constraint_Scholarship",
+          "numeric_difference_constraint_Scholarship",
+          "numeric_difference_constraint_Scholarship"
+        ]
+      }
+    },
+    {
+      "ocl": "context Course\ninv: self.credits > 0",
+      "pattern_id": "numeric_positive",
+      "pattern_name": "Numeric Attribute Positive",
+      "context": "Course",
+      "parameters": {
+        "numeric_attribute": "credits"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:26:42.282131",
+      "metadata": {
+        "category": "arithmetic",
+        "complexity": 1,
+        "generation_number": 6656,
+        "profile": "easy",
+        "operators_used": [
+          ">"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 1,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 1.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.0,
+            "vrc": 0,
+            "wno": 1.0,
+            "wnm": 0.0,
+            "total": 2.0
+          },
+          "computational": {
+            "oc": 1.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 1.0
+          },
+          "dependency": {
+            "ruc": 5,
+            "total": 5.0
+          },
+          "tc": 8.0
+        },
+        "semantic_cluster": 7,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Course\ninv: self.credits.abs() <= 10",
+      "pattern_id": "numeric_abs_bounded",
+      "pattern_name": "Numeric Absolute Value Bounded",
+      "context": "Course",
+      "parameters": {
+        "numeric_attribute": "credits",
+        "max_abs": 10
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:26:42.283488",
+      "metadata": {
+        "category": "arithmetic",
+        "complexity": 2,
+        "generation_number": 6657,
+        "profile": "medium",
+        "operators_used": [
+          "<",
+          "<=",
+          "=",
+          "abs"
+        ],
+        "navigation_depth": 3,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 4,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 2,
+            "wnc": 2.0,
+            "tnc": 2.0,
+            "vrc": 0,
+            "wno": 4.0,
+            "wnm": 1.0,
+            "total": 7.0
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 1,
+            "total": 1.0
+          },
+          "tc": 11.0
+        },
+        "semantic_cluster": 6,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context CourseOffering\ninv: self.capacity.abs() <= 0",
+      "pattern_id": "numeric_abs_bounded",
+      "pattern_name": "Numeric Absolute Value Bounded",
+      "context": "CourseOffering",
+      "parameters": {
+        "numeric_attribute": "capacity",
+        "max_abs": 0
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:26:42.284960",
+      "metadata": {
+        "category": "arithmetic",
+        "complexity": 2,
+        "generation_number": 6658,
+        "profile": "medium",
+        "operators_used": [
+          "<",
+          "<=",
+          "=",
+          "abs"
+        ],
+        "navigation_depth": 3,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 4,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 2,
+            "wnc": 2.0,
+            "tnc": 2.0,
+            "vrc": 0,
+            "wno": 4.0,
+            "wnm": 1.0,
+            "total": 7.0
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 1,
+            "total": 1.0
+          },
+          "tc": 11.0
+        },
+        "semantic_cluster": 6,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Course\ninv: self.credits >= 40 and self.credits <= 49",
+      "pattern_id": "numeric_bounded",
+      "pattern_name": "Numeric Attribute Bounded",
+      "context": "Course",
+      "parameters": {
+        "numeric_attribute": "credits",
+        "min_value": 40,
+        "max_value": 49
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:26:42.287756",
+      "metadata": {
+        "category": "arithmetic",
+        "complexity": 2,
+        "generation_number": 6660,
+        "profile": "medium",
+        "operators_used": [
+          "<",
+          "<=",
+          "=",
+          ">",
+          ">=",
+          "and"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 6,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 1,
+            "wnc": 2.0,
+            "tnc": 1.7,
+            "vrc": 0,
+            "wno": 7.5,
+            "wnm": 0.0,
+            "total": 9.2
+          },
+          "computational": {
+            "oc": 7.5,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 7.5
+          },
+          "dependency": {
+            "ruc": 5,
+            "total": 5.0
+          },
+          "tc": 21.7
+        },
+        "semantic_cluster": 7,
+        "implies": [
+          "numeric_positive_Course"
+        ]
+      }
+    },
+    {
+      "ocl": "context CourseOffering\ninv: (self.capacity >= 0) and (self.section.size() <= 77)",
+      "pattern_id": "numeric_non_negative",
+      "pattern_name": "Numeric Attribute Non-Negative",
+      "context": "CourseOffering",
+      "parameters": {
+        "numeric_attribute": "capacity"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:26:42.297399",
+      "metadata": {
+        "category": "arithmetic",
+        "complexity": 1,
+        "generation_number": 6672,
+        "profile": "medium",
+        "operators_used": [
+          "<",
+          "<=",
+          "=",
+          ">",
+          ">=",
+          "and",
+          "size"
+        ],
+        "navigation_depth": 3,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 7,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 3.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 2,
+            "wnc": 3.0,
+            "tnc": 2.7,
+            "vrc": 0,
+            "wno": 7.5,
+            "wnm": 1.0,
+            "total": 11.2
+          },
+          "computational": {
+            "oc": 7.5,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 7.5
+          },
+          "dependency": {
+            "ruc": 4,
+            "total": 4.0
+          },
+          "tc": 22.7
+        },
+        "semantic_cluster": 1,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context CourseOffering\ninv: self.capacity >= 67 and self.capacity <= 96",
+      "pattern_id": "numeric_bounded",
+      "pattern_name": "Numeric Attribute Bounded",
+      "context": "CourseOffering",
+      "parameters": {
+        "numeric_attribute": "capacity",
+        "min_value": 67,
+        "max_value": 96
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:26:42.305324",
+      "metadata": {
+        "category": "arithmetic",
+        "complexity": 2,
+        "generation_number": 6678,
+        "profile": "medium",
+        "operators_used": [
+          "<",
+          "<=",
+          "=",
+          ">",
+          ">=",
+          "and"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 6,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 1,
+            "wnc": 2.0,
+            "tnc": 1.7,
+            "vrc": 0,
+            "wno": 7.5,
+            "wnm": 0.0,
+            "total": 9.2
+          },
+          "computational": {
+            "oc": 7.5,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 7.5
+          },
+          "dependency": {
+            "ruc": 4,
+            "total": 4.0
+          },
+          "tc": 20.7
+        },
+        "semantic_cluster": 1,
+        "implies": [
+          "numeric_non_negative_CourseOffering"
+        ]
+      }
+    },
+    {
+      "ocl": "context Building\ninv: self.rooms->size() <= 1",
+      "pattern_id": "size_constraint",
+      "pattern_name": "Collection Size Constraint",
+      "context": "Building",
+      "parameters": {
+        "collection": "rooms",
+        "operator": "<=",
+        "value": 1
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:26:42.307259",
+      "metadata": {
+        "category": "basic",
+        "complexity": 1,
+        "generation_number": 6679,
+        "profile": "easy",
+        "operators_used": [
+          "-",
+          "<",
+          "<=",
+          "=",
+          ">",
+          "size"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 6,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.4,
+            "vrc": 0,
+            "wno": 4.0,
+            "wnm": 1.0,
+            "total": 6.4
+          },
+          "computational": {
+            "oc": 4.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 4.0
+          },
+          "dependency": {
+            "ruc": 6,
+            "total": 6.0
+          },
+          "tc": 16.4
+        },
+        "semantic_cluster": 8,
+        "implies": [
+          "collection_max_size_Building"
+        ]
+      }
+    },
+    {
+      "ocl": "context Department\ninv: self.programs->size() = 3",
+      "pattern_id": "collection_has_size",
+      "pattern_name": "Collection Has Specific Size",
+      "context": "Department",
+      "parameters": {
+        "collection": "programs",
+        "size": 3
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:26:42.309144",
+      "metadata": {
+        "category": "collection",
+        "complexity": 1,
+        "generation_number": 6680,
+        "profile": "easy",
+        "operators_used": [
+          "-",
+          "=",
+          ">",
+          "size"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 4,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.4,
+            "vrc": 0,
+            "wno": 2.0,
+            "wnm": 1.0,
+            "total": 4.4
+          },
+          "computational": {
+            "oc": 2.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 2.0
+          },
+          "dependency": {
+            "ruc": 2,
+            "total": 2.0
+          },
+          "tc": 8.4
+        },
+        "semantic_cluster": 1,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Course\ninv: self.offerings->size() > 0",
+      "pattern_id": "collection_not_empty_check",
+      "pattern_name": "Collection Not Empty Check",
+      "context": "Course",
+      "parameters": {
+        "collection": "offerings"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:26:42.311076",
+      "metadata": {
+        "category": "collection",
+        "complexity": 1,
+        "generation_number": 6681,
+        "profile": "easy",
+        "operators_used": [
+          "-",
+          ">",
+          "size"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.4,
+            "vrc": 0,
+            "wno": 2.0,
+            "wnm": 1.0,
+            "total": 4.4
+          },
+          "computational": {
+            "oc": 2.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 2.0
+          },
+          "dependency": {
+            "ruc": 7,
+            "total": 7.0
+          },
+          "tc": 13.4
+        },
+        "semantic_cluster": 1,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context CourseOffering\ninv: self.enrollments->notEmpty()",
+      "pattern_id": "collection_not_empty_simple",
+      "pattern_name": "Collection Not Empty (Simple)",
+      "context": "CourseOffering",
+      "parameters": {
+        "collection": "enrollments"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:26:42.314922",
+      "metadata": {
+        "category": "collection",
+        "complexity": 1,
+        "generation_number": 6683,
+        "profile": "easy",
+        "operators_used": [
+          "-",
+          ">",
+          "notEmpty"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.4,
+            "vrc": 0,
+            "wno": 1.0,
+            "wnm": 1.0,
+            "total": 3.4
+          },
+          "computational": {
+            "oc": 1.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 1.0
+          },
+          "dependency": {
+            "ruc": 3,
+            "total": 3.0
+          },
+          "tc": 7.4
+        },
+        "semantic_cluster": 5,
+        "implies": [
+          "collection_min_size_CourseOffering"
+        ]
+      }
+    },
+    {
+      "ocl": "context Department\ninv: self.staff->size() = 1",
+      "pattern_id": "collection_has_size",
+      "pattern_name": "Collection Has Specific Size",
+      "context": "Department",
+      "parameters": {
+        "collection": "staff",
+        "size": 1
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:26:42.316949",
+      "metadata": {
+        "category": "collection",
+        "complexity": 1,
+        "generation_number": 6685,
+        "profile": "easy",
+        "operators_used": [
+          "-",
+          "=",
+          ">",
+          "size"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 4,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.4,
+            "vrc": 0,
+            "wno": 2.0,
+            "wnm": 1.0,
+            "total": 4.4
+          },
+          "computational": {
+            "oc": 2.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 2.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 6.4
+        },
+        "semantic_cluster": 1,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Building\ninv: self.rooms->size() > 0",
+      "pattern_id": "collection_not_empty_check",
+      "pattern_name": "Collection Not Empty Check",
+      "context": "Building",
+      "parameters": {
+        "collection": "rooms"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:26:42.318817",
+      "metadata": {
+        "category": "collection",
+        "complexity": 1,
+        "generation_number": 6686,
+        "profile": "easy",
+        "operators_used": [
+          "-",
+          ">",
+          "size"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.4,
+            "vrc": 0,
+            "wno": 2.0,
+            "wnm": 1.0,
+            "total": 4.4
+          },
+          "computational": {
+            "oc": 2.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 2.0
+          },
+          "dependency": {
+            "ruc": 6,
+            "total": 6.0
+          },
+          "tc": 12.4
+        },
+        "semantic_cluster": 8,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Department\ninv: self.instructors->isEmpty()",
+      "pattern_id": "collection_empty_check",
+      "pattern_name": "Collection Must Be Empty",
+      "context": "Department",
+      "parameters": {
+        "collection": "instructors"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:26:42.320916",
+      "metadata": {
+        "category": "collection",
+        "complexity": 1,
+        "generation_number": 6688,
+        "profile": "easy",
+        "operators_used": [
+          "-",
+          ">",
+          "isEmpty"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.4,
+            "vrc": 0,
+            "wno": 1.0,
+            "wnm": 1.0,
+            "total": 3.4
+          },
+          "computational": {
+            "oc": 1.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 1.0
+          },
+          "dependency": {
+            "ruc": 1,
+            "total": 1.0
+          },
+          "tc": 5.4
+        },
+        "semantic_cluster": 9,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context CourseOffering\ninv: self.exams->size() >= 1",
+      "pattern_id": "size_constraint",
+      "pattern_name": "Collection Size Constraint",
+      "context": "CourseOffering",
+      "parameters": {
+        "collection": "exams",
+        "operator": ">=",
+        "value": 1
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:26:42.322794",
+      "metadata": {
+        "category": "basic",
+        "complexity": 1,
+        "generation_number": 6689,
+        "profile": "easy",
+        "operators_used": [
+          "-",
+          "=",
+          ">",
+          ">=",
+          "size"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 5,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.4,
+            "vrc": 0,
+            "wno": 4.0,
+            "wnm": 1.0,
+            "total": 6.4
+          },
+          "computational": {
+            "oc": 4.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 4.0
+          },
+          "dependency": {
+            "ruc": 5,
+            "total": 5.0
+          },
+          "tc": 15.4
+        },
+        "semantic_cluster": 1,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Department\ninv: self.courses->notEmpty()",
+      "pattern_id": "collection_not_empty_simple",
+      "pattern_name": "Collection Not Empty (Simple)",
+      "context": "Department",
+      "parameters": {
+        "collection": "courses"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:26:42.324664",
+      "metadata": {
+        "category": "collection",
+        "complexity": 1,
+        "generation_number": 6690,
+        "profile": "easy",
+        "operators_used": [
+          "-",
+          ">",
+          "notEmpty"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.4,
+            "vrc": 0,
+            "wno": 1.0,
+            "wnm": 1.0,
+            "total": 3.4
+          },
+          "computational": {
+            "oc": 1.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 1.0
+          },
+          "dependency": {
+            "ruc": 1,
+            "total": 1.0
+          },
+          "tc": 5.4
+        },
+        "semantic_cluster": 5,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context CourseOffering\ninv: self.exams->size() = 1",
+      "pattern_id": "collection_has_size",
+      "pattern_name": "Collection Has Specific Size",
+      "context": "CourseOffering",
+      "parameters": {
+        "collection": "exams",
+        "size": 1
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:26:42.326607",
+      "metadata": {
+        "category": "collection",
+        "complexity": 1,
+        "generation_number": 6691,
+        "profile": "easy",
+        "operators_used": [
+          "-",
+          "=",
+          ">",
+          "size"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 4,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.4,
+            "vrc": 0,
+            "wno": 2.0,
+            "wnm": 1.0,
+            "total": 4.4
+          },
+          "computational": {
+            "oc": 2.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 2.0
+          },
+          "dependency": {
+            "ruc": 5,
+            "total": 5.0
+          },
+          "tc": 11.4
+        },
+        "semantic_cluster": 1,
+        "implies": [
+          "size_constraint_CourseOffering"
+        ]
+      }
+    },
+    {
+      "ocl": "context Exam\ninv: self.attempts->size() <= 1",
+      "pattern_id": "collection_max_size",
+      "pattern_name": "Collection Maximum Size",
+      "context": "Exam",
+      "parameters": {
+        "collection": "attempts",
+        "max_size": 1
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:26:42.330403",
+      "metadata": {
+        "category": "collection",
+        "complexity": 1,
+        "generation_number": 6693,
+        "profile": "medium",
+        "operators_used": [
+          "-",
+          "<",
+          "<=",
+          "=",
+          ">",
+          "size"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 6,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.4,
+            "vrc": 0,
+            "wno": 4.0,
+            "wnm": 1.0,
+            "total": 6.4
+          },
+          "computational": {
+            "oc": 4.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 4.0
+          },
+          "dependency": {
+            "ruc": 4,
+            "total": 4.0
+          },
+          "tc": 14.4
+        },
+        "semantic_cluster": 1,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Scholarship\ninv: self.startYear <> null implies self.endYear <> null",
+      "pattern_id": "implies_simple",
+      "pattern_name": "Simple Implication",
+      "context": "Scholarship",
+      "parameters": {
+        "first_attribute": "startYear",
+        "second_attribute": "endYear"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:26:42.334176",
+      "metadata": {
+        "category": "advanced",
+        "complexity": 2,
+        "generation_number": 6694,
+        "profile": "medium",
+        "operators_used": [
+          "<",
+          "<>",
+          ">",
+          "implies"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 4,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 1,
+            "wnc": 2.0,
+            "tnc": 1.7,
+            "vrc": 0,
+            "wno": 8.0,
+            "wnm": 0.0,
+            "total": 9.7
+          },
+          "computational": {
+            "oc": 8.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 8.0
+          },
+          "dependency": {
+            "ruc": 9,
+            "total": 9.0
+          },
+          "tc": 26.7
+        },
+        "semantic_cluster": 3,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Semester\ninv: self.startDate <> null implies self.endDate <> null",
+      "pattern_id": "implies_reverse",
+      "pattern_name": "Reverse Implication",
+      "context": "Semester",
+      "parameters": {
+        "first_attribute": "endDate",
+        "second_attribute": "startDate"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:26:42.336177",
+      "metadata": {
+        "category": "advanced",
+        "complexity": 2,
+        "generation_number": 6695,
+        "profile": "medium",
+        "operators_used": [
+          "<",
+          "<>",
+          ">",
+          "implies"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 4,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 1,
+            "wnc": 2.0,
+            "tnc": 1.7,
+            "vrc": 0,
+            "wno": 8.0,
+            "wnm": 0.0,
+            "total": 9.7
+          },
+          "computational": {
+            "oc": 8.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 8.0
+          },
+          "dependency": {
+            "ruc": 1,
+            "total": 1.0
+          },
+          "tc": 18.7
+        },
+        "semantic_cluster": 3,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context CourseOffering\ninv: self.enrollments->size() >= 1",
+      "pattern_id": "collection_min_size",
+      "pattern_name": "Collection Minimum Size",
+      "context": "CourseOffering",
+      "parameters": {
+        "collection": "enrollments",
+        "min_size": 1
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:26:42.339963",
+      "metadata": {
+        "category": "collection",
+        "complexity": 1,
+        "generation_number": 6696,
+        "profile": "medium",
+        "operators_used": [
+          "-",
+          "=",
+          ">",
+          ">=",
+          "size"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 5,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.4,
+            "vrc": 0,
+            "wno": 4.0,
+            "wnm": 1.0,
+            "total": 6.4
+          },
+          "computational": {
+            "oc": 4.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 4.0
+          },
+          "dependency": {
+            "ruc": 3,
+            "total": 3.0
+          },
+          "tc": 13.4
+        },
+        "semantic_cluster": 1,
+        "implies": [
+          "collection_not_empty_simple_CourseOffering"
+        ]
+      }
+    },
+    {
+      "ocl": "context Course\ninv: self.offerings->size() <= 1",
+      "pattern_id": "collection_max_size",
+      "pattern_name": "Collection Maximum Size",
+      "context": "Course",
+      "parameters": {
+        "collection": "offerings",
+        "max_size": 1
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:26:42.341903",
+      "metadata": {
+        "category": "collection",
+        "complexity": 1,
+        "generation_number": 6697,
+        "profile": "medium",
+        "operators_used": [
+          "-",
+          "<",
+          "<=",
+          "=",
+          ">",
+          "size"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 6,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.4,
+            "vrc": 0,
+            "wno": 4.0,
+            "wnm": 1.0,
+            "total": 6.4
+          },
+          "computational": {
+            "oc": 4.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 4.0
+          },
+          "dependency": {
+            "ruc": 7,
+            "total": 7.0
+          },
+          "tc": 17.4
+        },
+        "semantic_cluster": 1,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Building\ninv: self.rooms->size() <= 3",
+      "pattern_id": "collection_max_size",
+      "pattern_name": "Collection Maximum Size",
+      "context": "Building",
+      "parameters": {
+        "collection": "rooms",
+        "max_size": 3
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:26:42.351694",
+      "metadata": {
+        "category": "collection",
+        "complexity": 1,
+        "generation_number": 6703,
+        "profile": "medium",
+        "operators_used": [
+          "-",
+          "<",
+          "<=",
+          "=",
+          ">",
+          "size"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 6,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.4,
+            "vrc": 0,
+            "wno": 4.0,
+            "wnm": 1.0,
+            "total": 6.4
+          },
+          "computational": {
+            "oc": 4.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 4.0
+          },
+          "dependency": {
+            "ruc": 6,
+            "total": 6.0
+          },
+          "tc": 16.4
+        },
+        "semantic_cluster": 8,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Semester\ninv: (self.endDate <> null) = (self.startDate <> null)",
+      "pattern_id": "bi_implication",
+      "pattern_name": "Bi-directional Implication",
+      "context": "Semester",
+      "parameters": {
+        "first_attribute": "endDate",
+        "second_attribute": "startDate"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:26:42.360442",
+      "metadata": {
+        "category": "advanced",
+        "complexity": 2,
+        "generation_number": 6707,
+        "profile": "medium",
+        "operators_used": [
+          "<",
+          "<>",
+          "=",
+          ">"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 4,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 1,
+            "wnc": 2.0,
+            "tnc": 1.7,
+            "vrc": 0,
+            "wno": 7.0,
+            "wnm": 0.0,
+            "total": 8.7
+          },
+          "computational": {
+            "oc": 7.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 7.0
+          },
+          "dependency": {
+            "ruc": 1,
+            "total": 1.0
+          },
+          "tc": 16.7
+        },
+        "semantic_cluster": 3,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context CourseOffering\ninv: self.exams->collect(x | x.attempts)->flatten()->notEmpty()",
+      "pattern_id": "flatten_operation",
+      "pattern_name": "Flatten Operation",
+      "context": "CourseOffering",
+      "parameters": {
+        "collection": "exams",
+        "iterator": "x",
+        "nested_collection": "attempts"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:26:42.362195",
+      "metadata": {
+        "category": "set_operations",
+        "complexity": 3,
+        "generation_number": 6708,
+        "profile": "difficult",
+        "operators_used": [
+          "-",
+          ">",
+          "collect",
+          "flatten",
+          "notEmpty"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "difficult",
+        "operator_count": 5,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 3.0,
+            "wnc": 5.0,
+            "tnc": 4.0,
+            "vrc": 1,
+            "wno": 7.0,
+            "wnm": 3.0,
+            "total": 15.0
+          },
+          "computational": {
+            "oc": 7.0,
+            "tcc": 2.0,
+            "cic": 2.0,
+            "total": 11.0
+          },
+          "dependency": {
+            "ruc": 5,
+            "total": 5.0
+          },
+          "tc": 31.0
+        },
+        "semantic_cluster": 5,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Course\ninv: self.offerings->collect(x | x.capacity)->sum() >= 7",
+      "pattern_id": "collection_sum",
+      "pattern_name": "Collection Sum",
+      "context": "Course",
+      "parameters": {
+        "collection": "offerings",
+        "numeric_attribute": "capacity",
+        "min_sum": 7
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:26:42.363958",
+      "metadata": {
+        "category": "collection",
+        "complexity": 3,
+        "generation_number": 6709,
+        "profile": "difficult",
+        "operators_used": [
+          "-",
+          "=",
+          ">",
+          ">=",
+          "collect",
+          "sum"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "difficult",
+        "operator_count": 6,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 3.0,
+            "wnc": 5.0,
+            "tnc": 4.0,
+            "vrc": 1,
+            "wno": 7.0,
+            "wnm": 2.0,
+            "total": 14.0
+          },
+          "computational": {
+            "oc": 7.0,
+            "tcc": 0.0,
+            "cic": 2.0,
+            "total": 9.0
+          },
+          "dependency": {
+            "ruc": 7,
+            "total": 7.0
+          },
+          "tc": 30.0
+        },
+        "semantic_cluster": 1,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Faculty\ninv: self.departments->collect(x | x.instructors)->flatten()->notEmpty()",
+      "pattern_id": "flatten_operation",
+      "pattern_name": "Flatten Operation",
+      "context": "Faculty",
+      "parameters": {
+        "collection": "departments",
+        "iterator": "x",
+        "nested_collection": "instructors"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:26:42.367429",
+      "metadata": {
+        "category": "set_operations",
+        "complexity": 3,
+        "generation_number": 6711,
+        "profile": "difficult",
+        "operators_used": [
+          "-",
+          ">",
+          "collect",
+          "flatten",
+          "notEmpty"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "difficult",
+        "operator_count": 5,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 3.0,
+            "wnc": 5.0,
+            "tnc": 4.0,
+            "vrc": 1,
+            "wno": 7.0,
+            "wnm": 3.0,
+            "total": 15.0
+          },
+          "computational": {
+            "oc": 7.0,
+            "tcc": 2.0,
+            "cic": 2.0,
+            "total": 11.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 26.0
+        },
+        "semantic_cluster": 5,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Exam\ninv: self.attempts->collect(x | x.marks)->sum() >= 2",
+      "pattern_id": "collection_sum",
+      "pattern_name": "Collection Sum",
+      "context": "Exam",
+      "parameters": {
+        "collection": "attempts",
+        "numeric_attribute": "marks",
+        "min_sum": 2
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:26:42.369187",
+      "metadata": {
+        "category": "collection",
+        "complexity": 3,
+        "generation_number": 6712,
+        "profile": "difficult",
+        "operators_used": [
+          "-",
+          "=",
+          ">",
+          ">=",
+          "collect",
+          "sum"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "difficult",
+        "operator_count": 6,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 3.0,
+            "wnc": 5.0,
+            "tnc": 4.0,
+            "vrc": 1,
+            "wno": 7.0,
+            "wnm": 2.0,
+            "total": 14.0
+          },
+          "computational": {
+            "oc": 7.0,
+            "tcc": 0.0,
+            "cic": 2.0,
+            "total": 9.0
+          },
+          "dependency": {
+            "ruc": 4,
+            "total": 4.0
+          },
+          "tc": 27.0
+        },
+        "semantic_cluster": 2,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Department\ninv: self.instructors->collect(x | x.offerings)->flatten()->notEmpty()",
+      "pattern_id": "flatten_operation",
+      "pattern_name": "Flatten Operation",
+      "context": "Department",
+      "parameters": {
+        "collection": "instructors",
+        "iterator": "x",
+        "nested_collection": "offerings"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:26:42.372659",
+      "metadata": {
+        "category": "set_operations",
+        "complexity": 3,
+        "generation_number": 6714,
+        "profile": "difficult",
+        "operators_used": [
+          "-",
+          ">",
+          "collect",
+          "flatten",
+          "notEmpty"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "difficult",
+        "operator_count": 5,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 3.0,
+            "wnc": 5.0,
+            "tnc": 4.0,
+            "vrc": 1,
+            "wno": 7.0,
+            "wnm": 3.0,
+            "total": 15.0
+          },
+          "computational": {
+            "oc": 7.0,
+            "tcc": 2.0,
+            "cic": 2.0,
+            "total": 11.0
+          },
+          "dependency": {
+            "ruc": 2,
+            "total": 2.0
+          },
+          "tc": 28.0
+        },
+        "semantic_cluster": 5,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Building\ninv: self.university <> null",
+      "pattern_id": "association_exists",
+      "pattern_name": "Association Exists",
+      "context": "Building",
+      "parameters": {
+        "association": "university"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:26:42.657377",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 1,
+        "generation_number": 6761,
+        "profile": "easy",
+        "regenerated_from": "association_exists",
+        "regen_box": "easy",
+        "regen_family": "quantified",
+        "refilled_after": "dedup",
+        "operators_used": [
+          "<",
+          "<>",
+          ">"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 1.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.0,
+            "vrc": 0,
+            "wno": 3.0,
+            "wnm": 0.0,
+            "total": 4.0
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 7.0
+        },
+        "semantic_cluster": 0,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context CourseOffering\ninv: self.course <> null",
+      "pattern_id": "association_exists",
+      "pattern_name": "Association Exists",
+      "context": "CourseOffering",
+      "parameters": {
+        "association": "course"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:26:42.663707",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 1,
+        "generation_number": 6783,
+        "profile": "easy",
+        "regenerated_from": "association_exists",
+        "regen_box": "easy",
+        "regen_family": "quantified",
+        "refilled_after": "dedup",
+        "operators_used": [
+          "<",
+          "<>",
+          ">"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 1.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.0,
+            "vrc": 0,
+            "wno": 3.0,
+            "wnm": 0.0,
+            "total": 4.0
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 7.0
+        },
+        "semantic_cluster": 0,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context CourseOffering\ninv: self.room <> null",
+      "pattern_id": "association_exists",
+      "pattern_name": "Association Exists",
+      "context": "CourseOffering",
+      "parameters": {
+        "association": "room"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:26:42.669809",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 1,
+        "generation_number": 6804,
+        "profile": "easy",
+        "regenerated_from": "association_exists",
+        "regen_box": "easy",
+        "regen_family": "quantified",
+        "refilled_after": "dedup",
+        "operators_used": [
+          "<",
+          "<>",
+          ">"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 1.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.0,
+            "vrc": 0,
+            "wno": 3.0,
+            "wnm": 0.0,
+            "total": 4.0
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 7.0
+        },
+        "semantic_cluster": 8,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context CourseOffering\ninv: self.instructor <> null",
+      "pattern_id": "association_exists",
+      "pattern_name": "Association Exists",
+      "context": "CourseOffering",
+      "parameters": {
+        "association": "instructor"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:26:42.675779",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 1,
+        "generation_number": 6825,
+        "profile": "easy",
+        "regenerated_from": "association_exists",
+        "regen_box": "easy",
+        "regen_family": "quantified",
+        "refilled_after": "dedup",
+        "operators_used": [
+          "<",
+          "<>",
+          ">"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 1.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.0,
+            "vrc": 0,
+            "wno": 3.0,
+            "wnm": 0.0,
+            "total": 4.0
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 7.0
+        },
+        "semantic_cluster": 0,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Scholarship\ninv: self.startYear <= self.endYear",
+      "pattern_id": "numeric_comparison",
+      "pattern_name": "Numeric Comparison",
+      "context": "Scholarship",
+      "parameters": {
+        "attr1": "startYear",
+        "operator": "<=",
+        "attr2": "endYear"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:26:42.694325",
+      "metadata": {
+        "category": "basic",
+        "complexity": 1,
+        "generation_number": 6829,
+        "profile": "medium",
+        "regenerated_from": "numeric_max_of_two",
+        "regen_box": "medium",
+        "regen_family": "arithmetic",
+        "refilled_after": "dedup",
+        "operators_used": [
+          "<",
+          "<=",
+          "="
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 1,
+            "wnc": 2.0,
+            "tnc": 1.7,
+            "vrc": 0,
+            "wno": 3.0,
+            "wnm": 0.0,
+            "total": 4.7
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 7.7
+        },
+        "semantic_cluster": 3,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Course\ninv: (self.credits <= 50) and (self.offerings->forAll(v | v.capacity > 0))",
+      "pattern_id": "attribute_not_null_simple",
+      "pattern_name": "Attribute Not Null (Simple)",
+      "context": "Course",
+      "parameters": {
+        "attribute": "title"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-12T20:26:42.709709",
+      "metadata": {
+        "category": "basic",
+        "complexity": 1,
+        "generation_number": 6840,
+        "profile": "difficult",
+        "regenerated_from": "collection_collectNested",
+        "regen_box": "difficult+forall",
+        "regen_family": "cardinality",
+        "refilled_after": "dedup",
+        "operators_used": [
+          "-",
+          "<",
+          "<=",
+          "=",
+          ">",
+          "and",
+          "forAll"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "difficult",
+        "operator_count": 7,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 5.0,
+            "nnc_plus": 4.0,
+            "dn_ca": 3.0,
+            "wnc": 6.0,
+            "tnc": 4.7,
+            "vrc": 1,
+            "wno": 9.5,
+            "wnm": 1.0,
+            "total": 16.2
+          },
+          "computational": {
+            "oc": 9.5,
+            "tcc": 0.0,
+            "cic": 3.0,
+            "total": 12.5
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 28.7
+        },
+        "semantic_cluster": 1,
+        "implies": [
+          "collection_size_range_Course",
+          "collection_size_range_unsat_Course"
+        ]
+      }
+    }
+  ]
+}

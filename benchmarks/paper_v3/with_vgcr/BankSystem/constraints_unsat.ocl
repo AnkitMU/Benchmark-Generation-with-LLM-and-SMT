@@ -1,0 +1,101 @@
+-- Benchmark: BankSystem / balanced
+-- Type: UNSAT Constraints Only
+-- Generated: 2026-10-16T01:06:25.218271
+-- Count: 16
+
+-- #1 Collection Size in Range (UNSAT) in CreditCard
+-- Difficulty: difficult
+-- Mutation Strategy: contradictory_bounds
+context CreditCard
+inv: ((self.limit <= 10) and (self.cardTransactions->forAll(v | v.merchant <> ''))) and (self.limit > 10)
+
+-- #2 Collection Size Constraint (UNSAT) in Account
+-- Difficulty: medium
+-- Mutation Strategy: contradictory_bounds
+context Account
+inv: (self.transactions->size() <= 1) and (self.transactions->size() > 1)
+
+-- #3 All Attributes Defined (UNSAT) in Address
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Address
+inv: (self.country <> null and self.line1 <> null) and (not(self.country <> null and self.line1 <> null))
+
+-- #4 Collection Size in Range (UNSAT) in Account
+-- Difficulty: difficult
+-- Mutation Strategy: contradictory_bounds
+context Account
+inv: ((self.balance >= 5) and (self.transactions->forAll(v | v.amount <= 1000))) and (self.balance < 5)
+
+-- #5 Collection Maximum Size (UNSAT) in Account
+-- Difficulty: unboxed
+-- Mutation Strategy: contradictory_bounds
+context Account
+inv: ((self.transactions->size() <= 3) and (self.balance >= 74 and self.balance <= 94)) and (self.transactions->size() > 3)
+
+-- #6 Numeric Comparison (UNSAT) in Loan
+-- Difficulty: medium
+-- Mutation Strategy: self_contradiction
+context Loan
+inv: (self.interestRate = self.principal) and (not(self.interestRate = self.principal))
+
+-- #7 Collect (Map) Operation (UNSAT) in Branch
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Branch
+inv: ((self.customers->collect(x | x.customerId)->notEmpty()) and (self.city <> null)) and (not((self.customers->collect(x | x.customerId)->notEmpty()) and (self.city <> null)))
+
+-- #8 Numeric Absolute Value Bounded (UNSAT) in Account
+-- Difficulty: difficult
+-- Mutation Strategy: contradictory_bounds
+context Account
+inv: ((self.balance <= 100) and (self.transactions->forAll(v | v.amount >= 2))) and (self.balance > 100)
+
+-- #9 Navigation Chain (UNSAT) in Branch
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Branch
+inv: ((self.bank.swiftCode <> '') and (self.customers->collect(x | x.fullName)->notEmpty())) and (not((self.bank.swiftCode <> '') and (self.customers->collect(x | x.fullName)->notEmpty())))
+
+-- #10 Any Operation (UNSAT) in Account
+-- Difficulty: unboxed
+-- Mutation Strategy: empty_collection
+context Account
+inv: ((self.transactions->any(x | x.amount > 2) <> null) and (self.transactions->size() >= 1 and self.transactions->size() <= 2)) and (self.transactions->size() < 1)
+
+-- #11 Navigation Chain (UNSAT) in Account
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Account
+inv: ((self.customer.branch.city <> '') and (self.accountNo.indexOf('test') >= 0)) and (not((self.customer.branch.city <> '') and (self.accountNo.indexOf('test') >= 0)))
+
+-- #12 Reverse Implication (UNSAT) in Address
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Address
+inv: (self.city <> null implies self.line1 <> null) and (not(self.city <> null implies self.line1 <> null))
+
+-- #13 Association Exists (UNSAT) in Customer
+-- Difficulty: medium
+-- Mutation Strategy: self_contradiction
+context Customer
+inv: (self.address <> null) and (not(self.address <> null))
+
+-- #14 Numeric Attribute Positive (UNSAT) in Loan
+-- Difficulty: unboxed
+-- Mutation Strategy: contradictory_bounds
+context Loan
+inv: ((self.principal > 0) and (if self.interestRate > self.principal then self.interestRate else self.principal endif >= 16)) and (self.principal < -5)
+
+-- #15 Navigation Chain (UNSAT) in Account
+-- Difficulty: difficult
+-- Mutation Strategy: contradictory_bounds
+context Account
+inv: ((self.balance > 1) and (self.transactions->forAll(v | v.amount > 5))) and (self.balance < -4)
+
+-- #16 Collection Maximum Size (UNSAT) in Branch
+-- Difficulty: medium
+-- Mutation Strategy: contradictory_bounds
+context Branch
+inv: (self.customers->size() <= 2) and (self.customers->size() > 2)
+

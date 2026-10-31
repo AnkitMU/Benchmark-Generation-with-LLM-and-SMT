@@ -1,0 +1,113 @@
+-- Benchmark: ManufacturingPlant / balanced
+-- Type: UNSAT Constraints Only
+-- Generated: 2026-10-15T12:03:14.850306
+-- Count: 18
+
+-- #1 Numeric Attribute Positive (UNSAT) in Sensor
+-- Difficulty: medium
+-- Mutation Strategy: contradictory_bounds
+context Sensor
+inv: ((self.lastReading > 0) and (self.sensorId.toUpperCase() = 'TEST')) and (self.lastReading < -5)
+
+-- #2 Collection Navigation (UNSAT) in Supplier
+-- Difficulty: difficult
+-- Mutation Strategy: universal_negation
+context Supplier
+inv: (self.items->forAll(x | x.quantity < 10)) and (self.items->exists(x | not(x.quantity < 10)))
+
+-- #3 Collect (Map) Operation (UNSAT) in BillOfMaterials
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context BillOfMaterials
+inv: ((self.items->collect(x | x.name)->notEmpty()) and (self.items->any(x | x.requiredQty >= 0) <> null)) and (not((self.items->collect(x | x.name)->notEmpty()) and (self.items->any(x | x.requiredQty >= 0) <> null)))
+
+-- #4 Numeric Attribute Bounded (UNSAT) in DefectReport
+-- Difficulty: medium
+-- Mutation Strategy: contradictory_bounds
+context DefectReport
+inv: (self.severity >= 45 and self.severity <= 55) and (self.severity < 45)
+
+-- #5 Collection Not Empty Check (UNSAT) in BillOfMaterials
+-- Difficulty: unboxed
+-- Mutation Strategy: contradictory_bounds
+context BillOfMaterials
+inv: ((self.items->size() > 0) and (self.bomId.size() >= 3 implies self.bomId.substring(1, 3) = 'AB')) and (self.items->size() < -5)
+
+-- #6 Conditional Existence (UNSAT) in MaintenanceTask
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context MaintenanceTask
+inv: (self.isDone implies self.assignedTo <> null) and (not(self.isDone implies self.assignedTo <> null))
+
+-- #7 Collection Size in Range (UNSAT) in ProductionLine
+-- Difficulty: unboxed
+-- Mutation Strategy: contradictory_bounds
+context ProductionLine
+inv: (self.workOrders->size() >= 3 and self.workOrders->size() <= 3) and (self.workOrders->size() < 3)
+
+-- #8 Collect (Map) Operation (UNSAT) in Machine
+-- Difficulty: difficult
+-- Mutation Strategy: contradictory_bounds
+context Machine
+inv: ((self.maintenanceTasks->collect(x | x.taskId)->notEmpty()) and (self.maintenanceTasks->size() <= 3)) and (self.maintenanceTasks->size() > 3)
+
+-- #9 Numeric Attribute Positive (UNSAT) in Sensor
+-- Difficulty: easy
+-- Mutation Strategy: contradictory_bounds
+context Sensor
+inv: (self.lastReading > 0) and (self.lastReading < -5)
+
+-- #10 Collection Size in Range (UNSAT) in ProductionLine
+-- Difficulty: unboxed
+-- Mutation Strategy: universal_negation
+context ProductionLine
+inv: ((self.isActive = true) and (self.workOrders->forAll(v | v.plannedQuantity >= 5))) and (self.workOrders->exists(v | not(v.plannedQuantity >= 5)))
+
+-- #11 Collection Maximum Size (UNSAT) in Plant
+-- Difficulty: medium
+-- Mutation Strategy: contradictory_bounds
+context Plant
+inv: ((self.workshops->size() <= 1) and (self.location.size() >= 14)) and (self.workshops->size() > 1)
+
+-- #12 Numeric Is Odd (UNSAT) in WorkOrder
+-- Difficulty: difficult
+-- Mutation Strategy: contradictory_bounds
+context WorkOrder
+inv: ((self.plannedQuantity > 1) and (self.qualityChecks->forAll(v | v.passed = true))) and (self.plannedQuantity < -4)
+
+-- #13 Navigation Chain (UNSAT) in Technician
+-- Difficulty: medium
+-- Mutation Strategy: self_contradiction
+context Technician
+inv: (self.shift.startTime <> '') and (not(self.shift.startTime <> ''))
+
+-- #14 Collection Minimum Size (UNSAT) in BillOfMaterials
+-- Difficulty: medium
+-- Mutation Strategy: contradictory_bounds
+context BillOfMaterials
+inv: (self.items->size() >= 3) and (self.items->size() < 3)
+
+-- #15 Navigation Chain (UNSAT) in InventoryItem
+-- Difficulty: medium
+-- Mutation Strategy: self_contradiction
+context InventoryItem
+inv: (self.plant.name <> '') and (not(self.plant.name <> ''))
+
+-- #16 Numeric Attribute Non-Negative (UNSAT) in DefectReport
+-- Difficulty: easy
+-- Mutation Strategy: contradictory_bounds
+context DefectReport
+inv: (self.severity >= 0) and (self.severity < 0)
+
+-- #17 Numeric Multiple Of (UNSAT) in BOMItem
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context BOMItem
+inv: ((self.requiredQty mod 5 = 0) and (self.requiredQty mod 2 = 0)) and (not((self.requiredQty mod 5 = 0) and (self.requiredQty mod 2 = 0)))
+
+-- #18 Collection Not Empty (Simple) (UNSAT) in Shift
+-- Difficulty: difficult
+-- Mutation Strategy: empty_collection
+context Shift
+inv: ((self.operators->notEmpty()) and (self.operators->any(x | x.name <> '') <> null)) and (self.operators->isEmpty())
+

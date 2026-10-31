@@ -1,0 +1,166 @@
+{
+  "suite_name": "OCL-Paper-v3-NoVGCR__HospitalSystem",
+  "version": "3.0",
+  "generated_at": "2026-10-16T06:23:14.548779",
+  "research_features_enabled": true,
+  "models": [
+    {
+      "model": "HospitalSystem",
+      "xmi": "models/hospital.xmi",
+      "profiles": [
+        {
+          "profile": "balanced",
+          "seed": 42,
+          "complexity": "standard",
+          "output_dir": "benchmarks/paper_v3/no_vgcr/HospitalSystem",
+          "research_features_applied": [
+            "metadata_enrichment",
+            "unsat_generation",
+            "ast_similarity",
+            "semantic_similarity",
+            "implication_checking",
+            "manifest_generation"
+          ],
+          "constraint_count": 64,
+          "initial_sat_count": 91,
+          "dedup": {
+            "removed": 14,
+            "refilled": 12,
+            "unfilled": [
+              {
+                "pattern": "simple_navigation",
+                "context": "Admission",
+                "profile": "easy"
+              },
+              {
+                "pattern": "navigation_chain",
+                "context": "Ward",
+                "profile": "easy"
+              }
+            ]
+          },
+          "sat_count_after_mutation": 72,
+          "unsat_count_after_mutation": 17,
+          "unsat_measured_tiers": {
+            "difficult": 3,
+            "medium": 7,
+            "unboxed": 5,
+            "easy": 2
+          },
+          "conflicts_removed": 21,
+          "consistency_verified": true,
+          "semantic_clusters": 14,
+          "implication_count": 19,
+          "valid_count": 51,
+          "sat_count": 51,
+          "unsat_count": 13,
+          "unknown_count": 0,
+          "verified_count": 51,
+          "fallback_unknown_count": 0,
+          "skipped_unsat_count": 17,
+          "intentional_unsat_count": 17,
+          "unsat_trimmed_for_ratio": 4,
+          "post_refine_coverage_deficit": {
+            "min_per_class": 1,
+            "classes": {
+              "InsurancePolicy": 0
+            }
+          },
+          "final_suite": {
+            "delivered": 64,
+            "sat": 51,
+            "unsat": 13,
+            "slot_tier_distribution": {
+              "easy": 24,
+              "difficult": 18,
+              "medium": 22
+            },
+            "requested_tier_distribution": {
+              "easy": 40,
+              "medium": 35,
+              "difficult": 25
+            },
+            "sat_tier_distribution": {
+              "easy": 17,
+              "difficult": 13,
+              "medium": 21
+            },
+            "unsat_measured_tier_distribution": {
+              "difficult": 3,
+              "medium": 5,
+              "unboxed": 3,
+              "easy": 2
+            },
+            "family_distribution": {
+              "navigation": 22,
+              "arithmetic": 18,
+              "quantified": 11,
+              "cardinality": 13
+            },
+            "requested_family_distribution": {
+              "cardinality": 30,
+              "arithmetic": 25,
+              "navigation": 25,
+              "quantified": 20
+            },
+            "complexity_fidelity_sat": {
+              "boxed_constraints": 51,
+              "in_box": 51,
+              "in_box_rate": 1.0,
+              "unlabeled_constraints": 0,
+              "out_of_box": []
+            },
+            "class_coverage": {
+              "min_per_class": 1,
+              "classes": 22,
+              "covered": 21,
+              "below_min": {
+                "InsurancePolicy": 0
+              }
+            },
+            "slot_accounting": {
+              "requested": 100,
+              "generated": 91,
+              "generation_gaps": 9,
+              "dedup_removed": 14,
+              "dedup_refilled": 12,
+              "dedup_unfilled": 2,
+              "vgcr_regenerated": 0,
+              "vgcr_unfilled": 0,
+              "late_duplicates_removed": 0,
+              "unsat_trimmed_for_ratio": 4,
+              "delivered": 64
+            },
+            "dedup_unfilled_slots": [
+              {
+                "pattern": "simple_navigation",
+                "context": "Admission",
+                "profile": "easy"
+              },
+              {
+                "pattern": "navigation_chain",
+                "context": "Ward",
+                "profile": "easy"
+              }
+            ],
+            "vgcr_unfilled_slots": [],
+            "coverage_repairs": []
+          },
+          "status": "success",
+          "generation_time_s": 251.7
+        }
+      ],
+      "total_constraints": 64,
+      "total_valid": 51,
+      "total_sat": 51,
+      "total_unsat": 13,
+      "total_unknown": 0
+    }
+  ],
+  "total_constraints": 64,
+  "total_sat": 51,
+  "total_unsat": 13,
+  "total_valid": 51,
+  "total_unknown": 0,
+  "total_generation_time_s": 251.7
+}

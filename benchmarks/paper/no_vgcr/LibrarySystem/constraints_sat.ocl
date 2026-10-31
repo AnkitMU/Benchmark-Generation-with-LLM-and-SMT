@@ -1,0 +1,355 @@
+-- Benchmark: LibrarySystem / balanced
+-- Type: SAT Constraints Only
+-- Generated: 2026-10-12T20:25:59.720745
+-- Count: 70
+
+-- #1 Simple Navigation in Loan
+-- Difficulty: easy
+context Loan
+inv: self.payment.isProcessed
+
+-- #2 Navigation Chain in Book
+-- Difficulty: easy
+context Book
+inv: self.library.maxLoanDays > 5
+
+-- #3 Navigation Chain in Book
+-- Difficulty: easy
+context Book
+inv: self.library.maxLoanDays < 1000
+
+-- #4 Navigation Chain in Book
+-- Difficulty: easy
+context Book
+inv: self.library.maxLoanDays >= 2
+
+-- #5 Navigation Chain in Book
+-- Difficulty: easy
+context Book
+inv: self.library.maxLoanDays <= 1000
+
+-- #6 Navigation Chain in Book
+-- Difficulty: easy
+context Book
+inv: self.library.maxLoanDays > 2
+
+-- #7 Association Exists in Librarian
+-- Difficulty: easy
+context Librarian
+inv: self.managedBranch <> null
+
+-- #8 Association Exists in Copy
+-- Difficulty: medium
+context Copy
+inv: (self.book <> null) and (self.loans->isEmpty())
+
+-- #9 Association Exists in Payment
+-- Difficulty: easy
+context Payment
+inv: self.fine <> null
+
+-- #10 Association Exists in Member
+-- Difficulty: easy
+context Member
+inv: self.homeAddress <> null
+
+-- #11 Association Exists in Reservation
+-- Difficulty: medium
+context Reservation
+inv: (self.copy <> null) and (self.expiryDate = self.requestDate)
+
+-- #12 Association Exists in Address
+-- Difficulty: medium
+context Address
+inv: (self.branch <> null) and (self.city.toLowerCase() = 'test')
+
+-- #13 Association Exists in Staff
+-- Difficulty: medium
+context Staff
+inv: (self.branch <> null) and (self.email.toLowerCase() = 'test')
+
+-- #14 Association Exists in Copy
+-- Difficulty: medium
+context Copy
+inv: (self.book <> null) and (self.barcode.toUpperCase() = 'TEST')
+
+-- #15 Association Exists in Book
+-- Difficulty: easy
+context Book
+inv: self.publisher <> null
+
+-- #16 Association Exists in Copy
+-- Difficulty: easy
+context Copy
+inv: self.branch <> null
+
+-- #17 Association Exists in Branch
+-- Difficulty: easy
+context Branch
+inv: self.address <> null
+
+-- #18 Navigation Chain in Address
+-- Difficulty: medium
+context Address
+inv: self.branch.library.maxLoanDays >= 0
+
+-- #19 Simple Navigation in Loan
+-- Difficulty: medium
+context Loan
+inv: (self.payment.isProcessed) and (self.returnDate.concat(self.dueDate).size() >= 11)
+
+-- #20 Navigation Chain in Branch
+-- Difficulty: medium
+context Branch
+inv: self.address.branch.name <> ''
+
+-- #21 Navigation Chain in Address
+-- Difficulty: medium
+context Address
+inv: self.branch.library.maxLoanDays >= 2
+
+-- #22 Navigation Chain in Copy
+-- Difficulty: medium
+context Copy
+inv: self.branch.library.maxLoanDays >= 10
+
+-- #23 Collection Navigation in Category
+-- Difficulty: difficult
+context Category
+inv: (self.books->exists(x | x.publishYear > 0)) and (self.name <> null)
+
+-- #24 Collection Navigation in Author
+-- Difficulty: difficult
+context Author
+inv: self.books->forAll(x | x.pages <= 100)
+
+-- #25 Collection Navigation in Book
+-- Difficulty: difficult
+context Book
+inv: self.copies->exists(x | x.barcode <> '')
+
+-- #26 Collection Navigation in Copy
+-- Difficulty: difficult
+context Copy
+inv: self.reservations->exists(x | x.expiryDate <> '')
+
+-- #27 Numeric Attribute Bounded in Fine
+-- Difficulty: difficult
+context Fine
+inv: (self.amount <= 50) and (self.payments->forAll(v | v.amount <= 50))
+
+-- #28 Numeric Multiple Of in Book
+-- Difficulty: easy
+context Book
+inv: self.publishYear mod 6 = 0
+
+-- #29 Numeric Is Even in Book
+-- Difficulty: easy
+context Book
+inv: self.publishYear mod 2 = 0
+
+-- #30 Numeric Attribute Positive in Fine
+-- Difficulty: easy
+context Fine
+inv: self.amount > 0
+
+-- #31 Numeric Attribute Non-Negative in Fine
+-- Difficulty: easy
+context Fine
+inv: self.amount >= 0
+
+-- #32 Numeric Absolute Value Bounded in Book
+-- Difficulty: medium
+context Book
+inv: self.publishYear.abs() <= 2
+
+-- #33 Numeric Absolute Value Bounded in Book
+-- Difficulty: medium
+context Book
+inv: self.pages.abs() <= 0
+
+-- #34 Numeric Attribute Bounded in Book
+-- Difficulty: medium
+context Book
+inv: self.publishYear >= 2 and self.publishYear <= 15
+
+-- #35 Numeric Absolute Value Bounded in Library
+-- Difficulty: medium
+context Library
+inv: self.maxLoanDays.abs() <= 4
+
+-- #36 Numeric Greater Than Value in Fine
+-- Difficulty: easy
+context Fine
+inv: self.amount > 30
+
+-- #37 Numeric Is Odd in Library
+-- Difficulty: easy
+context Library
+inv: self.maxLoanDays mod 2 = 1
+
+-- #38 Numeric Absolute Value Bounded in Fine
+-- Difficulty: medium
+context Fine
+inv: self.amount.abs() <= 1
+
+-- #39 Numeric Less Than Value in Book
+-- Difficulty: easy
+context Book
+inv: self.publishYear < 86
+
+-- #40 Numeric Is Odd in Book
+-- Difficulty: easy
+context Book
+inv: self.pages mod 2 = 1
+
+-- #41 Numeric Attribute Bounded in Book
+-- Difficulty: medium
+context Book
+inv: self.pages >= 20 and self.pages <= 95
+
+-- #42 Numeric Attribute Non-Negative in Payment
+-- Difficulty: medium
+context Payment
+inv: (self.amount >= 0) and (self.amount > 0)
+
+-- #43 Numeric Multiple Of in Library
+-- Difficulty: medium
+context Library
+inv: (self.maxLoanDays mod 7 = 0) and (self.maxLoanDays > 31)
+
+-- #44 Numeric Is Even in Book
+-- Difficulty: medium
+context Book
+inv: (self.publishYear mod 2 = 0) and (self.title.indexOf('test') >= 0)
+
+-- #45 Select (Filter) Operation in Fine
+-- Difficulty: difficult
+context Fine
+inv: self.payments->select(x | x.amount > 10)->size() >= 1
+
+-- #46 Select (Filter) Operation in Author
+-- Difficulty: difficult
+context Author
+inv: self.books->select(x | x.pages <= 10)->size() >= 1
+
+-- #47 Flatten Operation in Author
+-- Difficulty: difficult
+context Author
+inv: self.books->collect(x | x.copies)->flatten()->notEmpty()
+
+-- #48 Collection Nested Collection Flatten in Book
+-- Difficulty: difficult
+context Book
+inv: self.copies->collect(x | x.loans)->size() >= 3
+
+-- #49 Collection Has Specific Size in Category
+-- Difficulty: easy
+context Category
+inv: self.books->size() = 1
+
+-- #50 Collection Size Constraint in Author
+-- Difficulty: easy
+context Author
+inv: self.books->size() <= 1
+
+-- #51 Collection Not Empty (Simple) in Book
+-- Difficulty: easy
+context Book
+inv: self.reservations->notEmpty()
+
+-- #52 Collection Has Specific Size in Book
+-- Difficulty: easy
+context Book
+inv: self.reservations->size() = 3
+
+-- #53 Two Attributes Not Equal in Loan
+-- Difficulty: easy
+context Loan
+inv: self.startDate <> self.dueDate
+
+-- #54 Collection Must Be Empty in Branch
+-- Difficulty: easy
+context Branch
+inv: self.loans->isEmpty()
+
+-- #55 Collection Size Constraint in Copy
+-- Difficulty: easy
+context Copy
+inv: self.reservations->size() >= 1
+
+-- #56 Two Attributes Not Equal in Loan
+-- Difficulty: easy
+context Loan
+inv: self.returnDate <> self.startDate
+
+-- #57 Collection Not Empty (Simple) in Book
+-- Difficulty: easy
+context Book
+inv: self.copies->notEmpty()
+
+-- #58 Collection Not Empty Check in Book
+-- Difficulty: easy
+context Book
+inv: self.authors->size() > 0
+
+-- #59 Collection Maximum Size in Author
+-- Difficulty: medium
+context Author
+inv: self.books->size() <= 2
+
+-- #60 Reverse Implication in Loan
+-- Difficulty: medium
+context Loan
+inv: self.dueDate <> null implies self.startDate <> null
+
+-- #61 Simple Implication in Loan
+-- Difficulty: medium
+context Loan
+inv: self.returnDate <> null implies self.startDate <> null
+
+-- #62 Collection Minimum Size in Book
+-- Difficulty: medium
+context Book
+inv: self.authors->size() >= 2
+
+-- #63 Simple Implication in Loan
+-- Difficulty: medium
+context Loan
+inv: self.dueDate <> null implies self.returnDate <> null
+
+-- #64 Reverse Implication in Loan
+-- Difficulty: medium
+context Loan
+inv: self.startDate <> null implies self.dueDate <> null
+
+-- #65 Association Exists in Address
+-- Difficulty: easy
+context Address
+inv: self.member <> null
+
+-- #66 Collection Navigation in Book
+-- Difficulty: difficult
+context Book
+inv: self.reservations->forAll(x | x.requestDate <> '')
+
+-- #67 Existential Quantification (exists) in Fine
+-- Difficulty: difficult
+context Fine
+inv: (self.payments->exists(x | x.amount < 50)) and (self.member.library.maxLoanDays > 10)
+
+-- #68 One Operation in Library
+-- Difficulty: difficult
+context Library
+inv: (self.branches->one(x | x.phone <> '')) and (self.name.toUpperCase() = 'TEST')
+
+-- #69 Collection Nested Collection Flatten in Book
+-- Difficulty: difficult
+context Book
+inv: self.authors->collect(x | x.books)->size() >= 1
+
+-- #70 Collection Size Constraint in Category
+-- Difficulty: medium
+context Category
+inv: self.books->size() <> 1
+

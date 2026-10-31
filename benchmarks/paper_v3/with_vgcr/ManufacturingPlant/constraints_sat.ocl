@@ -1,0 +1,375 @@
+-- Benchmark: ManufacturingPlant / balanced
+-- Type: SAT Constraints Only
+-- Generated: 2026-10-16T03:46:50.599283
+-- Count: 74
+
+-- #1 Navigation Chain in InventoryItem
+-- Difficulty: easy
+context InventoryItem
+inv: self.plant.location <> ''
+
+-- #2 Simple Navigation in WorkOrder
+-- Difficulty: easy
+context WorkOrder
+inv: self.line.isActive
+
+-- #3 Navigation Chain in Shipment
+-- Difficulty: easy
+context Shipment
+inv: self.supplier.supplierId <> ''
+
+-- #4 Association Exists in Operator
+-- Difficulty: easy
+context Operator
+inv: self.shift <> null
+
+-- #5 Conditional Existence in MaintenanceTask
+-- Difficulty: easy
+context MaintenanceTask
+inv: self.isDone implies self.assignedTo <> null
+
+-- #6 Simple Navigation in DefectReport
+-- Difficulty: easy
+context DefectReport
+inv: self.qualityCheck.passed
+
+-- #7 Collection Size in Range in Machine
+-- Difficulty: difficult
+context Machine
+inv: (self.manufacturer <> '') and (self.sensors->forAll(v | v.lastReading <= 100))
+
+-- #8 Collection Size in Range in BillOfMaterials
+-- Difficulty: difficult
+context BillOfMaterials
+inv: (self.bomId <> '') and (self.items->forAll(v | v.requiredQty >= 1))
+
+-- #9 Numeric Attribute Bounded in WorkOrder
+-- Difficulty: difficult
+context WorkOrder
+inv: (self.plannedQuantity >= 1) and (self.qualityChecks->forAll(v | v.passed = true))
+
+-- #10 Collection Size in Range in Machine
+-- Difficulty: difficult
+context Machine
+inv: (self.serialNumber <> '') and (self.maintenanceTasks->forAll(v | v.isDone = false))
+
+-- #11 Collection Navigation in Shift
+-- Difficulty: difficult
+context Shift
+inv: self.operators->exists(x | x.name <> '')
+
+-- #12 Collection Navigation in Plant
+-- Difficulty: difficult
+context Plant
+inv: self.inventory->exists(x | x.quantity >= 5)
+
+-- #13 Collection Navigation in Supplier
+-- Difficulty: difficult
+context Supplier
+inv: self.items->forAll(x | x.quantity < 10)
+
+-- #14 Collection Navigation in QualityCheck
+-- Difficulty: difficult
+context QualityCheck
+inv: self.defects->forAll(x | x.severity > 0)
+
+-- #15 Collection Navigation in BillOfMaterials
+-- Difficulty: difficult
+context BillOfMaterials
+inv: self.items->exists(x | x.requiredQty > 2)
+
+-- #16 Collection Navigation in Machine
+-- Difficulty: difficult
+context Machine
+inv: self.sensors->forAll(x | x.lastReading <= 100)
+
+-- #17 Navigation Chain in Sensor
+-- Difficulty: medium
+context Sensor
+inv: (self.machine.station.stationId <> '') and (self.lastReading >= 0)
+
+-- #18 Simple Navigation in DefectReport
+-- Difficulty: medium
+context DefectReport
+inv: (self.qualityCheck.passed) and (self.defectId.indexOf('test') >= 0)
+
+-- #19 Navigation Chain in InventoryItem
+-- Difficulty: medium
+context InventoryItem
+inv: (self.plant.name <> '') and (self.quantity mod 4 = 0)
+
+-- #20 Navigation Chain in InventoryItem
+-- Difficulty: medium
+context InventoryItem
+inv: (self.plant.location <> '') and (self.name.toLowerCase() = 'test')
+
+-- #21 Simple Navigation in DefectReport
+-- Difficulty: medium
+context DefectReport
+inv: (self.qualityCheck.passed) and (self.description <> '' and self.description.size() > 0)
+
+-- #22 Simple Navigation in Workstation
+-- Difficulty: medium
+context Workstation
+inv: ((self.line.isActive) and (self.stationId.size() >= 20)) and (self.machines->size() = 2)
+
+-- #23 Association Exists in BOMItem
+-- Difficulty: medium
+context BOMItem
+inv: (self.inventoryItem <> null) and (self.name.toUpperCase() = 'TEST')
+
+-- #24 Simple Navigation in DefectReport
+-- Difficulty: medium
+context DefectReport
+inv: ((self.qualityCheck.passed) and (self.severity >= 0)) and (self.defectId.toUpperCase() = 'TEST')
+
+-- #25 Select (Filter) Operation in Machine
+-- Difficulty: medium
+context Machine
+inv: self.sensors->select(x | x.lastReading <= 10)->size() >= 1
+
+-- #26 Collect (Map) Operation in Machine
+-- Difficulty: medium
+context Machine
+inv: (self.maintenanceTasks->collect(x | x.taskId)->notEmpty()) and (self.maintenanceTasks->size() <= 3)
+
+-- #27 Any Operation in Machine
+-- Difficulty: medium
+context Machine
+inv: (self.sensors->any(x | x.lastReading >= 2) <> null) and (self.serialNumber.toLowerCase() = 'test')
+
+-- #28 Select (Filter) Operation in QualityCheck
+-- Difficulty: medium
+context QualityCheck
+inv: self.defects->select(x | x.severity >= 2)->size() >= 1
+
+-- #29 One Operation in ProductionLine
+-- Difficulty: medium
+context ProductionLine
+inv: (self.stations->one(x | x.name <> '')) and (self.lineId.toLowerCase() = 'test')
+
+-- #30 Any Operation in Plant
+-- Difficulty: medium
+context Plant
+inv: (self.inventory->any(x | x.quantity < 100) <> null) and (self.suppliers->isEmpty())
+
+-- #31 Numeric Attribute Bounded in BOMItem
+-- Difficulty: medium
+context BOMItem
+inv: self.requiredQty >= 44 and self.requiredQty <= 90
+
+-- #32 Numeric Attribute Non-Negative in Sensor
+-- Difficulty: medium
+context Sensor
+inv: (self.lastReading >= 0) and (self.type <> null)
+
+-- #33 Numeric Multiple Of in BOMItem
+-- Difficulty: medium
+context BOMItem
+inv: (self.requiredQty mod 5 = 0) and (self.requiredQty mod 2 = 0)
+
+-- #34 Numeric Greater Than Value in BOMItem
+-- Difficulty: easy
+context BOMItem
+inv: self.requiredQty > 75
+
+-- #35 Numeric Is Even in BOMItem
+-- Difficulty: easy
+context BOMItem
+inv: self.requiredQty mod 2 = 0
+
+-- #36 Numeric Attribute Bounded in DefectReport
+-- Difficulty: medium
+context DefectReport
+inv: self.severity >= 45 and self.severity <= 55
+
+-- #37 Numeric Attribute Positive in BOMItem
+-- Difficulty: medium
+context BOMItem
+inv: (self.requiredQty > 0) and (self.requiredQty > 55)
+
+-- #38 Numeric Multiple Of in InventoryItem
+-- Difficulty: medium
+context InventoryItem
+inv: (self.quantity mod 7 = 0) and (self.itemCode.indexOf('test') >= 0)
+
+-- #39 Numeric Attribute Positive in Sensor
+-- Difficulty: easy
+context Sensor
+inv: self.lastReading > 0
+
+-- #40 Numeric Multiple Of in DefectReport
+-- Difficulty: medium
+context DefectReport
+inv: (self.severity mod 8 = 0) and (self.description.toLowerCase() = 'test')
+
+-- #41 Numeric Attribute Non-Negative in DefectReport
+-- Difficulty: medium
+context DefectReport
+inv: (self.severity >= 0) and (self.severity <> null)
+
+-- #42 Numeric Multiple Of in WorkOrder
+-- Difficulty: medium
+context WorkOrder
+inv: (self.plannedQuantity mod 7 = 0) and (self.qualityChecks->size() <= 1)
+
+-- #43 Numeric Attribute Bounded in BOMItem
+-- Difficulty: medium
+context BOMItem
+inv: self.requiredQty >= 25 and self.requiredQty <= 99
+
+-- #44 Numeric Attribute Positive in InventoryItem
+-- Difficulty: easy
+context InventoryItem
+inv: self.quantity > 0
+
+-- #45 Numeric Attribute Non-Negative in DefectReport
+-- Difficulty: easy
+context DefectReport
+inv: self.severity >= 0
+
+-- #46 Numeric Absolute Value Bounded in Sensor
+-- Difficulty: medium
+context Sensor
+inv: (self.lastReading.abs() <= 6) and (self.type.size() <= 15)
+
+-- #47 Universal Quantification (forAll) in ProductionLine
+-- Difficulty: difficult
+context ProductionLine
+inv: self.workOrders->forAll(x | x.plannedQuantity <= 50)
+
+-- #48 Existential Quantification (exists) in Plant
+-- Difficulty: difficult
+context Plant
+inv: self.workshops->exists(x | x.name <> '')
+
+-- #49 Existential Quantification (exists) in QualityCheck
+-- Difficulty: difficult
+context QualityCheck
+inv: self.defects->exists(x | x.severity >= 2)
+
+-- #50 Flatten Operation in WorkOrder
+-- Difficulty: difficult
+context WorkOrder
+inv: self.qualityChecks->collect(x | x.defects)->flatten()->notEmpty()
+
+-- #51 Collection Nested Collection Flatten in ProductionLine
+-- Difficulty: difficult
+context ProductionLine
+inv: (self.workOrders->collect(x | x.qualityChecks)->size() >= 3) and (self.stations->exists(x | x.name <> ''))
+
+-- #52 Flatten Operation in Workshop
+-- Difficulty: difficult
+context Workshop
+inv: self.lines->collect(x | x.workOrders)->flatten()->notEmpty()
+
+-- #53 Collection Size Constraint in Plant
+-- Difficulty: easy
+context Plant
+inv: self.suppliers->size() < 1
+
+-- #54 Collection Has Specific Size in Plant
+-- Difficulty: easy
+context Plant
+inv: self.workshops->size() = 2
+
+-- #55 Collection Maximum Size in Machine
+-- Difficulty: easy
+context Machine
+inv: self.sensors->size() <= 1
+
+-- #56 Bi-directional Implication in Shift
+-- Difficulty: easy
+context Shift
+inv: (self.startTime <> null) = (self.endTime <> null)
+
+-- #57 Collection Not Empty (Simple) in Plant
+-- Difficulty: easy
+context Plant
+inv: self.workshops->notEmpty()
+
+-- #58 Collection Not Empty Check in Plant
+-- Difficulty: easy
+context Plant
+inv: self.inventory->size() > 0
+
+-- #59 Collection Maximum Size in Machine
+-- Difficulty: easy
+context Machine
+inv: self.sensors->size() <= 2
+
+-- #60 Bi-directional Implication in Shift
+-- Difficulty: easy
+context Shift
+inv: (self.endTime <> null) = (self.startTime <> null)
+
+-- #61 Reverse Implication in Shift
+-- Difficulty: medium
+context Shift
+inv: self.startTime <> null implies self.endTime <> null
+
+-- #62 Simple Implication in Shift
+-- Difficulty: medium
+context Shift
+inv: self.endTime <> null implies self.startTime <> null
+
+-- #63 All Attributes Defined in Shift
+-- Difficulty: medium
+context Shift
+inv: self.startTime <> null and self.endTime <> null
+
+-- #64 All Attributes Defined in Shift
+-- Difficulty: medium
+context Shift
+inv: self.endTime <> null and self.startTime <> null
+
+-- #65 Collection Not Empty Check in BillOfMaterials
+-- Difficulty: medium
+context BillOfMaterials
+inv: (self.items->size() > 0) and (self.bomId.indexOf('test') >= 0)
+
+-- #66 Two Attributes Not Equal in Shift
+-- Difficulty: medium
+context Shift
+inv: (self.endTime <> self.startTime) and (self.operators->one(x | x.name <> ''))
+
+-- #67 Association Exists in Workstation
+-- Difficulty: easy
+context Workstation
+inv: self.assignedOperator <> null
+
+-- #68 Navigation Chain in InventoryItem
+-- Difficulty: easy
+context InventoryItem
+inv: self.plant.name <> ''
+
+-- #69 Collect (Map) Operation in BillOfMaterials
+-- Difficulty: difficult
+context BillOfMaterials
+inv: (self.items->collect(x | x.name)->notEmpty()) and (self.items->any(x | x.requiredQty >= 0) <> null)
+
+-- #70 One Operation in Machine
+-- Difficulty: difficult
+context Machine
+inv: (self.sensors->one(x | x.lastReading <= 100)) and (self.sensors->exists(x | x.lastReading >= 1))
+
+-- #71 Collection Size Constraint in WorkOrder
+-- Difficulty: difficult
+context WorkOrder
+inv: (self.plannedQuantity <= 100) and (self.qualityChecks->forAll(v | v.passed <> false))
+
+-- #72 Collection Not Empty (Simple) in Workshop
+-- Difficulty: difficult
+context Workshop
+inv: (self.name <> '') and (self.lines->forAll(v | v.isActive = true))
+
+-- #73 Collection As Sequence Conversion in Machine
+-- Difficulty: difficult
+context Machine
+inv: (self.manufacturer <> '') and (self.maintenanceTasks->forAll(v | v.isDone = false))
+
+-- #74 Collection Not Empty (Simple) in Plant
+-- Difficulty: medium
+context Plant
+inv: ((self.workshops->notEmpty()) and (self.inventory->size() = 2)) and (self.name.indexOf('test') >= 0)
+

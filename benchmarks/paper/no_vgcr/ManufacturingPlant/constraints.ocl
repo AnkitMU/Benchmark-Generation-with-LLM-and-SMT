@@ -1,0 +1,541 @@
+-- Benchmark: ManufacturingPlant / balanced
+-- Generated: 2026-10-12T20:26:19.465381
+-- Seed: 42
+-- Complexity: standard
+-- Count: 89
+-- Advanced Features: ENABLED
+
+-- #1 Navigation Chain in InventoryItem
+-- Difficulty: easy
+-- Type: SAT
+context InventoryItem
+inv: self.plant.location <> ''
+
+-- #2 Simple Navigation in DefectReport
+-- Difficulty: easy
+-- Type: SAT
+context DefectReport
+inv: self.qualityCheck.passed
+
+-- #3 Navigation Chain in Shipment
+-- Difficulty: easy
+-- Type: SAT
+context Shipment
+inv: self.supplier.name <> ''
+
+-- #4 Navigation Chain in Workshop
+-- Difficulty: easy
+-- Type: SAT
+context Workshop
+inv: self.plant.name <> ''
+
+-- #5 Simple Navigation in Workstation
+-- Difficulty: easy
+-- Type: SAT
+context Workstation
+inv: self.line.isActive
+
+-- #6 Navigation Chain in Shipment
+-- Difficulty: easy
+-- Type: SAT
+context Shipment
+inv: self.supplier.supplierId <> ''
+
+-- #7 Navigation Chain in Technician
+-- Difficulty: easy
+-- Type: SAT
+context Technician
+inv: self.shift.startTime <> ''
+
+-- #8 Navigation Chain in Operator
+-- Difficulty: easy
+-- Type: SAT
+context Operator
+inv: self.shift.shiftName <> ''
+
+-- #9 Association Exists in ProductionLine
+-- Difficulty: easy
+-- Type: SAT
+context ProductionLine
+inv: self.workshop <> null
+
+-- #10 Association Exists in QualityCheck
+-- Difficulty: easy
+-- Type: SAT
+context QualityCheck
+inv: self.workOrder <> null
+
+-- #11 Association Exists in Product
+-- Difficulty: easy
+-- Type: SAT
+context Product
+inv: self.bom <> null
+
+-- #12 Association Exists in BillOfMaterials
+-- Difficulty: easy
+-- Type: SAT
+context BillOfMaterials
+inv: self.product <> null
+
+-- #13 Association Exists in Sensor
+-- Difficulty: easy
+-- Type: SAT
+context Sensor
+inv: self.machine <> null
+
+-- #14 Association Exists in Machine
+-- Difficulty: easy
+-- Type: SAT
+context Machine
+inv: self.station <> null
+
+-- #15 Association Exists in MaintenanceTask
+-- Difficulty: easy
+-- Type: SAT
+context MaintenanceTask
+inv: self.assignedTo <> null
+
+-- #16 Association Exists in Machine
+-- Difficulty: medium
+-- Type: SAT
+context Machine
+inv: (self.station <> null) and (self.sensors->isEmpty())
+
+-- #17 Association Exists in BillOfMaterials
+-- Difficulty: medium
+-- Type: SAT
+context BillOfMaterials
+inv: (self.product <> null) and (self.bomId.size() = 48)
+
+-- #18 Association Exists in InventoryItem
+-- Difficulty: easy
+-- Type: SAT
+context InventoryItem
+inv: self.supplier <> null
+
+-- #19 Association Exists in DefectReport
+-- Difficulty: easy
+-- Type: SAT
+context DefectReport
+inv: self.qualityCheck <> null
+
+-- #20 Association Exists in BillOfMaterials
+-- Difficulty: medium
+-- Type: SAT
+context BillOfMaterials
+inv: (self.product <> null) and (self.product.oclIsTypeOf(Product))
+
+-- #21 Association Exists in BOMItem
+-- Difficulty: medium
+-- Type: SAT
+context BOMItem
+inv: (self.bom <> null) and (self.requiredQty >= 0)
+
+-- #22 Numeric Attribute Bounded in WorkOrder
+-- Difficulty: difficult
+-- Type: SAT
+context WorkOrder
+inv: (self.plannedQuantity <= 100) and (self.qualityChecks->forAll(v | v.passed = true))
+
+-- #23 Simple Navigation in DefectReport
+-- Difficulty: medium
+-- Type: SAT
+context DefectReport
+inv: (self.qualityCheck.passed) and (self.qualityCheck <> null)
+
+-- #24 Simple Navigation in DefectReport
+-- Difficulty: medium
+-- Type: SAT
+context DefectReport
+inv: (self.qualityCheck.passed) and (self.severity.abs() <= 7)
+
+-- #25 Simple Navigation in Workstation
+-- Difficulty: medium
+-- Type: SAT
+context Workstation
+inv: (self.line.isActive) and (self.assignedOperator <> null)
+
+-- #26 Simple Navigation in Workstation
+-- Difficulty: medium
+-- Type: SAT
+context Workstation
+inv: (self.line.isActive) and (self.line.workshop.name <> '')
+
+-- #27 Collection Navigation in Plant
+-- Difficulty: difficult
+-- Type: SAT
+context Plant
+inv: self.inventory->forAll(x | x.quantity <= 100)
+
+-- #28 Collection Navigation in Supplier
+-- Difficulty: difficult
+-- Type: SAT
+context Supplier
+inv: self.shipments->exists(x | x.received <> true)
+
+-- #29 Collection Navigation in Shift
+-- Difficulty: difficult
+-- Type: SAT
+context Shift
+inv: self.operators->exists(x | x.empId <> '')
+
+-- #30 Collection Navigation in ProductionLine
+-- Difficulty: difficult
+-- Type: SAT
+context ProductionLine
+inv: self.stations->forAll(x | x.name <> '')
+
+-- #31 Numeric Is Even in DefectReport
+-- Difficulty: easy
+-- Type: SAT
+context DefectReport
+inv: self.severity mod 2 = 0
+
+-- #32 Numeric Is Odd in WorkOrder
+-- Difficulty: easy
+-- Type: SAT
+context WorkOrder
+inv: self.plannedQuantity mod 2 = 1
+
+-- #33 Numeric Attribute Non-Negative in Product
+-- Difficulty: easy
+-- Type: SAT
+context Product
+inv: self.unitPrice >= 0
+
+-- #34 Numeric Absolute Value Bounded in InventoryItem
+-- Difficulty: medium
+-- Type: SAT
+context InventoryItem
+inv: self.quantity.abs() <= 3
+
+-- #35 Numeric Attribute Bounded in DefectReport
+-- Difficulty: medium
+-- Type: SAT
+context DefectReport
+inv: self.severity >= 5 and self.severity <= 32
+
+-- #36 Numeric Less Than Value in InventoryItem
+-- Difficulty: easy
+-- Type: SAT
+context InventoryItem
+inv: self.quantity < 39
+
+-- #37 Numeric Attribute Bounded in Product
+-- Difficulty: medium
+-- Type: SAT
+context Product
+inv: self.unitPrice >= 19 and self.unitPrice <= 93
+
+-- #38 Numeric Absolute Value Bounded in Sensor
+-- Difficulty: medium
+-- Type: SAT
+context Sensor
+inv: self.lastReading.abs() <= 9
+
+-- #39 Numeric Attribute Non-Negative in InventoryItem
+-- Difficulty: medium
+-- Type: SAT
+context InventoryItem
+inv: (self.quantity >= 0) and (self.plant.oclIsTypeOf(Plant))
+
+-- #40 Numeric Is Even in InventoryItem
+-- Difficulty: easy
+-- Type: SAT
+context InventoryItem
+inv: self.quantity mod 2 = 0
+
+-- #41 Numeric Multiple Of in DefectReport
+-- Difficulty: easy
+-- Type: SAT
+context DefectReport
+inv: self.severity mod 4 = 0
+
+-- #42 Select (Filter) Operation in BillOfMaterials
+-- Difficulty: difficult
+-- Type: SAT
+context BillOfMaterials
+inv: self.items->select(x | x.requiredQty <= 100)->size() >= 1
+
+-- #43 Any Operation in ProductionLine
+-- Difficulty: difficult
+-- Type: SAT
+context ProductionLine
+inv: self.workOrders->any(x | x.plannedQuantity >= 1) <> null
+
+-- #44 Flatten Operation in Supplier
+-- Difficulty: difficult
+-- Type: SAT
+context Supplier
+inv: self.shipments->collect(x | x.items)->flatten()->notEmpty()
+
+-- #45 Collection Nested Collection Flatten in ProductionLine
+-- Difficulty: difficult
+-- Type: SAT
+context ProductionLine
+inv: self.workOrders->collect(x | x.qualityChecks)->size() >= 2
+
+-- #46 Flatten Operation in Plant
+-- Difficulty: difficult
+-- Type: SAT
+context Plant
+inv: self.workshops->collect(x | x.lines)->flatten()->notEmpty()
+
+-- #47 Flatten Operation in Workshop
+-- Difficulty: difficult
+-- Type: SAT
+context Workshop
+inv: self.lines->collect(x | x.workOrders)->flatten()->notEmpty()
+
+-- #48 Boolean Is False in Robot
+-- Difficulty: easy
+-- Type: SAT
+context Robot
+inv: self.isCalibrated = false
+
+-- #49 Collection Size Constraint in BillOfMaterials
+-- Difficulty: easy
+-- Type: SAT
+context BillOfMaterials
+inv: self.items->size() >= 1
+
+-- #50 Collection Has Specific Size in Plant
+-- Difficulty: easy
+-- Type: SAT
+context Plant
+inv: self.suppliers->size() = 3
+
+-- #51 Collection Not Empty Check in ProductionLine
+-- Difficulty: easy
+-- Type: SAT
+context ProductionLine
+inv: self.workOrders->size() > 0
+
+-- #52 Collection Size Constraint in BillOfMaterials
+-- Difficulty: easy
+-- Type: SAT
+context BillOfMaterials
+inv: self.items->size() <= 1
+
+-- #53 Collection Not Empty (Simple) in Plant
+-- Difficulty: easy
+-- Type: SAT
+context Plant
+inv: self.inventory->notEmpty()
+
+-- #54 Collection Has Specific Size in Machine
+-- Difficulty: easy
+-- Type: SAT
+context Machine
+inv: self.maintenanceTasks->size() = 3
+
+-- #55 Collection Not Empty Check in BillOfMaterials
+-- Difficulty: easy
+-- Type: SAT
+context BillOfMaterials
+inv: self.items->size() > 0
+
+-- #56 Collection Must Be Empty in ProductionLine
+-- Difficulty: easy
+-- Type: SAT
+context ProductionLine
+inv: self.stations->isEmpty()
+
+-- #57 Collection Maximum Size in ProductionLine
+-- Difficulty: medium
+-- Type: SAT
+context ProductionLine
+inv: self.workOrders->size() <= 2
+
+-- #58 All Attributes Defined in Shift
+-- Difficulty: medium
+-- Type: SAT
+context Shift
+inv: self.startTime <> null and self.endTime <> null
+
+-- #59 Bi-directional Implication in Shift
+-- Difficulty: medium
+-- Type: SAT
+context Shift
+inv: (self.endTime <> null) = (self.startTime <> null)
+
+-- #60 Collection Minimum Size in Machine
+-- Difficulty: medium
+-- Type: SAT
+context Machine
+inv: self.maintenanceTasks->size() >= 1
+
+-- #61 Two Attributes Not Equal in Shift
+-- Difficulty: medium
+-- Type: SAT
+context Shift
+inv: self.endTime <> self.startTime
+
+-- #62 Reverse Implication in Shift
+-- Difficulty: medium
+-- Type: SAT
+context Shift
+inv: self.endTime <> null implies self.startTime <> null
+
+-- #63 Collection Maximum Size in BillOfMaterials
+-- Difficulty: medium
+-- Type: SAT
+context BillOfMaterials
+inv: self.items->size() <= 3
+
+-- #64 Bi-directional Implication in Shift
+-- Difficulty: medium
+-- Type: SAT
+context Shift
+inv: (self.startTime <> null) = (self.endTime <> null)
+
+-- #65 Simple Implication in Shift
+-- Difficulty: medium
+-- Type: SAT
+context Shift
+inv: self.startTime <> null implies self.endTime <> null
+
+-- #66 Collection Minimum Size in Plant
+-- Difficulty: medium
+-- Type: SAT
+context Plant
+inv: self.suppliers->size() >= 2
+
+-- #67 Association Exists in DefectReport
+-- Difficulty: medium
+-- Type: SAT
+context DefectReport
+inv: (self.qualityCheck <> null) and (self.defectId <> null)
+
+-- #68 Navigation Chain in BOMItem
+-- Difficulty: medium
+-- Type: SAT
+context BOMItem
+inv: (self.bom.product.unitPrice < 10) and (self.name.size() <= 34)
+
+-- #69 Navigation Chain in BOMItem
+-- Difficulty: medium
+-- Type: SAT
+context BOMItem
+inv: (self.bom.product.unitPrice < 50) and (self.requiredQty > 0)
+
+-- #70 Collect (Map) Operation in BillOfMaterials
+-- Difficulty: difficult
+-- Type: SAT
+context BillOfMaterials
+inv: (self.items->collect(x | x.name)->notEmpty()) and (self.bomId.size() >= 3)
+
+-- #71 Flatten Operation in Plant
+-- Difficulty: difficult
+-- Type: SAT
+context Plant
+inv: self.suppliers->collect(x | x.items)->flatten()->notEmpty()
+
+-- #72 Collection Size in Range (UNSAT) in ProductionLine
+-- Difficulty: unboxed
+-- Type: UNSAT
+context ProductionLine
+inv: ((self.isActive <> true) and (self.stations->forAll(v | v.stationId <> ''))) and (not((self.isActive <> true) and (self.stations->forAll(v | v.stationId <> ''))))
+
+-- #73 Two Attributes Not Equal (UNSAT) in Shift
+-- Difficulty: unboxed
+-- Type: UNSAT
+context Shift
+inv: (self.startTime <> self.endTime) and (not(self.startTime <> self.endTime))
+
+-- #74 Collection Navigation (UNSAT) in Plant
+-- Difficulty: unboxed
+-- Type: UNSAT
+context Plant
+inv: (self.suppliers->exists(x | x.name <> '')) and (not(self.suppliers->exists(x | x.name <> '')))
+
+-- #75 Collection Size in Range (UNSAT) in BillOfMaterials
+-- Difficulty: unboxed
+-- Type: UNSAT
+context BillOfMaterials
+inv: ((self.bomId <> '') and (self.items->forAll(v | v.requiredQty <= 50))) and (not((self.bomId <> '') and (self.items->forAll(v | v.requiredQty <= 50))))
+
+-- #76 Numeric Multiple Of (UNSAT) in BOMItem
+-- Difficulty: medium
+-- Type: UNSAT
+context BOMItem
+inv: (self.requiredQty mod 4 = 0) and (not(self.requiredQty mod 4 = 0))
+
+-- #77 Navigation Chain (UNSAT) in Operator
+-- Difficulty: unboxed
+-- Type: UNSAT
+context Operator
+inv: (self.shift.endTime <> '') and (not(self.shift.endTime <> ''))
+
+-- #78 Numeric Absolute Value Bounded (UNSAT) in InventoryItem
+-- Difficulty: unboxed
+-- Type: UNSAT
+context InventoryItem
+inv: (self.quantity.abs() <= 5) and (not(self.quantity.abs() <= 5))
+
+-- #79 Association Exists (UNSAT) in BOMItem
+-- Difficulty: unboxed
+-- Type: UNSAT
+context BOMItem
+inv: ((self.inventoryItem <> null) and (self.requiredQty mod 3 = 0)) and (not((self.inventoryItem <> null) and (self.requiredQty mod 3 = 0)))
+
+-- #80 Any Operation (UNSAT) in BillOfMaterials
+-- Difficulty: unboxed
+-- Type: UNSAT
+context BillOfMaterials
+inv: ((self.items->any(x | x.requiredQty > 1) <> null) and (self.bomId.indexOf('test') >= 0)) and (not((self.items->any(x | x.requiredQty > 1) <> null) and (self.bomId.indexOf('test') >= 0)))
+
+-- #81 Numeric Absolute Value Bounded (UNSAT) in WorkOrder
+-- Difficulty: unboxed
+-- Type: UNSAT
+context WorkOrder
+inv: ((self.plannedQuantity <= 50) and (self.qualityChecks->forAll(v | v.passed <> false))) and (not((self.plannedQuantity <= 50) and (self.qualityChecks->forAll(v | v.passed <> false))))
+
+-- #82 Flatten Operation (UNSAT) in ProductionLine
+-- Difficulty: unboxed
+-- Type: UNSAT
+context ProductionLine
+inv: (self.stations->collect(x | x.machines)->flatten()->notEmpty()) and (not(self.stations->collect(x | x.machines)->flatten()->notEmpty()))
+
+-- #83 Association Exists (UNSAT) in BOMItem
+-- Difficulty: unboxed
+-- Type: UNSAT
+context BOMItem
+inv: ((self.inventoryItem <> null) and (self.requiredQty > 77)) and (not((self.inventoryItem <> null) and (self.requiredQty > 77)))
+
+-- #84 Numeric Absolute Value Bounded (UNSAT) in BOMItem
+-- Difficulty: unboxed
+-- Type: UNSAT
+context BOMItem
+inv: (self.requiredQty.abs() <= 4) and (not(self.requiredQty.abs() <= 4))
+
+-- #85 Simple Navigation (UNSAT) in WorkOrder
+-- Difficulty: unboxed
+-- Type: UNSAT
+context WorkOrder
+inv: (((self.line.isActive) and (self.plannedQuantity > 0)) and (self.qualityChecks->size() >= 1)) and (not(((self.line.isActive) and (self.plannedQuantity > 0)) and (self.qualityChecks->size() >= 1)))
+
+-- #86 Numeric Greater Than Value (UNSAT) in InventoryItem
+-- Difficulty: easy
+-- Type: UNSAT
+context InventoryItem
+inv: (self.quantity > 75) and (self.quantity < 70)
+
+-- #87 Numeric Absolute Value Bounded (UNSAT) in Product
+-- Difficulty: unboxed
+-- Type: UNSAT
+context Product
+inv: (self.unitPrice.abs() <= 0) and (not(self.unitPrice.abs() <= 0))
+
+-- #88 Collection Size Constraint (UNSAT) in BillOfMaterials
+-- Difficulty: unboxed
+-- Type: UNSAT
+context BillOfMaterials
+inv: (self.items->size() <> 1) and (not(self.items->size() <> 1))
+
+-- #89 Collection Minimum Size (UNSAT) in Plant
+-- Difficulty: medium
+-- Type: UNSAT
+context Plant
+inv: (self.workshops->size() >= 2) and (self.workshops->size() < 2)
+

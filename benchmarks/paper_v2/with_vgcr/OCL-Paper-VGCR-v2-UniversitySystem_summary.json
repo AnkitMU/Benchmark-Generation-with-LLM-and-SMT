@@ -1,0 +1,209 @@
+{
+  "suite_name": "OCL-Paper-VGCR-v2-UniversitySystem",
+  "version": "3.0",
+  "generated_at": "2026-10-14T20:32:33.367230",
+  "research_features_enabled": true,
+  "models": [
+    {
+      "model": "UniversitySystem",
+      "xmi": "models/university_system.xmi",
+      "profiles": [
+        {
+          "profile": "balanced",
+          "seed": 42,
+          "complexity": "standard",
+          "output_dir": "benchmarks/paper_v2/with_vgcr/UniversitySystem",
+          "research_features_applied": [
+            "metadata_enrichment",
+            "vgcr_refinement",
+            "unsat_generation",
+            "ast_similarity",
+            "semantic_similarity",
+            "implication_checking",
+            "manifest_generation"
+          ],
+          "constraint_count": 86,
+          "initial_sat_count": 88,
+          "dedup": {
+            "removed": 13,
+            "refilled": 11,
+            "unfilled": [
+              {
+                "pattern": "navigation_chain",
+                "context": "Faculty",
+                "profile": "easy"
+              },
+              {
+                "pattern": "navigation_chain",
+                "context": "Building",
+                "profile": "easy"
+              }
+            ]
+          },
+          "coverage_repairs": [
+            {
+              "class": "LibraryAccount",
+              "action": "donor_swap",
+              "donor_class": "Exam",
+              "pattern": "navigation_chain",
+              "profile": "medium"
+            }
+          ],
+          "vgcr_stats": {
+            "total_candidates": 86,
+            "passed": 86,
+            "passed_first_try": 70,
+            "passed_after_retry": 16,
+            "failed": 0,
+            "pass_rate": "100.0%",
+            "total_retries": 22,
+            "failure_breakdown": {
+              "tautology": 5,
+              "contradiction": 7,
+              "inconsistent": 6
+            },
+            "total_smt_queries": 226,
+            "total_smt_time_s": 501.499,
+            "independence_checked": 0,
+            "independence_skipped": 92,
+            "total_time_s": 503.261,
+            "duplicates_rejected": 1,
+            "unfilled_slots": [],
+            "generator_refinement": {
+              "total_refinements": 18,
+              "blacklisted_pattern_contexts": 7,
+              "blacklisted_bindings": 14,
+              "weight_modifications": 9,
+              "action_breakdown": {
+                "blacklist_bindings_and_downweight": 6,
+                "down_weight_pattern": 5,
+                "blacklist_pattern_context": 7
+              }
+            }
+          },
+          "vgcr_accepted": 86,
+          "vgcr_rejected": 0,
+          "sat_count_after_mutation": 69,
+          "unsat_count_after_mutation": 17,
+          "unsat_measured_tiers": {
+            "medium": 6,
+            "unboxed": 5,
+            "difficult": 5,
+            "easy": 1
+          },
+          "consistency_verified": true,
+          "semantic_clusters": 13,
+          "implication_count": 43,
+          "valid_count": 69,
+          "sat_count": 69,
+          "unsat_count": 17,
+          "unknown_count": 0,
+          "verified_count": 69,
+          "fallback_unknown_count": 0,
+          "skipped_unsat_count": 17,
+          "intentional_unsat_count": 17,
+          "post_refine_coverage_deficit": {},
+          "final_suite": {
+            "delivered": 86,
+            "sat": 69,
+            "unsat": 17,
+            "slot_tier_distribution": {
+              "easy": 28,
+              "medium": 33,
+              "difficult": 25
+            },
+            "requested_tier_distribution": {
+              "easy": 40,
+              "medium": 35,
+              "difficult": 25
+            },
+            "sat_tier_distribution": {
+              "easy": 23,
+              "medium": 27,
+              "difficult": 19
+            },
+            "unsat_measured_tier_distribution": {
+              "medium": 6,
+              "unboxed": 5,
+              "difficult": 5,
+              "easy": 1
+            },
+            "family_distribution": {
+              "navigation": 21,
+              "quantified": 12,
+              "arithmetic": 25,
+              "cardinality": 28
+            },
+            "requested_family_distribution": {
+              "cardinality": 30,
+              "arithmetic": 25,
+              "navigation": 25,
+              "quantified": 20
+            },
+            "complexity_fidelity_sat": {
+              "boxed_constraints": 69,
+              "in_box": 69,
+              "in_box_rate": 1.0,
+              "unlabeled_constraints": 0,
+              "out_of_box": []
+            },
+            "class_coverage": {
+              "min_per_class": 1,
+              "classes": 18,
+              "covered": 18,
+              "below_min": {}
+            },
+            "slot_accounting": {
+              "requested": 100,
+              "generated": 88,
+              "generation_gaps": 12,
+              "dedup_removed": 13,
+              "dedup_refilled": 11,
+              "dedup_unfilled": 2,
+              "vgcr_regenerated": 16,
+              "vgcr_unfilled": 0,
+              "late_duplicates_removed": 0,
+              "unsat_trimmed_for_ratio": 0,
+              "delivered": 86
+            },
+            "dedup_unfilled_slots": [
+              {
+                "pattern": "navigation_chain",
+                "context": "Faculty",
+                "profile": "easy"
+              },
+              {
+                "pattern": "navigation_chain",
+                "context": "Building",
+                "profile": "easy"
+              }
+            ],
+            "vgcr_unfilled_slots": [],
+            "coverage_repairs": [
+              {
+                "class": "LibraryAccount",
+                "action": "donor_swap",
+                "donor_class": "Exam",
+                "pattern": "navigation_chain",
+                "profile": "medium"
+              }
+            ]
+          },
+          "status": "success",
+          "generation_time_s": 858.0
+        }
+      ],
+      "total_constraints": 86,
+      "total_valid": 69,
+      "total_sat": 69,
+      "total_unsat": 17,
+      "total_unknown": 0
+    }
+  ],
+  "total_constraints": 86,
+  "total_sat": 69,
+  "total_unsat": 17,
+  "total_valid": 69,
+  "total_unknown": 0,
+  "total_generation_time_s": 858.1
+}

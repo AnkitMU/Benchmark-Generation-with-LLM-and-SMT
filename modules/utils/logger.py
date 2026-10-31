@@ -3,6 +3,7 @@ Enhanced Logging Utility for OCL Framework
 Provides comprehensive logging with levels, timestamps, and debugging support.
 """
 import sys
+import time
 from datetime import datetime
 from typing import Optional
 from enum import Enum
@@ -34,7 +35,10 @@ class FrameworkLogger:
         self.debug_enabled = debug  # Renamed to avoid shadowing debug() method
         self.name = name
         self.indent_level = 0
-        
+        # Wall-clock of the previous emitted line, so every line can show how long
+        # the step before it took (a slow/stalled step shows a large +Δs).
+        self._last_emit = time.monotonic()
+
         # Set minimum level
         if debug:
             self.min_level = LogLevel.DEBUG
@@ -48,10 +52,14 @@ class FrameworkLogger:
         return level.value >= self.min_level.value
     
     def _format_message(self, level: LogLevel, message: str, prefix: str = "") -> str:
-        """Format log message with timestamp and level."""
+        """Format log message with timestamp, elapsed-since-last-line, and level."""
+        now = time.monotonic()
+        delta = now - getattr(self, "_last_emit", now)
+        self._last_emit = now
         timestamp = datetime.now().strftime("%H:%M:%S")
+        delta_str = f"+{delta:5.1f}s"
         indent = "  " * self.indent_level
-        
+
         # Plain text prefixes (no symbols)
         icons = {
             LogLevel.DEBUG: "",
@@ -65,9 +73,9 @@ class FrameworkLogger:
         icon = icons.get(level, "")
         
         if level == LogLevel.DEBUG:
-            return f"[{timestamp}] {indent}{icon}DEBUG: {prefix}{message}"
+            return f"[{timestamp} {delta_str}] {indent}{icon}DEBUG: {prefix}{message}"
         else:
-            return f"[{timestamp}] {indent}{icon}{prefix}{message}"
+            return f"[{timestamp} {delta_str}] {indent}{icon}{prefix}{message}"
     
     def debug(self, message: str, **kwargs):
         """Log debug message."""

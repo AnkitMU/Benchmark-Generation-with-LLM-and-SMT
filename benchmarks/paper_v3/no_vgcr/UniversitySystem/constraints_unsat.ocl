@@ -1,0 +1,89 @@
+-- Benchmark: UniversitySystem / balanced
+-- Type: UNSAT Constraints Only
+-- Generated: 2026-10-16T06:28:28.662230
+-- Count: 14
+
+-- #1 Reverse Implication (UNSAT) in Scholarship
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Scholarship
+inv: (self.endYear <> null implies self.startYear <> null) and (not(self.endYear <> null implies self.startYear <> null))
+
+-- #2 Association Exists (UNSAT) in Enrollment
+-- Difficulty: unboxed
+-- Mutation Strategy: contradictory_bounds
+context Enrollment
+inv: ((self.grade <> null) and (self.student.program.durationYears < 1000)) and (self.student.program.durationYears > 1005)
+
+-- #3 Numeric Attribute Bounded (UNSAT) in Room
+-- Difficulty: difficult
+-- Mutation Strategy: contradictory_bounds
+context Room
+inv: ((self.capacity <= 100) and (self.offerings->forAll(v | v.capacity <= 1000))) and (self.capacity > 100)
+
+-- #4 Navigation Chain (UNSAT) in Exam
+-- Difficulty: unboxed
+-- Mutation Strategy: contradictory_bounds
+context Exam
+inv: ((self.offering.course.credits <= 50) and (self.type.size() >= 4 implies self.type.substring(1, 4) = 'AB')) and (self.offering.course.credits > 50)
+
+-- #5 Navigation Chain (UNSAT) in Building
+-- Difficulty: medium
+-- Mutation Strategy: self_contradiction
+context Building
+inv: (self.university.name <> '') and (not(self.university.name <> ''))
+
+-- #6 Collection Navigation (UNSAT) in University
+-- Difficulty: difficult
+-- Mutation Strategy: universal_negation
+context University
+inv: (self.buildings->forAll(x | x.code <> '')) and (self.buildings->exists(x | not(x.code <> '')))
+
+-- #7 Collect (Map) Operation (UNSAT) in Building
+-- Difficulty: difficult
+-- Mutation Strategy: contradictory_bounds
+context Building
+inv: ((self.rooms->collect(x | x.capacity)->notEmpty()) and (self.rooms->size() >= 2)) and (self.rooms->size() < 2)
+
+-- #8 Navigation Chain (UNSAT) in Faculty
+-- Difficulty: medium
+-- Mutation Strategy: self_contradiction
+context Faculty
+inv: (self.university.code <> '') and (not(self.university.code <> ''))
+
+-- #9 Collection Index Of Element (UNSAT) in CourseOffering
+-- Difficulty: difficult
+-- Mutation Strategy: contradictory_bounds
+context CourseOffering
+inv: ((self.capacity > 10) and (self.enrollments->forAll(v | v.enrolledAt <> ''))) and (self.capacity < 5)
+
+-- #10 Attribute Not Null (Simple) (UNSAT) in Department
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Department
+inv: ((self.name <> null) and (self.courses->select(x | x.credits >= 2)->size() >= 1)) and (not((self.name <> null) and (self.courses->select(x | x.credits >= 2)->size() >= 1)))
+
+-- #11 Navigation Chain (UNSAT) in Scholarship
+-- Difficulty: unboxed
+-- Mutation Strategy: contradictory_bounds
+context Scholarship
+inv: ((self.student.program.durationYears < 100) and (self.endYear + self.startYear > 42)) and (self.student.program.durationYears > 105)
+
+-- #12 Numeric Sum Constraint (UNSAT) in Scholarship
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Scholarship
+inv: ((self.endYear + self.startYear > 73) and (self.endYear + self.startYear > 64)) and (not((self.endYear + self.startYear > 73) and (self.endYear + self.startYear > 64)))
+
+-- #13 Numeric Comparison (UNSAT) in Scholarship
+-- Difficulty: medium
+-- Mutation Strategy: self_contradiction
+context Scholarship
+inv: (self.endYear <= self.startYear) and (not(self.endYear <= self.startYear))
+
+-- #14 Universal Quantification (forAll) (UNSAT) in Course
+-- Difficulty: difficult
+-- Mutation Strategy: universal_negation
+context Course
+inv: (self.offerings->forAll(x | x.capacity <= 100)) and (self.offerings->exists(x | not(x.capacity <= 100)))
+

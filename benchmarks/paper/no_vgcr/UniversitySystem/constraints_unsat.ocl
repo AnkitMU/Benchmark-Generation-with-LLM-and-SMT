@@ -1,0 +1,107 @@
+-- Benchmark: UniversitySystem / balanced
+-- Type: UNSAT Constraints Only
+-- Generated: 2026-10-12T20:27:11.121047
+-- Count: 17
+
+-- #1 Collection Nested Collection Flatten (UNSAT) in Department
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Department
+inv: (self.courses->collect(x | x.offerings)->size() >= 1) and (not(self.courses->collect(x | x.offerings)->size() >= 1))
+
+-- #2 Collection Size in Range (UNSAT) in Course
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Course
+inv: ((self.credits <= 100) and (self.offerings->forAll(v | v.capacity >= 2))) and (not((self.credits <= 100) and (self.offerings->forAll(v | v.capacity >= 2))))
+
+-- #3 Numeric Absolute Value Bounded (UNSAT) in Course
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Course
+inv: (self.credits.abs() <= 3) and (not(self.credits.abs() <= 3))
+
+-- #4 Simple Navigation (UNSAT) in Student
+-- Difficulty: medium
+-- Mutation Strategy: self_contradiction
+context Student
+inv: (self.libraryAccount.isBlocked) and (not(self.libraryAccount.isBlocked))
+
+-- #5 Association Exists (UNSAT) in Scholarship
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Scholarship
+inv: (self.student <> null) and (not(self.student <> null))
+
+-- #6 Numeric Comparison (UNSAT) in Scholarship
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Scholarship
+inv: (self.endYear >= self.startYear) and (not(self.endYear >= self.startYear))
+
+-- #7 Minimum Of Two Attributes (UNSAT) in Scholarship
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Scholarship
+inv: (if self.startYear < self.endYear then self.startYear else self.endYear endif >= 19) and (not(if self.startYear < self.endYear then self.startYear else self.endYear endif >= 19))
+
+-- #8 Numeric Comparison (UNSAT) in Scholarship
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Scholarship
+inv: (self.endYear <= self.startYear) and (not(self.endYear <= self.startYear))
+
+-- #9 Attribute Not Null (Simple) (UNSAT) in Department
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Department
+inv: ((self.code <> null) and (self.code.toUpperCase() = 'TEST')) and (not((self.code <> null) and (self.code.toUpperCase() = 'TEST')))
+
+-- #10 Numeric Attribute Bounded (UNSAT) in Room
+-- Difficulty: difficult
+-- Mutation Strategy: contradictory_bounds
+context Room
+inv: ((self.capacity >= 0) and (self.offerings->forAll(v | v.capacity < 50))) and (self.capacity < 0)
+
+-- #11 Simple Implication (UNSAT) in Scholarship
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Scholarship
+inv: (self.endYear <> null implies self.startYear <> null) and (not(self.endYear <> null implies self.startYear <> null))
+
+-- #12 Collection Navigation (UNSAT) in Course
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Course
+inv: (self.offerings->forAll(x | x.capacity >= 10)) and (not(self.offerings->forAll(x | x.capacity >= 10)))
+
+-- #13 Numeric Absolute Value Bounded (UNSAT) in CourseOffering
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context CourseOffering
+inv: (self.capacity.abs() <= 6) and (not(self.capacity.abs() <= 6))
+
+-- #14 Any Operation (UNSAT) in Building
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Building
+inv: (self.rooms->any(x | x.capacity >= 10) <> null) and (not(self.rooms->any(x | x.capacity >= 10) <> null))
+
+-- #15 Association Exists (UNSAT) in ExamAttempt
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context ExamAttempt
+inv: ((self.student <> null) and (self.marks > 75)) and (not((self.student <> null) and (self.marks > 75)))
+
+-- #16 Numeric Is Even (UNSAT) in Course
+-- Difficulty: medium
+-- Mutation Strategy: self_contradiction
+context Course
+inv: (self.credits mod 2 = 0) and (not(self.credits mod 2 = 0))
+
+-- #17 Collection Size Constraint (UNSAT) in Building
+-- Difficulty: medium
+-- Mutation Strategy: contradictory_bounds
+context Building
+inv: (self.rooms->size() >= 1) and (self.rooms->size() < 1)
+

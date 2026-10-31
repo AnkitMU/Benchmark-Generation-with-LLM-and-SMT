@@ -51,8 +51,19 @@ def classify_family(pattern_id: str, category: str) -> str:
     pid = pattern_id.lower()
     cat = (category or "").lower()
     
+    # 'association_exists' is an existence check on an optional single-valued
+    # end (self.x <> null): a navigation constraint, not a quantifier, even
+    # though its id contains 'exists'. Checked first so the substring rule
+    # below never claims it.
+    if pid in ("association_exists", "association_exists_unsat"):
+        return "navigation"
     if cat == "string" or pid.startswith("string_") or "regex" in pid:
         return "string"
+    # 'conditional_existence' (a flag implies an optional end is set) carries
+    # 'conditional' in its id but is an existence/navigation constraint, not an
+    # if-then-else expression: keep it in the navigation family.
+    if pid == "conditional_existence":
+        return "navigation"
     # Conditional (if-then-else) expressions get their own family instead of
     # falling through to the "cardinality" catch-all (or, for the arithmetic-
     # categorised if_then_else_expression, into arithmetic). The numeric min/max
@@ -478,6 +489,48 @@ class BenchmarkEngineV2:
 
     def _get_association(self, context: str, ref_name: str):
         return next((a for a in self.metamodel.get_associations_for(context) if a.ref_name == ref_name), None)
+
+    def _optional_single_associations(self, context: str) -> List[str]:
+        """Ref-names of the context's single-valued ends with lower bound 0.
+        An existence check ('self.x <> null') on a mandatory [1..1] end is a
+        tautology under the metamodel axioms (VGCR q1 rejects it), so existence
+        patterns bind only these. Pure (no RNG)."""
+        return [a.ref_name for a in self.metamodel.get_single_associations(context)
+                if a.lower == 0]
+
+    def _navigation_consistency_triples(self, context: str) -> List[Tuple[str, str, str]]:
+        """All (assoc_a, assoc_b, assoc_c) for 'self.assoc_a.assoc_b = self.assoc_c':
+        assoc_a and assoc_c single-valued ends of the context, assoc_b a
+        single-valued end of assoc_a's target, and assoc_b's target class equal
+        to assoc_c's (the equality is well-typed). Degenerate triples are
+        dropped: assoc_c == assoc_a ('self.a.b = self.a') and assoc_b the
+        eOpposite of assoc_a ('self.a.opp' is self by the association axioms).
+        Pure (no RNG), so applicability and binding agree."""
+        out: List[Tuple[str, str, str]] = []
+        singles = self.metamodel.get_single_associations(context)
+        for a in singles:
+            for b in self.metamodel.get_single_associations(a.target_class):
+                # eOpposite is stored as '#//Class/ref' by the XMI extractor
+                b_opp = str(b.opposite_ref or '').split('/')[-1]
+                if b.target_class == context and b_opp == a.ref_name:
+                    continue
+                for c in singles:
+                    if c.ref_name != a.ref_name and c.target_class == b.target_class:
+                        out.append((a.ref_name, b.ref_name, c.ref_name))
+        return out
+
+    def _navigation_consistency_options(self, context: str, param_name: str,
+                                        params: Dict) -> List[str]:
+        """Options for one hop of navigation_consistency, restricted to the
+        triples that complete the hops already bound in ``params``."""
+        triples = self._navigation_consistency_triples(context)
+        if param_name == 'assoc_a':
+            return sorted({t[0] for t in triples})
+        if param_name == 'assoc_b':
+            a = params.get('assoc_a')
+            return sorted({t[1] for t in triples if t[0] == a})
+        a, b = params.get('assoc_a'), params.get('assoc_b')
+        return sorted({t[2] for t in triples if t[0] == a and t[1] == b})
 
     def _has_usable_attr(self, cls: str) -> bool:
         """True if `cls` exposes a numeric/boolean/string attribute that
@@ -1144,6 +1197,9 @@ class BenchmarkEngineV2:
         gen = SteeredGenerator(self, spec)
         gen.profile()
         suite, report = gen.run()
+        # Keep the generator (with its fill state) so VGCR regeneration can
+        # re-enter box-targeted generation for a failed candidate's slot.
+        self._steered_gen = gen
         constraints = []
         for t in suite:
             c = t[0]
@@ -1164,15 +1220,25 @@ class BenchmarkEngineV2:
         box_ct = Counter(t[5] for t in suite)
         gaps = [r for r in report if r and r[0] in
                 ("unreached", "unfilled", "below_min", "support_infeasible")]
+        self.steered_report = self._build_steered_report(spec, suite, report)
         print(f"Filled {len(constraints)}/{spec.n}  families={dict(fam_ct)}  "
               f"profiles={dict(box_ct)}")
+        opt = self.steered_report.get("optimality") or {}
+        if opt.get("assignment_upper_bound") is not None:
+            print(f"Assignment optimality: {opt['achieved']}/{opt['assignment_upper_bound']} "
+                  f"of the certified outer-assignment optimum "
+                  f"(ratio {opt['ratio']})")
+        fid = self.steered_report.get("complexity_fidelity") or {}
+        if fid.get("boxed_constraints"):
+            print(f"Complexity fidelity: {fid['in_box']}/{fid['boxed_constraints']} "
+                  f"inside their requested box (rate {fid['in_box_rate']}, "
+                  f"mean deviation {fid['mean_normalized_deviation']}, "
+                  f"mean center offset {fid['mean_center_offset']})")
         if gaps:
             print(f"Feasibility gaps reported (not padded): {len(gaps)}")
             for g in gaps[:8]:
                 print(f"   - {g}")
         print(f"=== STEERED GENERATION COMPLETE ===\n")
-
-        self.steered_report = self._build_steered_report(spec, suite, report)
         if progress_callback:
             progress_callback(len(constraints), spec.n, 1.0)
         return constraints
@@ -1195,12 +1261,21 @@ class BenchmarkEngineV2:
         envelope, derived = {}, {}
         unreachable, gaps = [], []
         actuators = Counter()
+        upper_bound = None
+        matching_deviations = 0
+        matching_guided = False
         for r in report:
             if not r:
                 continue
             kind = r[0]
             if kind == "reachable_envelope":
                 envelope = {k: [round(v[0], 3), round(v[1], 3)] for k, v in r[1].items()}
+            elif kind == "assignment_upper_bound":
+                upper_bound = int(r[1])
+            elif kind == "matching_deviations":
+                matching_deviations = int(r[1])
+            elif kind == "matching_guided":
+                matching_guided = bool(r[1])
             elif kind == "reported_derived_components":
                 derived = {k: [round(v[0], 3), round(v[1], 3)] for k, v in r[1].items()}
             elif kind == "box_unreachable":
@@ -1212,9 +1287,79 @@ class BenchmarkEngineV2:
                 gaps.append({"type": kind, "info": safe(list(r[1:]))})
         total = len(suite)
         n_sat = sum(1 for t in suite if t[2] == "sat")
+
+        # ---- Complexity fidelity: measured vector vs the REQUESTED box -----
+        # For every accepted constraint carrying a profile label, compare its
+        # measured components against the ranges of the box it was generated
+        # for. Deviation is the per-component overshoot normalised by range
+        # width, summed over constrained components (0.0 => strictly inside
+        # every requested range). Acceptance is gated on Box.contains, so a
+        # constraint whose EFFECTIVE box was the requested one has deviation 0
+        # by construction; nonzero deviation can arise only from the explicit
+        # relax/skip policies -- this block makes that guarantee measurable.
+        box_by_label = {b.label: b for b, _ in spec.profiles}
+        boxed = in_box = unboxed = 0
+        devs: list = []
+        offsets: list = []
+        comp_viol = Counter()
+        for t in suite:
+            vec = t[4] if len(t) > 4 and isinstance(t[4], dict) else None
+            box = box_by_label.get(str(t[5]).split("+")[0])
+            if vec is None or box is None or not getattr(box, "ranges", None):
+                unboxed += 1          # 'skip' / 'any' acceptances: no box requested
+                continue
+            boxed += 1
+            dev = off = 0.0
+            for comp, (lo, hi) in box.ranges.items():
+                x = float(vec.get(comp, 0.0))
+                w = max(1.0, hi - lo)
+                if x < lo:
+                    dev += (lo - x) / w
+                    comp_viol[comp] += 1
+                elif x > hi:
+                    dev += (x - hi) / w
+                    comp_viol[comp] += 1
+                off += abs(x - 0.5 * (lo + hi)) / w
+            devs.append(dev)
+            offsets.append(off / max(1, len(box.ranges)))
+            if dev == 0.0:
+                in_box += 1
+        fidelity = {
+            "boxed_constraints": boxed,
+            "in_box": in_box,
+            "in_box_rate": round(in_box / boxed, 3) if boxed else None,
+            "mean_normalized_deviation": (round(sum(devs) / len(devs), 4)
+                                          if devs else None),
+            "max_normalized_deviation": round(max(devs), 4) if devs else None,
+            # Mean distance to box centre in range-widths (0 = dead centre,
+            # 0.5 = at a range edge): shows constraints SPREAD within the
+            # requested ranges rather than hugging one boundary.
+            "mean_center_offset": (round(sum(offsets) / len(offsets), 3)
+                                   if offsets else None),
+            "out_of_box_components": dict(comp_viol),
+            "unboxed_constraints": unboxed,
+        }
+
         return {
             "target_size": spec.n,
             "generated": total,
+            # Certified optimum N* of the outer slot-assignment relaxation
+            # (bipartite b-matching via max-flow) and the realised ratio N/N*.
+            # The relaxation only drops effects that reduce the achievable
+            # count, so ratio <= 1 always and a ratio near 1 certifies the
+            # greedy fill is near-optimal for this model + spec.
+            "optimality": {
+                "assignment_upper_bound": upper_bound,
+                "achieved": total,
+                "ratio": (round(total / upper_bound, 3)
+                          if upper_bound else None),
+                # Whether the fill was witness-guided (per-class capacity was
+                # tight) and how many slots deviated from their reserved class
+                # (each deviation re-matches the remainder).
+                "matching_guided": matching_guided,
+                "matching_deviations": matching_deviations,
+            },
+            "complexity_fidelity": fidelity,
             "requested_sat_ratio": spec.sat_ratio,
             "realised_sat_ratio": round(n_sat / total, 3) if total else 0.0,
             "family_distribution": dict(Counter(t[1] for t in suite)),
@@ -1462,9 +1607,26 @@ class BenchmarkEngineV2:
         self,
         failed_constraint: 'OCLConstraint',
         generator_state: 'GeneratorState',
+        accept=None,
+        only_classes=None,
+        exclude_patterns=None,
     ) -> Optional['OCLConstraint']:
         """
         Generate a refined candidate after a VGCR property-check failure.
+
+        ``accept(constraint) -> bool`` optionally vetoes a finished candidate
+        (near-duplicate suppression); ``only_classes`` restricts the context
+        classes a replacement may land on (coverage repair);
+        ``exclude_patterns`` is the set of pattern ids the VGCR loop has ruled
+        out for THIS slot (a pattern that produced a tautology, or that failed
+        twice on the same context): the replacement is drawn from a different
+        pattern of the same family and complexity box, on every class.
+
+        In steered mode a slot that was generated for a complexity box is only
+        ever replaced INSIDE that box. If the box cannot be reached the method
+        returns None and the slot stays unfilled and reported -- it never falls
+        back to a box-free draw, which would break the suite's tier quotas and
+        in-box certificate.
 
         Called by the VGCR loop when a candidate fails q1–q5.  Instead of
         asking the LLM for a new constraint, this method re-samples from
@@ -1488,12 +1650,34 @@ class BenchmarkEngineV2:
         context = failed_constraint.context
         failed_pid = failed_constraint.pattern_id
         max_attempts = 15  # cap to avoid infinite loops
+        # Slot-level pattern exclusions from the VGCR loop (see docstring).
+        excluded = set(exclude_patterns or ())
+
+        # Steered mode: re-enter the box-targeted generation of Phase 3 so the
+        # replacement preserves the failed slot's family AND complexity box
+        # (cascading to a relaxed or box-free draw only when the box cannot be
+        # reached, with the realised level recorded). Falls through to the
+        # box-free path below only if no steered replacement can be drawn.
+        gen = getattr(self, "_steered_gen", None)
+        if gen is not None and hasattr(gen, "H"):
+            steered = self._generate_refined_steered(
+                gen, failed_constraint, failed_pid, context, generator_state,
+                accept=accept, only_classes=only_classes,
+                exclude_patterns=excluded,
+            )
+            if steered is not None:
+                return steered
+            label = (failed_constraint.metadata or {}).get("profile")
+            if label and str(label).split("+")[0] in getattr(gen, "box_by_label", {}):
+                # Boxed slot, exact box unreachable: leave it unfilled.
+                return None
 
         for attempt in range(max_attempts):
             # Pick a pattern, applying weight modifiers from generator state
             try:
                 pattern = self._vgcr_weighted_sample(
-                    context, failed_pid, generator_state
+                    context, failed_pid, generator_state,
+                    exclude_patterns=excluded,
                 )
             except Exception:
                 pattern = None
@@ -1508,8 +1692,10 @@ class BenchmarkEngineV2:
                 context = alt_context
                 continue
 
-            # Check blacklist before generating
+            # Check blacklist and slot-level exclusions before generating
             if generator_state.is_blacklisted(pattern.id, context):
+                continue
+            if pattern.id in excluded:
                 continue
 
             # Check applicability
@@ -1527,6 +1713,10 @@ class BenchmarkEngineV2:
                     continue
 
                 c = self.generator.generate(pattern.id, context, params)
+                if c is not None and only_classes is not None and context not in only_classes:
+                    continue
+                if c is not None and accept is not None and not accept(c):
+                    continue
 
                 # Basic diversity check against recent constraints
                 # (We can't check against the full suite here — the VGCR
@@ -1546,16 +1736,97 @@ class BenchmarkEngineV2:
 
         return None
 
+    def _generate_refined_steered(
+        self,
+        gen,
+        failed_constraint: 'OCLConstraint',
+        failed_pid: str,
+        context: str,
+        generator_state: 'GeneratorState',
+        accept=None,
+        only_classes=None,
+        exclude_patterns=None,
+    ) -> Optional['OCLConstraint']:
+        """Box-preserving VGCR regeneration through the steered generator.
+
+        The failed candidate's profile label selects the box it was generated
+        for (no label => box-free draw, as for skip/any fills); its pattern's
+        family is preserved; the failed pattern itself, every pattern id in
+        ``exclude_patterns`` (slot-level exclusions after a tautology or a
+        repeated failure) and every combination blacklisted in
+        ``generator_state`` are vetoed. The replacement carries the realised
+        box label so downstream tiering stays honest.
+        """
+        from .steered_generation import SKIP_BOX
+        failed_pat = next((p for p in self.all_patterns if p.id == failed_pid), None)
+        if failed_pat is None:
+            return None
+        family = classify_family(
+            failed_pat.id, getattr(failed_pat.category, "value", str(failed_pat.category))
+        )
+        label = failed_constraint.metadata.get("profile") if failed_constraint.metadata else None
+        label = str(label).split("+")[0] if label else None
+        box = gen.box_by_label.get(label, SKIP_BOX) if label else SKIP_BOX
+        # A slot that carries a real box is replaced in that EXACT box or not
+        # at all; only genuinely unboxed slots may be drawn box-free.
+        exact_only = box is not SKIP_BOX
+
+        excluded = set(exclude_patterns or ())
+
+        def reject(pid, cls, params):
+            # Avoid the failed pattern on the failed context (as the legacy
+            # path does); elsewhere it may legitimately serve, subject to the
+            # blacklists recorded from earlier failures. A slot-level excluded
+            # pattern is vetoed on EVERY class.
+            if pid == failed_pid and cls == context:
+                return True
+            if pid in excluded:
+                return True
+            return generator_state.is_blacklisted(pid, cls, params)
+
+        res = gen.regenerate_for(context, family, box, reject=reject,
+                                 exact_only=exact_only,
+                                 only_classes=only_classes, accept=accept,
+                                 exclude_patterns=excluded)
+        if res is None:
+            return None
+        newc, vec, realised = res
+        base = str(realised).split("+")[0]
+        try:
+            if base and base not in ("skip", "any"):
+                newc.metadata["profile"] = base
+            newc.metadata["regenerated_from"] = failed_pid
+            newc.metadata["regen_box"] = realised
+            newc.metadata["regen_family"] = family
+        except Exception:
+            pass
+        rep = getattr(self, "steered_report", None)
+        if isinstance(rep, dict):
+            rep.setdefault("vgcr_regenerations", []).append({
+                "failed_pattern": failed_pid, "failed_context": context,
+                "replacement_pattern": getattr(newc, "pattern_id", None),
+                "replacement_context": getattr(newc, "context", None),
+                "requested_box": label, "realised_box": realised,
+            })
+        logger.debug(
+            f"  generate_refined (steered): '{failed_pid}@{context}' -> "
+            f"'{getattr(newc, 'pattern_id', '?')}@{getattr(newc, 'context', '?')}' "
+            f"box={realised}"
+        )
+        return newc
+
     def _vgcr_weighted_sample(
         self,
         context: str,
         avoid_pattern_id: str,
         generator_state: 'GeneratorState',
+        exclude_patterns=None,
     ):
         """
         Sample a pattern for VGCR refinement, respecting generator state.
 
-        Avoids the failed pattern, applies weight modifiers, and skips
+        Avoids the failed pattern and every id in ``exclude_patterns`` (the
+        VGCR loop's slot-level exclusions), applies weight modifiers, and skips
         blacklisted (pattern, context) pairs. The replacement is kept in the
         SAME family as the failed constraint so refinement does not drift the
         requested family distribution (and cannot inject a zero-quota family
@@ -1566,11 +1837,13 @@ class BenchmarkEngineV2:
 
         failed_pat = next((p for p in self.all_patterns if p.id == avoid_pattern_id), None)
         failed_family = _fam(failed_pat) if failed_pat is not None else None
+        excluded = set(exclude_patterns or ())
 
         candidates = [
             p for p in self.all_patterns
             if p.id not in self.EXCLUDE_LIST
             and p.id != avoid_pattern_id
+            and p.id not in excluded
             and not generator_state.is_blacklisted(p.id, context)
             and (failed_family is None or _fam(p) == failed_family)
         ]
@@ -1650,10 +1923,19 @@ class BenchmarkEngineV2:
             ]
             if not self_assocs:
                 return False
-        if pattern.id in ['association_exists', 'type_check']:
+        if pattern.id == 'type_check':
             # Require at least one single-valued association
             if not self.metamodel.get_single_associations(context):
                 return False
+        if pattern.id == 'association_exists':
+            # Only an OPTIONAL [0..1] single-valued end yields a non-tautological
+            # existence check (the same set _gen_params binds from).
+            return bool(self._optional_single_associations(context))
+        if pattern.id == 'navigation_consistency':
+            # The hops are bound jointly at instantiation; the generic
+            # empty-options gate below probes with no dependency values and
+            # cannot see the second hop, so decide here (same oracle as binding).
+            return bool(self._navigation_consistency_triples(context))
         # Navigation patterns resolve their target from a single/collection
         # association at instantiation, so the generic empty-options gate (which
         # probes with no dependency values) cannot see it. Decide here instead.
@@ -1989,8 +2271,21 @@ class BenchmarkEngineV2:
             options = param.get_options_for_context(self.metamodel, context, params)
 
             # Override options for patterns requiring special association handling
-            if pattern.id in ['association_exists', 'type_check'] and param.options == 'associations':
+            if pattern.id == 'type_check' and param.options == 'associations':
                 options = [a.ref_name for a in self.metamodel.get_single_associations(context)]
+
+            # Existence check on a single-valued end ('self.x <> null'): bind
+            # only OPTIONAL [0..1] ends whatever option source the template
+            # declares -- on a mandatory [1..1] end the check is a tautology.
+            if pattern.id == 'association_exists' and param.name == 'association':
+                options = self._optional_single_associations(context)
+
+            # navigation_consistency 'self.{assoc_a}.{assoc_b} = self.{assoc_c}':
+            # each hop is restricted to the triples whose two paths reach the
+            # same class (see _navigation_consistency_triples).
+            if pattern.id == 'navigation_consistency' \
+                    and param.name in ('assoc_a', 'assoc_b', 'assoc_c'):
+                options = self._navigation_consistency_options(context, param.name, params)
 
             if pattern.id == 'type_check' and param.name == 'type':
                 assoc_name = params.get('attribute')
@@ -2267,7 +2562,8 @@ class BenchmarkEngineV2:
                     if param.default is not None:
                         params[param.name] = param.default
                     elif param.options in ['string_attributes', 'numeric_attributes', 'attributes', 
-                                          'collection_associations', 'single_associations']:
+                                          'collection_associations', 'single_associations',
+                                          'optional_associations', 'target_single_associations']:
                         # Metamodel-dependent parameter with no options - pattern not applicable
                         raise ValueError(f"Parameter '{param.label}' requires {param.options} but none found for {context}")
                     else:

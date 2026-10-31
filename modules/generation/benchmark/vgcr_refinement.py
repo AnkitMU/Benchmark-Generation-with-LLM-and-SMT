@@ -182,6 +182,53 @@ class GeneratorState:
         }
 
 
+@dataclass
+class SlotRetryState:
+    """
+    Per-slot retry bookkeeping: which pattern ids are ruled out for the
+    remaining retries of ONE slot (``_refine_single``).
+
+    ``GeneratorState`` is suite-wide and only down-weights a pattern after a
+    tautology, which the box-preserving steered regeneration ignores, so the
+    engine could re-propose the same tautological template for the same slot
+    until the retry budget was gone (e.g. ``association_exists`` on a
+    mandatory end, 33 proposals for one slot).  This state makes the switch
+    explicit: a pattern is excluded for the slot
+
+      * as soon as it fails q1 (tautology) -- the template, not the binding,
+        is the problem, so the replacement must come from a DIFFERENT pattern
+        of the same family and complexity box; and
+      * once the same (pattern, context) pair has failed ``REPEAT_LIMIT``
+        times for the slot for any reason (duplicate, contradiction, ...).
+
+    The excluded ids are handed to ``engine.generate_refined(exclude_patterns=)``
+    on every subsequent retry of the slot.  No solver involved.
+    """
+
+    REPEAT_LIMIT = 2
+
+    excluded_patterns: Set[str] = field(default_factory=set)
+    fail_counts: Dict[Tuple[str, str], int] = field(default_factory=dict)
+
+    def record_failure(
+        self,
+        pattern_id: str,
+        context: str,
+        failure_type: Optional[FailureType] = None,
+    ) -> bool:
+        """Record one rejected candidate for the slot; return True if its
+        pattern is (now) excluded for the slot's remaining retries."""
+        key = (pattern_id, context)
+        self.fail_counts[key] = self.fail_counts.get(key, 0) + 1
+        if failure_type == FailureType.TAUTOLOGY \
+                or self.fail_counts[key] >= self.REPEAT_LIMIT:
+            self.excluded_patterns.add(pattern_id)
+        return pattern_id in self.excluded_patterns
+
+    def is_excluded(self, pattern_id: str) -> bool:
+        return pattern_id in self.excluded_patterns
+
+
 # ---------------------------------------------------------------------------
 # VGCR Loop
 # ---------------------------------------------------------------------------
@@ -209,6 +256,7 @@ class VGCRLoop:
         checker: VGCRPropertyChecker,
         metamodel: Metamodel,
         max_retries: int = 3,
+        is_duplicate=None,
     ):
         """
         Args:
@@ -216,13 +264,25 @@ class VGCRLoop:
             checker: Initialised VGCRPropertyChecker.
             metamodel: Current metamodel.
             max_retries: Maximum refinement attempts per candidate slot.
+            is_duplicate: Optional ``(candidate, suite) -> bool`` near-duplicate
+                test. A candidate it flags is never accepted: the slot is
+                regenerated like any failed slot, so deduplication happens
+                INSIDE the verified fill loop rather than deleting constraints
+                after verification.
         """
         self.engine = engine
         self.checker = checker
         self.metamodel = metamodel
         self.max_retries = max_retries
+        self.is_duplicate = is_duplicate
         self.state = GeneratorState()
         self.stats = VGCRStats()
+        self.duplicates_rejected = 0
+        # Slots that ended unfilled: the last failed candidate stands for the
+        # slot (its family and box are what a later refill must honour).
+        self.unfilled_slots: List[OCLConstraint] = []
+        self.unfilled_log: List[Dict[str, Any]] = []
+        self.coverage_log: List[Dict[str, Any]] = []
 
     def refine_suite(
         self,
@@ -277,6 +337,8 @@ class VGCRLoop:
 
         stats_dict = self.stats.to_dict()
         stats_dict["total_time_s"] = round(total_time, 3)
+        stats_dict["duplicates_rejected"] = self.duplicates_rejected
+        stats_dict["unfilled_slots"] = list(self.unfilled_log)
         stats_dict["generator_refinement"] = self.state.get_refinement_summary()
 
         logger.info(
@@ -303,6 +365,9 @@ class VGCRLoop:
         Returns the accepted constraint, or None if all retries exhausted.
         """
         c = candidate
+        # Slot-level pattern exclusions (tautology => switch pattern; repeated
+        # failure of the same (pattern, context) pair => switch pattern).
+        slot_state = SlotRetryState()
 
         for attempt in range(self.max_retries + 1):  # attempt 0 = original
             # Skip if this (pattern, context) is already blacklisted
@@ -313,15 +378,35 @@ class VGCRLoop:
                     f"  Slot {slot_idx}: attempt {attempt} skipped — "
                     f"'{c.pattern_id}@{c.context}' is blacklisted"
                 )
+                slot_state.record_failure(c.pattern_id, c.context)
                 # Try to get a refined candidate for the remaining attempts
                 if attempt < self.max_retries:
-                    c = self._get_refined_candidate(c, current_suite)
-                    if c is None:
+                    nxt = self._get_refined_candidate(c, current_suite, slot_state)
+                    if nxt is None:
                         break
+                    c = nxt
                     self.stats.total_retries += 1
                     continue
                 else:
                     break
+
+            # Near-duplicate gate (no SMT): a candidate too similar to an
+            # already-verified constraint is sent back through regeneration.
+            if self.is_duplicate is not None and self.is_duplicate(c, current_suite):
+                self.duplicates_rejected += 1
+                logger.debug(
+                    f"  Slot {slot_idx}: attempt {attempt} near-duplicate — "
+                    f"'{c.pattern_id}@{c.context}'"
+                )
+                slot_state.record_failure(c.pattern_id, c.context)
+                if attempt < self.max_retries:
+                    nxt = self._get_refined_candidate(c, current_suite, slot_state)
+                    if nxt is None:
+                        break
+                    c = nxt
+                    self.stats.total_retries += 1
+                    continue
+                break
 
             # Run property checks
             result = self.checker.check_all(c, current_suite, tc_range)
@@ -352,21 +437,38 @@ class VGCRLoop:
                 actual_tc=result.actual_tc,
                 target_tc_range=result.target_tc_range,
             )
+            if slot_state.record_failure(c.pattern_id, c.context, result.failure_type):
+                logger.debug(
+                    f"  Slot {slot_idx}: pattern '{c.pattern_id}' excluded for "
+                    f"the remaining retries ({result.failure_type.value})"
+                )
 
             # Try to get a refined candidate
             if attempt < self.max_retries:
-                c = self._get_refined_candidate(c, current_suite)
-                if c is None:
+                nxt = self._get_refined_candidate(c, current_suite, slot_state)
+                if nxt is None:
                     logger.debug(
                         f"  Slot {slot_idx}: engine returned no refined "
                         f"candidate — giving up"
                     )
                     break
+                c = nxt
                 self.stats.total_retries += 1
             # else: final attempt exhausted
 
-        # All retries failed
+        # All retries failed: the slot stays unfilled and is REPORTED, exactly
+        # as an unreached slot is during generation. It is never padded with a
+        # replacement outside the slot's complexity box.
         self.stats.failed_all_retries += 1
+        self.unfilled_slots.append(c)
+        meta = getattr(c, "metadata", None) or {}
+        self.unfilled_log.append({
+            "slot": slot_idx,
+            "last_pattern": c.pattern_id,
+            "last_context": c.context,
+            "profile": meta.get("profile"),
+            "excluded_patterns": sorted(slot_state.excluded_patterns),
+        })
         logger.debug(f"  Slot {slot_idx}: UNFILLED after {self.max_retries} retries")
         return None
 
@@ -374,10 +476,11 @@ class VGCRLoop:
         self,
         failed: OCLConstraint,
         current_suite: List[OCLConstraint],
+        slot_state: Optional[SlotRetryState] = None,
     ) -> Optional[OCLConstraint]:
         """
         Ask the engine for a refined candidate using the current
-        generator state.
+        generator state (and the slot's pattern exclusions, if any).
 
         The engine's ``generate_refined()`` method is responsible for
         consulting ``self.state`` to avoid blacklisted patterns/bindings
@@ -394,14 +497,143 @@ class VGCRLoop:
             return None
 
         try:
-            refined = self.engine.generate_refined(
-                failed_constraint=failed,
-                generator_state=self.state,
-            )
-            return refined
+            excluded = slot_state.excluded_patterns if slot_state is not None else None
+            return self._call_engine(failed, current_suite, exclude_patterns=excluded)
         except Exception as e:
             logger.debug(f"  generate_refined() raised: {e}")
             return None
+
+    def _call_engine(
+        self,
+        failed: OCLConstraint,
+        current_suite: List[OCLConstraint],
+        only_classes: Optional[List[str]] = None,
+        exclude_patterns: Optional[Set[str]] = None,
+    ) -> Optional[OCLConstraint]:
+        """Ask the engine for a replacement, passing the near-duplicate veto,
+        an optional class restriction and the slot's pattern exclusions when
+        the engine supports them."""
+        kwargs: Dict[str, Any] = {}
+        if self.is_duplicate is not None:
+            dup = self.is_duplicate
+            kwargs["accept"] = lambda nc: not dup(nc, current_suite)
+        if only_classes is not None:
+            kwargs["only_classes"] = list(only_classes)
+        if exclude_patterns:
+            kwargs["exclude_patterns"] = set(exclude_patterns)
+        # Pass only the keyword arguments this engine's generate_refined()
+        # accepts (checked once per call via its signature) so a TypeError
+        # raised INSIDE the engine is never mistaken for a signature mismatch
+        # and silently retried without the slot's exclusions.
+        import inspect
+        try:
+            params = inspect.signature(self.engine.generate_refined).parameters
+            accepts_any = any(p.kind is inspect.Parameter.VAR_KEYWORD for p in params.values())
+            accepted = {k: (accepts_any or k in params) for k in kwargs}
+        except (TypeError, ValueError):
+            accepted = {k: True for k in kwargs}
+        if only_classes is not None and not accepted.get("only_classes", True):
+            return None  # engine cannot honour the class restriction
+        for key, ok in accepted.items():
+            if not ok:
+                logger.debug(f"engine.generate_refined() does not accept '{key}'; dropping it")
+                kwargs.pop(key)
+        return self.engine.generate_refined(
+            failed_constraint=failed, generator_state=self.state, **kwargs
+        )
+
+    # ------------------------------------------------------------------
+    # Coverage repair (post-refinement)
+    # ------------------------------------------------------------------
+
+    def repair_coverage(
+        self,
+        verified: List[OCLConstraint],
+        tc_range: Tuple[float, float],
+        classes: List[str],
+        min_per_class: int = 1,
+        max_checks_per_class: int = 6,
+    ) -> Tuple[List[OCLConstraint], List[Dict[str, Any]]]:
+        """Refill classes that refinement left below ``min_per_class``.
+
+        Mirrors the generation-time minima repair, but every replacement is
+        property-checked before it is committed:
+
+          1. an UNFILLED slot is filled on the deficit class (same family and
+             box as the slot) -- this adds coverage and restores a lost slot;
+          2. otherwise a DONOR from a class above the minimum is swapped for a
+             same-family, same-box constraint on the deficit class, so suite
+             size and tier/family quotas are unchanged.
+
+        A class that cannot be repaired is reported, never padded.
+        """
+        counts: Dict[str, int] = {}
+        for c in verified:
+            counts[c.context] = counts.get(c.context, 0) + 1
+
+        for X in classes:
+            while counts.get(X, 0) < min_per_class:
+                checks = 0
+                done = False
+
+                # 1) fill an unfilled slot on X
+                for slot_c in list(self.unfilled_slots):
+                    if checks >= max_checks_per_class:
+                        break
+                    cand = self._call_engine(slot_c, verified, only_classes=[X])
+                    if cand is None or cand.context != X:
+                        continue
+                    checks += 1
+                    if self.checker.check_all(cand, verified, tc_range).passed:
+                        verified.append(cand)
+                        # unfilled_slots and unfilled_log are index-aligned
+                        k = next(j for j, u in enumerate(self.unfilled_slots) if u is slot_c)
+                        self.unfilled_slots.pop(k)
+                        self.unfilled_log.pop(k)
+                        counts[X] = counts.get(X, 0) + 1
+                        self.coverage_log.append({
+                            "class": X, "action": "filled_unfilled_slot",
+                            "pattern": cand.pattern_id,
+                            "profile": (cand.metadata or {}).get("profile"),
+                        })
+                        done = True
+                        break
+
+                # 2) donor swap preserving the donor's family and box
+                if not done:
+                    for i, donor in enumerate(verified):
+                        if checks >= max_checks_per_class:
+                            break
+                        Y = donor.context
+                        if Y == X or counts.get(Y, 0) <= min_per_class:
+                            continue
+                        cand = self._call_engine(
+                            donor, verified[:i] + verified[i + 1:], only_classes=[X]
+                        )
+                        if cand is None or cand.context != X:
+                            continue
+                        checks += 1
+                        rest = verified[:i] + verified[i + 1:]
+                        if self.checker.check_all(cand, rest, tc_range).passed:
+                            verified[i] = cand
+                            counts[Y] -= 1
+                            counts[X] = counts.get(X, 0) + 1
+                            self.coverage_log.append({
+                                "class": X, "action": "donor_swap", "donor_class": Y,
+                                "pattern": cand.pattern_id,
+                                "profile": (cand.metadata or {}).get("profile"),
+                            })
+                            done = True
+                            break
+
+                if not done:
+                    self.coverage_log.append({
+                        "class": X, "action": "unrepaired",
+                        "have": counts.get(X, 0), "min": min_per_class,
+                    })
+                    break
+
+        return verified, list(self.coverage_log)
 
     # ------------------------------------------------------------------
     # Public accessors

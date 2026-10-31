@@ -1,0 +1,113 @@
+-- Benchmark: LibrarySystem / balanced
+-- Type: UNSAT Constraints Only
+-- Generated: 2026-10-12T20:25:59.725624
+-- Count: 18
+
+-- #1 Association Exists (UNSAT) in Fine
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Fine
+inv: (self.loan <> null) and (not(self.loan <> null))
+
+-- #2 Navigation Chain (UNSAT) in Book
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Book
+inv: ((self.library.maxLoanDays < 10) and (self.isbn.size() <= 36)) and (not((self.library.maxLoanDays < 10) and (self.isbn.size() <= 36)))
+
+-- #3 Numeric Absolute Value Bounded (UNSAT) in Book
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Book
+inv: (self.publishYear.abs() <= 4) and (not(self.publishYear.abs() <= 4))
+
+-- #4 Navigation Chain (UNSAT) in Book
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Book
+inv: ((self.library.maxLoanDays < 10) and (self.pages mod 2 = 1)) and (not((self.library.maxLoanDays < 10) and (self.pages mod 2 = 1)))
+
+-- #5 Navigation Chain (UNSAT) in Book
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Book
+inv: ((self.publishYear < 100) and (self.authors->forAll(v | v.name <> ''))) and (not((self.publishYear < 100) and (self.authors->forAll(v | v.name <> ''))))
+
+-- #6 Navigation Chain (UNSAT) in Book
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Book
+inv: ((self.publishYear > 1) and (self.copies->forAll(v | v.barcode <> ''))) and (not((self.publishYear > 1) and (self.copies->forAll(v | v.barcode <> ''))))
+
+-- #7 Collection Not Empty Check (UNSAT) in Branch
+-- Difficulty: medium
+-- Mutation Strategy: empty_collection
+context Branch
+inv: (self.reservations->size() > 0) and (self.reservations->size() <= 0)
+
+-- #8 Any Operation (UNSAT) in Category
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Category
+inv: (self.books->any(x | x.publishYear <= 100) <> null) and (not(self.books->any(x | x.publishYear <= 100) <> null))
+
+-- #9 All Attributes Defined (UNSAT) in Loan
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Loan
+inv: (self.returnDate <> null and self.dueDate <> null) and (not(self.returnDate <> null and self.dueDate <> null))
+
+-- #10 Navigation Chain (UNSAT) in Book
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Book
+inv: ((self.publishYear >= 1) and (self.authors->forAll(v | v.name <> ''))) and (not((self.publishYear >= 1) and (self.authors->forAll(v | v.name <> ''))))
+
+-- #11 Navigation Chain (UNSAT) in Book
+-- Difficulty: medium
+-- Mutation Strategy: self_contradiction
+context Book
+inv: (self.library.maxLoanDays > 10) and (not(self.library.maxLoanDays > 10))
+
+-- #12 Navigation Chain (UNSAT) in Book
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Book
+inv: (self.library.maxLoanDays <= 10) and (not(self.library.maxLoanDays <= 10))
+
+-- #13 Association Exists (UNSAT) in Branch
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Branch
+inv: (self.library <> null) and (not(self.library <> null))
+
+-- #14 Collection Navigation (UNSAT) in Library
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Library
+inv: (self.members->exists(x | x.name <> '')) and (not(self.members->exists(x | x.name <> '')))
+
+-- #15 Any Operation (UNSAT) in Book
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Book
+inv: (self.authors->any(x | x.name <> '') <> null) and (not(self.authors->any(x | x.name <> '') <> null))
+
+-- #16 Collection Size Constraint (UNSAT) in Book
+-- Difficulty: medium
+-- Mutation Strategy: self_contradiction
+context Book
+inv: (self.copies->size() = 1) and (not(self.copies->size() = 1))
+
+-- #17 Bi-directional Implication (UNSAT) in Loan
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Loan
+inv: ((self.returnDate <> null) = (self.startDate <> null)) and (not((self.returnDate <> null) = (self.startDate <> null)))
+
+-- #18 Numeric Absolute Value Bounded (UNSAT) in Payment
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Payment
+inv: (self.amount.abs() <= 8) and (not(self.amount.abs() <= 8))
+

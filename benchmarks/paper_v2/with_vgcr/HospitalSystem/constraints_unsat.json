@@ -1,0 +1,993 @@
+{
+  "metadata": {
+    "type": "UNSAT",
+    "model": "HospitalSystem",
+    "profile": "balanced",
+    "generated_at": "2026-10-15T02:30:53.624810",
+    "constraint_count": 16
+  },
+  "constraints": [
+    {
+      "ocl": "context Department\ninv: ((self.nurses->size() <= 1)) and (self.nurses->size() > 1)",
+      "pattern_id": "collection_size_range_unsat",
+      "pattern_name": "Collection Size in Range (UNSAT)",
+      "context": "Department",
+      "parameters": {
+        "collection": "nurses",
+        "min_size": 1,
+        "max_size": 1
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-15T02:02:10.038973",
+      "metadata": {
+        "category": "collection",
+        "complexity": 2,
+        "generation_number": 5574,
+        "profile": "medium",
+        "regenerated_from": "numeric_greater_than_value",
+        "regen_box": "easy+drop",
+        "regen_family": "arithmetic",
+        "operators_used": [
+          "-",
+          "<",
+          "<=",
+          "=",
+          ">",
+          "size"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 6,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.4,
+            "vrc": 0,
+            "wno": 1.0,
+            "wnm": 1.0,
+            "total": 3.4
+          },
+          "computational": {
+            "oc": 1.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 1.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 4.4
+        },
+        "is_unsat": true,
+        "mutation": "contradictory_bounds",
+        "original_pattern_id": "collection_size_range",
+        "contradiction_ocl": "context Department\ninv: self.nurses->size() > 1",
+        "slot_profile": "easy",
+        "semantic_cluster": 3,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Prescription\ninv: ((self.issuedAt <> '') and (self.medications->forAll(v | v.name <> ''))) and (self.medications->exists(v | not(v.name <> '')))",
+      "pattern_id": "collection_size_range_unsat",
+      "pattern_name": "Collection Size in Range (UNSAT)",
+      "context": "Prescription",
+      "parameters": {
+        "collection": "medications",
+        "min_size": 3,
+        "max_size": 3
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-15T02:02:10.688827",
+      "metadata": {
+        "category": "collection",
+        "complexity": 2,
+        "generation_number": 4903,
+        "profile": "unboxed",
+        "operators_used": [
+          "-",
+          "<",
+          "<>",
+          ">",
+          "and",
+          "forAll"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "unboxed",
+        "operator_count": 6,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 4.0,
+            "dn_ca": 3.0,
+            "wnc": 6.0,
+            "tnc": 4.3,
+            "vrc": 1,
+            "wno": 6.5,
+            "wnm": 1.0,
+            "total": 12.8
+          },
+          "computational": {
+            "oc": 6.5,
+            "tcc": 0.0,
+            "cic": 3.0,
+            "total": 9.5
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 22.3
+        },
+        "is_unsat": true,
+        "mutation": "universal_negation",
+        "original_pattern_id": "collection_size_range",
+        "contradiction_ocl": "context Prescription\ninv: self.medications->exists(v | not(v.name <> ''))",
+        "contradiction_pattern_id": "exists_nested",
+        "slot_profile": "difficult",
+        "semantic_cluster": 3,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Ward\ninv: ((self.floor > 0) and (self.rooms->forAll(v | v.roomNo <> ''))) and (self.floor < -5)",
+      "pattern_id": "numeric_abs_bounded_unsat",
+      "pattern_name": "Numeric Absolute Value Bounded (UNSAT)",
+      "context": "Ward",
+      "parameters": {
+        "numeric_attribute": "floor",
+        "max_abs": 10
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-15T02:02:11.359218",
+      "metadata": {
+        "category": "arithmetic",
+        "complexity": 2,
+        "generation_number": 4907,
+        "profile": "difficult",
+        "operators_used": [
+          "-",
+          "<",
+          "<>",
+          ">",
+          "and",
+          "floor",
+          "forAll"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "difficult",
+        "operator_count": 7,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 4.0,
+            "dn_ca": 3.0,
+            "wnc": 6.0,
+            "tnc": 4.3,
+            "vrc": 1,
+            "wno": 7.5,
+            "wnm": 1.0,
+            "total": 13.8
+          },
+          "computational": {
+            "oc": 6.5,
+            "tcc": 0.0,
+            "cic": 3.0,
+            "total": 9.5
+          },
+          "dependency": {
+            "ruc": 18,
+            "total": 18.0
+          },
+          "tc": 41.3
+        },
+        "is_unsat": true,
+        "mutation": "contradictory_bounds",
+        "original_pattern_id": "numeric_abs_bounded",
+        "contradiction_ocl": "context Ward\ninv: self.floor < -5",
+        "slot_profile": "difficult",
+        "semantic_cluster": 5,
+        "implies": [
+          "numeric_non_negative_Ward",
+          "numeric_positive_Ward",
+          "numeric_non_negative_Ward",
+          "numeric_positive_Ward",
+          "collection_asSequence_Ward"
+        ]
+      }
+    },
+    {
+      "ocl": "context Hospital\ninv: (self.wards->size() = 1) and (self.wards->size() <> 1)",
+      "pattern_id": "collection_has_size_unsat",
+      "pattern_name": "Collection Has Specific Size (UNSAT)",
+      "context": "Hospital",
+      "parameters": {
+        "collection": "wards",
+        "size": 1
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-15T02:02:11.978980",
+      "metadata": {
+        "category": "collection",
+        "complexity": 1,
+        "generation_number": 4991,
+        "profile": "medium",
+        "operators_used": [
+          "-",
+          "=",
+          ">",
+          "size"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 4,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.4,
+            "vrc": 0,
+            "wno": 1.0,
+            "wnm": 1.0,
+            "total": 3.4
+          },
+          "computational": {
+            "oc": 1.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 1.0
+          },
+          "dependency": {
+            "ruc": 8,
+            "total": 8.0
+          },
+          "tc": 12.4
+        },
+        "is_unsat": true,
+        "mutation": "contradictory_bounds",
+        "original_pattern_id": "collection_has_size",
+        "contradiction_ocl": "context Hospital\ninv: self.wards->size() <> 1",
+        "slot_profile": "easy",
+        "semantic_cluster": 10,
+        "implies": [
+          "collection_max_size_Hospital",
+          "collection_min_size_unsat_Hospital"
+        ]
+      }
+    },
+    {
+      "ocl": "context Bed\ninv: ((self.isOccupied = false) and (self.bedNo.size() <= 22)) and (not((self.isOccupied = false) and (self.bedNo.size() <= 22)))",
+      "pattern_id": "boolean_is_false_unsat",
+      "pattern_name": "Boolean Is False (UNSAT)",
+      "context": "Bed",
+      "parameters": {
+        "boolean_attribute": "isOccupied"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-15T02:02:12.675835",
+      "metadata": {
+        "category": "basic",
+        "complexity": 1,
+        "generation_number": 5040,
+        "profile": "unboxed",
+        "operators_used": [
+          "<",
+          "<=",
+          "=",
+          "and",
+          "size"
+        ],
+        "navigation_depth": 3,
+        "quantifier_depth": 0,
+        "difficulty": "unboxed",
+        "operator_count": 5,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 1,
+            "wnc": 2.0,
+            "tnc": 1.7,
+            "vrc": 0,
+            "wno": 3.5,
+            "wnm": 1.0,
+            "total": 6.2
+          },
+          "computational": {
+            "oc": 3.5,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.5
+          },
+          "dependency": {
+            "ruc": 1,
+            "total": 1.0
+          },
+          "tc": 10.7
+        },
+        "is_unsat": true,
+        "mutation": "self_contradiction",
+        "original_pattern_id": "boolean_is_false",
+        "slot_profile": "medium",
+        "semantic_cluster": 10,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context MedicalRecord\ninv: (self.procedures->notEmpty()) and (self.procedures->isEmpty())",
+      "pattern_id": "collection_not_empty_simple_unsat",
+      "pattern_name": "Collection Not Empty (Simple) (UNSAT)",
+      "context": "MedicalRecord",
+      "parameters": {
+        "collection": "procedures"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-15T02:02:12.676263",
+      "metadata": {
+        "category": "collection",
+        "complexity": 1,
+        "generation_number": 4996,
+        "profile": "unboxed",
+        "operators_used": [
+          "-",
+          ">",
+          "notEmpty"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "unboxed",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.4,
+            "vrc": 0,
+            "wno": 0.0,
+            "wnm": 1.0,
+            "total": 2.4
+          },
+          "computational": {
+            "oc": 0.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 0.0
+          },
+          "dependency": {
+            "ruc": 3,
+            "total": 3.0
+          },
+          "tc": 5.4
+        },
+        "is_unsat": true,
+        "mutation": "empty_collection",
+        "original_pattern_id": "collection_not_empty_simple",
+        "contradiction_ocl": "context MedicalRecord\ninv: self.procedures->isEmpty()",
+        "slot_profile": "easy",
+        "semantic_cluster": 9,
+        "implies": [
+          "collection_not_empty_check_MedicalRecord"
+        ]
+      }
+    },
+    {
+      "ocl": "context Department\ninv: (self.nurses->exists(x | x.nurseId <> '')) and (not(self.nurses->exists(x | x.nurseId <> '')))",
+      "pattern_id": "exists_constraint_unsat",
+      "pattern_name": "Existential Quantification (exists) (UNSAT)",
+      "context": "Department",
+      "parameters": {
+        "collection": "nurses",
+        "iterator": "x",
+        "condition": "x.nurseId <> ''"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-15T02:02:13.316849",
+      "metadata": {
+        "category": "collection",
+        "complexity": 2,
+        "generation_number": 4976,
+        "profile": "difficult",
+        "operators_used": [
+          "-",
+          "<",
+          "<>",
+          ">",
+          "exists"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "difficult",
+        "operator_count": 5,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 3.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 3.0,
+            "wnc": 5.0,
+            "tnc": 3.6,
+            "vrc": 1,
+            "wno": 4.0,
+            "wnm": 1.0,
+            "total": 9.6
+          },
+          "computational": {
+            "oc": 4.0,
+            "tcc": 0.0,
+            "cic": 3.0,
+            "total": 7.0
+          },
+          "dependency": {
+            "ruc": 4,
+            "total": 4.0
+          },
+          "tc": 20.6
+        },
+        "is_unsat": true,
+        "mutation": "self_contradiction",
+        "original_pattern_id": "exists_constraint",
+        "slot_profile": "difficult",
+        "semantic_cluster": 3,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context MedicalRecord\ninv: (self.labTests->size() >= 2) and (self.labTests->size() < 2)",
+      "pattern_id": "collection_min_size_unsat",
+      "pattern_name": "Collection Minimum Size (UNSAT)",
+      "context": "MedicalRecord",
+      "parameters": {
+        "collection": "labTests",
+        "min_size": 2
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-15T02:02:13.316955",
+      "metadata": {
+        "category": "collection",
+        "complexity": 1,
+        "generation_number": 4993,
+        "profile": "medium",
+        "operators_used": [
+          "-",
+          "=",
+          ">",
+          ">=",
+          "size"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 5,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.4,
+            "vrc": 0,
+            "wno": 1.0,
+            "wnm": 1.0,
+            "total": 3.4
+          },
+          "computational": {
+            "oc": 1.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 1.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 4.4
+        },
+        "is_unsat": true,
+        "mutation": "contradictory_bounds",
+        "original_pattern_id": "collection_min_size",
+        "contradiction_ocl": "context MedicalRecord\ninv: self.labTests->size() < 2",
+        "slot_profile": "easy",
+        "semantic_cluster": 6,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Patient\ninv: ((self.isInsured = true) and (self.patientId <> '' and self.patientId.size() > 0)) and (not((self.isInsured = true) and (self.patientId <> '' and self.patientId.size() > 0)))",
+      "pattern_id": "boolean_is_true_unsat",
+      "pattern_name": "Boolean Is True (UNSAT)",
+      "context": "Patient",
+      "parameters": {
+        "boolean_attribute": "isInsured"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-15T02:02:13.908991",
+      "metadata": {
+        "category": "basic",
+        "complexity": 1,
+        "generation_number": 5026,
+        "profile": "unboxed",
+        "operators_used": [
+          "<",
+          "<>",
+          "=",
+          ">",
+          "and",
+          "size"
+        ],
+        "navigation_depth": 3,
+        "quantifier_depth": 0,
+        "difficulty": "unboxed",
+        "operator_count": 6,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 3.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 1,
+            "wnc": 3.0,
+            "tnc": 2.4,
+            "vrc": 0,
+            "wno": 6.0,
+            "wnm": 1.0,
+            "total": 9.4
+          },
+          "computational": {
+            "oc": 6.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 6.0
+          },
+          "dependency": {
+            "ruc": 2,
+            "total": 2.0
+          },
+          "tc": 17.4
+        },
+        "is_unsat": true,
+        "mutation": "self_contradiction",
+        "original_pattern_id": "boolean_is_true",
+        "slot_profile": "medium",
+        "semantic_cluster": 3,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Hospital\ninv: ((self.wards->size() >= 1) and (self.address.toUpperCase() = 'TEST')) and (self.wards->size() < 1)",
+      "pattern_id": "collection_min_size_unsat",
+      "pattern_name": "Collection Minimum Size (UNSAT)",
+      "context": "Hospital",
+      "parameters": {
+        "collection": "wards",
+        "min_size": 1
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-15T02:02:13.909038",
+      "metadata": {
+        "category": "collection",
+        "complexity": 1,
+        "generation_number": 5017,
+        "profile": "medium",
+        "operators_used": [
+          "-",
+          "=",
+          ">",
+          ">=",
+          "and",
+          "size"
+        ],
+        "navigation_depth": 3,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 6,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 3.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 1,
+            "wnc": 2.0,
+            "tnc": 2.1,
+            "vrc": 0,
+            "wno": 3.5,
+            "wnm": 2.0,
+            "total": 7.6
+          },
+          "computational": {
+            "oc": 3.5,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.5
+          },
+          "dependency": {
+            "ruc": 9,
+            "total": 9.0
+          },
+          "tc": 20.1
+        },
+        "is_unsat": true,
+        "mutation": "contradictory_bounds",
+        "original_pattern_id": "collection_min_size",
+        "contradiction_ocl": "context Hospital\ninv: self.wards->size() < 1",
+        "slot_profile": "medium",
+        "semantic_cluster": 4,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Bed\ninv: (((self.isOccupied = false) and (self.room.oclIsTypeOf(Room))) and (self.bedNo.toUpperCase() = 'TEST')) and (not(((self.isOccupied = false) and (self.room.oclIsTypeOf(Room))) and (self.bedNo.toUpperCase() = 'TEST')))",
+      "pattern_id": "boolean_is_false_unsat",
+      "pattern_name": "Boolean Is False (UNSAT)",
+      "context": "Bed",
+      "parameters": {
+        "boolean_attribute": "isOccupied"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-15T02:02:16.692478",
+      "metadata": {
+        "category": "basic",
+        "complexity": 1,
+        "generation_number": 5777,
+        "profile": "unboxed",
+        "regenerated_from": "attribute_not_null_simple",
+        "regen_box": "medium+conjoin+conjoin",
+        "regen_family": "cardinality",
+        "operators_used": [
+          "=",
+          "and",
+          "oclIsTypeOf"
+        ],
+        "navigation_depth": 3,
+        "quantifier_depth": 0,
+        "difficulty": "unboxed",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 3.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 1,
+            "wnc": 3.0,
+            "tnc": 2.4,
+            "vrc": 0,
+            "wno": 5.0,
+            "wnm": 2.0,
+            "total": 9.4
+          },
+          "computational": {
+            "oc": 5.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 5.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 14.4
+        },
+        "is_unsat": true,
+        "mutation": "self_contradiction",
+        "original_pattern_id": "boolean_is_false",
+        "slot_profile": "medium",
+        "semantic_cluster": 4,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Ward\ninv: (self.hospital.name <> '') and (not(self.hospital.name <> ''))",
+      "pattern_id": "navigation_chain_unsat",
+      "pattern_name": "Navigation Chain (UNSAT)",
+      "context": "Ward",
+      "parameters": {
+        "navigation_path": "self.hospital.name <> ''"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-15T02:02:16.692610",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 2,
+        "generation_number": 4866,
+        "profile": "medium",
+        "operators_used": [
+          "<",
+          "<>",
+          ">"
+        ],
+        "navigation_depth": 3,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 2,
+            "wnc": 2.0,
+            "tnc": 2.0,
+            "vrc": 0,
+            "wno": 1.0,
+            "wnm": 0.0,
+            "total": 3.0
+          },
+          "computational": {
+            "oc": 1.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 1.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 4.0
+        },
+        "is_unsat": true,
+        "mutation": "self_contradiction",
+        "original_pattern_id": "navigation_chain",
+        "slot_profile": "easy",
+        "semantic_cluster": 3,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Medication\ninv: ((self.prescription.record.createdAt <> '') and (self.name.size() <= 85)) and (not((self.prescription.record.createdAt <> '') and (self.name.size() <= 85)))",
+      "pattern_id": "navigation_chain_unsat",
+      "pattern_name": "Navigation Chain (UNSAT)",
+      "context": "Medication",
+      "parameters": {
+        "navigation_path": "self.prescription.record.createdAt <> ''"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-15T02:02:16.692794",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 2,
+        "generation_number": 4974,
+        "profile": "unboxed",
+        "operators_used": [
+          "<",
+          "<=",
+          "<>",
+          "=",
+          ">",
+          "and",
+          "size"
+        ],
+        "navigation_depth": 4,
+        "quantifier_depth": 0,
+        "difficulty": "unboxed",
+        "operator_count": 7,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 4.0,
+            "dn_ca": 3,
+            "wnc": 4.0,
+            "tnc": 3.7,
+            "vrc": 0,
+            "wno": 3.5,
+            "wnm": 1.0,
+            "total": 8.2
+          },
+          "computational": {
+            "oc": 3.5,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.5
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 11.7
+        },
+        "is_unsat": true,
+        "mutation": "self_contradiction",
+        "original_pattern_id": "navigation_chain",
+        "slot_profile": "medium",
+        "semantic_cluster": 3,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context MedicalRecord\ninv: (self.prescriptions->exists(x | x.issuedAt <> '')) and (not(self.prescriptions->exists(x | x.issuedAt <> '')))",
+      "pattern_id": "exists_constraint_unsat",
+      "pattern_name": "Existential Quantification (exists) (UNSAT)",
+      "context": "MedicalRecord",
+      "parameters": {
+        "collection": "prescriptions",
+        "iterator": "x",
+        "condition": "x.issuedAt <> ''"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-15T02:02:16.692843",
+      "metadata": {
+        "category": "collection",
+        "complexity": 2,
+        "generation_number": 4988,
+        "profile": "difficult",
+        "operators_used": [
+          "-",
+          "<",
+          "<>",
+          ">",
+          "exists"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "difficult",
+        "operator_count": 5,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 3.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 3.0,
+            "wnc": 5.0,
+            "tnc": 3.6,
+            "vrc": 1,
+            "wno": 4.0,
+            "wnm": 1.0,
+            "total": 9.6
+          },
+          "computational": {
+            "oc": 4.0,
+            "tcc": 0.0,
+            "cic": 3.0,
+            "total": 7.0
+          },
+          "dependency": {
+            "ruc": 1,
+            "total": 1.0
+          },
+          "tc": 17.6
+        },
+        "is_unsat": true,
+        "mutation": "self_contradiction",
+        "original_pattern_id": "exists_constraint",
+        "slot_profile": "difficult",
+        "semantic_cluster": 3,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Ward\ninv: ((self.rooms->notEmpty()) and (self.floor > 46)) and (self.floor < 41)",
+      "pattern_id": "collection_not_empty_simple_unsat",
+      "pattern_name": "Collection Not Empty (Simple) (UNSAT)",
+      "context": "Ward",
+      "parameters": {
+        "collection": "rooms"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-15T02:02:16.692896",
+      "metadata": {
+        "category": "collection",
+        "complexity": 1,
+        "generation_number": 5782,
+        "profile": "medium",
+        "regenerated_from": "attribute_not_null_simple",
+        "regen_box": "medium+conjoin",
+        "regen_family": "cardinality",
+        "operators_used": [
+          "-",
+          ">",
+          "and",
+          "floor",
+          "notEmpty"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 5,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 3.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 1,
+            "wnc": 2.0,
+            "tnc": 2.1,
+            "vrc": 0,
+            "wno": 3.5,
+            "wnm": 1.0,
+            "total": 6.6
+          },
+          "computational": {
+            "oc": 2.5,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 2.5
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 9.1
+        },
+        "is_unsat": true,
+        "mutation": "contradictory_bounds",
+        "original_pattern_id": "collection_not_empty_simple",
+        "contradiction_ocl": "context Ward\ninv: self.floor < 41",
+        "slot_profile": "medium",
+        "semantic_cluster": 5,
+        "implies": [
+          "numeric_non_negative_Ward",
+          "numeric_positive_Ward",
+          "numeric_non_negative_Ward",
+          "numeric_positive_Ward",
+          "collection_asSequence_Ward",
+          "numeric_abs_bounded_unsat_Ward"
+        ]
+      }
+    },
+    {
+      "ocl": "context Department\ninv: (self.doctors->forAll(x | x.specialty <> '')) and (self.doctors->exists(x | not(x.specialty <> '')))",
+      "pattern_id": "collection_navigation_unsat",
+      "pattern_name": "Collection Navigation (UNSAT)",
+      "context": "Department",
+      "parameters": {
+        "collection": "doctors",
+        "operation": "forAll",
+        "iterator": "x",
+        "nested": "specialty <> ''"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-15T02:02:17.348065",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 3,
+        "generation_number": 4914,
+        "profile": "difficult",
+        "operators_used": [
+          "-",
+          "<",
+          "<>",
+          ">",
+          "forAll"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "difficult",
+        "operator_count": 5,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 3.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 3.0,
+            "wnc": 5.0,
+            "tnc": 3.6,
+            "vrc": 1,
+            "wno": 4.0,
+            "wnm": 1.0,
+            "total": 9.6
+          },
+          "computational": {
+            "oc": 4.0,
+            "tcc": 0.0,
+            "cic": 3.0,
+            "total": 7.0
+          },
+          "dependency": {
+            "ruc": 3,
+            "total": 3.0
+          },
+          "tc": 19.6
+        },
+        "is_unsat": true,
+        "mutation": "universal_negation",
+        "original_pattern_id": "collection_navigation",
+        "contradiction_ocl": "context Department\ninv: self.doctors->exists(x | not(x.specialty <> ''))",
+        "contradiction_pattern_id": "exists_nested",
+        "slot_profile": "difficult",
+        "semantic_cluster": 3,
+        "implies": []
+      }
+    }
+  ]
+}

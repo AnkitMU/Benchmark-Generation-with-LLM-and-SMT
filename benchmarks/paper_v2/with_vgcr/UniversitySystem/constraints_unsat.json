@@ -1,0 +1,1058 @@
+{
+  "metadata": {
+    "type": "UNSAT",
+    "model": "UniversitySystem",
+    "profile": "balanced",
+    "generated_at": "2026-10-14T20:46:51.519896",
+    "constraint_count": 17
+  },
+  "constraints": [
+    {
+      "ocl": "context Scholarship\ninv: (self.endYear + self.startYear > 71) and (not(self.endYear + self.startYear > 71))",
+      "pattern_id": "numeric_sum_constraint_unsat",
+      "pattern_name": "Numeric Sum Constraint (UNSAT)",
+      "context": "Scholarship",
+      "parameters": {
+        "first_numeric": "endYear",
+        "second_numeric": "startYear",
+        "threshold": 71
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-14T20:41:02.428133",
+      "metadata": {
+        "category": "arithmetic",
+        "complexity": 2,
+        "generation_number": 6405,
+        "profile": "medium",
+        "operators_used": [
+          "+",
+          ">"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 2,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 1,
+            "wnc": 2.0,
+            "tnc": 1.7,
+            "vrc": 0,
+            "wno": 2.0,
+            "wnm": 0.0,
+            "total": 3.7
+          },
+          "computational": {
+            "oc": 1.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 1.0
+          },
+          "dependency": {
+            "ruc": 14,
+            "total": 14.0
+          },
+          "tc": 18.7
+        },
+        "is_unsat": true,
+        "mutation": "self_contradiction",
+        "original_pattern_id": "numeric_sum_constraint",
+        "slot_profile": "easy",
+        "semantic_cluster": 3,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context GradeRecord\ninv: ((self.enrollment.student.yearOfStudy >= 2) and (self.letterGrade <> null)) and (self.enrollment.student.yearOfStudy < 2)",
+      "pattern_id": "navigation_chain_unsat",
+      "pattern_name": "Navigation Chain (UNSAT)",
+      "context": "GradeRecord",
+      "parameters": {
+        "navigation_path": "self.enrollment.student.yearOfStudy >= 2"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-14T20:41:02.428205",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 2,
+        "generation_number": 6342,
+        "profile": "unboxed",
+        "operators_used": [
+          "<",
+          "<>",
+          "=",
+          ">",
+          ">=",
+          "and"
+        ],
+        "navigation_depth": 4,
+        "quantifier_depth": 0,
+        "difficulty": "unboxed",
+        "operator_count": 6,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 4.0,
+            "dn_ca": 3,
+            "wnc": 4.0,
+            "tnc": 3.7,
+            "vrc": 0,
+            "wno": 3.5,
+            "wnm": 0.0,
+            "total": 7.2
+          },
+          "computational": {
+            "oc": 3.5,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.5
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 10.7
+        },
+        "is_unsat": true,
+        "mutation": "contradictory_bounds",
+        "original_pattern_id": "navigation_chain",
+        "contradiction_ocl": "context GradeRecord\ninv: self.enrollment.student.yearOfStudy < 2",
+        "slot_profile": "medium",
+        "semantic_cluster": 0,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Building\ninv: (self.rooms->exists(x | x.capacity <= 1000)) and (not(self.rooms->exists(x | x.capacity <= 1000)))",
+      "pattern_id": "exists_constraint_unsat",
+      "pattern_name": "Existential Quantification (exists) (UNSAT)",
+      "context": "Building",
+      "parameters": {
+        "collection": "rooms",
+        "iterator": "x",
+        "condition": "x.capacity <= 1000"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-14T20:41:04.293840",
+      "metadata": {
+        "category": "collection",
+        "complexity": 2,
+        "generation_number": 6399,
+        "profile": "difficult",
+        "operators_used": [
+          "-",
+          "<",
+          "<=",
+          "=",
+          ">",
+          "exists"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "difficult",
+        "operator_count": 6,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 3.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 3.0,
+            "wnc": 5.0,
+            "tnc": 3.6,
+            "vrc": 1,
+            "wno": 4.0,
+            "wnm": 1.0,
+            "total": 9.6
+          },
+          "computational": {
+            "oc": 4.0,
+            "tcc": 0.0,
+            "cic": 3.0,
+            "total": 7.0
+          },
+          "dependency": {
+            "ruc": 14,
+            "total": 14.0
+          },
+          "tc": 30.6
+        },
+        "is_unsat": true,
+        "mutation": "self_contradiction",
+        "original_pattern_id": "exists_constraint",
+        "slot_profile": "difficult",
+        "semantic_cluster": 1,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Enrollment\ninv: (self.grade <> null) and (not(self.grade <> null))",
+      "pattern_id": "association_exists_unsat",
+      "pattern_name": "Association Exists (UNSAT)",
+      "context": "Enrollment",
+      "parameters": {
+        "association": "grade"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-14T20:41:04.293884",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 1,
+        "generation_number": 6234,
+        "profile": "medium",
+        "operators_used": [
+          "<",
+          "<>",
+          ">"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 1.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.0,
+            "vrc": 0,
+            "wno": 1.0,
+            "wnm": 0.0,
+            "total": 2.0
+          },
+          "computational": {
+            "oc": 1.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 1.0
+          },
+          "dependency": {
+            "ruc": 1,
+            "total": 1.0
+          },
+          "tc": 4.0
+        },
+        "is_unsat": true,
+        "mutation": "self_contradiction",
+        "original_pattern_id": "association_exists",
+        "slot_profile": "easy",
+        "semantic_cluster": 10,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context CourseOffering\ninv: ((self.enrollments->size() > 0) and (self.room <> null)) and (self.enrollments->size() < -5)",
+      "pattern_id": "collection_not_empty_check_unsat",
+      "pattern_name": "Collection Not Empty Check (UNSAT)",
+      "context": "CourseOffering",
+      "parameters": {
+        "collection": "enrollments"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-14T20:41:04.293953",
+      "metadata": {
+        "category": "collection",
+        "complexity": 1,
+        "generation_number": 6928,
+        "profile": "medium",
+        "regenerated_from": "collection_empty_check",
+        "regen_box": "medium+conjoin",
+        "regen_family": "cardinality",
+        "operators_used": [
+          "-",
+          "<",
+          "<>",
+          ">",
+          "and",
+          "size"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 6,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 3.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 1,
+            "wnc": 2.0,
+            "tnc": 2.1,
+            "vrc": 0,
+            "wno": 3.5,
+            "wnm": 1.0,
+            "total": 6.6
+          },
+          "computational": {
+            "oc": 3.5,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.5
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 10.1
+        },
+        "is_unsat": true,
+        "mutation": "contradictory_bounds",
+        "original_pattern_id": "collection_not_empty_check",
+        "contradiction_ocl": "context CourseOffering\ninv: self.enrollments->size() < -5",
+        "slot_profile": "medium",
+        "semantic_cluster": 0,
+        "implies": [
+          "collection_not_empty_check_unsat_CourseOffering",
+          "collection_not_empty_check_unsat_CourseOffering"
+        ]
+      }
+    },
+    {
+      "ocl": "context Building\ninv: (self.rooms->select(x | x.capacity > 10)->size() >= 1) and (not(self.rooms->select(x | x.capacity > 10)->size() >= 1))",
+      "pattern_id": "select_operation_unsat",
+      "pattern_name": "Select (Filter) Operation (UNSAT)",
+      "context": "Building",
+      "parameters": {
+        "collection": "rooms",
+        "iterator": "x",
+        "condition": "x.capacity > 10",
+        "result_operation": "->size() >= 1"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-14T20:41:05.405300",
+      "metadata": {
+        "category": "collection",
+        "complexity": 2,
+        "generation_number": 6378,
+        "profile": "difficult",
+        "operators_used": [
+          "-",
+          "=",
+          ">",
+          ">=",
+          "select",
+          "size"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "difficult",
+        "operator_count": 6,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 3.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 3.0,
+            "wnc": 5.0,
+            "tnc": 3.6,
+            "vrc": 1,
+            "wno": 4.0,
+            "wnm": 2.0,
+            "total": 10.6
+          },
+          "computational": {
+            "oc": 4.0,
+            "tcc": 0.0,
+            "cic": 2.0,
+            "total": 6.0
+          },
+          "dependency": {
+            "ruc": 14,
+            "total": 14.0
+          },
+          "tc": 30.6
+        },
+        "is_unsat": true,
+        "mutation": "self_contradiction",
+        "original_pattern_id": "select_operation",
+        "slot_profile": "medium",
+        "semantic_cluster": 1,
+        "implies": [
+          "collection_navigation_Building"
+        ]
+      }
+    },
+    {
+      "ocl": "context Course\ninv: ((self.credits <= 1000) and (self.offerings->forAll(v | v.capacity < 50))) and (self.credits > 1000)",
+      "pattern_id": "numeric_multiple_of_unsat",
+      "pattern_name": "Numeric Multiple Of (UNSAT)",
+      "context": "Course",
+      "parameters": {
+        "numeric_attribute": "credits",
+        "divisor": 4
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-14T20:41:05.405341",
+      "metadata": {
+        "category": "arithmetic",
+        "complexity": 2,
+        "generation_number": 6627,
+        "profile": "difficult",
+        "regenerated_from": "collection_size_range",
+        "regen_box": "difficult+forall",
+        "regen_family": "arithmetic",
+        "refilled_after": "dedup",
+        "operators_used": [
+          "-",
+          "<",
+          "<=",
+          "=",
+          ">",
+          "and",
+          "forAll"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "difficult",
+        "operator_count": 7,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 4.0,
+            "dn_ca": 3.0,
+            "wnc": 6.0,
+            "tnc": 4.3,
+            "vrc": 1,
+            "wno": 6.5,
+            "wnm": 1.0,
+            "total": 12.8
+          },
+          "computational": {
+            "oc": 6.5,
+            "tcc": 0.0,
+            "cic": 3.0,
+            "total": 9.5
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 22.3
+        },
+        "is_unsat": true,
+        "mutation": "contradictory_bounds",
+        "original_pattern_id": "numeric_multiple_of",
+        "contradiction_ocl": "context Course\ninv: self.credits > 1000",
+        "slot_profile": "difficult",
+        "semantic_cluster": 1,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Department\ninv: (self.instructors->collect(x | x.offerings)->flatten()->notEmpty()) and (not(self.instructors->collect(x | x.offerings)->flatten()->notEmpty()))",
+      "pattern_id": "flatten_operation_unsat",
+      "pattern_name": "Flatten Operation (UNSAT)",
+      "context": "Department",
+      "parameters": {
+        "collection": "instructors",
+        "iterator": "x",
+        "nested_collection": "offerings"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-14T20:41:05.963146",
+      "metadata": {
+        "category": "set_operations",
+        "complexity": 3,
+        "generation_number": 6499,
+        "profile": "unboxed",
+        "operators_used": [
+          "-",
+          ">",
+          "collect",
+          "flatten",
+          "notEmpty"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "unboxed",
+        "operator_count": 5,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 3.0,
+            "wnc": 5.0,
+            "tnc": 4.0,
+            "vrc": 1,
+            "wno": 4.0,
+            "wnm": 3.0,
+            "total": 12.0
+          },
+          "computational": {
+            "oc": 4.0,
+            "tcc": 2.0,
+            "cic": 2.0,
+            "total": 8.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 20.0
+        },
+        "is_unsat": true,
+        "mutation": "self_contradiction",
+        "original_pattern_id": "flatten_operation",
+        "slot_profile": "difficult",
+        "semantic_cluster": 11,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context CourseOffering\ninv: (self.enrollments->size() > 0) and (self.enrollments->size() < -5)",
+      "pattern_id": "collection_not_empty_check_unsat",
+      "pattern_name": "Collection Not Empty Check (UNSAT)",
+      "context": "CourseOffering",
+      "parameters": {
+        "collection": "enrollments"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-14T20:41:05.963208",
+      "metadata": {
+        "category": "collection",
+        "complexity": 1,
+        "generation_number": 6754,
+        "profile": "medium",
+        "regenerated_from": "collection_max_size",
+        "regen_box": "easy",
+        "regen_family": "cardinality",
+        "operators_used": [
+          "-",
+          ">",
+          "size"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.4,
+            "vrc": 0,
+            "wno": 1.0,
+            "wnm": 1.0,
+            "total": 3.4
+          },
+          "computational": {
+            "oc": 1.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 1.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 4.4
+        },
+        "is_unsat": true,
+        "mutation": "contradictory_bounds",
+        "original_pattern_id": "collection_not_empty_check",
+        "contradiction_ocl": "context CourseOffering\ninv: self.enrollments->size() < -5",
+        "slot_profile": "easy",
+        "semantic_cluster": 0,
+        "implies": [
+          "collection_not_empty_check_unsat_CourseOffering",
+          "collection_not_empty_check_unsat_CourseOffering"
+        ]
+      }
+    },
+    {
+      "ocl": "context CourseOffering\ninv: (self.capacity > 27) and (self.capacity < 22)",
+      "pattern_id": "numeric_greater_than_value_unsat",
+      "pattern_name": "Numeric Greater Than Value (UNSAT)",
+      "context": "CourseOffering",
+      "parameters": {
+        "numeric_attribute": "capacity",
+        "value": 27
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-14T20:41:06.438292",
+      "metadata": {
+        "category": "arithmetic",
+        "complexity": 1,
+        "generation_number": 6416,
+        "profile": "easy",
+        "operators_used": [
+          ">"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 1,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 1.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.0,
+            "vrc": 0,
+            "wno": 1.0,
+            "wnm": 0.0,
+            "total": 2.0
+          },
+          "computational": {
+            "oc": 1.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 1.0
+          },
+          "dependency": {
+            "ruc": 4,
+            "total": 4.0
+          },
+          "tc": 7.0
+        },
+        "is_unsat": true,
+        "mutation": "contradictory_bounds",
+        "original_pattern_id": "numeric_greater_than_value",
+        "contradiction_ocl": "context CourseOffering\ninv: self.capacity < 22",
+        "slot_profile": "easy",
+        "semantic_cluster": 1,
+        "implies": [
+          "numeric_even_CourseOffering",
+          "numeric_greater_than_value_CourseOffering",
+          "numeric_bounded_CourseOffering",
+          "collection_indexOf_unsat_CourseOffering"
+        ]
+      }
+    },
+    {
+      "ocl": "context CourseOffering\ninv: ((self.capacity > 10) and (self.enrollments->forAll(v | v.enrolledAt <> ''))) and (self.capacity < 5)",
+      "pattern_id": "collection_indexOf_unsat",
+      "pattern_name": "Collection Index Of Element (UNSAT)",
+      "context": "CourseOffering",
+      "parameters": {
+        "collection": "enrollments",
+        "element": "semester"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-14T20:41:06.996227",
+      "metadata": {
+        "category": "collection",
+        "complexity": 3,
+        "generation_number": 6700,
+        "profile": "difficult",
+        "regenerated_from": "flatten_operation",
+        "regen_box": "difficult+forall",
+        "regen_family": "cardinality",
+        "refilled_after": "dedup",
+        "operators_used": [
+          "-",
+          "<",
+          "<>",
+          ">",
+          "and",
+          "forAll"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "difficult",
+        "operator_count": 6,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 4.0,
+            "dn_ca": 3.0,
+            "wnc": 6.0,
+            "tnc": 4.3,
+            "vrc": 1,
+            "wno": 6.5,
+            "wnm": 1.0,
+            "total": 12.8
+          },
+          "computational": {
+            "oc": 6.5,
+            "tcc": 0.0,
+            "cic": 3.0,
+            "total": 9.5
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 22.3
+        },
+        "is_unsat": true,
+        "mutation": "contradictory_bounds",
+        "original_pattern_id": "collection_indexOf",
+        "contradiction_ocl": "context CourseOffering\ninv: self.capacity < 5",
+        "slot_profile": "difficult",
+        "semantic_cluster": 0,
+        "implies": [
+          "numeric_even_CourseOffering",
+          "numeric_greater_than_value_CourseOffering",
+          "numeric_bounded_CourseOffering"
+        ]
+      }
+    },
+    {
+      "ocl": "context Student\ninv: (self.libraryAccount.isBlocked) and (not(self.libraryAccount.isBlocked))",
+      "pattern_id": "simple_navigation_unsat",
+      "pattern_name": "Simple Navigation (UNSAT)",
+      "context": "Student",
+      "parameters": {
+        "association": "libraryAccount",
+        "attribute": "isBlocked"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-14T20:41:07.629635",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 1,
+        "generation_number": 6235,
+        "profile": "medium",
+        "operators_used": [],
+        "navigation_depth": 3,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 0,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 2,
+            "wnc": 2.0,
+            "tnc": 2.0,
+            "vrc": 0,
+            "wno": 0.0,
+            "wnm": 0.0,
+            "total": 2.0
+          },
+          "computational": {
+            "oc": 0.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 0.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 2.0
+        },
+        "is_unsat": true,
+        "mutation": "self_contradiction",
+        "original_pattern_id": "simple_navigation",
+        "slot_profile": "easy",
+        "semantic_cluster": 2,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Exam\ninv: (((self.attempts->one(x | x.marks > 2)) and (self.offering.oclIsTypeOf(CourseOffering))) and (self.attempts->size() = 2)) and (not(((self.attempts->one(x | x.marks > 2)) and (self.offering.oclIsTypeOf(CourseOffering))) and (self.attempts->size() = 2)))",
+      "pattern_id": "one_operation_unsat",
+      "pattern_name": "One Operation (UNSAT)",
+      "context": "Exam",
+      "parameters": {
+        "collection": "attempts",
+        "iterator": "x",
+        "condition": "x.marks > 2"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-14T20:41:08.274795",
+      "metadata": {
+        "category": "collection",
+        "complexity": 2,
+        "generation_number": 6402,
+        "profile": "unboxed",
+        "operators_used": [
+          "-",
+          "=",
+          ">",
+          "and",
+          "oclIsTypeOf",
+          "one",
+          "size"
+        ],
+        "navigation_depth": 3,
+        "quantifier_depth": 1,
+        "difficulty": "unboxed",
+        "operator_count": 7,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 6.0,
+            "nnc_plus": 5.0,
+            "dn_ca": 3.0,
+            "wnc": 7.0,
+            "tnc": 5.4,
+            "vrc": 1,
+            "wno": 5.0,
+            "wnm": 3.0,
+            "total": 14.4
+          },
+          "computational": {
+            "oc": 5.0,
+            "tcc": 0.0,
+            "cic": 2.0,
+            "total": 7.0
+          },
+          "dependency": {
+            "ruc": 3,
+            "total": 3.0
+          },
+          "tc": 24.4
+        },
+        "is_unsat": true,
+        "mutation": "self_contradiction",
+        "original_pattern_id": "one_operation",
+        "slot_profile": "difficult",
+        "semantic_cluster": 0,
+        "implies": [
+          "forall_nested_Exam",
+          "collection_min_size_Exam"
+        ]
+      }
+    },
+    {
+      "ocl": "context Course\ninv: ((self.department.faculty.name <> '') and (self.credits > 0)) and (self.credits < -5)",
+      "pattern_id": "navigation_chain_unsat",
+      "pattern_name": "Navigation Chain (UNSAT)",
+      "context": "Course",
+      "parameters": {
+        "navigation_path": "self.department.faculty.name <> ''"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-14T20:41:08.274889",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 2,
+        "generation_number": 6337,
+        "profile": "medium",
+        "operators_used": [
+          "<",
+          "<>",
+          ">",
+          "and"
+        ],
+        "navigation_depth": 4,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 4,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 4.0,
+            "dn_ca": 3,
+            "wnc": 4.0,
+            "tnc": 3.7,
+            "vrc": 0,
+            "wno": 3.5,
+            "wnm": 0.0,
+            "total": 7.2
+          },
+          "computational": {
+            "oc": 3.5,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.5
+          },
+          "dependency": {
+            "ruc": 4,
+            "total": 4.0
+          },
+          "tc": 14.7
+        },
+        "is_unsat": true,
+        "mutation": "contradictory_bounds",
+        "original_pattern_id": "navigation_chain",
+        "contradiction_ocl": "context Course\ninv: self.credits < -5",
+        "slot_profile": "medium",
+        "semantic_cluster": 0,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context University\ninv: (self.buildings->forAll(x | x.code <> '')) and (self.buildings->exists(x | not(x.code <> '')))",
+      "pattern_id": "collection_navigation_unsat",
+      "pattern_name": "Collection Navigation (UNSAT)",
+      "context": "University",
+      "parameters": {
+        "collection": "buildings",
+        "operation": "forAll",
+        "iterator": "x",
+        "nested": "code <> ''"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-14T20:41:08.944068",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 3,
+        "generation_number": 6376,
+        "profile": "difficult",
+        "operators_used": [
+          "-",
+          "<",
+          "<>",
+          ">",
+          "forAll"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "difficult",
+        "operator_count": 5,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 3.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 3.0,
+            "wnc": 5.0,
+            "tnc": 3.6,
+            "vrc": 1,
+            "wno": 4.0,
+            "wnm": 1.0,
+            "total": 9.6
+          },
+          "computational": {
+            "oc": 4.0,
+            "tcc": 0.0,
+            "cic": 3.0,
+            "total": 7.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 16.6
+        },
+        "is_unsat": true,
+        "mutation": "universal_negation",
+        "original_pattern_id": "collection_navigation",
+        "contradiction_ocl": "context University\ninv: self.buildings->exists(x | not(x.code <> ''))",
+        "contradiction_pattern_id": "exists_nested",
+        "slot_profile": "difficult",
+        "semantic_cluster": 12,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Room\ninv: ((self.building.university.name <> '') and (self.capacity mod 2 = 0)) and (not((self.building.university.name <> '') and (self.capacity mod 2 = 0)))",
+      "pattern_id": "navigation_chain_unsat",
+      "pattern_name": "Navigation Chain (UNSAT)",
+      "context": "Room",
+      "parameters": {
+        "navigation_path": "self.building.university.name <> ''"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-14T20:41:10.262408",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 2,
+        "generation_number": 6352,
+        "profile": "unboxed",
+        "operators_used": [
+          "<",
+          "<>",
+          "=",
+          ">",
+          "and",
+          "mod"
+        ],
+        "navigation_depth": 4,
+        "quantifier_depth": 0,
+        "difficulty": "unboxed",
+        "operator_count": 6,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 4.0,
+            "dn_ca": 3,
+            "wnc": 4.0,
+            "tnc": 3.7,
+            "vrc": 0,
+            "wno": 4.5,
+            "wnm": 0.0,
+            "total": 8.2
+          },
+          "computational": {
+            "oc": 3.5,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.5
+          },
+          "dependency": {
+            "ruc": 2,
+            "total": 2.0
+          },
+          "tc": 13.7
+        },
+        "is_unsat": true,
+        "mutation": "self_contradiction",
+        "original_pattern_id": "navigation_chain",
+        "slot_profile": "medium",
+        "semantic_cluster": 0,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context CourseOffering\ninv: (self.exams->size() >= 2 and self.exams->size() <= 2) and (self.exams->size() < 2)",
+      "pattern_id": "collection_size_range_unsat",
+      "pattern_name": "Collection Size in Range (UNSAT)",
+      "context": "CourseOffering",
+      "parameters": {
+        "collection": "exams",
+        "min_size": 2,
+        "max_size": 2
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-14T20:41:10.262450",
+      "metadata": {
+        "category": "collection",
+        "complexity": 2,
+        "generation_number": 6421,
+        "profile": "unboxed",
+        "operators_used": [
+          "-",
+          "<",
+          "<=",
+          "=",
+          ">",
+          ">=",
+          "and",
+          "size"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "unboxed",
+        "operator_count": 8,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 1,
+            "wnc": 2.0,
+            "tnc": 2.5,
+            "vrc": 0,
+            "wno": 3.5,
+            "wnm": 2.0,
+            "total": 8.0
+          },
+          "computational": {
+            "oc": 3.5,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.5
+          },
+          "dependency": {
+            "ruc": 7,
+            "total": 7.0
+          },
+          "tc": 18.5
+        },
+        "is_unsat": true,
+        "mutation": "contradictory_bounds",
+        "original_pattern_id": "collection_size_range",
+        "contradiction_ocl": "context CourseOffering\ninv: self.exams->size() < 2",
+        "slot_profile": "medium",
+        "semantic_cluster": 7,
+        "implies": [
+          "collection_not_empty_simple_CourseOffering"
+        ]
+      }
+    }
+  ]
+}

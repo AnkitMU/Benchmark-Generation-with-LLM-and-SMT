@@ -1,0 +1,1024 @@
+{
+  "metadata": {
+    "type": "UNSAT",
+    "model": "FlightBooking",
+    "profile": "balanced",
+    "generated_at": "2026-10-15T02:50:04.296188",
+    "constraint_count": 16
+  },
+  "constraints": [
+    {
+      "ocl": "context Flight\ninv: (self.departureTime <> null implies self.arrivalTime <> null) and (not(self.departureTime <> null implies self.arrivalTime <> null))",
+      "pattern_id": "implies_simple_unsat",
+      "pattern_name": "Simple Implication (UNSAT)",
+      "context": "Flight",
+      "parameters": {
+        "first_attribute": "departureTime",
+        "second_attribute": "arrivalTime"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-15T02:43:19.743395",
+      "metadata": {
+        "category": "advanced",
+        "complexity": 2,
+        "generation_number": 3269,
+        "profile": "unboxed",
+        "operators_used": [
+          "<",
+          "<>",
+          ">",
+          "implies"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "unboxed",
+        "operator_count": 4,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 1,
+            "wnc": 2.0,
+            "tnc": 1.7,
+            "vrc": 0,
+            "wno": 4.0,
+            "wnm": 0.0,
+            "total": 5.7
+          },
+          "computational": {
+            "oc": 4.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 4.0
+          },
+          "dependency": {
+            "ruc": 10,
+            "total": 10.0
+          },
+          "tc": 19.7
+        },
+        "is_unsat": true,
+        "mutation": "self_contradiction",
+        "original_pattern_id": "implies_simple",
+        "slot_profile": "medium",
+        "semantic_cluster": 4,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Aircraft\ninv: (self.seats->forAll(x | x.seatNo <> '')) and (self.seats->exists(x | not(x.seatNo <> '')))",
+      "pattern_id": "collection_navigation_unsat",
+      "pattern_name": "Collection Navigation (UNSAT)",
+      "context": "Aircraft",
+      "parameters": {
+        "collection": "seats",
+        "operation": "forAll",
+        "iterator": "x",
+        "nested": "seatNo <> ''"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-15T02:43:19.743546",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 3,
+        "generation_number": 3111,
+        "profile": "difficult",
+        "operators_used": [
+          "-",
+          "<",
+          "<>",
+          ">",
+          "forAll"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "difficult",
+        "operator_count": 5,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 3.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 3.0,
+            "wnc": 5.0,
+            "tnc": 3.6,
+            "vrc": 1,
+            "wno": 4.0,
+            "wnm": 1.0,
+            "total": 9.6
+          },
+          "computational": {
+            "oc": 4.0,
+            "tcc": 0.0,
+            "cic": 3.0,
+            "total": 7.0
+          },
+          "dependency": {
+            "ruc": 10,
+            "total": 10.0
+          },
+          "tc": 26.6
+        },
+        "is_unsat": true,
+        "mutation": "universal_negation",
+        "original_pattern_id": "collection_navigation",
+        "contradiction_ocl": "context Aircraft\ninv: self.seats->exists(x | not(x.seatNo <> ''))",
+        "contradiction_pattern_id": "exists_nested",
+        "slot_profile": "difficult",
+        "semantic_cluster": 0,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Airline\ninv: ((self.aircrafts->one(x | x.registrationNo <> '')) and (self.flights->size() >= 2 and self.flights->size() <= 3)) and (self.flights->size() < 2)",
+      "pattern_id": "one_operation_unsat",
+      "pattern_name": "One Operation (UNSAT)",
+      "context": "Airline",
+      "parameters": {
+        "collection": "aircrafts",
+        "iterator": "x",
+        "condition": "x.registrationNo <> ''"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-15T02:43:20.081293",
+      "metadata": {
+        "category": "collection",
+        "complexity": 2,
+        "generation_number": 3355,
+        "profile": "unboxed",
+        "regenerated_from": "exists_constraint",
+        "regen_box": "difficult+conjoin",
+        "regen_family": "quantified",
+        "refilled_after": "dedup",
+        "operators_used": [
+          "-",
+          "<",
+          "<=",
+          "<>",
+          "=",
+          ">",
+          ">=",
+          "and",
+          "one",
+          "size"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "unboxed",
+        "operator_count": 10,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 7.0,
+            "nnc_plus": 5.0,
+            "dn_ca": 3.0,
+            "wnc": 7.0,
+            "tnc": 5.8,
+            "vrc": 1,
+            "wno": 6.0,
+            "wnm": 3.0,
+            "total": 15.8
+          },
+          "computational": {
+            "oc": 6.0,
+            "tcc": 0.0,
+            "cic": 2.0,
+            "total": 8.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 23.8
+        },
+        "is_unsat": true,
+        "mutation": "contradictory_bounds",
+        "original_pattern_id": "one_operation",
+        "contradiction_ocl": "context Airline\ninv: self.flights->size() < 2",
+        "slot_profile": "difficult",
+        "semantic_cluster": 0,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Baggage\ninv: ((self.booking.flight.departureTime <> '') and (self.weightKg.abs() <= 4)) and (not((self.booking.flight.departureTime <> '') and (self.weightKg.abs() <= 4)))",
+      "pattern_id": "navigation_chain_unsat",
+      "pattern_name": "Navigation Chain (UNSAT)",
+      "context": "Baggage",
+      "parameters": {
+        "navigation_path": "self.booking.flight.departureTime <> ''"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-15T02:43:20.419237",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 2,
+        "generation_number": 3158,
+        "profile": "unboxed",
+        "operators_used": [
+          "<",
+          "<=",
+          "<>",
+          "=",
+          ">",
+          "abs",
+          "and"
+        ],
+        "navigation_depth": 4,
+        "quantifier_depth": 0,
+        "difficulty": "unboxed",
+        "operator_count": 7,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 4.0,
+            "dn_ca": 3,
+            "wnc": 4.0,
+            "tnc": 3.7,
+            "vrc": 0,
+            "wno": 4.5,
+            "wnm": 1.0,
+            "total": 9.2
+          },
+          "computational": {
+            "oc": 3.5,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.5
+          },
+          "dependency": {
+            "ruc": 12,
+            "total": 12.0
+          },
+          "tc": 24.7
+        },
+        "is_unsat": true,
+        "mutation": "self_contradiction",
+        "original_pattern_id": "navigation_chain",
+        "slot_profile": "medium",
+        "semantic_cluster": 0,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Airline\ninv: (self.flights->forAll(x | x.departureTime <> '')) and (self.flights->exists(x | not(x.departureTime <> '')))",
+      "pattern_id": "collection_navigation_unsat",
+      "pattern_name": "Collection Navigation (UNSAT)",
+      "context": "Airline",
+      "parameters": {
+        "collection": "flights",
+        "operation": "forAll",
+        "iterator": "x",
+        "nested": "departureTime <> ''"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-15T02:43:20.419305",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 3,
+        "generation_number": 3344,
+        "profile": "difficult",
+        "regenerated_from": "collection_navigation",
+        "regen_box": "difficult",
+        "regen_family": "navigation",
+        "refilled_after": "dedup",
+        "operators_used": [
+          "-",
+          "<",
+          "<>",
+          ">",
+          "forAll"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "difficult",
+        "operator_count": 5,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 3.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 3.0,
+            "wnc": 5.0,
+            "tnc": 3.6,
+            "vrc": 1,
+            "wno": 4.0,
+            "wnm": 1.0,
+            "total": 9.6
+          },
+          "computational": {
+            "oc": 4.0,
+            "tcc": 0.0,
+            "cic": 3.0,
+            "total": 7.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 16.6
+        },
+        "is_unsat": true,
+        "mutation": "universal_negation",
+        "original_pattern_id": "collection_navigation",
+        "contradiction_ocl": "context Airline\ninv: self.flights->exists(x | not(x.departureTime <> ''))",
+        "contradiction_pattern_id": "exists_nested",
+        "slot_profile": "difficult",
+        "semantic_cluster": 0,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context BoardingPass\ninv: (((self.seat <> null) and (self.seat.oclIsTypeOf(Seat))) and (self.checkIn.booking.createdAt <> '')) and (not(((self.seat <> null) and (self.seat.oclIsTypeOf(Seat))) and (self.checkIn.booking.createdAt <> '')))",
+      "pattern_id": "association_exists_unsat",
+      "pattern_name": "Association Exists (UNSAT)",
+      "context": "BoardingPass",
+      "parameters": {
+        "association": "seat"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-15T02:43:21.135434",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 1,
+        "generation_number": 3124,
+        "profile": "unboxed",
+        "operators_used": [
+          "<",
+          "<>",
+          ">",
+          "and",
+          "oclIsTypeOf"
+        ],
+        "navigation_depth": 4,
+        "quantifier_depth": 0,
+        "difficulty": "unboxed",
+        "operator_count": 5,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 5.0,
+            "nnc_plus": 5.0,
+            "dn_ca": 3,
+            "wnc": 5.0,
+            "tnc": 4.4,
+            "vrc": 0,
+            "wno": 5.0,
+            "wnm": 1.0,
+            "total": 10.4
+          },
+          "computational": {
+            "oc": 5.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 5.0
+          },
+          "dependency": {
+            "ruc": 3,
+            "total": 3.0
+          },
+          "tc": 18.4
+        },
+        "is_unsat": true,
+        "mutation": "self_contradiction",
+        "original_pattern_id": "association_exists",
+        "slot_profile": "medium",
+        "semantic_cluster": 0,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Baggage\ninv: ((self.weightKg > 0) and (self.tagNo.toUpperCase() = 'TEST')) and (self.weightKg < -5)",
+      "pattern_id": "numeric_positive_unsat",
+      "pattern_name": "Numeric Attribute Positive (UNSAT)",
+      "context": "Baggage",
+      "parameters": {
+        "numeric_attribute": "weightKg"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-15T02:43:21.135487",
+      "metadata": {
+        "category": "arithmetic",
+        "complexity": 1,
+        "generation_number": 3705,
+        "profile": "medium",
+        "regenerated_from": "numeric_bounded",
+        "regen_box": "medium+conjoin",
+        "regen_family": "arithmetic",
+        "operators_used": [
+          "=",
+          ">",
+          "and"
+        ],
+        "navigation_depth": 3,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 1,
+            "wnc": 2.0,
+            "tnc": 1.7,
+            "vrc": 0,
+            "wno": 3.5,
+            "wnm": 1.0,
+            "total": 6.2
+          },
+          "computational": {
+            "oc": 3.5,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.5
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 9.7
+        },
+        "is_unsat": true,
+        "mutation": "contradictory_bounds",
+        "original_pattern_id": "numeric_positive",
+        "contradiction_ocl": "context Baggage\ninv: self.weightKg < -5",
+        "slot_profile": "medium",
+        "semantic_cluster": 6,
+        "implies": [
+          "numeric_positive_Baggage",
+          "numeric_positive_Baggage",
+          "numeric_positive_Baggage",
+          "numeric_positive_Baggage",
+          "numeric_positive_Baggage",
+          "numeric_positive_Baggage",
+          "numeric_positive_unsat_Baggage",
+          "numeric_positive_unsat_Baggage"
+        ]
+      }
+    },
+    {
+      "ocl": "context Baggage\ninv: (self.weightKg > 0) and (self.weightKg < -5)",
+      "pattern_id": "numeric_positive_unsat",
+      "pattern_name": "Numeric Attribute Positive (UNSAT)",
+      "context": "Baggage",
+      "parameters": {
+        "numeric_attribute": "weightKg"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-15T02:43:21.431320",
+      "metadata": {
+        "category": "arithmetic",
+        "complexity": 1,
+        "generation_number": 3180,
+        "profile": "easy",
+        "operators_used": [
+          ">"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 1,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 1.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.0,
+            "vrc": 0,
+            "wno": 1.0,
+            "wnm": 0.0,
+            "total": 2.0
+          },
+          "computational": {
+            "oc": 1.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 1.0
+          },
+          "dependency": {
+            "ruc": 12,
+            "total": 12.0
+          },
+          "tc": 15.0
+        },
+        "is_unsat": true,
+        "mutation": "contradictory_bounds",
+        "original_pattern_id": "numeric_positive",
+        "contradiction_ocl": "context Baggage\ninv: self.weightKg < -5",
+        "slot_profile": "easy",
+        "semantic_cluster": 6,
+        "implies": [
+          "numeric_positive_Baggage",
+          "numeric_positive_Baggage",
+          "numeric_positive_Baggage",
+          "numeric_positive_Baggage",
+          "numeric_positive_Baggage",
+          "numeric_positive_Baggage",
+          "numeric_positive_unsat_Baggage",
+          "numeric_positive_unsat_Baggage"
+        ]
+      }
+    },
+    {
+      "ocl": "context Baggage\ninv: (self.weightKg < 41) and (self.weightKg > 46)",
+      "pattern_id": "numeric_less_than_value_unsat",
+      "pattern_name": "Numeric Less Than Value (UNSAT)",
+      "context": "Baggage",
+      "parameters": {
+        "numeric_attribute": "weightKg",
+        "value": 41
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-15T02:43:21.746513",
+      "metadata": {
+        "category": "arithmetic",
+        "complexity": 1,
+        "generation_number": 3664,
+        "profile": "easy",
+        "regenerated_from": "numeric_abs_bounded",
+        "regen_box": "easy",
+        "regen_family": "arithmetic",
+        "operators_used": [
+          "<"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 1,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 1.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.0,
+            "vrc": 0,
+            "wno": 1.0,
+            "wnm": 0.0,
+            "total": 2.0
+          },
+          "computational": {
+            "oc": 1.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 1.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 3.0
+        },
+        "is_unsat": true,
+        "mutation": "contradictory_bounds",
+        "original_pattern_id": "numeric_less_than_value",
+        "contradiction_ocl": "context Baggage\ninv: self.weightKg > 46",
+        "slot_profile": "easy",
+        "semantic_cluster": 6,
+        "implies": [
+          "numeric_less_than_value_Baggage",
+          "numeric_less_than_value_Baggage",
+          "numeric_less_than_value_Baggage",
+          "numeric_less_than_value_Baggage",
+          "numeric_less_than_value_unsat_Baggage"
+        ]
+      }
+    },
+    {
+      "ocl": "context CheckIn\ninv: (self.boardingPass <> null) and (not(self.boardingPass <> null))",
+      "pattern_id": "association_exists_unsat",
+      "pattern_name": "Association Exists (UNSAT)",
+      "context": "CheckIn",
+      "parameters": {
+        "association": "boardingPass"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-15T02:43:22.032441",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 1,
+        "generation_number": 3106,
+        "profile": "medium",
+        "operators_used": [
+          "<",
+          "<>",
+          ">"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 1.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.0,
+            "vrc": 0,
+            "wno": 1.0,
+            "wnm": 0.0,
+            "total": 2.0
+          },
+          "computational": {
+            "oc": 1.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 1.0
+          },
+          "dependency": {
+            "ruc": 1,
+            "total": 1.0
+          },
+          "tc": 4.0
+        },
+        "is_unsat": true,
+        "mutation": "self_contradiction",
+        "original_pattern_id": "association_exists",
+        "slot_profile": "easy",
+        "semantic_cluster": 2,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Airport\ninv: (self.arrivingFlights->collect(x | x.bookings)->flatten()->notEmpty()) and (not(self.arrivingFlights->collect(x | x.bookings)->flatten()->notEmpty()))",
+      "pattern_id": "flatten_operation_unsat",
+      "pattern_name": "Flatten Operation (UNSAT)",
+      "context": "Airport",
+      "parameters": {
+        "collection": "arrivingFlights",
+        "iterator": "x",
+        "nested_collection": "bookings"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-15T02:43:22.032607",
+      "metadata": {
+        "category": "set_operations",
+        "complexity": 3,
+        "generation_number": 3378,
+        "profile": "unboxed",
+        "regenerated_from": "flatten_operation",
+        "regen_box": "difficult",
+        "regen_family": "cardinality",
+        "refilled_after": "dedup",
+        "operators_used": [
+          "-",
+          ">",
+          "collect",
+          "flatten",
+          "notEmpty"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "unboxed",
+        "operator_count": 5,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 3.0,
+            "wnc": 5.0,
+            "tnc": 4.0,
+            "vrc": 1,
+            "wno": 4.0,
+            "wnm": 3.0,
+            "total": 12.0
+          },
+          "computational": {
+            "oc": 4.0,
+            "tcc": 2.0,
+            "cic": 2.0,
+            "total": 8.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 20.0
+        },
+        "is_unsat": true,
+        "mutation": "self_contradiction",
+        "original_pattern_id": "flatten_operation",
+        "slot_profile": "difficult",
+        "semantic_cluster": 7,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Airline\ninv: (self.flights->exists(x | x.departureTime <> '')) and (not(self.flights->exists(x | x.departureTime <> '')))",
+      "pattern_id": "collection_navigation_unsat",
+      "pattern_name": "Collection Navigation (UNSAT)",
+      "context": "Airline",
+      "parameters": {
+        "collection": "flights",
+        "operation": "exists",
+        "iterator": "x",
+        "nested": "departureTime <> ''"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-15T02:43:22.032622",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 3,
+        "generation_number": 3108,
+        "profile": "difficult",
+        "operators_used": [
+          "-",
+          "<",
+          "<>",
+          ">",
+          "exists"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "difficult",
+        "operator_count": 5,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 3.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 3.0,
+            "wnc": 5.0,
+            "tnc": 3.6,
+            "vrc": 1,
+            "wno": 4.0,
+            "wnm": 1.0,
+            "total": 9.6
+          },
+          "computational": {
+            "oc": 4.0,
+            "tcc": 0.0,
+            "cic": 3.0,
+            "total": 7.0
+          },
+          "dependency": {
+            "ruc": 4,
+            "total": 4.0
+          },
+          "tc": 20.6
+        },
+        "is_unsat": true,
+        "mutation": "self_contradiction",
+        "original_pattern_id": "collection_navigation",
+        "slot_profile": "difficult",
+        "semantic_cluster": 0,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Booking\ninv: (self.baggages->exists(x | x.weightKg <= 50)) and (not(self.baggages->exists(x | x.weightKg <= 50)))",
+      "pattern_id": "collection_navigation_unsat",
+      "pattern_name": "Collection Navigation (UNSAT)",
+      "context": "Booking",
+      "parameters": {
+        "collection": "baggages",
+        "operation": "exists",
+        "iterator": "x",
+        "nested": "weightKg <= 50"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-15T02:43:22.332578",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 3,
+        "generation_number": 3110,
+        "profile": "difficult",
+        "operators_used": [
+          "-",
+          "<",
+          "<=",
+          "=",
+          ">",
+          "exists"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "difficult",
+        "operator_count": 6,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 3.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 3.0,
+            "wnc": 5.0,
+            "tnc": 3.6,
+            "vrc": 1,
+            "wno": 4.0,
+            "wnm": 1.0,
+            "total": 9.6
+          },
+          "computational": {
+            "oc": 4.0,
+            "tcc": 0.0,
+            "cic": 3.0,
+            "total": 7.0
+          },
+          "dependency": {
+            "ruc": 6,
+            "total": 6.0
+          },
+          "tc": 22.6
+        },
+        "is_unsat": true,
+        "mutation": "self_contradiction",
+        "original_pattern_id": "collection_navigation",
+        "slot_profile": "difficult",
+        "semantic_cluster": 9,
+        "implies": [
+          "select_operation_Booking"
+        ]
+      }
+    },
+    {
+      "ocl": "context Aircraft\ninv: (self.seats->size() = 3) and (self.seats->size() <> 3)",
+      "pattern_id": "collection_has_size_unsat",
+      "pattern_name": "Collection Has Specific Size (UNSAT)",
+      "context": "Aircraft",
+      "parameters": {
+        "collection": "seats",
+        "size": 3
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-15T02:43:22.332618",
+      "metadata": {
+        "category": "collection",
+        "complexity": 1,
+        "generation_number": 3248,
+        "profile": "medium",
+        "operators_used": [
+          "-",
+          "=",
+          ">",
+          "size"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 4,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.4,
+            "vrc": 0,
+            "wno": 1.0,
+            "wnm": 1.0,
+            "total": 3.4
+          },
+          "computational": {
+            "oc": 1.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 1.0
+          },
+          "dependency": {
+            "ruc": 10,
+            "total": 10.0
+          },
+          "tc": 14.4
+        },
+        "is_unsat": true,
+        "mutation": "contradictory_bounds",
+        "original_pattern_id": "collection_has_size",
+        "contradiction_ocl": "context Aircraft\ninv: self.seats->size() <> 3",
+        "slot_profile": "easy",
+        "semantic_cluster": 0,
+        "implies": [
+          "navigation_chain_Aircraft",
+          "collection_min_size_Aircraft",
+          "collection_not_empty_simple_Aircraft",
+          "collection_min_size_Aircraft",
+          "collection_not_empty_simple_Aircraft",
+          "collection_not_empty_simple_Aircraft",
+          "collection_not_empty_check_unsat_Aircraft"
+        ]
+      }
+    },
+    {
+      "ocl": "context Baggage\ninv: ((self.weightKg < 44) and (self.weightKg <> null)) and (self.weightKg > 49)",
+      "pattern_id": "numeric_less_than_value_unsat",
+      "pattern_name": "Numeric Less Than Value (UNSAT)",
+      "context": "Baggage",
+      "parameters": {
+        "numeric_attribute": "weightKg",
+        "value": 44
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-15T02:43:22.637674",
+      "metadata": {
+        "category": "arithmetic",
+        "complexity": 1,
+        "generation_number": 3722,
+        "profile": "medium",
+        "regenerated_from": "numeric_greater_than_value",
+        "regen_box": "medium+conjoin",
+        "regen_family": "arithmetic",
+        "operators_used": [
+          "<",
+          "<>",
+          ">",
+          "and"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 4,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 1,
+            "wnc": 2.0,
+            "tnc": 1.7,
+            "vrc": 0,
+            "wno": 3.5,
+            "wnm": 0.0,
+            "total": 5.2
+          },
+          "computational": {
+            "oc": 3.5,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.5
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 8.7
+        },
+        "is_unsat": true,
+        "mutation": "contradictory_bounds",
+        "original_pattern_id": "numeric_less_than_value",
+        "contradiction_ocl": "context Baggage\ninv: self.weightKg > 49",
+        "slot_profile": "medium",
+        "semantic_cluster": 6,
+        "implies": [
+          "numeric_less_than_value_Baggage",
+          "numeric_less_than_value_Baggage",
+          "numeric_less_than_value_Baggage",
+          "numeric_less_than_value_Baggage",
+          "numeric_less_than_value_unsat_Baggage"
+        ]
+      }
+    },
+    {
+      "ocl": "context Aircraft\ninv: (self.seats->size() > 0) and (self.seats->size() < -5)",
+      "pattern_id": "collection_not_empty_check_unsat",
+      "pattern_name": "Collection Not Empty Check (UNSAT)",
+      "context": "Aircraft",
+      "parameters": {
+        "collection": "seats"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-15T02:43:22.951780",
+      "metadata": {
+        "category": "collection",
+        "complexity": 1,
+        "generation_number": 3251,
+        "profile": "medium",
+        "operators_used": [
+          "-",
+          ">",
+          "size"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.4,
+            "vrc": 0,
+            "wno": 1.0,
+            "wnm": 1.0,
+            "total": 3.4
+          },
+          "computational": {
+            "oc": 1.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 1.0
+          },
+          "dependency": {
+            "ruc": 10,
+            "total": 10.0
+          },
+          "tc": 14.4
+        },
+        "is_unsat": true,
+        "mutation": "contradictory_bounds",
+        "original_pattern_id": "collection_not_empty_check",
+        "contradiction_ocl": "context Aircraft\ninv: self.seats->size() < -5",
+        "slot_profile": "easy",
+        "semantic_cluster": 0,
+        "implies": [
+          "navigation_chain_Aircraft"
+        ]
+      }
+    }
+  ]
+}

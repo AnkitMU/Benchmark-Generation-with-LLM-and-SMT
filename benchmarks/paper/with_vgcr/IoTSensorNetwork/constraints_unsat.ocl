@@ -1,0 +1,119 @@
+-- Benchmark: IoTSensorNetwork / balanced
+-- Type: UNSAT Constraints Only
+-- Generated: 2026-10-12T20:18:50.688117
+-- Count: 19
+
+-- #1 Numeric Absolute Value Bounded (UNSAT) in ActuatorNode
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context ActuatorNode
+inv: (self.maxLoad.abs() <= 7) and (not(self.maxLoad.abs() <= 7))
+
+-- #2 Navigation Chain (UNSAT) in Metric
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Metric
+inv: (self.sensor.sampleRateHz >= 2) and (not(self.sensor.sampleRateHz >= 2))
+
+-- #3 Navigation Chain (UNSAT) in Metric
+-- Difficulty: medium
+-- Mutation Strategy: self_contradiction
+context Metric
+inv: (self.sensor.sampleRateHz > 1) and (not(self.sensor.sampleRateHz > 1))
+
+-- #4 Association Exists (UNSAT) in Gateway
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Gateway
+inv: (self.cluster <> null) and (not(self.cluster <> null))
+
+-- #5 Navigation Chain (UNSAT) in Metric
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Metric
+inv: ((self.sensor.sampleRateHz < 10) and (self.name.size() = 17)) and (not((self.sensor.sampleRateHz < 10) and (self.name.size() = 17)))
+
+-- #6 Numeric Attribute Non-Negative (UNSAT) in Battery
+-- Difficulty: medium
+-- Mutation Strategy: contradictory_bounds
+context Battery
+inv: (self.healthPct >= 0) and (self.healthPct < 0)
+
+-- #7 Navigation Chain (UNSAT) in Metric
+-- Difficulty: medium
+-- Mutation Strategy: self_contradiction
+context Metric
+inv: (self.sensor.sampleRateHz < 1000) and (not(self.sensor.sampleRateHz < 1000))
+
+-- #8 Collection Not Empty (Simple) (UNSAT) in AlertRule
+-- Difficulty: medium
+-- Mutation Strategy: empty_collection
+context AlertRule
+inv: (self.alerts->notEmpty()) and (self.alerts->isEmpty())
+
+-- #9 Numeric Multiple Of (UNSAT) in CommunicationLink
+-- Difficulty: medium
+-- Mutation Strategy: self_contradiction
+context CommunicationLink
+inv: (self.bandwidthKbps mod 3 = 0) and (not(self.bandwidthKbps mod 3 = 0))
+
+-- #10 Numeric Absolute Value Bounded (UNSAT) in Location
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Location
+inv: (self.longitude.abs() <= 4) and (not(self.longitude.abs() <= 4))
+
+-- #11 Simple Navigation (UNSAT) in EdgeNode
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context EdgeNode
+inv: ((self.gateway.isPrimary) and (self.cpuCores mod 6 = 0)) and (not((self.gateway.isPrimary) and (self.cpuCores mod 6 = 0)))
+
+-- #12 Collection Minimum Size (UNSAT) in AccessPolicy
+-- Difficulty: medium
+-- Mutation Strategy: contradictory_bounds
+context AccessPolicy
+inv: (self.roles->size() >= 3) and (self.roles->size() < 3)
+
+-- #13 Collection Not Empty Check (UNSAT) in DataStream
+-- Difficulty: medium
+-- Mutation Strategy: empty_collection
+context DataStream
+inv: (self.records->size() > 0) and (self.records->size() <= 0)
+
+-- #14 Collection Not Empty (Simple) (UNSAT) in AccessPolicy
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context AccessPolicy
+inv: ((self.roles->notEmpty()) and (self.description.size() >= 2)) and (not((self.roles->notEmpty()) and (self.description.size() >= 2)))
+
+-- #15 Numeric Is Odd (UNSAT) in Battery
+-- Difficulty: medium
+-- Mutation Strategy: self_contradiction
+context Battery
+inv: (self.healthPct mod 2 = 1) and (not(self.healthPct mod 2 = 1))
+
+-- #16 Collection Not Empty Check (UNSAT) in AccessPolicy
+-- Difficulty: medium
+-- Mutation Strategy: empty_collection
+context AccessPolicy
+inv: (self.roles->size() > 0) and (self.roles->size() <= 0)
+
+-- #17 Simple Navigation (UNSAT) in EdgeNode
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context EdgeNode
+inv: ((self.gateway.isPrimary) and (self.gateway <> null)) and (not((self.gateway.isPrimary) and (self.gateway <> null)))
+
+-- #18 Numeric Greater Than Value (UNSAT) in Battery
+-- Difficulty: easy
+-- Mutation Strategy: contradictory_bounds
+context Battery
+inv: (self.healthPct > 13) and (self.healthPct < 8)
+
+-- #19 Select (Filter) Operation (UNSAT) in Network
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Network
+inv: (self.links->select(x | x.bandwidthKbps >= 1)->size() >= 1) and (not(self.links->select(x | x.bandwidthKbps >= 1)->size() >= 1))
+

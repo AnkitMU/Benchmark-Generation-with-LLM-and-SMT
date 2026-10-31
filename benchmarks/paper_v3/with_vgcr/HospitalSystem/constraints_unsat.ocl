@@ -1,0 +1,101 @@
+-- Benchmark: HospitalSystem / balanced
+-- Type: UNSAT Constraints Only
+-- Generated: 2026-10-16T01:09:10.508980
+-- Count: 16
+
+-- #1 Collection Size in Range (UNSAT) in MedicalRecord
+-- Difficulty: unboxed
+-- Mutation Strategy: universal_negation
+context MedicalRecord
+inv: ((self.createdAt <> '') and (self.procedures->forAll(v | v.performedAt <> ''))) and (self.procedures->exists(v | not(v.performedAt <> '')))
+
+-- #2 Collect (Map) Operation (UNSAT) in Hospital
+-- Difficulty: difficult
+-- Mutation Strategy: self_contradiction
+context Hospital
+inv: (self.wards->collect(x | x.floor)->notEmpty()) and (not(self.wards->collect(x | x.floor)->notEmpty()))
+
+-- #3 Association Exists (UNSAT) in Admission
+-- Difficulty: medium
+-- Mutation Strategy: self_contradiction
+context Admission
+inv: (self.discharge <> null) and (not(self.discharge <> null))
+
+-- #4 Numeric Attribute Bounded (UNSAT) in Invoice
+-- Difficulty: medium
+-- Mutation Strategy: contradictory_bounds
+context Invoice
+inv: (self.totalAmount >= 4 and self.totalAmount <= 6) and (self.totalAmount < 4)
+
+-- #5 Association Exists (UNSAT) in LabTest
+-- Difficulty: medium
+-- Mutation Strategy: self_contradiction
+context LabTest
+inv: (self.result <> null) and (not(self.result <> null))
+
+-- #6 Collection Size in Range (UNSAT) in Department
+-- Difficulty: medium
+-- Mutation Strategy: contradictory_bounds
+context Department
+inv: ((self.nurses->size() <= 1)) and (self.nurses->size() > 1)
+
+-- #7 Simple Navigation (UNSAT) in Appointment
+-- Difficulty: medium
+-- Mutation Strategy: self_contradiction
+context Appointment
+inv: (self.patient.isInsured) and (not(self.patient.isInsured))
+
+-- #8 Numeric Attribute Bounded (UNSAT) in Invoice
+-- Difficulty: medium
+-- Mutation Strategy: contradictory_bounds
+context Invoice
+inv: (self.totalAmount >= 6 and self.totalAmount <= 65) and (self.totalAmount < 6)
+
+-- #9 Numeric Absolute Value Bounded (UNSAT) in Ward
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Ward
+inv: ((self.floor.abs() <= 4) and (self.floor.abs() <= 3)) and (not((self.floor.abs() <= 4) and (self.floor.abs() <= 3)))
+
+-- #10 Numeric Attribute Positive (UNSAT) in Invoice
+-- Difficulty: easy
+-- Mutation Strategy: contradictory_bounds
+context Invoice
+inv: (self.totalAmount > 0) and (self.totalAmount < -5)
+
+-- #11 Numeric Less Than Value (UNSAT) in Payment
+-- Difficulty: easy
+-- Mutation Strategy: contradictory_bounds
+context Payment
+inv: (self.amount < 41) and (self.amount > 46)
+
+-- #12 Collection Navigation (UNSAT) in Room
+-- Difficulty: difficult
+-- Mutation Strategy: self_contradiction
+context Room
+inv: (self.beds->exists(x | x.isOccupied <> true)) and (not(self.beds->exists(x | x.isOccupied <> true)))
+
+-- #13 Numeric Absolute Value Bounded (UNSAT) in Ward
+-- Difficulty: difficult
+-- Mutation Strategy: contradictory_bounds
+context Ward
+inv: ((self.floor > 0) and (self.rooms->forAll(v | v.roomNo <> ''))) and (self.floor < -5)
+
+-- #14 Numeric Is Even (UNSAT) in Ward
+-- Difficulty: difficult
+-- Mutation Strategy: contradictory_bounds
+context Ward
+inv: ((self.floor < 50) and (self.rooms->forAll(v | v.roomNo <> ''))) and (self.floor > 55)
+
+-- #15 Collection Size in Range (UNSAT) in Doctor
+-- Difficulty: unboxed
+-- Mutation Strategy: universal_negation
+context Doctor
+inv: ((self.specialty <> '') and (self.appointments->forAll(v | v.appointmentId <> ''))) and (self.appointments->exists(v | not(v.appointmentId <> '')))
+
+-- #16 Collection Not Empty Check (UNSAT) in Department
+-- Difficulty: medium
+-- Mutation Strategy: contradictory_bounds
+context Department
+inv: ((self.doctors->size() > 0) and (self.name <> null)) and (self.doctors->size() < -5)
+

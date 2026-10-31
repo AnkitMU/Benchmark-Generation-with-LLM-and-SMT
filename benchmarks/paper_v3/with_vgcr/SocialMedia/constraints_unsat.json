@@ -1,0 +1,945 @@
+{
+  "metadata": {
+    "type": "UNSAT",
+    "model": "SocialMedia",
+    "profile": "balanced",
+    "generated_at": "2026-10-16T06:22:31.321592",
+    "constraint_count": 15
+  },
+  "constraints": [
+    {
+      "ocl": "context Conversation\ninv: (self.participants->exists(x | x.createdAt <> '')) and (not(self.participants->exists(x | x.createdAt <> '')))",
+      "pattern_id": "collection_navigation_unsat",
+      "pattern_name": "Collection Navigation (UNSAT)",
+      "context": "Conversation",
+      "parameters": {
+        "collection": "participants",
+        "operation": "exists",
+        "iterator": "x",
+        "nested": "createdAt <> ''"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-16T06:19:41.472559",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 3,
+        "generation_number": 2929,
+        "profile": "difficult",
+        "operators_used": [
+          "-",
+          "<",
+          "<>",
+          ">",
+          "exists"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "difficult",
+        "operator_count": 5,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 3.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 3.0,
+            "wnc": 5.0,
+            "tnc": 3.6,
+            "vrc": 1,
+            "wno": 4.0,
+            "wnm": 1.0,
+            "total": 9.6
+          },
+          "computational": {
+            "oc": 4.0,
+            "tcc": 0.0,
+            "cic": 3.0,
+            "total": 7.0
+          },
+          "dependency": {
+            "ruc": 15,
+            "total": 15.0
+          },
+          "tc": 31.6
+        },
+        "is_unsat": true,
+        "mutation": "self_contradiction",
+        "original_pattern_id": "collection_navigation",
+        "slot_profile": "difficult",
+        "semantic_cluster": 0,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context User\ninv: (self.posts->exists(x | x.isPublic = true)) and (not(self.posts->exists(x | x.isPublic = true)))",
+      "pattern_id": "collection_navigation_unsat",
+      "pattern_name": "Collection Navigation (UNSAT)",
+      "context": "User",
+      "parameters": {
+        "collection": "posts",
+        "operation": "exists",
+        "iterator": "x",
+        "nested": "isPublic = true"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-16T06:19:41.472573",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 3,
+        "generation_number": 2931,
+        "profile": "difficult",
+        "operators_used": [
+          "-",
+          "=",
+          ">",
+          "exists"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "difficult",
+        "operator_count": 4,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 3.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 3.0,
+            "wnc": 5.0,
+            "tnc": 3.6,
+            "vrc": 1,
+            "wno": 4.0,
+            "wnm": 1.0,
+            "total": 9.6
+          },
+          "computational": {
+            "oc": 4.0,
+            "tcc": 0.0,
+            "cic": 3.0,
+            "total": 7.0
+          },
+          "dependency": {
+            "ruc": 9,
+            "total": 9.0
+          },
+          "tc": 25.6
+        },
+        "is_unsat": true,
+        "mutation": "self_contradiction",
+        "original_pattern_id": "collection_navigation",
+        "slot_profile": "difficult",
+        "semantic_cluster": 0,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Conversation\ninv: ((self.participants->size() <= 2) and (self.participants->any(x | x.username <> '') <> null)) and (self.participants->size() > 2)",
+      "pattern_id": "collection_max_size_unsat",
+      "pattern_name": "Collection Maximum Size (UNSAT)",
+      "context": "Conversation",
+      "parameters": {
+        "collection": "participants",
+        "max_size": 2
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-16T06:19:41.472677",
+      "metadata": {
+        "category": "collection",
+        "complexity": 1,
+        "generation_number": 3861,
+        "profile": "difficult",
+        "regenerated_from": "collection_min_size",
+        "regen_box": "medium+conjoin",
+        "regen_family": "cardinality",
+        "operators_used": [
+          "-",
+          "<",
+          "<=",
+          "<>",
+          "=",
+          ">",
+          "and",
+          "any",
+          "size"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "difficult",
+        "operator_count": 9,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 5.0,
+            "nnc_plus": 4.0,
+            "dn_ca": 3.0,
+            "wnc": 6.0,
+            "tnc": 4.7,
+            "vrc": 1,
+            "wno": 4.5,
+            "wnm": 2.0,
+            "total": 12.2
+          },
+          "computational": {
+            "oc": 4.5,
+            "tcc": 0.0,
+            "cic": 2.0,
+            "total": 6.5
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 18.7
+        },
+        "is_unsat": true,
+        "mutation": "contradictory_bounds",
+        "original_pattern_id": "collection_max_size",
+        "contradiction_ocl": "context Conversation\ninv: self.participants->size() > 2",
+        "slot_profile": "medium",
+        "semantic_cluster": 0,
+        "implies": [
+          "collection_size_range_Conversation",
+          "collection_max_size_Conversation"
+        ]
+      }
+    },
+    {
+      "ocl": "context Message\ninv: ((self.sender.profile.bio <> '') and (self.body.size() <= 74)) and (not((self.sender.profile.bio <> '') and (self.body.size() <= 74)))",
+      "pattern_id": "navigation_chain_unsat",
+      "pattern_name": "Navigation Chain (UNSAT)",
+      "context": "Message",
+      "parameters": {
+        "navigation_path": "self.sender.profile.bio <> ''"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-16T06:19:41.611999",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 2,
+        "generation_number": 2966,
+        "profile": "unboxed",
+        "operators_used": [
+          "<",
+          "<=",
+          "<>",
+          "=",
+          ">",
+          "and",
+          "size"
+        ],
+        "navigation_depth": 4,
+        "quantifier_depth": 0,
+        "difficulty": "unboxed",
+        "operator_count": 7,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 4.0,
+            "dn_ca": 3,
+            "wnc": 4.0,
+            "tnc": 3.7,
+            "vrc": 0,
+            "wno": 3.5,
+            "wnm": 1.0,
+            "total": 8.2
+          },
+          "computational": {
+            "oc": 3.5,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.5
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 11.7
+        },
+        "is_unsat": true,
+        "mutation": "self_contradiction",
+        "original_pattern_id": "navigation_chain",
+        "slot_profile": "medium",
+        "semantic_cluster": 0,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Post\ninv: (self.comments->size() = 1) and (self.comments->size() <> 1)",
+      "pattern_id": "collection_has_size_unsat",
+      "pattern_name": "Collection Has Specific Size (UNSAT)",
+      "context": "Post",
+      "parameters": {
+        "collection": "comments",
+        "size": 1
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-16T06:19:41.612018",
+      "metadata": {
+        "category": "collection",
+        "complexity": 1,
+        "generation_number": 3042,
+        "profile": "medium",
+        "operators_used": [
+          "-",
+          "=",
+          ">",
+          "size"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 4,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.4,
+            "vrc": 0,
+            "wno": 1.0,
+            "wnm": 1.0,
+            "total": 3.4
+          },
+          "computational": {
+            "oc": 1.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 1.0
+          },
+          "dependency": {
+            "ruc": 3,
+            "total": 3.0
+          },
+          "tc": 7.4
+        },
+        "is_unsat": true,
+        "mutation": "contradictory_bounds",
+        "original_pattern_id": "collection_has_size",
+        "contradiction_ocl": "context Post\ninv: self.comments->size() <> 1",
+        "slot_profile": "easy",
+        "semantic_cluster": 1,
+        "implies": [
+          "collection_size_range_Post",
+          "collection_size_range_Post",
+          "collection_not_empty_check_Post"
+        ]
+      }
+    },
+    {
+      "ocl": "context Group\ninv: ((self.memberships->collect(x | x.role)->notEmpty()) and (self.name.size() <= 26)) and (not((self.memberships->collect(x | x.role)->notEmpty()) and (self.name.size() <= 26)))",
+      "pattern_id": "collect_operation_unsat",
+      "pattern_name": "Collect (Map) Operation (UNSAT)",
+      "context": "Group",
+      "parameters": {
+        "collection": "memberships",
+        "iterator": "x",
+        "attribute": "role"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-16T06:19:41.747177",
+      "metadata": {
+        "category": "collection",
+        "complexity": 2,
+        "generation_number": 2952,
+        "profile": "unboxed",
+        "operators_used": [
+          "-",
+          "<",
+          "<=",
+          "=",
+          ">",
+          "and",
+          "collect",
+          "notEmpty",
+          "size"
+        ],
+        "navigation_depth": 3,
+        "quantifier_depth": 1,
+        "difficulty": "unboxed",
+        "operator_count": 9,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 4.0,
+            "dn_ca": 3.0,
+            "wnc": 6.0,
+            "tnc": 4.3,
+            "vrc": 1,
+            "wno": 4.5,
+            "wnm": 3.0,
+            "total": 12.8
+          },
+          "computational": {
+            "oc": 4.5,
+            "tcc": 0.0,
+            "cic": 2.0,
+            "total": 6.5
+          },
+          "dependency": {
+            "ruc": 9,
+            "total": 9.0
+          },
+          "tc": 28.3
+        },
+        "is_unsat": true,
+        "mutation": "self_contradiction",
+        "original_pattern_id": "collect_operation",
+        "slot_profile": "medium",
+        "semantic_cluster": 3,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Post\ninv: ((self.reactions->size() <= 2)) and (self.reactions->size() > 2)",
+      "pattern_id": "collection_size_range_unsat",
+      "pattern_name": "Collection Size in Range (UNSAT)",
+      "context": "Post",
+      "parameters": {
+        "collection": "reactions",
+        "min_size": 1,
+        "max_size": 2
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-16T06:19:41.747195",
+      "metadata": {
+        "category": "collection",
+        "complexity": 2,
+        "generation_number": 3603,
+        "profile": "medium",
+        "regenerated_from": "collection_size_range",
+        "regen_box": "easy+drop",
+        "regen_family": "arithmetic",
+        "operators_used": [
+          "-",
+          "<",
+          "<=",
+          "=",
+          ">",
+          "size"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 6,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.4,
+            "vrc": 0,
+            "wno": 1.0,
+            "wnm": 1.0,
+            "total": 3.4
+          },
+          "computational": {
+            "oc": 1.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 1.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 4.4
+        },
+        "is_unsat": true,
+        "mutation": "contradictory_bounds",
+        "original_pattern_id": "collection_size_range",
+        "contradiction_ocl": "context Post\ninv: self.reactions->size() > 2",
+        "slot_profile": "easy",
+        "semantic_cluster": 1,
+        "implies": [
+          "collection_size_range_Post"
+        ]
+      }
+    },
+    {
+      "ocl": "context Comment\ninv: (self.post.author = self.author) and (not(self.post.author = self.author))",
+      "pattern_id": "navigation_consistency_unsat",
+      "pattern_name": "Navigation Consistency (UNSAT)",
+      "context": "Comment",
+      "parameters": {
+        "assoc_a": "post",
+        "assoc_b": "author",
+        "assoc_c": "author"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-16T06:19:41.887734",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 1,
+        "generation_number": 2910,
+        "profile": "unboxed",
+        "operators_used": [
+          "="
+        ],
+        "navigation_depth": 3,
+        "quantifier_depth": 0,
+        "difficulty": "unboxed",
+        "operator_count": 1,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 3.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 2,
+            "wnc": 3.0,
+            "tnc": 2.7,
+            "vrc": 0,
+            "wno": 1.0,
+            "wnm": 0.0,
+            "total": 3.7
+          },
+          "computational": {
+            "oc": 1.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 1.0
+          },
+          "dependency": {
+            "ruc": 1,
+            "total": 1.0
+          },
+          "tc": 5.7
+        },
+        "is_unsat": true,
+        "mutation": "self_contradiction",
+        "original_pattern_id": "navigation_consistency",
+        "slot_profile": "easy",
+        "semantic_cluster": 0,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Post\ninv: (((self.reactions->one(x | x.createdAt <> '')) and (self.isPublic)) and (self.content.size() <= 60)) and (not(((self.reactions->one(x | x.createdAt <> '')) and (self.isPublic)) and (self.content.size() <= 60)))",
+      "pattern_id": "one_operation_unsat",
+      "pattern_name": "One Operation (UNSAT)",
+      "context": "Post",
+      "parameters": {
+        "collection": "reactions",
+        "iterator": "x",
+        "condition": "x.createdAt <> ''"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-16T06:19:41.887789",
+      "metadata": {
+        "category": "collection",
+        "complexity": 2,
+        "generation_number": 3772,
+        "profile": "unboxed",
+        "regenerated_from": "one_operation",
+        "regen_box": "medium+conjoin+conjoin",
+        "regen_family": "quantified",
+        "operators_used": [
+          "-",
+          "<",
+          "<=",
+          "<>",
+          "=",
+          ">",
+          "and",
+          "one",
+          "size"
+        ],
+        "navigation_depth": 3,
+        "quantifier_depth": 1,
+        "difficulty": "unboxed",
+        "operator_count": 9,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 5.0,
+            "nnc_plus": 5.0,
+            "dn_ca": 3.0,
+            "wnc": 7.0,
+            "tnc": 5.0,
+            "vrc": 1,
+            "wno": 5.0,
+            "wnm": 2.0,
+            "total": 13.0
+          },
+          "computational": {
+            "oc": 5.0,
+            "tcc": 0.0,
+            "cic": 2.0,
+            "total": 7.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 20.0
+        },
+        "is_unsat": true,
+        "mutation": "self_contradiction",
+        "original_pattern_id": "one_operation",
+        "slot_profile": "medium",
+        "semantic_cluster": 0,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Media\ninv: (((self.post.isPublic) and (self.url.size() = 40)) and (self.url.size() >= 17)) and (not(((self.post.isPublic) and (self.url.size() = 40)) and (self.url.size() >= 17)))",
+      "pattern_id": "simple_navigation_unsat",
+      "pattern_name": "Simple Navigation (UNSAT)",
+      "context": "Media",
+      "parameters": {
+        "association": "post",
+        "attribute": "isPublic"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-16T06:19:41.887868",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 1,
+        "generation_number": 2986,
+        "profile": "unboxed",
+        "operators_used": [
+          "=",
+          ">",
+          ">=",
+          "and",
+          "size"
+        ],
+        "navigation_depth": 3,
+        "quantifier_depth": 0,
+        "difficulty": "unboxed",
+        "operator_count": 5,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 4.0,
+            "dn_ca": 2,
+            "wnc": 4.0,
+            "tnc": 3.4,
+            "vrc": 0,
+            "wno": 5.0,
+            "wnm": 2.0,
+            "total": 10.4
+          },
+          "computational": {
+            "oc": 5.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 5.0
+          },
+          "dependency": {
+            "ruc": 1,
+            "total": 1.0
+          },
+          "tc": 16.4
+        },
+        "is_unsat": true,
+        "mutation": "self_contradiction",
+        "original_pattern_id": "simple_navigation",
+        "slot_profile": "medium",
+        "semantic_cluster": 0,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Conversation\ninv: (self.messages->exists(x | x.isRead = true)) and (not(self.messages->exists(x | x.isRead = true)))",
+      "pattern_id": "collection_navigation_unsat",
+      "pattern_name": "Collection Navigation (UNSAT)",
+      "context": "Conversation",
+      "parameters": {
+        "collection": "messages",
+        "operation": "exists",
+        "iterator": "x",
+        "nested": "isRead = true"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-16T06:19:41.887876",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 3,
+        "generation_number": 2930,
+        "profile": "difficult",
+        "operators_used": [
+          "-",
+          "=",
+          ">",
+          "exists"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "difficult",
+        "operator_count": 4,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 3.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 3.0,
+            "wnc": 5.0,
+            "tnc": 3.6,
+            "vrc": 1,
+            "wno": 4.0,
+            "wnm": 1.0,
+            "total": 9.6
+          },
+          "computational": {
+            "oc": 4.0,
+            "tcc": 0.0,
+            "cic": 3.0,
+            "total": 7.0
+          },
+          "dependency": {
+            "ruc": 6,
+            "total": 6.0
+          },
+          "tc": 22.6
+        },
+        "is_unsat": true,
+        "mutation": "self_contradiction",
+        "original_pattern_id": "collection_navigation",
+        "slot_profile": "difficult",
+        "semantic_cluster": 5,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Conversation\ninv: (self.participants->size() >= 1) and (self.participants->size() < 1)",
+      "pattern_id": "collection_min_size_unsat",
+      "pattern_name": "Collection Minimum Size (UNSAT)",
+      "context": "Conversation",
+      "parameters": {
+        "collection": "participants",
+        "min_size": 1
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-16T06:19:41.887887",
+      "metadata": {
+        "category": "collection",
+        "complexity": 1,
+        "generation_number": 3044,
+        "profile": "medium",
+        "operators_used": [
+          "-",
+          "=",
+          ">",
+          ">=",
+          "size"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 5,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.4,
+            "vrc": 0,
+            "wno": 1.0,
+            "wnm": 1.0,
+            "total": 3.4
+          },
+          "computational": {
+            "oc": 1.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 1.0
+          },
+          "dependency": {
+            "ruc": 15,
+            "total": 15.0
+          },
+          "tc": 19.4
+        },
+        "is_unsat": true,
+        "mutation": "contradictory_bounds",
+        "original_pattern_id": "collection_min_size",
+        "contradiction_ocl": "context Conversation\ninv: self.participants->size() < 1",
+        "slot_profile": "easy",
+        "semantic_cluster": 1,
+        "implies": [
+          "collection_size_range_Conversation"
+        ]
+      }
+    },
+    {
+      "ocl": "context Tag\ninv: (self.posts->collect(x | x.reactions)->flatten()->notEmpty()) and (not(self.posts->collect(x | x.reactions)->flatten()->notEmpty()))",
+      "pattern_id": "flatten_operation_unsat",
+      "pattern_name": "Flatten Operation (UNSAT)",
+      "context": "Tag",
+      "parameters": {
+        "collection": "posts",
+        "iterator": "x",
+        "nested_collection": "reactions"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-16T06:19:42.024579",
+      "metadata": {
+        "category": "set_operations",
+        "complexity": 3,
+        "generation_number": 3002,
+        "profile": "unboxed",
+        "operators_used": [
+          "-",
+          ">",
+          "collect",
+          "flatten",
+          "notEmpty"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "unboxed",
+        "operator_count": 5,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 3.0,
+            "wnc": 5.0,
+            "tnc": 4.0,
+            "vrc": 1,
+            "wno": 4.0,
+            "wnm": 3.0,
+            "total": 12.0
+          },
+          "computational": {
+            "oc": 4.0,
+            "tcc": 2.0,
+            "cic": 2.0,
+            "total": 8.0
+          },
+          "dependency": {
+            "ruc": 8,
+            "total": 8.0
+          },
+          "tc": 28.0
+        },
+        "is_unsat": true,
+        "mutation": "self_contradiction",
+        "original_pattern_id": "flatten_operation",
+        "slot_profile": "difficult",
+        "semantic_cluster": 10,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context User\ninv: ((self.email <> '') and (self.notifications->forAll(v | v.isSeen = false))) and (self.notifications->exists(v | not(v.isSeen = false)))",
+      "pattern_id": "collection_size_range_unsat",
+      "pattern_name": "Collection Size in Range (UNSAT)",
+      "context": "User",
+      "parameters": {
+        "collection": "notifications",
+        "min_size": 3,
+        "max_size": 3
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-16T06:19:42.024662",
+      "metadata": {
+        "category": "collection",
+        "complexity": 2,
+        "generation_number": 2883,
+        "profile": "unboxed",
+        "operators_used": [
+          "-",
+          "<",
+          "<>",
+          "=",
+          ">",
+          "and",
+          "forAll"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "unboxed",
+        "operator_count": 7,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 4.0,
+            "dn_ca": 3.0,
+            "wnc": 6.0,
+            "tnc": 4.3,
+            "vrc": 1,
+            "wno": 6.5,
+            "wnm": 1.0,
+            "total": 12.8
+          },
+          "computational": {
+            "oc": 6.5,
+            "tcc": 0.0,
+            "cic": 3.0,
+            "total": 9.5
+          },
+          "dependency": {
+            "ruc": 5,
+            "total": 5.0
+          },
+          "tc": 27.3
+        },
+        "is_unsat": true,
+        "mutation": "universal_negation",
+        "original_pattern_id": "collection_size_range",
+        "contradiction_ocl": "context User\ninv: self.notifications->exists(v | not(v.isSeen = false))",
+        "contradiction_pattern_id": "exists_nested",
+        "slot_profile": "difficult",
+        "semantic_cluster": 9,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Comment\ninv: ((self.post.isPublic) and (self.createdAt.size() >= 8 implies self.createdAt.substring(1, 8) = 'AB')) and (not((self.post.isPublic) and (self.createdAt.size() >= 8 implies self.createdAt.substring(1, 8) = 'AB')))",
+      "pattern_id": "simple_navigation_unsat",
+      "pattern_name": "Simple Navigation (UNSAT)",
+      "context": "Comment",
+      "parameters": {
+        "association": "post",
+        "attribute": "isPublic"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-16T06:19:42.162363",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 1,
+        "generation_number": 2990,
+        "profile": "unboxed",
+        "operators_used": [
+          "=",
+          ">",
+          ">=",
+          "and",
+          "implies",
+          "size",
+          "substring"
+        ],
+        "navigation_depth": 3,
+        "quantifier_depth": 0,
+        "difficulty": "unboxed",
+        "operator_count": 7,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 4.0,
+            "dn_ca": 2,
+            "wnc": 4.0,
+            "tnc": 3.4,
+            "vrc": 0,
+            "wno": 6.5,
+            "wnm": 2.0,
+            "total": 11.9
+          },
+          "computational": {
+            "oc": 5.5,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 5.5
+          },
+          "dependency": {
+            "ruc": 4,
+            "total": 4.0
+          },
+          "tc": 21.4
+        },
+        "is_unsat": true,
+        "mutation": "self_contradiction",
+        "original_pattern_id": "simple_navigation",
+        "slot_profile": "medium",
+        "semantic_cluster": 0,
+        "implies": []
+      }
+    }
+  ]
+}

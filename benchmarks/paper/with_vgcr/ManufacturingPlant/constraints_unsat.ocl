@@ -1,0 +1,119 @@
+-- Benchmark: ManufacturingPlant / balanced
+-- Type: UNSAT Constraints Only
+-- Generated: 2026-10-12T20:20:43.743378
+-- Count: 19
+
+-- #1 Association Exists (UNSAT) in QualityCheck
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context QualityCheck
+inv: (self.workOrder <> null) and (not(self.workOrder <> null))
+
+-- #2 Numeric Absolute Value Bounded (UNSAT) in WorkOrder
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context WorkOrder
+inv: ((self.plannedQuantity >= 10) and (self.qualityChecks->forAll(v | v.passed <> false))) and (not((self.plannedQuantity >= 10) and (self.qualityChecks->forAll(v | v.passed <> false))))
+
+-- #3 Numeric Attribute Bounded (UNSAT) in DefectReport
+-- Difficulty: unboxed
+-- Mutation Strategy: contradictory_bounds
+context DefectReport
+inv: (self.severity >= 5 and self.severity <= 32) and (self.severity < 5)
+
+-- #4 Numeric Is Odd (UNSAT) in WorkOrder
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context WorkOrder
+inv: ((self.plannedQuantity <= 50) and (self.qualityChecks->forAll(v | v.passed = true))) and (not((self.plannedQuantity <= 50) and (self.qualityChecks->forAll(v | v.passed = true))))
+
+-- #5 Numeric Attribute Bounded (UNSAT) in WorkOrder
+-- Difficulty: difficult
+-- Mutation Strategy: contradictory_bounds
+context WorkOrder
+inv: ((self.plannedQuantity <= 100) and (self.qualityChecks->forAll(v | v.passed = true))) and (self.plannedQuantity > 100)
+
+-- #6 Collection Not Empty Check (UNSAT) in BillOfMaterials
+-- Difficulty: medium
+-- Mutation Strategy: empty_collection
+context BillOfMaterials
+inv: (self.items->size() > 0) and (self.items->size() <= 0)
+
+-- #7 Numeric Attribute Bounded (UNSAT) in WorkOrder
+-- Difficulty: unboxed
+-- Mutation Strategy: contradictory_bounds
+context WorkOrder
+inv: ((self.plannedQuantity >= 2) and (self.qualityChecks->forAll(v | v.passed <> false))) and (self.plannedQuantity < 2)
+
+-- #8 Flatten Operation (UNSAT) in ProductionLine
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context ProductionLine
+inv: (self.stations->collect(x | x.machines)->flatten()->notEmpty()) and (not(self.stations->collect(x | x.machines)->flatten()->notEmpty()))
+
+-- #9 Collection Has Specific Size (UNSAT) in Machine
+-- Difficulty: medium
+-- Mutation Strategy: self_contradiction
+context Machine
+inv: (self.maintenanceTasks->size() = 3) and (not(self.maintenanceTasks->size() = 3))
+
+-- #10 Boolean Is False (UNSAT) in Robot
+-- Difficulty: medium
+-- Mutation Strategy: self_contradiction
+context Robot
+inv: (self.isCalibrated = false) and (not(self.isCalibrated = false))
+
+-- #11 Collection As Sequence Conversion (UNSAT) in BillOfMaterials
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context BillOfMaterials
+inv: ((self.bomId <> '') and (self.items->forAll(v | v.requiredQty < 1000))) and (not((self.bomId <> '') and (self.items->forAll(v | v.requiredQty < 1000))))
+
+-- #12 Collection Maximum Size (UNSAT) in ProductionLine
+-- Difficulty: medium
+-- Mutation Strategy: contradictory_bounds
+context ProductionLine
+inv: (self.workOrders->size() <= 2) and (self.workOrders->size() > 2)
+
+-- #13 Collection Size Constraint (UNSAT) in BillOfMaterials
+-- Difficulty: medium
+-- Mutation Strategy: contradictory_bounds
+context BillOfMaterials
+inv: (self.items->size() <= 1) and (self.items->size() > 1)
+
+-- #14 Collection Size Constraint (UNSAT) in BillOfMaterials
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context BillOfMaterials
+inv: (self.items->size() <> 1) and (not(self.items->size() <> 1))
+
+-- #15 Bi-directional Implication (UNSAT) in Shift
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Shift
+inv: ((self.startTime <> null) = (self.endTime <> null)) and (not((self.startTime <> null) = (self.endTime <> null)))
+
+-- #16 Numeric Is Even (UNSAT) in DefectReport
+-- Difficulty: medium
+-- Mutation Strategy: self_contradiction
+context DefectReport
+inv: (self.severity mod 2 = 0) and (not(self.severity mod 2 = 0))
+
+-- #17 Numeric Less Than Value (UNSAT) in WorkOrder
+-- Difficulty: difficult
+-- Mutation Strategy: contradictory_bounds
+context WorkOrder
+inv: ((self.plannedQuantity < 1000) and (self.qualityChecks->forAll(v | v.passed <> false))) and (self.plannedQuantity > 1005)
+
+-- #18 Collection Nested Collection Flatten (UNSAT) in ProductionLine
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context ProductionLine
+inv: (self.workOrders->collect(x | x.qualityChecks)->size() >= 2) and (not(self.workOrders->collect(x | x.qualityChecks)->size() >= 2))
+
+-- #19 Collection Not Empty Check (UNSAT) in ProductionLine
+-- Difficulty: medium
+-- Mutation Strategy: empty_collection
+context ProductionLine
+inv: (self.workOrders->size() > 0) and (self.workOrders->size() <= 0)
+

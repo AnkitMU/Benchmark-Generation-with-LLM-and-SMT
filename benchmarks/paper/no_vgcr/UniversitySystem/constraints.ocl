@@ -1,0 +1,511 @@
+-- Benchmark: UniversitySystem / balanced
+-- Generated: 2026-10-12T20:27:11.107830
+-- Seed: 42
+-- Complexity: standard
+-- Count: 84
+-- Advanced Features: ENABLED
+
+-- #1 Navigation Chain in Faculty
+-- Difficulty: easy
+-- Type: SAT
+context Faculty
+inv: self.university.name <> ''
+
+-- #2 Navigation Chain in Faculty
+-- Difficulty: easy
+-- Type: SAT
+context Faculty
+inv: self.university.code <> ''
+
+-- #3 Association Exists in Course
+-- Difficulty: easy
+-- Type: SAT
+context Course
+inv: self.department <> null
+
+-- #4 Association Exists in GradeRecord
+-- Difficulty: medium
+-- Type: SAT
+context GradeRecord
+inv: (self.enrollment <> null) and (self.enrollment.student.yearOfStudy >= 0)
+
+-- #5 Association Exists in Exam
+-- Difficulty: medium
+-- Type: SAT
+context Exam
+inv: (self.offering <> null) and (self.offering.oclIsTypeOf(CourseOffering))
+
+-- #6 Association Exists in CourseOffering
+-- Difficulty: easy
+-- Type: SAT
+context CourseOffering
+inv: self.semester <> null
+
+-- #7 Association Exists in Room
+-- Difficulty: medium
+-- Type: SAT
+context Room
+inv: (self.building <> null) and (self.offerings->size() = 3)
+
+-- #8 Association Exists in Department
+-- Difficulty: easy
+-- Type: SAT
+context Department
+inv: self.faculty <> null
+
+-- #9 Association Exists in Enrollment
+-- Difficulty: medium
+-- Type: SAT
+context Enrollment
+inv: (self.offering <> null) and (self.enrolledAt.size() >= 5)
+
+-- #10 Association Exists in Building
+-- Difficulty: medium
+-- Type: SAT
+context Building
+inv: (self.university <> null) and (self.university.code <> '')
+
+-- #11 Association Exists in Enrollment
+-- Difficulty: medium
+-- Type: SAT
+context Enrollment
+inv: (self.grade <> null) and (self.student.oclIsTypeOf(Student))
+
+-- #12 Navigation Chain in CourseOffering
+-- Difficulty: medium
+-- Type: SAT
+context CourseOffering
+inv: self.course.department.name <> ''
+
+-- #13 Navigation Chain in Course
+-- Difficulty: medium
+-- Type: SAT
+context Course
+inv: self.department.faculty.name <> ''
+
+-- #14 Navigation Chain in CourseOffering
+-- Difficulty: medium
+-- Type: SAT
+context CourseOffering
+inv: self.course.department.code <> ''
+
+-- #15 Navigation Chain in Department
+-- Difficulty: medium
+-- Type: SAT
+context Department
+inv: self.faculty.university.name <> ''
+
+-- #16 Simple Navigation in Student
+-- Difficulty: medium
+-- Type: SAT
+context Student
+inv: ((self.libraryAccount.isBlocked) and (self.yearOfStudy > 0)) and (self.examAttempts->size() = 1)
+
+-- #17 Navigation Chain in Department
+-- Difficulty: medium
+-- Type: SAT
+context Department
+inv: self.faculty.university.code <> ''
+
+-- #18 Navigation Chain in Enrollment
+-- Difficulty: medium
+-- Type: SAT
+context Enrollment
+inv: self.student.program.durationYears >= 0
+
+-- #19 Collection Navigation in Semester
+-- Difficulty: difficult
+-- Type: SAT
+context Semester
+inv: self.offerings->exists(x | x.capacity >= 1)
+
+-- #20 Collection Navigation in University
+-- Difficulty: difficult
+-- Type: SAT
+context University
+inv: self.buildings->exists(x | x.name <> '')
+
+-- #21 Collection Navigation in Department
+-- Difficulty: difficult
+-- Type: SAT
+context Department
+inv: self.programs->forAll(x | x.durationYears >= 0)
+
+-- #22 Collection Navigation in CourseOffering
+-- Difficulty: difficult
+-- Type: SAT
+context CourseOffering
+inv: self.enrollments->forAll(x | x.enrolledAt <> '')
+
+-- #23 Collection Navigation in Exam
+-- Difficulty: difficult
+-- Type: SAT
+context Exam
+inv: (self.attempts->forAll(x | x.marks > 5)) and (self.maxMarks >= 0)
+
+-- #24 Numeric Absolute Value Bounded in CourseOffering
+-- Difficulty: difficult
+-- Type: SAT
+context CourseOffering
+inv: (self.capacity <= 100) and (self.exams->forAll(v | v.maxMarks <= 10))
+
+-- #25 Select (Filter) Operation in Department
+-- Difficulty: difficult
+-- Type: SAT
+context Department
+inv: self.programs->select(x | x.durationYears <= 50)->size() >= 1
+
+-- #26 Any Operation in CourseOffering
+-- Difficulty: difficult
+-- Type: SAT
+context CourseOffering
+inv: self.enrollments->any(x | x.enrolledAt <> '') <> null
+
+-- #27 Select (Filter) Operation in CourseOffering
+-- Difficulty: difficult
+-- Type: SAT
+context CourseOffering
+inv: self.exams->select(x | x.maxMarks >= 0)->size() >= 1
+
+-- #28 Select (Filter) Operation in Exam
+-- Difficulty: difficult
+-- Type: SAT
+context Exam
+inv: self.attempts->select(x | x.marks >= 10)->size() >= 1
+
+-- #29 Numeric Is Odd in CourseOffering
+-- Difficulty: easy
+-- Type: SAT
+context CourseOffering
+inv: self.capacity mod 2 = 1
+
+-- #30 Numeric Sum Constraint in Scholarship
+-- Difficulty: easy
+-- Type: SAT
+context Scholarship
+inv: self.startYear + self.endYear > 29
+
+-- #31 Numeric Sum Constraint in Scholarship
+-- Difficulty: easy
+-- Type: SAT
+context Scholarship
+inv: self.startYear + self.endYear > 53
+
+-- #32 Numeric Difference Constraint in Scholarship
+-- Difficulty: easy
+-- Type: SAT
+context Scholarship
+inv: self.startYear - self.endYear >= 0
+
+-- #33 Numeric Sum Constraint in Scholarship
+-- Difficulty: easy
+-- Type: SAT
+context Scholarship
+inv: self.endYear + self.startYear > 26
+
+-- #34 Numeric Attribute Positive in Course
+-- Difficulty: easy
+-- Type: SAT
+context Course
+inv: self.credits > 0
+
+-- #35 Numeric Absolute Value Bounded in Course
+-- Difficulty: medium
+-- Type: SAT
+context Course
+inv: self.credits.abs() <= 10
+
+-- #36 Numeric Absolute Value Bounded in CourseOffering
+-- Difficulty: medium
+-- Type: SAT
+context CourseOffering
+inv: self.capacity.abs() <= 0
+
+-- #37 Numeric Attribute Bounded in Course
+-- Difficulty: medium
+-- Type: SAT
+context Course
+inv: self.credits >= 40 and self.credits <= 49
+
+-- #38 Numeric Attribute Non-Negative in CourseOffering
+-- Difficulty: medium
+-- Type: SAT
+context CourseOffering
+inv: (self.capacity >= 0) and (self.section.size() <= 77)
+
+-- #39 Numeric Attribute Bounded in CourseOffering
+-- Difficulty: medium
+-- Type: SAT
+context CourseOffering
+inv: self.capacity >= 67 and self.capacity <= 96
+
+-- #40 Collection Size Constraint in Building
+-- Difficulty: easy
+-- Type: SAT
+context Building
+inv: self.rooms->size() <= 1
+
+-- #41 Collection Has Specific Size in Department
+-- Difficulty: easy
+-- Type: SAT
+context Department
+inv: self.programs->size() = 3
+
+-- #42 Collection Not Empty Check in Course
+-- Difficulty: easy
+-- Type: SAT
+context Course
+inv: self.offerings->size() > 0
+
+-- #43 Collection Not Empty (Simple) in CourseOffering
+-- Difficulty: easy
+-- Type: SAT
+context CourseOffering
+inv: self.enrollments->notEmpty()
+
+-- #44 Collection Has Specific Size in Department
+-- Difficulty: easy
+-- Type: SAT
+context Department
+inv: self.staff->size() = 1
+
+-- #45 Collection Not Empty Check in Building
+-- Difficulty: easy
+-- Type: SAT
+context Building
+inv: self.rooms->size() > 0
+
+-- #46 Collection Must Be Empty in Department
+-- Difficulty: easy
+-- Type: SAT
+context Department
+inv: self.instructors->isEmpty()
+
+-- #47 Collection Size Constraint in CourseOffering
+-- Difficulty: easy
+-- Type: SAT
+context CourseOffering
+inv: self.exams->size() >= 1
+
+-- #48 Collection Not Empty (Simple) in Department
+-- Difficulty: easy
+-- Type: SAT
+context Department
+inv: self.courses->notEmpty()
+
+-- #49 Collection Has Specific Size in CourseOffering
+-- Difficulty: easy
+-- Type: SAT
+context CourseOffering
+inv: self.exams->size() = 1
+
+-- #50 Collection Maximum Size in Exam
+-- Difficulty: medium
+-- Type: SAT
+context Exam
+inv: self.attempts->size() <= 1
+
+-- #51 Simple Implication in Scholarship
+-- Difficulty: medium
+-- Type: SAT
+context Scholarship
+inv: self.startYear <> null implies self.endYear <> null
+
+-- #52 Reverse Implication in Semester
+-- Difficulty: medium
+-- Type: SAT
+context Semester
+inv: self.startDate <> null implies self.endDate <> null
+
+-- #53 Collection Minimum Size in CourseOffering
+-- Difficulty: medium
+-- Type: SAT
+context CourseOffering
+inv: self.enrollments->size() >= 1
+
+-- #54 Collection Maximum Size in Course
+-- Difficulty: medium
+-- Type: SAT
+context Course
+inv: self.offerings->size() <= 1
+
+-- #55 Collection Maximum Size in Building
+-- Difficulty: medium
+-- Type: SAT
+context Building
+inv: self.rooms->size() <= 3
+
+-- #56 Bi-directional Implication in Semester
+-- Difficulty: medium
+-- Type: SAT
+context Semester
+inv: (self.endDate <> null) = (self.startDate <> null)
+
+-- #57 Flatten Operation in CourseOffering
+-- Difficulty: difficult
+-- Type: SAT
+context CourseOffering
+inv: self.exams->collect(x | x.attempts)->flatten()->notEmpty()
+
+-- #58 Collection Sum in Course
+-- Difficulty: difficult
+-- Type: SAT
+context Course
+inv: self.offerings->collect(x | x.capacity)->sum() >= 7
+
+-- #59 Flatten Operation in Faculty
+-- Difficulty: difficult
+-- Type: SAT
+context Faculty
+inv: self.departments->collect(x | x.instructors)->flatten()->notEmpty()
+
+-- #60 Collection Sum in Exam
+-- Difficulty: difficult
+-- Type: SAT
+context Exam
+inv: self.attempts->collect(x | x.marks)->sum() >= 2
+
+-- #61 Flatten Operation in Department
+-- Difficulty: difficult
+-- Type: SAT
+context Department
+inv: self.instructors->collect(x | x.offerings)->flatten()->notEmpty()
+
+-- #62 Association Exists in Building
+-- Difficulty: easy
+-- Type: SAT
+context Building
+inv: self.university <> null
+
+-- #63 Association Exists in CourseOffering
+-- Difficulty: easy
+-- Type: SAT
+context CourseOffering
+inv: self.course <> null
+
+-- #64 Association Exists in CourseOffering
+-- Difficulty: easy
+-- Type: SAT
+context CourseOffering
+inv: self.room <> null
+
+-- #65 Association Exists in CourseOffering
+-- Difficulty: easy
+-- Type: SAT
+context CourseOffering
+inv: self.instructor <> null
+
+-- #66 Numeric Comparison in Scholarship
+-- Difficulty: medium
+-- Type: SAT
+context Scholarship
+inv: self.startYear <= self.endYear
+
+-- #67 Attribute Not Null (Simple) in Course
+-- Difficulty: difficult
+-- Type: SAT
+context Course
+inv: (self.credits <= 50) and (self.offerings->forAll(v | v.capacity > 0))
+
+-- #68 Collection Nested Collection Flatten (UNSAT) in Department
+-- Difficulty: unboxed
+-- Type: UNSAT
+context Department
+inv: (self.courses->collect(x | x.offerings)->size() >= 1) and (not(self.courses->collect(x | x.offerings)->size() >= 1))
+
+-- #69 Collection Size in Range (UNSAT) in Course
+-- Difficulty: unboxed
+-- Type: UNSAT
+context Course
+inv: ((self.credits <= 100) and (self.offerings->forAll(v | v.capacity >= 2))) and (not((self.credits <= 100) and (self.offerings->forAll(v | v.capacity >= 2))))
+
+-- #70 Numeric Absolute Value Bounded (UNSAT) in Course
+-- Difficulty: unboxed
+-- Type: UNSAT
+context Course
+inv: (self.credits.abs() <= 3) and (not(self.credits.abs() <= 3))
+
+-- #71 Simple Navigation (UNSAT) in Student
+-- Difficulty: medium
+-- Type: UNSAT
+context Student
+inv: (self.libraryAccount.isBlocked) and (not(self.libraryAccount.isBlocked))
+
+-- #72 Association Exists (UNSAT) in Scholarship
+-- Difficulty: unboxed
+-- Type: UNSAT
+context Scholarship
+inv: (self.student <> null) and (not(self.student <> null))
+
+-- #73 Numeric Comparison (UNSAT) in Scholarship
+-- Difficulty: unboxed
+-- Type: UNSAT
+context Scholarship
+inv: (self.endYear >= self.startYear) and (not(self.endYear >= self.startYear))
+
+-- #74 Minimum Of Two Attributes (UNSAT) in Scholarship
+-- Difficulty: unboxed
+-- Type: UNSAT
+context Scholarship
+inv: (if self.startYear < self.endYear then self.startYear else self.endYear endif >= 19) and (not(if self.startYear < self.endYear then self.startYear else self.endYear endif >= 19))
+
+-- #75 Numeric Comparison (UNSAT) in Scholarship
+-- Difficulty: unboxed
+-- Type: UNSAT
+context Scholarship
+inv: (self.endYear <= self.startYear) and (not(self.endYear <= self.startYear))
+
+-- #76 Attribute Not Null (Simple) (UNSAT) in Department
+-- Difficulty: unboxed
+-- Type: UNSAT
+context Department
+inv: ((self.code <> null) and (self.code.toUpperCase() = 'TEST')) and (not((self.code <> null) and (self.code.toUpperCase() = 'TEST')))
+
+-- #77 Numeric Attribute Bounded (UNSAT) in Room
+-- Difficulty: difficult
+-- Type: UNSAT
+context Room
+inv: ((self.capacity >= 0) and (self.offerings->forAll(v | v.capacity < 50))) and (self.capacity < 0)
+
+-- #78 Simple Implication (UNSAT) in Scholarship
+-- Difficulty: unboxed
+-- Type: UNSAT
+context Scholarship
+inv: (self.endYear <> null implies self.startYear <> null) and (not(self.endYear <> null implies self.startYear <> null))
+
+-- #79 Collection Navigation (UNSAT) in Course
+-- Difficulty: unboxed
+-- Type: UNSAT
+context Course
+inv: (self.offerings->forAll(x | x.capacity >= 10)) and (not(self.offerings->forAll(x | x.capacity >= 10)))
+
+-- #80 Numeric Absolute Value Bounded (UNSAT) in CourseOffering
+-- Difficulty: unboxed
+-- Type: UNSAT
+context CourseOffering
+inv: (self.capacity.abs() <= 6) and (not(self.capacity.abs() <= 6))
+
+-- #81 Any Operation (UNSAT) in Building
+-- Difficulty: unboxed
+-- Type: UNSAT
+context Building
+inv: (self.rooms->any(x | x.capacity >= 10) <> null) and (not(self.rooms->any(x | x.capacity >= 10) <> null))
+
+-- #82 Association Exists (UNSAT) in ExamAttempt
+-- Difficulty: unboxed
+-- Type: UNSAT
+context ExamAttempt
+inv: ((self.student <> null) and (self.marks > 75)) and (not((self.student <> null) and (self.marks > 75)))
+
+-- #83 Numeric Is Even (UNSAT) in Course
+-- Difficulty: medium
+-- Type: UNSAT
+context Course
+inv: (self.credits mod 2 = 0) and (not(self.credits mod 2 = 0))
+
+-- #84 Collection Size Constraint (UNSAT) in Building
+-- Difficulty: medium
+-- Type: UNSAT
+context Building
+inv: (self.rooms->size() >= 1) and (self.rooms->size() < 1)
+

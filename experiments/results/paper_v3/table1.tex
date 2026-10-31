@@ -1,0 +1,26 @@
+\begin{table}[t]
+\centering
+\scriptsize
+\setlength{\tabcolsep}{2pt}
+\begin{tabular}{l rrr rrr rr rrrr r}
+\toprule
+\textbf{Model} & \textbf{Class} & \textbf{Attr} & \textbf{Pairs} & \textbf{Filled} & \textbf{Gen} & \textbf{Gen$^{-}$} & \textbf{SAT} & \textbf{UNSAT} & \textbf{Taut} & \textbf{Contr} & \textbf{Inco} & \textbf{Dup} & \textbf{Time\,(s)} \\
+\midrule
+CarRental                      &     8 &    56 &    56 &    91 &    89 &    85 &    71 &    18 &     0 &     2 &     1 &    16 &    84 \\
+FlightBooking                  &    12 &    30 &    17 &    85 &    81 &    66 &    65 &    16 &     1 &     2 &    13 &    11 &  7676 \\
+SocialMedia                    &    14 &    31 &    13 &    88 &    73 &    69 &    58 &    15 &     3 &     1 &    13 &    23 & 18309 \\
+BankSystem                     &    17 &    37 &    15 &    91 &    80 &    75 &    64 &    16 &     2 &     4 &     6 &    15 &   455 \\
+LibrarySystem                  &    15 &    35 &    21 &    87 &    82 &    74 &    66 &    16 &     1 &     2 &     7 &    12 &   228 \\
+EcommerceSystem                &    19 &    45 &    25 &    91 &    91 &    81 &    73 &    18 &     2 &     2 &     6 &    16 &  1108 \\
+UniversitySystem               &    18 &    46 &    18 &    88 &    86 &    71 &    69 &    17 &     2 &     4 &    10 &    14 &   458 \\
+ManufacturingPlant$^{\dagger}$ &    20 &    50 &    18 &    93 &    92 &    75 &    74 &    18 &     2 &     3 &    11 &    10 &  2785 \\
+HospitalSystem                 &    22 &    53 &    29 &    91 &    78 &    64 &    62 &    16 &     2 &     3 &    11 &    19 &   532 \\
+IoTSensorNetwork               &    28 &    68 &    33 &    94 &    90 &    84 &    72 &    18 &     3 &     4 &     9 &    11 &   813 \\
+\midrule
+\textbf{Average} & \textbf{17.3} & \textbf{45.1} & \textbf{24.5} & \textbf{89.9} & \textbf{84.2} & \textbf{74.4} & \textbf{67.4} & \textbf{16.8} & \textbf{1.8} & \textbf{2.7} & \textbf{8.7} & \textbf{14.7} & \textbf{3244.8} \\
+\bottomrule
+\end{tabular}
+\caption{Evaluation across $10$ metamodels ($100$ constraints requested per model, seed $42$). Class/Attr\,=\,classes and attributes in the metamodel; Pairs\,=\,same-typed attribute pairs analysed by the semantic analysis; Filled\,=\,slots filled by generation, out of $100$; Gen\,=\,constraints delivered with VGCR; Gen$^{-}$\,=\,constraints delivered with VGCR disabled, where candidates that fail verification are discarded; SAT/UNSAT\,=\,satisfiable and unsatisfiable constraints in the delivered suite; Taut/Contr/Inco\,=\,tautologies, contradictions, and joint inconsistencies caught by VGCR, counted per failed check across retries; Dup\,=\,near-duplicates removed before verification or rejected inside VGCR; Time\,=\,wall-clock generation and verification time per model with VGCR. All delivered SAT constraints lie inside their requested complexity level. $^{\dagger}$Joint consistency of the SAT constraints was not decided within the solver time limit at scope~6 (including the seed portfolio); each of its SAT constraints is individually verified.}
+\label{tab:models}
+\end{table}
+% totals: {'gen': 842, 'novgcr': 744, 'sat': 674, 'unsat': 168, 'taut': 18, 'contr': 27, 'inco': 87, 'dup': 147} | in-box rates: [1.0] | phaseB: {'ManufacturingPlant': 'timed out'}

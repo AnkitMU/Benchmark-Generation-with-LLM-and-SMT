@@ -1,0 +1,350 @@
+-- Benchmark: UniversitySystem / balanced
+-- Type: SAT Constraints Only
+-- Generated: 2026-10-16T01:27:47.244058
+-- Count: 69
+
+-- #1 Navigation Chain in Faculty
+-- Difficulty: easy
+context Faculty
+inv: self.university.code <> ''
+
+-- #2 Association Exists in Enrollment
+-- Difficulty: easy
+context Enrollment
+inv: self.grade <> null
+
+-- #3 Simple Navigation in Student
+-- Difficulty: easy
+context Student
+inv: self.libraryAccount.isBlocked
+
+-- #4 Association Exists in CourseOffering
+-- Difficulty: easy
+context CourseOffering
+inv: self.room <> null
+
+-- #5 Navigation Chain in Building
+-- Difficulty: easy
+context Building
+inv: self.university.name <> ''
+
+-- #6 Navigation Chain in LibraryAccount
+-- Difficulty: medium
+context LibraryAccount
+inv: (self.student.program.durationYears >= 2) and (self.accountId.size() <= 60)
+
+-- #7 Navigation Chain in GradeRecord
+-- Difficulty: medium
+context GradeRecord
+inv: (self.enrollment.student.yearOfStudy >= 2) and (self.letterGrade <> null)
+
+-- #8 Navigation Chain in Exam
+-- Difficulty: medium
+context Exam
+inv: (self.offering.course.credits <= 50) and (self.type.size() >= 4 implies self.type.substring(1, 4) = 'AB')
+
+-- #9 Navigation Chain in ExamAttempt
+-- Difficulty: medium
+context ExamAttempt
+inv: (self.student.program.durationYears > 1) and (self.marks mod 2 = 1)
+
+-- #10 Navigation Chain in Staff
+-- Difficulty: medium
+context Staff
+inv: (self.department.faculty.name <> '') and (self.name.size() >= 11)
+
+-- #11 Navigation Chain in Scholarship
+-- Difficulty: medium
+context Scholarship
+inv: (self.student.program.durationYears < 100) and (self.endYear + self.startYear > 42)
+
+-- #12 Navigation Chain in Department
+-- Difficulty: medium
+context Department
+inv: ((self.faculty.university.name <> '') and (self.faculty.oclIsTypeOf(Faculty))) and (self.code.toLowerCase() = 'test')
+
+-- #13 Association Exists in Enrollment
+-- Difficulty: medium
+context Enrollment
+inv: (self.grade <> null) and (self.student.program.durationYears < 1000)
+
+-- #14 Collection Navigation in Program
+-- Difficulty: difficult
+context Program
+inv: self.students->exists(x | x.yearOfStudy >= 2)
+
+-- #15 Collection Navigation in University
+-- Difficulty: difficult
+context University
+inv: self.buildings->forAll(x | x.code <> '')
+
+-- #16 Collection Navigation in Building
+-- Difficulty: difficult
+context Building
+inv: self.rooms->forAll(x | x.capacity > 5)
+
+-- #17 Select (Filter) Operation in Building
+-- Difficulty: medium
+context Building
+inv: self.rooms->select(x | x.capacity > 10)->size() >= 1
+
+-- #18 Collect (Map) Operation in Building
+-- Difficulty: medium
+context Building
+inv: (self.rooms->collect(x | x.capacity)->notEmpty()) and (self.rooms->size() >= 2)
+
+-- #19 Select (Filter) Operation in CourseOffering
+-- Difficulty: medium
+context CourseOffering
+inv: self.exams->select(x | x.maxMarks <= 10)->size() >= 1
+
+-- #20 Collection Size in Range in Building
+-- Difficulty: difficult
+context Building
+inv: (self.name <> '') and (self.rooms->forAll(v | v.capacity >= 1))
+
+-- #21 Numeric Attribute Bounded in Room
+-- Difficulty: difficult
+context Room
+inv: (self.capacity >= 10) and (self.offerings->forAll(v | v.capacity <= 100))
+
+-- #22 Collection Size in Range in Exam
+-- Difficulty: difficult
+context Exam
+inv: (self.maxMarks < 1000) and (self.attempts->forAll(v | v.marks < 10))
+
+-- #23 Collection Size in Range in Course
+-- Difficulty: difficult
+context Course
+inv: (self.credits >= 5) and (self.offerings->forAll(v | v.capacity < 50))
+
+-- #24 Numeric Is Even in CourseOffering
+-- Difficulty: difficult
+context CourseOffering
+inv: (self.capacity >= 5) and (self.enrollments->forAll(v | v.enrolledAt <> ''))
+
+-- #25 Numeric Multiple Of in Program
+-- Difficulty: difficult
+context Program
+inv: (self.durationYears <= 1000) and (self.students->forAll(v | v.yearOfStudy > 1))
+
+-- #26 Numeric Absolute Value Bounded in Course
+-- Difficulty: difficult
+context Course
+inv: (self.credits >= 2) and (self.offerings->forAll(v | v.capacity > 0))
+
+-- #27 Universal Quantification (forAll) in Exam
+-- Difficulty: difficult
+context Exam
+inv: self.attempts->forAll(x | x.marks >= 1)
+
+-- #28 Existential Quantification (exists) in Building
+-- Difficulty: difficult
+context Building
+inv: self.rooms->exists(x | x.capacity <= 1000)
+
+-- #29 One Operation in Exam
+-- Difficulty: difficult
+context Exam
+inv: ((self.attempts->one(x | x.marks > 2)) and (self.offering.oclIsTypeOf(CourseOffering))) and (self.attempts->size() = 2)
+
+-- #30 Numeric Comparison in Scholarship
+-- Difficulty: easy
+context Scholarship
+inv: self.startYear > self.endYear
+
+-- #31 Numeric Comparison in Scholarship
+-- Difficulty: easy
+context Scholarship
+inv: self.endYear <= self.startYear
+
+-- #32 Numeric Difference Constraint in Scholarship
+-- Difficulty: easy
+context Scholarship
+inv: self.startYear - self.endYear >= 3
+
+-- #33 Numeric Attribute Positive in CourseOffering
+-- Difficulty: easy
+context CourseOffering
+inv: self.capacity > 0
+
+-- #34 Numeric Sum Constraint in Scholarship
+-- Difficulty: easy
+context Scholarship
+inv: self.endYear + self.startYear > 75
+
+-- #35 Numeric Attribute Non-Negative in CourseOffering
+-- Difficulty: easy
+context CourseOffering
+inv: self.capacity >= 0
+
+-- #36 Numeric Greater Than Value in CourseOffering
+-- Difficulty: easy
+context CourseOffering
+inv: self.capacity > 27
+
+-- #37 Numeric Difference Constraint in Scholarship
+-- Difficulty: easy
+context Scholarship
+inv: self.startYear - self.endYear >= 5
+
+-- #38 Maximum Of Two Attributes in Scholarship
+-- Difficulty: medium
+context Scholarship
+inv: (if self.startYear > self.endYear then self.startYear else self.endYear endif > 11) and (self.endYear mod 2 = 1)
+
+-- #39 Numeric Attribute Bounded in CourseOffering
+-- Difficulty: medium
+context CourseOffering
+inv: self.capacity >= 2 and self.capacity <= 65
+
+-- #40 Collection Size in Range in CourseOffering
+-- Difficulty: medium
+context CourseOffering
+inv: self.exams->size() >= 2 and self.exams->size() <= 2
+
+-- #41 Numeric Is Even in Course
+-- Difficulty: medium
+context Course
+inv: (self.credits mod 2 = 0) and (self.code <> '' and self.code.size() > 0)
+
+-- #42 Collection Size Constraint in Course
+-- Difficulty: easy
+context Course
+inv: self.offerings->size() <= 1
+
+-- #43 Collection Not Empty Check in Department
+-- Difficulty: easy
+context Department
+inv: self.staff->size() > 0
+
+-- #44 Collection Minimum Size in Building
+-- Difficulty: easy
+context Building
+inv: self.rooms->size() >= 3
+
+-- #45 Collection Minimum Size in CourseOffering
+-- Difficulty: easy
+context CourseOffering
+inv: self.enrollments->size() >= 3
+
+-- #46 Collection Maximum Size in Course
+-- Difficulty: easy
+context Course
+inv: self.offerings->size() <= 2
+
+-- #47 Collection Not Empty (Simple) in Building
+-- Difficulty: easy
+context Building
+inv: self.rooms->notEmpty()
+
+-- #48 Collection Size Constraint in CourseOffering
+-- Difficulty: easy
+context CourseOffering
+inv: self.enrollments->size() > 1
+
+-- #49 Two Attributes Not Equal in Scholarship
+-- Difficulty: easy
+context Scholarship
+inv: self.endYear <> self.startYear
+
+-- #50 Collection Not Empty Check in Building
+-- Difficulty: easy
+context Building
+inv: self.rooms->size() > 0
+
+-- #51 All Attributes Defined in Semester
+-- Difficulty: easy
+context Semester
+inv: self.endDate <> null and self.startDate <> null
+
+-- #52 Collection Sum in CourseOffering
+-- Difficulty: medium
+context CourseOffering
+inv: self.exams->collect(x | x.maxMarks)->sum() >= 3
+
+-- #53 Reverse Implication in Scholarship
+-- Difficulty: medium
+context Scholarship
+inv: self.startYear <> null implies self.endYear <> null
+
+-- #54 Collection Nested Collection Flatten in Department
+-- Difficulty: medium
+context Department
+inv: self.programs->collect(x | x.students)->size() >= 1
+
+-- #55 Reverse Implication in Scholarship
+-- Difficulty: medium
+context Scholarship
+inv: self.endYear <> null implies self.startYear <> null
+
+-- #56 All Attributes Defined in Semester
+-- Difficulty: medium
+context Semester
+inv: self.startDate <> null and self.endDate <> null
+
+-- #57 All Attributes Defined in Scholarship
+-- Difficulty: medium
+context Scholarship
+inv: self.startYear <> null and self.endYear <> null
+
+-- #58 Collection Sum in Program
+-- Difficulty: medium
+context Program
+inv: self.students->collect(x | x.yearOfStudy)->sum() >= 1
+
+-- #59 All Attributes Defined in Scholarship
+-- Difficulty: medium
+context Scholarship
+inv: self.endYear <> null and self.startYear <> null
+
+-- #60 Flatten Operation in Department
+-- Difficulty: difficult
+context Department
+inv: self.instructors->collect(x | x.offerings)->flatten()->notEmpty()
+
+-- #61 Any Operation in CourseOffering
+-- Difficulty: medium
+context CourseOffering
+inv: (self.enrollments->any(x | x.enrolledAt <> '') <> null) and (self.instructor.oclIsTypeOf(Instructor))
+
+-- #62 Numeric Multiple Of in Course
+-- Difficulty: difficult
+context Course
+inv: (self.credits <= 1000) and (self.offerings->forAll(v | v.capacity < 50))
+
+-- #63 Numeric Sum Constraint in Scholarship
+-- Difficulty: medium
+context Scholarship
+inv: (self.endYear + self.startYear > 73) and (self.endYear + self.startYear > 64)
+
+-- #64 Collection Minimum Size in CourseOffering
+-- Difficulty: medium
+context CourseOffering
+inv: (self.enrollments->size() >= 1) and (self.capacity > 0)
+
+-- #65 Collection Size Constraint in Department
+-- Difficulty: medium
+context Department
+inv: (self.staff->size() > 1) and (self.name.toLowerCase() = 'test')
+
+-- #66 Collection Not Empty Check in CourseOffering
+-- Difficulty: medium
+context CourseOffering
+inv: ((self.exams->size() > 0) and (self.room.oclIsTypeOf(Room))) and (self.capacity mod 2 = 0)
+
+-- #67 Collection As Sequence Conversion in Department
+-- Difficulty: difficult
+context Department
+inv: (self.name <> '') and (self.courses->forAll(v | v.credits > 0))
+
+-- #68 Collection Not Empty (Simple) in Building
+-- Difficulty: difficult
+context Building
+inv: (self.code <> '') and (self.rooms->forAll(v | v.capacity < 100))
+
+-- #69 Collection Index Of Element in CourseOffering
+-- Difficulty: difficult
+context CourseOffering
+inv: (self.capacity > 10) and (self.enrollments->forAll(v | v.enrolledAt <> ''))
+

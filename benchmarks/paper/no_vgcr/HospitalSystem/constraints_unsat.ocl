@@ -1,0 +1,101 @@
+-- Benchmark: HospitalSystem / balanced
+-- Type: UNSAT Constraints Only
+-- Generated: 2026-10-12T20:24:39.929869
+-- Count: 16
+
+-- #1 Collection Index Of Element (UNSAT) in MedicalRecord
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context MedicalRecord
+inv: ((self.recordNo <> '') and (self.procedures->forAll(v | v.name <> ''))) and (not((self.recordNo <> '') and (self.procedures->forAll(v | v.name <> ''))))
+
+-- #2 Simple Navigation (UNSAT) in Admission
+-- Difficulty: medium
+-- Mutation Strategy: self_contradiction
+context Admission
+inv: (self.bed.isOccupied) and (not(self.bed.isOccupied))
+
+-- #3 Numeric Multiple Of (UNSAT) in Ward
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Ward
+inv: ((self.floor mod 2 = 0) and (self.name.size() = 41)) and (not((self.floor mod 2 = 0) and (self.name.size() = 41)))
+
+-- #4 Simple Navigation (UNSAT) in Appointment
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Appointment
+inv: ((self.patient.isInsured) and (self.dateTime <> null)) and (not((self.patient.isInsured) and (self.dateTime <> null)))
+
+-- #5 Collection Size Constraint (UNSAT) in Hospital
+-- Difficulty: medium
+-- Mutation Strategy: contradictory_bounds
+context Hospital
+inv: (self.departments->size() <= 1) and (self.departments->size() > 1)
+
+-- #6 Collection Not Empty Check (UNSAT) in MedicalRecord
+-- Difficulty: medium
+-- Mutation Strategy: empty_collection
+context MedicalRecord
+inv: (self.prescriptions->size() > 0) and (self.prescriptions->size() <= 0)
+
+-- #7 Numeric Absolute Value Bounded (UNSAT) in Ward
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Ward
+inv: (self.floor.abs() <= 6) and (not(self.floor.abs() <= 6))
+
+-- #8 Numeric Greater Than Value (UNSAT) in Ward
+-- Difficulty: medium
+-- Mutation Strategy: contradictory_bounds
+context Ward
+inv: (self.floor > 10) and (self.floor < 5)
+
+-- #9 Association Exists (UNSAT) in Bed
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Bed
+inv: ((self.room <> null) and (self.isOccupied = false)) and (not((self.room <> null) and (self.isOccupied = false)))
+
+-- #10 Collection Navigation (UNSAT) in Patient
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Patient
+inv: (self.appointments->forAll(x | x.dateTime <> '')) and (not(self.appointments->forAll(x | x.dateTime <> '')))
+
+-- #11 Simple Navigation (UNSAT) in Appointment
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Appointment
+inv: ((self.patient.isInsured) and (self.dateTime <> '' and self.dateTime.size() > 0)) and (not((self.patient.isInsured) and (self.dateTime <> '' and self.dateTime.size() > 0)))
+
+-- #12 Collection Size in Range (UNSAT) in Room
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Room
+inv: ((self.roomNo <> '') and (self.beds->forAll(v | v.isOccupied <> false))) and (not((self.roomNo <> '') and (self.beds->forAll(v | v.isOccupied <> false))))
+
+-- #13 Association Exists (UNSAT) in Department
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Department
+inv: (self.hospital <> null) and (not(self.hospital <> null))
+
+-- #14 Attribute Not Null (Simple) (UNSAT) in Person
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Person
+inv: (self.fullName <> null) and (not(self.fullName <> null))
+
+-- #15 Collection Nested Collection Flatten (UNSAT) in Department
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Department
+inv: (self.doctors->collect(x | x.appointments)->size() >= 2) and (not(self.doctors->collect(x | x.appointments)->size() >= 2))
+
+-- #16 Collection Must Be Empty (UNSAT) in MedicalRecord
+-- Difficulty: medium
+-- Mutation Strategy: self_contradiction
+context MedicalRecord
+inv: (self.procedures->isEmpty()) and (not(self.procedures->isEmpty()))
+

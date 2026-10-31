@@ -1,0 +1,95 @@
+-- Benchmark: LibrarySystem / balanced
+-- Type: UNSAT Constraints Only
+-- Generated: 2026-10-16T06:27:22.297100
+-- Count: 15
+
+-- #1 Numeric Attribute Non-Negative (UNSAT) in Fine
+-- Difficulty: easy
+-- Mutation Strategy: contradictory_bounds
+context Fine
+inv: (self.amount >= 0) and (self.amount < 0)
+
+-- #2 Collection Sum (UNSAT) in Fine
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Fine
+inv: ((self.payments->collect(x | x.amount)->sum() >= 4) and (self.reason.toUpperCase() = 'TEST')) and (not((self.payments->collect(x | x.amount)->sum() >= 4) and (self.reason.toUpperCase() = 'TEST')))
+
+-- #3 Collection Index Of Element (UNSAT) in Book
+-- Difficulty: difficult
+-- Mutation Strategy: contradictory_bounds
+context Book
+inv: ((self.publishYear < 10) and (self.reservations->forAll(v | v.requestDate <> ''))) and (self.publishYear > 15)
+
+-- #4 Numeric Greater Than Value (UNSAT) in Book
+-- Difficulty: medium
+-- Mutation Strategy: contradictory_bounds
+context Book
+inv: ((self.publishYear > 16) and (self.isbn.size() <= 80)) and (self.publishYear < 11)
+
+-- #5 Navigation Chain (UNSAT) in Fine
+-- Difficulty: difficult
+-- Mutation Strategy: contradictory_bounds
+context Fine
+inv: ((self.amount < 1000) and (self.payments->forAll(v | v.amount < 50))) and (self.amount > 1005)
+
+-- #6 Not Both Defined (UNSAT) in Reservation
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Reservation
+inv: (not(self.expiryDate <> null and self.requestDate <> null)) and (not(not(self.expiryDate <> null and self.requestDate <> null)))
+
+-- #7 Collection Size in Range (UNSAT) in Author
+-- Difficulty: unboxed
+-- Mutation Strategy: contradictory_bounds
+context Author
+inv: (self.books->size() >= 3 and self.books->size() <= 3) and (self.books->size() < 3)
+
+-- #8 Collection Size in Range (UNSAT) in Fine
+-- Difficulty: difficult
+-- Mutation Strategy: contradictory_bounds
+context Fine
+inv: ((self.amount >= 2) and (self.payments->forAll(v | v.amount >= 2))) and (self.amount < 2)
+
+-- #9 Collection Navigation (UNSAT) in Copy
+-- Difficulty: difficult
+-- Mutation Strategy: universal_negation
+context Copy
+inv: (self.reservations->forAll(x | x.requestDate <> '')) and (self.reservations->exists(x | not(x.requestDate <> '')))
+
+-- #10 Association Exists (UNSAT) in Branch
+-- Difficulty: medium
+-- Mutation Strategy: self_contradiction
+context Branch
+inv: (self.manager <> null) and (not(self.manager <> null))
+
+-- #11 Select (Filter) Operation (UNSAT) in Author
+-- Difficulty: difficult
+-- Mutation Strategy: self_contradiction
+context Author
+inv: (self.books->select(x | x.pages > 1)->size() >= 1) and (not(self.books->select(x | x.pages > 1)->size() >= 1))
+
+-- #12 Numeric Attribute Positive (UNSAT) in Fine
+-- Difficulty: easy
+-- Mutation Strategy: contradictory_bounds
+context Fine
+inv: (self.amount > 0) and (self.amount < -5)
+
+-- #13 Navigation Consistency (UNSAT) in Reservation
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Reservation
+inv: (self.copy.book = self.book) and (not(self.copy.book = self.book))
+
+-- #14 Collection Not Empty Check (UNSAT) in Branch
+-- Difficulty: medium
+-- Mutation Strategy: contradictory_bounds
+context Branch
+inv: (self.reservations->size() > 0) and (self.reservations->size() < -5)
+
+-- #15 Navigation Chain (UNSAT) in Branch
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Branch
+inv: ((self.address.branch.code <> '') and (self.name.size() >= 8 implies self.name.substring(1, 8) = 'AB')) and (not((self.address.branch.code <> '') and (self.name.size() >= 8 implies self.name.substring(1, 8) = 'AB')))
+

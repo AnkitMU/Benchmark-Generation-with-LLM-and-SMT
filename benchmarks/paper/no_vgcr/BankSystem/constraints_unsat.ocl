@@ -1,0 +1,113 @@
+-- Benchmark: BankSystem / balanced
+-- Type: UNSAT Constraints Only
+-- Generated: 2026-10-12T20:22:52.543598
+-- Count: 18
+
+-- #1 Association Exists (UNSAT) in Employee
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Employee
+inv: (self.branch <> null) and (not(self.branch <> null))
+
+-- #2 Two Attributes Not Equal (UNSAT) in Loan
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Loan
+inv: (self.interestRate <> self.principal) and (not(self.interestRate <> self.principal))
+
+-- #3 Navigation Chain (UNSAT) in Customer
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Customer
+inv: (self.branch.bank.swiftCode <> '') and (not(self.branch.bank.swiftCode <> ''))
+
+-- #4 Numeric Multiple Of (UNSAT) in Teller
+-- Difficulty: medium
+-- Mutation Strategy: self_contradiction
+context Teller
+inv: (self.counterNo mod 5 = 0) and (not(self.counterNo mod 5 = 0))
+
+-- #5 Collection Nested Collection Flatten (UNSAT) in Customer
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Customer
+inv: (self.accounts->collect(x | x.transactions)->size() >= 1) and (not(self.accounts->collect(x | x.transactions)->size() >= 1))
+
+-- #6 Any Operation (UNSAT) in Branch
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Branch
+inv: (self.employees->any(x | x.name <> '') <> null) and (not(self.employees->any(x | x.name <> '') <> null))
+
+-- #7 Numeric Is Odd (UNSAT) in Teller
+-- Difficulty: medium
+-- Mutation Strategy: self_contradiction
+context Teller
+inv: (self.counterNo mod 2 = 1) and (not(self.counterNo mod 2 = 1))
+
+-- #8 Collection Maximum Size (UNSAT) in CreditCard
+-- Difficulty: medium
+-- Mutation Strategy: contradictory_bounds
+context CreditCard
+inv: (self.cardTransactions->size() <= 3) and (self.cardTransactions->size() > 3)
+
+-- #9 Navigation Chain (UNSAT) in Account
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Account
+inv: ((self.balance <= 1000) and (self.transactions->forAll(v | v.amount < 100))) and (not((self.balance <= 1000) and (self.transactions->forAll(v | v.amount < 100))))
+
+-- #10 Collection Navigation (UNSAT) in Branch
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Branch
+inv: (self.customers->exists(x | x.email <> '')) and (not(self.customers->exists(x | x.email <> '')))
+
+-- #11 Association Exists (UNSAT) in Address
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Address
+inv: ((self.customer <> null) and (self.postalCode <> null)) and (not((self.customer <> null) and (self.postalCode <> null)))
+
+-- #12 Numeric Attribute Bounded (UNSAT) in Loan
+-- Difficulty: unboxed
+-- Mutation Strategy: contradictory_bounds
+context Loan
+inv: (self.principal >= 41 and self.principal <= 63) and (self.principal < 41)
+
+-- #13 Simple Navigation (UNSAT) in Customer
+-- Difficulty: medium
+-- Mutation Strategy: self_contradiction
+context Customer
+inv: (self.kyc.isVerified) and (not(self.kyc.isVerified))
+
+-- #14 Collection Minimum Size (UNSAT) in Account
+-- Difficulty: medium
+-- Mutation Strategy: contradictory_bounds
+context Account
+inv: (self.transactions->size() >= 2) and (self.transactions->size() < 2)
+
+-- #15 All Attributes Defined (UNSAT) in Address
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Address
+inv: (self.line1 <> null and self.city <> null) and (not(self.line1 <> null and self.city <> null))
+
+-- #16 Collection Size in Range (UNSAT) in Customer
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Customer
+inv: ((self.email <> '') and (self.loans->forAll(v | v.interestRate <= 10))) and (not((self.email <> '') and (self.loans->forAll(v | v.interestRate <= 10))))
+
+-- #17 Association Exists (UNSAT) in Customer
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Customer
+inv: (self.kyc <> null) and (not(self.kyc <> null))
+
+-- #18 Association Exists (UNSAT) in Customer
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Customer
+inv: (self.address <> null) and (not(self.address <> null))
+

@@ -1,0 +1,95 @@
+-- Benchmark: SocialMedia / balanced
+-- Type: UNSAT Constraints Only
+-- Generated: 2026-10-15T05:43:08.249109
+-- Count: 15
+
+-- #1 Collection Minimum Size (UNSAT) in Conversation
+-- Difficulty: medium
+-- Mutation Strategy: contradictory_bounds
+context Conversation
+inv: (self.participants->size() >= 1) and (self.participants->size() < 1)
+
+-- #2 Collection Not Empty Check (UNSAT) in Conversation
+-- Difficulty: medium
+-- Mutation Strategy: contradictory_bounds
+context Conversation
+inv: (self.messages->size() > 0) and (self.messages->size() < -5)
+
+-- #3 Any Operation (UNSAT) in Post
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Post
+inv: ((self.media->any(x | x.mediaType <> '') <> null) and (self.createdAt.size() >= 2 implies self.createdAt.substring(1, 2) = 'AB')) and (not((self.media->any(x | x.mediaType <> '') <> null) and (self.createdAt.size() >= 2 implies self.createdAt.substring(1, 2) = 'AB')))
+
+-- #4 Collection As Sequence Conversion (UNSAT) in User
+-- Difficulty: unboxed
+-- Mutation Strategy: universal_negation
+context User
+inv: ((self.username <> '') and (self.notifications->forAll(v | v.isSeen <> true))) and (self.notifications->exists(v | not(v.isSeen <> true)))
+
+-- #5 Navigation Chain (UNSAT) in Membership
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Membership
+inv: ((self.user.profile.birthDate <> '') and (self.role.size() = 19)) and (not((self.user.profile.birthDate <> '') and (self.role.size() = 19)))
+
+-- #6 Collection Navigation (UNSAT) in Post
+-- Difficulty: difficult
+-- Mutation Strategy: self_contradiction
+context Post
+inv: (self.media->exists(x | x.mediaType <> '')) and (not(self.media->exists(x | x.mediaType <> '')))
+
+-- #7 Navigation Chain (UNSAT) in Profile
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Profile
+inv: ((self.user.profile.bio <> '') and (self.bio.size() = 26)) and (not((self.user.profile.bio <> '') and (self.bio.size() = 26)))
+
+-- #8 Navigation Consistency (UNSAT) in Reaction
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Reaction
+inv: (self.post.author = self.user) and (not(self.post.author = self.user))
+
+-- #9 Collection Size in Range (UNSAT) in Tag
+-- Difficulty: unboxed
+-- Mutation Strategy: contradictory_bounds
+context Tag
+inv: (self.posts->size() >= 3 and self.posts->size() <= 3) and (self.posts->size() < 3)
+
+-- #10 Collection Size in Range (UNSAT) in Group
+-- Difficulty: medium
+-- Mutation Strategy: contradictory_bounds
+context Group
+inv: ((self.memberships->size() <= 3)) and (self.memberships->size() > 3)
+
+-- #11 Collection Size in Range (UNSAT) in Post
+-- Difficulty: medium
+-- Mutation Strategy: contradictory_bounds
+context Post
+inv: ((self.reactions->size() <= 2)) and (self.reactions->size() > 2)
+
+-- #12 Collection Navigation (UNSAT) in Conversation
+-- Difficulty: difficult
+-- Mutation Strategy: self_contradiction
+context Conversation
+inv: (self.participants->exists(x | x.createdAt <> '')) and (not(self.participants->exists(x | x.createdAt <> '')))
+
+-- #13 Collection Size in Range (UNSAT) in Post
+-- Difficulty: medium
+-- Mutation Strategy: contradictory_bounds
+context Post
+inv: ((self.comments->size() <= 3)) and (self.comments->size() > 3)
+
+-- #14 Boolean Guard (UNSAT) in Message
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Message
+inv: ((self.isRead) and (self.sentAt <> '' and self.sentAt.size() > 0)) and (not((self.isRead) and (self.sentAt <> '' and self.sentAt.size() > 0)))
+
+-- #15 Collection Navigation (UNSAT) in Conversation
+-- Difficulty: difficult
+-- Mutation Strategy: self_contradiction
+context Conversation
+inv: (self.messages->exists(x | x.isRead = true)) and (not(self.messages->exists(x | x.isRead = true)))
+

@@ -1,0 +1,499 @@
+-- Benchmark: LibrarySystem / balanced
+-- Generated: 2026-10-15T01:57:05.097986
+-- Seed: 42
+-- Complexity: standard
+-- Count: 82
+-- Advanced Features: ENABLED
+
+-- #1 Association Exists in Book
+-- Difficulty: easy
+-- Type: SAT
+context Book
+inv: self.publisher <> null
+
+-- #2 Conditional Existence in Payment
+-- Difficulty: easy
+-- Type: SAT
+context Payment
+inv: self.isProcessed implies self.loan <> null
+
+-- #3 Navigation Consistency in Loan
+-- Difficulty: easy
+-- Type: SAT
+context Loan
+inv: self.copy.branch = self.branch
+
+-- #4 Navigation Consistency in Reservation
+-- Difficulty: easy
+-- Type: SAT
+context Reservation
+inv: self.copy.book = self.book
+
+-- #5 Navigation Consistency in Fine
+-- Difficulty: easy
+-- Type: SAT
+context Fine
+inv: self.loan.member = self.member
+
+-- #6 Association Exists in Branch
+-- Difficulty: easy
+-- Type: SAT
+context Branch
+inv: self.manager <> null
+
+-- #7 Collection Navigation in Library
+-- Difficulty: difficult
+-- Type: SAT
+context Library
+inv: self.members->forAll(x | x.memberId <> '')
+
+-- #8 Collection Navigation in Publisher
+-- Difficulty: difficult
+-- Type: SAT
+context Publisher
+inv: self.books->exists(x | x.publishYear < 1000)
+
+-- #9 Collection Navigation in Member
+-- Difficulty: difficult
+-- Type: SAT
+context Member
+inv: self.fines->exists(x | x.amount < 100)
+
+-- #10 Navigation Chain in Copy
+-- Difficulty: difficult
+-- Type: SAT
+context Copy
+inv: (self.barcode <> '') and (self.loans->forAll(v | v.dueDate <> ''))
+
+-- #11 Navigation Chain in Fine
+-- Difficulty: difficult
+-- Type: SAT
+context Fine
+inv: (self.amount < 1000) and (self.payments->forAll(v | v.amount < 50))
+
+-- #12 Collection Size in Range in Branch
+-- Difficulty: difficult
+-- Type: SAT
+context Branch
+inv: (self.code <> '') and (self.copies->forAll(v | v.barcode <> ''))
+
+-- #13 Collection Size in Range in Branch
+-- Difficulty: difficult
+-- Type: SAT
+context Branch
+inv: (self.code <> '') and (self.reservations->forAll(v | v.expiryDate <> ''))
+
+-- #14 Collection Size in Range in Fine
+-- Difficulty: difficult
+-- Type: SAT
+context Fine
+inv: (self.amount >= 2) and (self.payments->forAll(v | v.amount >= 2))
+
+-- #15 Numeric Is Odd in Book
+-- Difficulty: difficult
+-- Type: SAT
+context Book
+inv: (self.publishYear <= 1000) and (self.reservations->forAll(v | v.expiryDate <> ''))
+
+-- #16 Numeric Absolute Value Bounded in Book
+-- Difficulty: difficult
+-- Type: SAT
+context Book
+inv: (self.pages > 2) and (self.authors->forAll(v | v.name <> ''))
+
+-- #17 Navigation Chain in Librarian
+-- Difficulty: medium
+-- Type: SAT
+context Librarian
+inv: (self.managedBranch.library.maxLoanDays >= 5) and (self.level.size() <= 59)
+
+-- #18 Navigation Chain in Staff
+-- Difficulty: medium
+-- Type: SAT
+context Staff
+inv: (self.branch.library.maxLoanDays <= 10) and (self.email.indexOf('test') >= 0)
+
+-- #19 Conditional Existence in Payment
+-- Difficulty: medium
+-- Type: SAT
+context Payment
+inv: self.isProcessed implies self.fine <> null
+
+-- #20 Navigation Chain in Fine
+-- Difficulty: medium
+-- Type: SAT
+context Fine
+inv: (self.member.library.maxLoanDays >= 2) and (self.reason.size() >= 6)
+
+-- #21 Navigation Consistency in Payment
+-- Difficulty: medium
+-- Type: SAT
+context Payment
+inv: (self.loan.fine = self.fine) and (self.timestamp <> '' and self.timestamp.size() > 0)
+
+-- #22 Association Exists in Address
+-- Difficulty: medium
+-- Type: SAT
+context Address
+inv: (self.member <> null) and (self.branch <> null)
+
+-- #23 Simple Navigation in Loan
+-- Difficulty: medium
+-- Type: SAT
+context Loan
+inv: ((self.payment.isProcessed) and (self.returnDate.size() <= 57)) and (self.branch.oclIsTypeOf(Branch))
+
+-- #24 Navigation Chain in Copy
+-- Difficulty: medium
+-- Type: SAT
+context Copy
+inv: (self.branch.library.maxLoanDays >= 2) and (self.barcode <> '' and self.barcode.size() > 0)
+
+-- #25 Navigation Consistency in Payment
+-- Difficulty: medium
+-- Type: SAT
+context Payment
+inv: (self.fine.member = self.member) and (self.amount >= 0)
+
+-- #26 Navigation Chain in Branch
+-- Difficulty: medium
+-- Type: SAT
+context Branch
+inv: (self.address.branch.code <> '') and (self.name.size() >= 8 implies self.name.substring(1, 8) = 'AB')
+
+-- #27 Select (Filter) Operation in Author
+-- Difficulty: medium
+-- Type: SAT
+context Author
+inv: self.books->select(x | x.pages > 1)->size() >= 1
+
+-- #28 Collect (Map) Operation in Author
+-- Difficulty: medium
+-- Type: SAT
+context Author
+inv: (self.books->collect(x | x.title)->notEmpty()) and (self.name.size() >= 4)
+
+-- #29 Numeric Attribute Bounded in Fine
+-- Difficulty: medium
+-- Type: SAT
+context Fine
+inv: self.amount >= 51 and self.amount <= 58
+
+-- #30 Numeric Attribute Positive in Book
+-- Difficulty: easy
+-- Type: SAT
+context Book
+inv: self.publishYear > 0
+
+-- #31 Collection Size in Range in Fine
+-- Difficulty: medium
+-- Type: SAT
+context Fine
+inv: self.payments->size() >= 1 and self.payments->size() <= 1
+
+-- #32 Numeric Is Even in Library
+-- Difficulty: medium
+-- Type: SAT
+context Library
+inv: (self.maxLoanDays mod 2 = 0) and (self.books->size() > 1)
+
+-- #33 Numeric Multiple Of in Library
+-- Difficulty: easy
+-- Type: SAT
+context Library
+inv: self.maxLoanDays mod 6 = 0
+
+-- #34 Numeric Less Than Value in Book
+-- Difficulty: medium
+-- Type: SAT
+context Book
+inv: ((self.pages < 17) and (self.authors->notEmpty())) and (self.copies->size() > 0)
+
+-- #35 Numeric Multiple Of in Book
+-- Difficulty: medium
+-- Type: SAT
+context Book
+inv: (self.publishYear mod 9 = 0) and (self.authors->notEmpty())
+
+-- #36 Numeric Absolute Value Bounded in Book
+-- Difficulty: medium
+-- Type: SAT
+context Book
+inv: (self.pages.abs() <= 6) and (self.authors->any(x | x.name <> '') <> null)
+
+-- #37 Numeric Multiple Of in Book
+-- Difficulty: easy
+-- Type: SAT
+context Book
+inv: self.pages mod 2 = 0
+
+-- #38 Numeric Is Even in Book
+-- Difficulty: medium
+-- Type: SAT
+context Book
+inv: (self.publishYear mod 2 = 0) and (self.authors->collect(x | x.books)->size() >= 2)
+
+-- #39 Numeric Attribute Positive in Fine
+-- Difficulty: easy
+-- Type: SAT
+context Fine
+inv: self.amount > 0
+
+-- #40 Collection Size in Range in Author
+-- Difficulty: medium
+-- Type: SAT
+context Author
+inv: self.books->size() >= 3 and self.books->size() <= 3
+
+-- #41 Numeric Attribute Non-Negative in Library
+-- Difficulty: easy
+-- Type: SAT
+context Library
+inv: self.maxLoanDays >= 0
+
+-- #42 Universal Quantification (forAll) in Member
+-- Difficulty: difficult
+-- Type: SAT
+context Member
+inv: self.payments->forAll(x | x.amount > 5)
+
+-- #43 Collection Size Constraint in Author
+-- Difficulty: easy
+-- Type: SAT
+context Author
+inv: self.books->size() <> 1
+
+-- #44 Collection Has Specific Size in Branch
+-- Difficulty: easy
+-- Type: SAT
+context Branch
+inv: self.reservations->size() = 3
+
+-- #45 Collection Not Empty Check in Book
+-- Difficulty: easy
+-- Type: SAT
+context Book
+inv: self.authors->size() > 0
+
+-- #46 Two Attributes Not Equal in Loan
+-- Difficulty: easy
+-- Type: SAT
+context Loan
+inv: self.returnDate <> self.startDate
+
+-- #47 Collection Minimum Size in Book
+-- Difficulty: easy
+-- Type: SAT
+context Book
+inv: self.copies->size() >= 2
+
+-- #48 Collection Maximum Size in Book
+-- Difficulty: easy
+-- Type: SAT
+context Book
+inv: self.reservations->size() <= 3
+
+-- #49 Bi-directional Implication in Loan
+-- Difficulty: easy
+-- Type: SAT
+context Loan
+inv: (self.dueDate <> null) = (self.returnDate <> null)
+
+-- #50 Collection Not Empty (Simple) in Author
+-- Difficulty: easy
+-- Type: SAT
+context Author
+inv: self.books->notEmpty()
+
+-- #51 Two Attributes Not Equal in Reservation
+-- Difficulty: easy
+-- Type: SAT
+context Reservation
+inv: self.requestDate <> self.expiryDate
+
+-- #52 Simple Implication in Reservation
+-- Difficulty: easy
+-- Type: SAT
+context Reservation
+inv: self.requestDate <> null implies self.expiryDate <> null
+
+-- #53 Collection Not Empty Check in Branch
+-- Difficulty: easy
+-- Type: SAT
+context Branch
+inv: self.reservations->size() > 0
+
+-- #54 All Attributes Defined in Loan
+-- Difficulty: easy
+-- Type: SAT
+context Loan
+inv: self.returnDate <> null and self.startDate <> null
+
+-- #55 Simple Implication in Loan
+-- Difficulty: medium
+-- Type: SAT
+context Loan
+inv: self.dueDate <> null implies self.returnDate <> null
+
+-- #56 Reverse Implication in Reservation
+-- Difficulty: medium
+-- Type: SAT
+context Reservation
+inv: self.expiryDate <> null implies self.requestDate <> null
+
+-- #57 Simple Implication in Loan
+-- Difficulty: medium
+-- Type: SAT
+context Loan
+inv: self.startDate <> null implies self.dueDate <> null
+
+-- #58 Three Attributes Defined in Loan
+-- Difficulty: medium
+-- Type: SAT
+context Loan
+inv: self.startDate <> null and self.dueDate <> null and self.returnDate <> null
+
+-- #59 Navigation Chain in Book
+-- Difficulty: difficult
+-- Type: SAT
+context Book
+inv: (self.pages < 100) and (self.copies->forAll(v | v.barcode <> ''))
+
+-- #60 Numeric Attribute Non-Negative in Fine
+-- Difficulty: difficult
+-- Type: SAT
+context Fine
+inv: (self.amount > 0) and (self.payments->forAll(v | v.amount >= 10))
+
+-- #61 Numeric Absolute Value Bounded in Book
+-- Difficulty: difficult
+-- Type: SAT
+context Book
+inv: (self.pages > 0) and (self.authors->forAll(v | v.name <> ''))
+
+-- #62 Any Operation in Category
+-- Difficulty: difficult
+-- Type: SAT
+context Category
+inv: (self.books->any(x | x.publishYear < 100) <> null) and (self.books->size() <= 3)
+
+-- #63 Flatten Operation in Library
+-- Difficulty: difficult
+-- Type: SAT
+context Library
+inv: self.branches->collect(x | x.copies)->flatten()->notEmpty()
+
+-- #64 Flatten Operation in Book
+-- Difficulty: difficult
+-- Type: SAT
+context Book
+inv: self.authors->collect(x | x.books)->flatten()->notEmpty()
+
+-- #65 Collection Must Be Empty in Book
+-- Difficulty: difficult
+-- Type: SAT
+context Book
+inv: (self.publishYear <= 100) and (self.copies->forAll(v | v.barcode <> ''))
+
+-- #66 Collection Index Of Element in Branch
+-- Difficulty: difficult
+-- Type: SAT
+context Branch
+inv: (self.phone <> '') and (self.reservations->forAll(v | v.expiryDate <> ''))
+
+-- #67 All Attributes Defined (UNSAT) in Loan
+-- Difficulty: unboxed
+-- Type: UNSAT
+context Loan
+inv: (self.startDate <> null and self.dueDate <> null) and (not(self.startDate <> null and self.dueDate <> null))
+
+-- #68 All Attributes Defined (UNSAT) in Reservation
+-- Difficulty: unboxed
+-- Type: UNSAT
+context Reservation
+inv: (self.expiryDate <> null and self.requestDate <> null) and (not(self.expiryDate <> null and self.requestDate <> null))
+
+-- #69 Any Operation (UNSAT) in Copy
+-- Difficulty: unboxed
+-- Type: UNSAT
+context Copy
+inv: ((self.loans->any(x | x.startDate <> '') <> null) and (self.barcode.size() = 8)) and (not((self.loans->any(x | x.startDate <> '') <> null) and (self.barcode.size() = 8)))
+
+-- #70 Numeric Greater Than Value (UNSAT) in Payment
+-- Difficulty: medium
+-- Type: UNSAT
+context Payment
+inv: (((self.amount > 31) and (self.isProcessed)) and (self.fine.oclIsTypeOf(Fine))) and (self.amount < 26)
+
+-- #71 Select (Filter) Operation (UNSAT) in Member
+-- Difficulty: difficult
+-- Type: UNSAT
+context Member
+inv: (self.payments->select(x | x.amount > 5)->size() >= 1) and (not(self.payments->select(x | x.amount > 5)->size() >= 1))
+
+-- #72 Collection Index Of Element (UNSAT) in Book
+-- Difficulty: difficult
+-- Type: UNSAT
+context Book
+inv: ((self.publishYear < 10) and (self.reservations->forAll(v | v.requestDate <> ''))) and (self.publishYear > 15)
+
+-- #73 Collection Navigation (UNSAT) in Category
+-- Difficulty: difficult
+-- Type: UNSAT
+context Category
+inv: (self.books->forAll(x | x.pages >= 2)) and (self.books->exists(x | not(x.pages >= 2)))
+
+-- #74 Reverse Implication (UNSAT) in Loan
+-- Difficulty: unboxed
+-- Type: UNSAT
+context Loan
+inv: (self.startDate <> null implies self.returnDate <> null) and (not(self.startDate <> null implies self.returnDate <> null))
+
+-- #75 Association Exists (UNSAT) in Address
+-- Difficulty: medium
+-- Type: UNSAT
+context Address
+inv: (self.branch <> null) and (not(self.branch <> null))
+
+-- #76 Numeric Greater Than Value (UNSAT) in Book
+-- Difficulty: medium
+-- Type: UNSAT
+context Book
+inv: ((self.publishYear > 16) and (self.isbn.size() <= 80)) and (self.publishYear < 11)
+
+-- #77 Collection Size in Range (UNSAT) in Fine
+-- Difficulty: medium
+-- Type: UNSAT
+context Fine
+inv: ((self.payments->size() <= 3)) and (self.payments->size() > 3)
+
+-- #78 Collection Navigation (UNSAT) in Copy
+-- Difficulty: difficult
+-- Type: UNSAT
+context Copy
+inv: (self.reservations->forAll(x | x.requestDate <> '')) and (self.reservations->exists(x | not(x.requestDate <> '')))
+
+-- #79 Flatten Operation (UNSAT) in Branch
+-- Difficulty: unboxed
+-- Type: UNSAT
+context Branch
+inv: (self.copies->collect(x | x.reservations)->flatten()->notEmpty()) and (not(self.copies->collect(x | x.reservations)->flatten()->notEmpty()))
+
+-- #80 Collection Nested Collection Flatten (UNSAT) in Library
+-- Difficulty: unboxed
+-- Type: UNSAT
+context Library
+inv: ((self.members->collect(x | x.reservations)->size() >= 3) and (self.members->size() <= 1)) and (self.members->size() > 1)
+
+-- #81 Collection Not Empty Check (UNSAT) in Author
+-- Difficulty: medium
+-- Type: UNSAT
+context Author
+inv: (self.books->size() > 0) and (self.books->size() < -5)
+
+-- #82 Collection Size in Range (UNSAT) in Copy
+-- Difficulty: unboxed
+-- Type: UNSAT
+context Copy
+inv: (self.reservations->size() >= 1 and self.reservations->size() <= 2) and (self.reservations->size() < 1)
+

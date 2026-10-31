@@ -1,0 +1,395 @@
+-- Benchmark: BankSystem / balanced
+-- Type: SAT Constraints Only
+-- Generated: 2026-10-12T20:14:18.596604
+-- Count: 78
+
+-- #1 Simple Navigation in Customer
+-- Difficulty: easy
+context Customer
+inv: self.kyc.isVerified
+
+-- #2 Simple Navigation in Transaction
+-- Difficulty: easy
+context Transaction
+inv: self.payment.isConfirmed
+
+-- #3 Navigation Chain in Branch
+-- Difficulty: easy
+context Branch
+inv: self.bank.swiftCode <> ''
+
+-- #4 Collection Navigation in CreditCard
+-- Difficulty: difficult
+context CreditCard
+inv: self.cardTransactions->forAll(x | x.merchant <> '')
+
+-- #5 Collection Navigation in Branch
+-- Difficulty: difficult
+context Branch
+inv: self.employees->forAll(x | x.name <> '')
+
+-- #6 Collection Navigation in Customer
+-- Difficulty: difficult
+context Customer
+inv: self.loans->exists(x | x.interestRate <= 50)
+
+-- #7 Association Exists in Loan
+-- Difficulty: medium
+context Loan
+inv: (self.customer <> null) and (self.customer.oclIsTypeOf(Customer))
+
+-- #8 Association Exists in Payment
+-- Difficulty: medium
+context Payment
+inv: (self.transaction <> null) and (self.method.size() = 25)
+
+-- #9 Association Exists in Employee
+-- Difficulty: easy
+context Employee
+inv: self.branch <> null
+
+-- #10 Association Exists in Address
+-- Difficulty: medium
+context Address
+inv: (self.customer <> null) and (self.line1.toLowerCase() = 'test')
+
+-- #11 Association Exists in CreditCard
+-- Difficulty: medium
+context CreditCard
+inv: (self.customer <> null) and (self.cardTransactions->size() > 0)
+
+-- #12 Association Exists in Branch
+-- Difficulty: easy
+context Branch
+inv: self.bank <> null
+
+-- #13 Association Exists in Address
+-- Difficulty: medium
+context Address
+inv: (self.customer <> null) and (self.postalCode <> null)
+
+-- #14 Association Exists in CardTransaction
+-- Difficulty: easy
+context CardTransaction
+inv: self.card <> null
+
+-- #15 Navigation Chain in CardTransaction
+-- Difficulty: medium
+context CardTransaction
+inv: self.card.customer.fullName <> ''
+
+-- #16 Navigation Chain in Account
+-- Difficulty: medium
+context Account
+inv: self.customer.branch.city <> ''
+
+-- #17 Simple Navigation in Customer
+-- Difficulty: medium
+context Customer
+inv: (self.kyc.isVerified) and (self.email <> null)
+
+-- #18 Navigation Chain in CreditCard
+-- Difficulty: medium
+context CreditCard
+inv: self.customer.branch.branchCode <> ''
+
+-- #19 Simple Navigation in CardTransaction
+-- Difficulty: medium
+context CardTransaction
+inv: (self.card.isActive) and (self.merchant <> '' and self.merchant.size() > 0)
+
+-- #20 Simple Navigation in Customer
+-- Difficulty: medium
+context Customer
+inv: (self.kyc.isVerified) and (self.email.size() <= 43)
+
+-- #21 Numeric Greater Than Value in CreditCard
+-- Difficulty: difficult
+context CreditCard
+inv: (self.limit > 1) and (self.cardTransactions->forAll(v | v.merchant <> ''))
+
+-- #22 Numeric Attribute Non-Negative in Account
+-- Difficulty: difficult
+context Account
+inv: (self.balance < 1000) and (self.transactions->forAll(v | v.amount >= 2))
+
+-- #23 Numeric Attribute Bounded in Account
+-- Difficulty: difficult
+context Account
+inv: (self.balance < 100) and (self.transactions->forAll(v | v.amount > 2))
+
+-- #24 Numeric Greater Than Value in Account
+-- Difficulty: difficult
+context Account
+inv: (self.balance <= 10) and (self.transactions->forAll(v | v.amount >= 10))
+
+-- #25 Any Operation in Account
+-- Difficulty: difficult
+context Account
+inv: self.transactions->any(x | x.amount >= 10) <> null
+
+-- #26 Any Operation in Branch
+-- Difficulty: difficult
+context Branch
+inv: self.employees->any(x | x.name <> '') <> null
+
+-- #27 Select (Filter) Operation in Account
+-- Difficulty: difficult
+context Account
+inv: self.transactions->select(x | x.amount >= 10)->size() >= 1
+
+-- #28 Numeric Is Odd in Teller
+-- Difficulty: easy
+context Teller
+inv: self.counterNo mod 2 = 1
+
+-- #29 Numeric Attribute Positive in SavingsAccount
+-- Difficulty: easy
+context SavingsAccount
+inv: self.interestRate > 0
+
+-- #30 Numeric Less Than Value in CheckingAccount
+-- Difficulty: easy
+context CheckingAccount
+inv: self.overdraftLimit < 11
+
+-- #31 Numeric Multiple Of in Teller
+-- Difficulty: easy
+context Teller
+inv: self.counterNo mod 5 = 0
+
+-- #32 Numeric Sum Constraint in Loan
+-- Difficulty: easy
+context Loan
+inv: self.interestRate + self.principal > 83
+
+-- #33 Numeric Difference Constraint in Loan
+-- Difficulty: easy
+context Loan
+inv: self.principal - self.interestRate >= 0
+
+-- #34 Numeric Difference Constraint in Loan
+-- Difficulty: easy
+context Loan
+inv: self.principal - self.interestRate >= 8
+
+-- #35 Numeric Absolute Value Bounded in CheckingAccount
+-- Difficulty: easy
+context CheckingAccount
+inv: self.overdraftLimit.abs() <= 8
+
+-- #36 Numeric Comparison in Loan
+-- Difficulty: easy
+context Loan
+inv: self.principal > self.interestRate
+
+-- #37 Numeric Comparison in Loan
+-- Difficulty: easy
+context Loan
+inv: self.principal >= self.interestRate
+
+-- #38 Numeric Attribute Positive in Account
+-- Difficulty: easy
+context Account
+inv: self.balance > 0
+
+-- #39 Flatten Operation in Customer
+-- Difficulty: difficult
+context Customer
+inv: self.cards->collect(x | x.cardTransactions)->flatten()->notEmpty()
+
+-- #40 Collection Nested Collection Flatten in Customer
+-- Difficulty: difficult
+context Customer
+inv: self.accounts->collect(x | x.transactions)->size() >= 1
+
+-- #41 Flatten Operation in Bank
+-- Difficulty: difficult
+context Bank
+inv: self.branches->collect(x | x.employees)->flatten()->notEmpty()
+
+-- #42 Collection Sum in Account
+-- Difficulty: difficult
+context Account
+inv: self.transactions->collect(x | x.amount)->sum() >= 1
+
+-- #43 Flatten Operation in Branch
+-- Difficulty: difficult
+context Branch
+inv: self.customers->collect(x | x.loans)->flatten()->notEmpty()
+
+-- #44 Numeric Absolute Value Bounded in Loan
+-- Difficulty: medium
+context Loan
+inv: self.interestRate.abs() <= 4
+
+-- #45 Numeric Absolute Value Bounded in Loan
+-- Difficulty: medium
+context Loan
+inv: self.interestRate.abs() <= 1
+
+-- #46 Numeric Absolute Value Bounded in CreditCard
+-- Difficulty: medium
+context CreditCard
+inv: self.limit.abs() <= 3
+
+-- #47 Numeric Absolute Value Bounded in CheckingAccount
+-- Difficulty: medium
+context CheckingAccount
+inv: self.overdraftLimit.abs() <= 7
+
+-- #48 Numeric Absolute Value Bounded in Account
+-- Difficulty: medium
+context Account
+inv: self.balance.abs() <= 9
+
+-- #49 Attribute Not Null (Simple) in Manager
+-- Difficulty: easy
+context Manager
+inv: self.level <> null
+
+-- #50 Collection Size Constraint in Bank
+-- Difficulty: easy
+context Bank
+inv: self.branches->size() <> 1
+
+-- #51 Collection Not Empty Check in Bank
+-- Difficulty: easy
+context Bank
+inv: self.branches->size() > 0
+
+-- #52 Collection Size Constraint in Branch
+-- Difficulty: easy
+context Branch
+inv: self.employees->size() = 1
+
+-- #53 Two Attributes Not Equal in Address
+-- Difficulty: easy
+context Address
+inv: self.city <> self.line1
+
+-- #54 Collection Not Empty (Simple) in CreditCard
+-- Difficulty: easy
+context CreditCard
+inv: self.cardTransactions->notEmpty()
+
+-- #55 Collection Not Empty Check in Customer
+-- Difficulty: easy
+context Customer
+inv: self.loans->size() > 0
+
+-- #56 Collection Must Be Empty in Customer
+-- Difficulty: easy
+context Customer
+inv: self.cards->isEmpty()
+
+-- #57 Collection Size Constraint in CreditCard
+-- Difficulty: easy
+context CreditCard
+inv: self.cardTransactions->size() <= 1
+
+-- #58 Two Attributes Not Equal in Loan
+-- Difficulty: easy
+context Loan
+inv: self.interestRate <> self.principal
+
+-- #59 Collection Minimum Size in CreditCard
+-- Difficulty: medium
+context CreditCard
+inv: self.cardTransactions->size() >= 1
+
+-- #60 Collection Maximum Size in CreditCard
+-- Difficulty: medium
+context CreditCard
+inv: self.cardTransactions->size() <= 2
+
+-- #61 All Attributes Defined in Loan
+-- Difficulty: medium
+context Loan
+inv: self.interestRate <> null and self.principal <> null
+
+-- #62 Bi-directional Implication in Loan
+-- Difficulty: medium
+context Loan
+inv: (self.principal <> null) = (self.interestRate <> null)
+
+-- #63 Simple Implication in Address
+-- Difficulty: medium
+context Address
+inv: self.line1 <> null implies self.city <> null
+
+-- #64 Collection Minimum Size in Account
+-- Difficulty: medium
+context Account
+inv: self.transactions->size() >= 2
+
+-- #65 Reverse Implication in Address
+-- Difficulty: medium
+context Address
+inv: self.country <> null implies self.line1 <> null
+
+-- #66 Collection Maximum Size in CreditCard
+-- Difficulty: medium
+context CreditCard
+inv: self.cardTransactions->size() <= 3
+
+-- #67 Navigation Chain in Account
+-- Difficulty: difficult
+context Account
+inv: (self.balance <= 1000) and (self.transactions->forAll(v | v.amount < 100))
+
+-- #68 Association Exists in Customer
+-- Difficulty: easy
+context Customer
+inv: self.kyc <> null
+
+-- #69 Association Exists in Customer
+-- Difficulty: easy
+context Customer
+inv: self.address <> null
+
+-- #70 Navigation Chain in CardTransaction
+-- Difficulty: medium
+context CardTransaction
+inv: self.card.customer.customerId <> ''
+
+-- #71 Navigation Chain in CardTransaction
+-- Difficulty: medium
+context CardTransaction
+inv: self.card.customer.email <> ''
+
+-- #72 Navigation Chain in Customer
+-- Difficulty: medium
+context Customer
+inv: self.branch.bank.swiftCode <> ''
+
+-- #73 Any Operation in Bank
+-- Difficulty: difficult
+context Bank
+inv: self.branches->any(x | x.city <> '') <> null
+
+-- #74 Universal Quantification (forAll) in Account
+-- Difficulty: difficult
+context Account
+inv: self.transactions->forAll(x | x.amount <= 100)
+
+-- #75 Association Exists in Account
+-- Difficulty: difficult
+context Account
+inv: (self.balance < 10) and (self.transactions->forAll(v | v.amount < 100))
+
+-- #76 Collection As Sequence Conversion in Account
+-- Difficulty: difficult
+context Account
+inv: (self.balance >= 2) and (self.transactions->forAll(v | v.amount > 5))
+
+-- #77 Numeric Attribute Bounded in Loan
+-- Difficulty: medium
+context Loan
+inv: self.principal >= 41 and self.principal <= 63
+
+-- #78 Numeric Absolute Value Bounded in Loan
+-- Difficulty: medium
+context Loan
+inv: self.interestRate.abs() <= 3
+

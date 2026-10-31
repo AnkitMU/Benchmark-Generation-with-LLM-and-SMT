@@ -1,0 +1,1143 @@
+{
+  "metadata": {
+    "type": "UNSAT",
+    "model": "ManufacturingPlant",
+    "profile": "balanced",
+    "generated_at": "2026-10-15T12:03:14.850383",
+    "constraint_count": 18
+  },
+  "constraints": [
+    {
+      "ocl": "context Sensor\ninv: ((self.lastReading > 0) and (self.sensorId.toUpperCase() = 'TEST')) and (self.lastReading < -5)",
+      "pattern_id": "numeric_positive_unsat",
+      "pattern_name": "Numeric Attribute Positive (UNSAT)",
+      "context": "Sensor",
+      "parameters": {
+        "numeric_attribute": "lastReading"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-15T11:42:38.302735",
+      "metadata": {
+        "category": "arithmetic",
+        "complexity": 1,
+        "generation_number": 6329,
+        "profile": "medium",
+        "regenerated_from": "numeric_greater_than_value",
+        "regen_box": "medium+conjoin",
+        "regen_family": "arithmetic",
+        "operators_used": [
+          "=",
+          ">",
+          "and"
+        ],
+        "navigation_depth": 3,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 1,
+            "wnc": 2.0,
+            "tnc": 1.7,
+            "vrc": 0,
+            "wno": 3.5,
+            "wnm": 1.0,
+            "total": 6.2
+          },
+          "computational": {
+            "oc": 3.5,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.5
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 9.7
+        },
+        "is_unsat": true,
+        "mutation": "contradictory_bounds",
+        "original_pattern_id": "numeric_positive",
+        "contradiction_ocl": "context Sensor\ninv: self.lastReading < -5",
+        "slot_profile": "medium",
+        "semantic_cluster": 6,
+        "implies": [
+          "navigation_chain_Sensor",
+          "navigation_chain_Sensor",
+          "numeric_positive_Sensor",
+          "numeric_positive_Sensor",
+          "numeric_positive_unsat_Sensor",
+          "numeric_positive_unsat_Sensor"
+        ]
+      }
+    },
+    {
+      "ocl": "context Supplier\ninv: (self.items->forAll(x | x.quantity < 10)) and (self.items->exists(x | not(x.quantity < 10)))",
+      "pattern_id": "collection_navigation_unsat",
+      "pattern_name": "Collection Navigation (UNSAT)",
+      "context": "Supplier",
+      "parameters": {
+        "collection": "items",
+        "operation": "forAll",
+        "iterator": "x",
+        "nested": "quantity < 10"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-15T11:42:38.918402",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 3,
+        "generation_number": 6038,
+        "profile": "difficult",
+        "operators_used": [
+          "-",
+          "<",
+          ">",
+          "forAll"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "difficult",
+        "operator_count": 4,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 3.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 3.0,
+            "wnc": 5.0,
+            "tnc": 3.6,
+            "vrc": 1,
+            "wno": 4.0,
+            "wnm": 1.0,
+            "total": 9.6
+          },
+          "computational": {
+            "oc": 4.0,
+            "tcc": 0.0,
+            "cic": 3.0,
+            "total": 7.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 16.6
+        },
+        "is_unsat": true,
+        "mutation": "universal_negation",
+        "original_pattern_id": "collection_navigation",
+        "contradiction_ocl": "context Supplier\ninv: self.items->exists(x | not(x.quantity < 10))",
+        "contradiction_pattern_id": "exists_nested",
+        "slot_profile": "difficult",
+        "semantic_cluster": 5,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context BillOfMaterials\ninv: ((self.items->collect(x | x.name)->notEmpty()) and (self.items->any(x | x.requiredQty >= 0) <> null)) and (not((self.items->collect(x | x.name)->notEmpty()) and (self.items->any(x | x.requiredQty >= 0) <> null)))",
+      "pattern_id": "collect_operation_unsat",
+      "pattern_name": "Collect (Map) Operation (UNSAT)",
+      "context": "BillOfMaterials",
+      "parameters": {
+        "collection": "items",
+        "iterator": "x",
+        "attribute": "name"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-15T11:42:39.560012",
+      "metadata": {
+        "category": "collection",
+        "complexity": 2,
+        "generation_number": 6198,
+        "profile": "unboxed",
+        "regenerated_from": "forall_nested",
+        "regen_box": "difficult+conjoin",
+        "regen_family": "quantified",
+        "refilled_after": "dedup",
+        "operators_used": [
+          "-",
+          "<",
+          "<>",
+          "=",
+          ">",
+          ">=",
+          "and",
+          "any",
+          "collect",
+          "notEmpty"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "unboxed",
+        "operator_count": 10,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 6.0,
+            "nnc_plus": 6.0,
+            "dn_ca": 3.0,
+            "wnc": 10.0,
+            "tnc": 6.3,
+            "vrc": 1,
+            "wno": 5.5,
+            "wnm": 3.0,
+            "total": 15.8
+          },
+          "computational": {
+            "oc": 5.5,
+            "tcc": 0.0,
+            "cic": 4.0,
+            "total": 9.5
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 25.3
+        },
+        "is_unsat": true,
+        "mutation": "self_contradiction",
+        "original_pattern_id": "collect_operation",
+        "slot_profile": "difficult",
+        "semantic_cluster": 5,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context DefectReport\ninv: (self.severity >= 45 and self.severity <= 55) and (self.severity < 45)",
+      "pattern_id": "numeric_bounded_unsat",
+      "pattern_name": "Numeric Attribute Bounded (UNSAT)",
+      "context": "DefectReport",
+      "parameters": {
+        "numeric_attribute": "severity",
+        "min_value": 45,
+        "max_value": 55
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-15T11:42:39.560039",
+      "metadata": {
+        "category": "arithmetic",
+        "complexity": 2,
+        "generation_number": 6097,
+        "profile": "medium",
+        "operators_used": [
+          "<",
+          "<=",
+          "=",
+          ">",
+          ">=",
+          "and"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 6,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 1,
+            "wnc": 2.0,
+            "tnc": 1.7,
+            "vrc": 0,
+            "wno": 3.5,
+            "wnm": 0.0,
+            "total": 5.2
+          },
+          "computational": {
+            "oc": 3.5,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.5
+          },
+          "dependency": {
+            "ruc": 4,
+            "total": 4.0
+          },
+          "tc": 12.7
+        },
+        "is_unsat": true,
+        "mutation": "contradictory_bounds",
+        "original_pattern_id": "numeric_bounded",
+        "contradiction_ocl": "context DefectReport\ninv: self.severity < 45",
+        "slot_profile": "medium",
+        "semantic_cluster": 13,
+        "implies": [
+          "simple_navigation_DefectReport",
+          "numeric_non_negative_unsat_DefectReport"
+        ]
+      }
+    },
+    {
+      "ocl": "context BillOfMaterials\ninv: ((self.items->size() > 0) and (self.bomId.size() >= 3 implies self.bomId.substring(1, 3) = 'AB')) and (self.items->size() < -5)",
+      "pattern_id": "collection_not_empty_check_unsat",
+      "pattern_name": "Collection Not Empty Check (UNSAT)",
+      "context": "BillOfMaterials",
+      "parameters": {
+        "collection": "items"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-15T11:42:39.861728",
+      "metadata": {
+        "category": "collection",
+        "complexity": 1,
+        "generation_number": 6388,
+        "profile": "unboxed",
+        "regenerated_from": "attribute_not_null_simple",
+        "regen_box": "medium+conjoin",
+        "regen_family": "cardinality",
+        "operators_used": [
+          "-",
+          "=",
+          ">",
+          ">=",
+          "and",
+          "implies",
+          "size",
+          "substring"
+        ],
+        "navigation_depth": 3,
+        "quantifier_depth": 0,
+        "difficulty": "unboxed",
+        "operator_count": 8,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 1,
+            "wnc": 3.0,
+            "tnc": 2.8,
+            "vrc": 0,
+            "wno": 7.5,
+            "wnm": 3.0,
+            "total": 13.3
+          },
+          "computational": {
+            "oc": 6.5,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 6.5
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 19.8
+        },
+        "is_unsat": true,
+        "mutation": "contradictory_bounds",
+        "original_pattern_id": "collection_not_empty_check",
+        "contradiction_ocl": "context BillOfMaterials\ninv: self.items->size() < -5",
+        "slot_profile": "medium",
+        "semantic_cluster": 18,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context MaintenanceTask\ninv: (self.isDone implies self.assignedTo <> null) and (not(self.isDone implies self.assignedTo <> null))",
+      "pattern_id": "conditional_existence_unsat",
+      "pattern_name": "Conditional Existence (UNSAT)",
+      "context": "MaintenanceTask",
+      "parameters": {
+        "bool_attribute": "isDone",
+        "optional_association": "assignedTo"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-15T11:42:40.130217",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 1,
+        "generation_number": 6024,
+        "profile": "unboxed",
+        "operators_used": [
+          "<",
+          "<>",
+          ">",
+          "implies"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "unboxed",
+        "operator_count": 4,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 1,
+            "wnc": 2.0,
+            "tnc": 1.7,
+            "vrc": 0,
+            "wno": 3.0,
+            "wnm": 0.0,
+            "total": 4.7
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 7.7
+        },
+        "is_unsat": true,
+        "mutation": "self_contradiction",
+        "original_pattern_id": "conditional_existence",
+        "slot_profile": "easy",
+        "semantic_cluster": 17,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context ProductionLine\ninv: (self.workOrders->size() >= 3 and self.workOrders->size() <= 3) and (self.workOrders->size() < 3)",
+      "pattern_id": "collection_size_range_unsat",
+      "pattern_name": "Collection Size in Range (UNSAT)",
+      "context": "ProductionLine",
+      "parameters": {
+        "collection": "workOrders",
+        "min_size": 3,
+        "max_size": 3
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-15T11:42:40.130249",
+      "metadata": {
+        "category": "collection",
+        "complexity": 2,
+        "generation_number": 6121,
+        "profile": "unboxed",
+        "operators_used": [
+          "-",
+          "<",
+          "<=",
+          "=",
+          ">",
+          ">=",
+          "and",
+          "size"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "unboxed",
+        "operator_count": 8,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 1,
+            "wnc": 2.0,
+            "tnc": 2.5,
+            "vrc": 0,
+            "wno": 3.5,
+            "wnm": 2.0,
+            "total": 8.0
+          },
+          "computational": {
+            "oc": 3.5,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.5
+          },
+          "dependency": {
+            "ruc": 4,
+            "total": 4.0
+          },
+          "tc": 15.5
+        },
+        "is_unsat": true,
+        "mutation": "contradictory_bounds",
+        "original_pattern_id": "collection_size_range",
+        "contradiction_ocl": "context ProductionLine\ninv: self.workOrders->size() < 3",
+        "slot_profile": "medium",
+        "semantic_cluster": 16,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Machine\ninv: ((self.maintenanceTasks->collect(x | x.taskId)->notEmpty()) and (self.maintenanceTasks->size() <= 3)) and (self.maintenanceTasks->size() > 3)",
+      "pattern_id": "collect_operation_unsat",
+      "pattern_name": "Collect (Map) Operation (UNSAT)",
+      "context": "Machine",
+      "parameters": {
+        "collection": "maintenanceTasks",
+        "iterator": "x",
+        "attribute": "taskId"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-15T11:42:40.446381",
+      "metadata": {
+        "category": "collection",
+        "complexity": 2,
+        "generation_number": 6076,
+        "profile": "difficult",
+        "operators_used": [
+          "-",
+          "<",
+          "<=",
+          "=",
+          ">",
+          "and",
+          "collect",
+          "notEmpty",
+          "size"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "difficult",
+        "operator_count": 9,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 5.0,
+            "nnc_plus": 4.0,
+            "dn_ca": 3.0,
+            "wnc": 6.0,
+            "tnc": 4.7,
+            "vrc": 1,
+            "wno": 4.5,
+            "wnm": 3.0,
+            "total": 13.2
+          },
+          "computational": {
+            "oc": 4.5,
+            "tcc": 0.0,
+            "cic": 2.0,
+            "total": 6.5
+          },
+          "dependency": {
+            "ruc": 2,
+            "total": 2.0
+          },
+          "tc": 21.7
+        },
+        "is_unsat": true,
+        "mutation": "contradictory_bounds",
+        "original_pattern_id": "collect_operation",
+        "contradiction_ocl": "context Machine\ninv: self.maintenanceTasks->size() > 3",
+        "slot_profile": "medium",
+        "semantic_cluster": 7,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Sensor\ninv: (self.lastReading > 0) and (self.lastReading < -5)",
+      "pattern_id": "numeric_positive_unsat",
+      "pattern_name": "Numeric Attribute Positive (UNSAT)",
+      "context": "Sensor",
+      "parameters": {
+        "numeric_attribute": "lastReading"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-15T11:42:40.759232",
+      "metadata": {
+        "category": "arithmetic",
+        "complexity": 1,
+        "generation_number": 6353,
+        "profile": "easy",
+        "regenerated_from": "numeric_non_negative",
+        "regen_box": "easy",
+        "regen_family": "arithmetic",
+        "operators_used": [
+          ">"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 1,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 1.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.0,
+            "vrc": 0,
+            "wno": 1.0,
+            "wnm": 0.0,
+            "total": 2.0
+          },
+          "computational": {
+            "oc": 1.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 1.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 3.0
+        },
+        "is_unsat": true,
+        "mutation": "contradictory_bounds",
+        "original_pattern_id": "numeric_positive",
+        "contradiction_ocl": "context Sensor\ninv: self.lastReading < -5",
+        "slot_profile": "easy",
+        "semantic_cluster": 19,
+        "implies": [
+          "navigation_chain_Sensor",
+          "navigation_chain_Sensor",
+          "numeric_positive_Sensor",
+          "numeric_positive_Sensor",
+          "numeric_positive_unsat_Sensor",
+          "numeric_positive_unsat_Sensor"
+        ]
+      }
+    },
+    {
+      "ocl": "context ProductionLine\ninv: ((self.isActive = true) and (self.workOrders->forAll(v | v.plannedQuantity >= 5))) and (self.workOrders->exists(v | not(v.plannedQuantity >= 5)))",
+      "pattern_id": "collection_size_range_unsat",
+      "pattern_name": "Collection Size in Range (UNSAT)",
+      "context": "ProductionLine",
+      "parameters": {
+        "collection": "workOrders",
+        "min_size": 2,
+        "max_size": 3
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-15T11:42:41.363948",
+      "metadata": {
+        "category": "collection",
+        "complexity": 2,
+        "generation_number": 6320,
+        "profile": "unboxed",
+        "regenerated_from": "collection_size_range",
+        "regen_box": "difficult+forall",
+        "regen_family": "arithmetic",
+        "operators_used": [
+          "-",
+          "=",
+          ">",
+          ">=",
+          "and",
+          "forAll"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "unboxed",
+        "operator_count": 6,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 4.0,
+            "dn_ca": 3.0,
+            "wnc": 6.0,
+            "tnc": 4.3,
+            "vrc": 1,
+            "wno": 6.5,
+            "wnm": 1.0,
+            "total": 12.8
+          },
+          "computational": {
+            "oc": 6.5,
+            "tcc": 0.0,
+            "cic": 3.0,
+            "total": 9.5
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 22.3
+        },
+        "is_unsat": true,
+        "mutation": "universal_negation",
+        "original_pattern_id": "collection_size_range",
+        "contradiction_ocl": "context ProductionLine\ninv: self.workOrders->exists(v | not(v.plannedQuantity >= 5))",
+        "contradiction_pattern_id": "exists_nested",
+        "slot_profile": "difficult",
+        "semantic_cluster": 5,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Plant\ninv: ((self.workshops->size() <= 1) and (self.location.size() >= 14)) and (self.workshops->size() > 1)",
+      "pattern_id": "collection_max_size_unsat",
+      "pattern_name": "Collection Maximum Size (UNSAT)",
+      "context": "Plant",
+      "parameters": {
+        "collection": "workshops",
+        "max_size": 1
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-15T11:42:41.688093",
+      "metadata": {
+        "category": "collection",
+        "complexity": 1,
+        "generation_number": 6407,
+        "profile": "medium",
+        "regenerated_from": "collection_min_size",
+        "regen_box": "medium+conjoin",
+        "regen_family": "cardinality",
+        "operators_used": [
+          "-",
+          "<",
+          "<=",
+          "=",
+          ">",
+          ">=",
+          "and",
+          "size"
+        ],
+        "navigation_depth": 3,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 8,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 3.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 1,
+            "wnc": 2.0,
+            "tnc": 2.1,
+            "vrc": 0,
+            "wno": 3.5,
+            "wnm": 2.0,
+            "total": 7.6
+          },
+          "computational": {
+            "oc": 3.5,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.5
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 11.1
+        },
+        "is_unsat": true,
+        "mutation": "contradictory_bounds",
+        "original_pattern_id": "collection_max_size",
+        "contradiction_ocl": "context Plant\ninv: self.workshops->size() > 1",
+        "slot_profile": "medium",
+        "semantic_cluster": 16,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context WorkOrder\ninv: ((self.plannedQuantity > 1) and (self.qualityChecks->forAll(v | v.passed = true))) and (self.plannedQuantity < -4)",
+      "pattern_id": "numeric_odd_unsat",
+      "pattern_name": "Numeric Is Odd (UNSAT)",
+      "context": "WorkOrder",
+      "parameters": {
+        "numeric_attribute": "plannedQuantity"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-15T11:42:41.995102",
+      "metadata": {
+        "category": "arithmetic",
+        "complexity": 2,
+        "generation_number": 6032,
+        "profile": "difficult",
+        "operators_used": [
+          "-",
+          "=",
+          ">",
+          "and",
+          "forAll"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "difficult",
+        "operator_count": 5,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 4.0,
+            "dn_ca": 3.0,
+            "wnc": 6.0,
+            "tnc": 4.3,
+            "vrc": 1,
+            "wno": 6.5,
+            "wnm": 1.0,
+            "total": 12.8
+          },
+          "computational": {
+            "oc": 6.5,
+            "tcc": 0.0,
+            "cic": 3.0,
+            "total": 9.5
+          },
+          "dependency": {
+            "ruc": 6,
+            "total": 6.0
+          },
+          "tc": 28.3
+        },
+        "is_unsat": true,
+        "mutation": "contradictory_bounds",
+        "original_pattern_id": "numeric_odd",
+        "contradiction_ocl": "context WorkOrder\ninv: self.plannedQuantity < -4",
+        "slot_profile": "difficult",
+        "semantic_cluster": 4,
+        "implies": [
+          "numeric_bounded_WorkOrder"
+        ]
+      }
+    },
+    {
+      "ocl": "context Technician\ninv: (self.shift.startTime <> '') and (not(self.shift.startTime <> ''))",
+      "pattern_id": "navigation_chain_unsat",
+      "pattern_name": "Navigation Chain (UNSAT)",
+      "context": "Technician",
+      "parameters": {
+        "navigation_path": "self.shift.startTime <> ''"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-15T11:42:42.286192",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 2,
+        "generation_number": 6018,
+        "profile": "medium",
+        "operators_used": [
+          "<",
+          "<>",
+          ">"
+        ],
+        "navigation_depth": 3,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 2,
+            "wnc": 2.0,
+            "tnc": 2.0,
+            "vrc": 0,
+            "wno": 1.0,
+            "wnm": 0.0,
+            "total": 3.0
+          },
+          "computational": {
+            "oc": 1.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 1.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 4.0
+        },
+        "is_unsat": true,
+        "mutation": "self_contradiction",
+        "original_pattern_id": "navigation_chain",
+        "slot_profile": "easy",
+        "semantic_cluster": 3,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context BillOfMaterials\ninv: (self.items->size() >= 3) and (self.items->size() < 3)",
+      "pattern_id": "collection_min_size_unsat",
+      "pattern_name": "Collection Minimum Size (UNSAT)",
+      "context": "BillOfMaterials",
+      "parameters": {
+        "collection": "items",
+        "min_size": 3
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-15T11:42:42.286218",
+      "metadata": {
+        "category": "collection",
+        "complexity": 1,
+        "generation_number": 6145,
+        "profile": "medium",
+        "operators_used": [
+          "-",
+          "=",
+          ">",
+          ">=",
+          "size"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 5,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.4,
+            "vrc": 0,
+            "wno": 1.0,
+            "wnm": 1.0,
+            "total": 3.4
+          },
+          "computational": {
+            "oc": 1.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 1.0
+          },
+          "dependency": {
+            "ruc": 5,
+            "total": 5.0
+          },
+          "tc": 9.4
+        },
+        "is_unsat": true,
+        "mutation": "contradictory_bounds",
+        "original_pattern_id": "collection_min_size",
+        "contradiction_ocl": "context BillOfMaterials\ninv: self.items->size() < 3",
+        "slot_profile": "easy",
+        "semantic_cluster": 16,
+        "implies": [
+          "collection_min_size_BillOfMaterials",
+          "collection_not_empty_check_unsat_BillOfMaterials"
+        ]
+      }
+    },
+    {
+      "ocl": "context InventoryItem\ninv: (self.plant.name <> '') and (not(self.plant.name <> ''))",
+      "pattern_id": "navigation_chain_unsat",
+      "pattern_name": "Navigation Chain (UNSAT)",
+      "context": "InventoryItem",
+      "parameters": {
+        "navigation_path": "self.plant.name <> ''"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-15T11:42:42.600184",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 2,
+        "generation_number": 6197,
+        "profile": "medium",
+        "regenerated_from": "navigation_chain",
+        "regen_box": "easy",
+        "regen_family": "navigation",
+        "refilled_after": "dedup",
+        "operators_used": [
+          "<",
+          "<>",
+          ">"
+        ],
+        "navigation_depth": 3,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 2,
+            "wnc": 2.0,
+            "tnc": 2.0,
+            "vrc": 0,
+            "wno": 1.0,
+            "wnm": 0.0,
+            "total": 3.0
+          },
+          "computational": {
+            "oc": 1.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 1.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 4.0
+        },
+        "is_unsat": true,
+        "mutation": "self_contradiction",
+        "original_pattern_id": "navigation_chain",
+        "slot_profile": "easy",
+        "semantic_cluster": 0,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context DefectReport\ninv: (self.severity >= 0) and (self.severity < 0)",
+      "pattern_id": "numeric_non_negative_unsat",
+      "pattern_name": "Numeric Attribute Non-Negative (UNSAT)",
+      "context": "DefectReport",
+      "parameters": {
+        "numeric_attribute": "severity"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-15T11:42:42.600216",
+      "metadata": {
+        "category": "arithmetic",
+        "complexity": 1,
+        "generation_number": 6122,
+        "profile": "easy",
+        "operators_used": [
+          "=",
+          ">",
+          ">="
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 1.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.0,
+            "vrc": 0,
+            "wno": 1.0,
+            "wnm": 0.0,
+            "total": 2.0
+          },
+          "computational": {
+            "oc": 1.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 1.0
+          },
+          "dependency": {
+            "ruc": 4,
+            "total": 4.0
+          },
+          "tc": 7.0
+        },
+        "is_unsat": true,
+        "mutation": "contradictory_bounds",
+        "original_pattern_id": "numeric_non_negative",
+        "contradiction_ocl": "context DefectReport\ninv: self.severity < 0",
+        "slot_profile": "easy",
+        "semantic_cluster": 13,
+        "implies": [
+          "simple_navigation_DefectReport"
+        ]
+      }
+    },
+    {
+      "ocl": "context BOMItem\ninv: ((self.requiredQty mod 5 = 0) and (self.requiredQty mod 2 = 0)) and (not((self.requiredQty mod 5 = 0) and (self.requiredQty mod 2 = 0)))",
+      "pattern_id": "numeric_multiple_of_unsat",
+      "pattern_name": "Numeric Multiple Of (UNSAT)",
+      "context": "BOMItem",
+      "parameters": {
+        "numeric_attribute": "requiredQty",
+        "divisor": 5
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-15T11:42:43.195142",
+      "metadata": {
+        "category": "arithmetic",
+        "complexity": 2,
+        "generation_number": 6093,
+        "profile": "unboxed",
+        "operators_used": [
+          "=",
+          "and",
+          "mod"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "unboxed",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 1,
+            "wnc": 2.0,
+            "tnc": 1.7,
+            "vrc": 0,
+            "wno": 5.5,
+            "wnm": 0.0,
+            "total": 7.2
+          },
+          "computational": {
+            "oc": 3.5,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.5
+          },
+          "dependency": {
+            "ruc": 5,
+            "total": 5.0
+          },
+          "tc": 15.7
+        },
+        "is_unsat": true,
+        "mutation": "self_contradiction",
+        "original_pattern_id": "numeric_multiple_of",
+        "slot_profile": "medium",
+        "semantic_cluster": 5,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Shift\ninv: ((self.operators->notEmpty()) and (self.operators->any(x | x.name <> '') <> null)) and (self.operators->isEmpty())",
+      "pattern_id": "collection_not_empty_simple_unsat",
+      "pattern_name": "Collection Not Empty (Simple) (UNSAT)",
+      "context": "Shift",
+      "parameters": {
+        "collection": "operators"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-15T11:42:43.195176",
+      "metadata": {
+        "category": "collection",
+        "complexity": 1,
+        "generation_number": 6403,
+        "profile": "difficult",
+        "regenerated_from": "two_attributes_not_equal",
+        "regen_box": "medium+conjoin",
+        "regen_family": "cardinality",
+        "operators_used": [
+          "-",
+          "<",
+          "<>",
+          ">",
+          "and",
+          "any",
+          "notEmpty"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "difficult",
+        "operator_count": 7,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 5.0,
+            "nnc_plus": 4.0,
+            "dn_ca": 3.0,
+            "wnc": 6.0,
+            "tnc": 4.7,
+            "vrc": 1,
+            "wno": 3.5,
+            "wnm": 2.0,
+            "total": 11.2
+          },
+          "computational": {
+            "oc": 3.5,
+            "tcc": 0.0,
+            "cic": 2.0,
+            "total": 5.5
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 16.7
+        },
+        "is_unsat": true,
+        "mutation": "empty_collection",
+        "original_pattern_id": "collection_not_empty_simple",
+        "contradiction_ocl": "context Shift\ninv: self.operators->isEmpty()",
+        "slot_profile": "medium",
+        "semantic_cluster": 20,
+        "implies": []
+      }
+    }
+  ]
+}

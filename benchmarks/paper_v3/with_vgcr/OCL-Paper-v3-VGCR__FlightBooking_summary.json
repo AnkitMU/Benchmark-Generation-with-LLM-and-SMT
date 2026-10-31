@@ -1,0 +1,212 @@
+{
+  "suite_name": "OCL-Paper-v3-VGCR__FlightBooking",
+  "version": "3.0",
+  "generated_at": "2026-10-16T00:58:50.008152",
+  "research_features_enabled": true,
+  "models": [
+    {
+      "model": "FlightBooking",
+      "xmi": "models/flight_booking.xmi",
+      "profiles": [
+        {
+          "profile": "balanced",
+          "seed": 42,
+          "complexity": "standard",
+          "output_dir": "benchmarks/paper_v3/with_vgcr/FlightBooking",
+          "research_features_applied": [
+            "metadata_enrichment",
+            "vgcr_refinement",
+            "unsat_generation",
+            "ast_similarity",
+            "semantic_similarity",
+            "implication_checking",
+            "manifest_generation"
+          ],
+          "constraint_count": 81,
+          "initial_sat_count": 85,
+          "dedup": {
+            "removed": 11,
+            "refilled": 7,
+            "unfilled": [
+              {
+                "pattern": "collection_size_range",
+                "context": "Booking",
+                "profile": "difficult"
+              },
+              {
+                "pattern": "flatten_operation",
+                "context": "Airline",
+                "profile": "difficult"
+              },
+              {
+                "pattern": "flatten_operation",
+                "context": "Passenger",
+                "profile": "difficult"
+              },
+              {
+                "pattern": "collection_collectNested",
+                "context": "Flight",
+                "profile": "difficult"
+              }
+            ]
+          },
+          "vgcr_stats": {
+            "total_candidates": 81,
+            "passed": 81,
+            "passed_first_try": 63,
+            "passed_after_retry": 18,
+            "failed": 0,
+            "pass_rate": "100.0%",
+            "total_retries": 25,
+            "failure_breakdown": {
+              "tautology": 1,
+              "contradiction": 2,
+              "inconsistent": 13
+            },
+            "total_smt_queries": 232,
+            "total_smt_time_s": 7631.477,
+            "independence_checked": 0,
+            "independence_skipped": 94,
+            "total_time_s": 7632.156,
+            "duplicates_rejected": 0,
+            "unfilled_slots": [],
+            "generator_refinement": {
+              "total_refinements": 16,
+              "blacklisted_pattern_contexts": 2,
+              "blacklisted_bindings": 28,
+              "weight_modifications": 10,
+              "action_breakdown": {
+                "blacklist_bindings_and_downweight": 13,
+                "down_weight_pattern": 1,
+                "blacklist_pattern_context": 2
+              }
+            }
+          },
+          "vgcr_accepted": 81,
+          "vgcr_rejected": 0,
+          "sat_count_after_mutation": 65,
+          "unsat_count_after_mutation": 16,
+          "unsat_measured_tiers": {
+            "unboxed": 11,
+            "medium": 2,
+            "difficult": 2,
+            "easy": 1
+          },
+          "consistency_verified": true,
+          "semantic_clusters": 10,
+          "implication_count": 54,
+          "valid_count": 65,
+          "sat_count": 65,
+          "unsat_count": 16,
+          "unknown_count": 0,
+          "verified_count": 65,
+          "fallback_unknown_count": 0,
+          "skipped_unsat_count": 16,
+          "intentional_unsat_count": 16,
+          "post_refine_coverage_deficit": {},
+          "final_suite": {
+            "delivered": 81,
+            "sat": 65,
+            "unsat": 16,
+            "slot_tier_distribution": {
+              "difficult": 21,
+              "easy": 28,
+              "medium": 32
+            },
+            "requested_tier_distribution": {
+              "easy": 40,
+              "medium": 35,
+              "difficult": 25
+            },
+            "sat_tier_distribution": {
+              "difficult": 13,
+              "easy": 25,
+              "medium": 27
+            },
+            "unsat_measured_tier_distribution": {
+              "unboxed": 11,
+              "medium": 2,
+              "difficult": 2,
+              "easy": 1
+            },
+            "family_distribution": {
+              "arithmetic": 24,
+              "navigation": 24,
+              "quantified": 9,
+              "cardinality": 24
+            },
+            "requested_family_distribution": {
+              "cardinality": 30,
+              "arithmetic": 25,
+              "navigation": 25,
+              "quantified": 20
+            },
+            "complexity_fidelity_sat": {
+              "boxed_constraints": 65,
+              "in_box": 65,
+              "in_box_rate": 1.0,
+              "unlabeled_constraints": 0,
+              "out_of_box": []
+            },
+            "class_coverage": {
+              "min_per_class": 1,
+              "classes": 12,
+              "covered": 12,
+              "below_min": {}
+            },
+            "slot_accounting": {
+              "requested": 100,
+              "generated": 85,
+              "generation_gaps": 15,
+              "dedup_removed": 11,
+              "dedup_refilled": 7,
+              "dedup_unfilled": 4,
+              "vgcr_regenerated": 18,
+              "vgcr_unfilled": 0,
+              "late_duplicates_removed": 0,
+              "unsat_trimmed_for_ratio": 0,
+              "delivered": 81
+            },
+            "dedup_unfilled_slots": [
+              {
+                "pattern": "collection_size_range",
+                "context": "Booking",
+                "profile": "difficult"
+              },
+              {
+                "pattern": "flatten_operation",
+                "context": "Airline",
+                "profile": "difficult"
+              },
+              {
+                "pattern": "flatten_operation",
+                "context": "Passenger",
+                "profile": "difficult"
+              },
+              {
+                "pattern": "collection_collectNested",
+                "context": "Flight",
+                "profile": "difficult"
+              }
+            ],
+            "vgcr_unfilled_slots": [],
+            "coverage_repairs": []
+          },
+          "status": "success",
+          "generation_time_s": 7676.0
+        }
+      ],
+      "total_constraints": 81,
+      "total_valid": 65,
+      "total_sat": 65,
+      "total_unsat": 16,
+      "total_unknown": 0
+    }
+  ],
+  "total_constraints": 81,
+  "total_sat": 65,
+  "total_unsat": 16,
+  "total_valid": 65,
+  "total_unknown": 0,
+  "total_generation_time_s": 7676.0
+}

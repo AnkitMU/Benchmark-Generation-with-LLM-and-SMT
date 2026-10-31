@@ -1,0 +1,107 @@
+-- Benchmark: IoTSensorNetwork / balanced
+-- Type: UNSAT Constraints Only
+-- Generated: 2026-10-15T04:39:49.750303
+-- Count: 17
+
+-- #1 Navigation Consistency (UNSAT) in MaintenanceTicket
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context MaintenanceTicket
+inv: (self.otaUpdate.targetDevice = self.device) and (not(self.otaUpdate.targetDevice = self.device))
+
+-- #2 Collection Size Constraint (UNSAT) in DataStream
+-- Difficulty: medium
+-- Mutation Strategy: contradictory_bounds
+context DataStream
+inv: (self.alertRules->size() = 1) and (self.alertRules->size() <> 1)
+
+-- #3 Collection Size Constraint (UNSAT) in AccessPolicy
+-- Difficulty: medium
+-- Mutation Strategy: contradictory_bounds
+context AccessPolicy
+inv: (self.roles->size() > 1) and (self.roles->size() < -4)
+
+-- #4 Numeric Is Even (UNSAT) in CommunicationLink
+-- Difficulty: medium
+-- Mutation Strategy: self_contradiction
+context CommunicationLink
+inv: (self.bandwidthKbps mod 2 = 0) and (not(self.bandwidthKbps mod 2 = 0))
+
+-- #5 Navigation Chain (UNSAT) in PowerSource
+-- Difficulty: medium
+-- Mutation Strategy: contradictory_bounds
+context PowerSource
+inv: ((self.device.firmware.checksum <> '') and (self.capacity > 0)) and (self.capacity < -5)
+
+-- #6 Numeric Attribute Bounded (UNSAT) in CommunicationLink
+-- Difficulty: medium
+-- Mutation Strategy: contradictory_bounds
+context CommunicationLink
+inv: (self.bandwidthKbps >= 42 and self.bandwidthKbps <= 64) and (self.bandwidthKbps < 42)
+
+-- #7 Collection Not Empty Check (UNSAT) in Cluster
+-- Difficulty: difficult
+-- Mutation Strategy: contradictory_bounds
+context Cluster
+inv: ((self.gateways->size() > 0) and (self.gateways->collect(x | x.ipAddress)->notEmpty())) and (self.gateways->size() < -5)
+
+-- #8 Conditional Existence (UNSAT) in CommunicationLink
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context CommunicationLink
+inv: (self.isSecure implies self.stream <> null) and (not(self.isSecure implies self.stream <> null))
+
+-- #9 Numeric Attribute Positive (UNSAT) in Battery
+-- Difficulty: easy
+-- Mutation Strategy: contradictory_bounds
+context Battery
+inv: (self.healthPct > 0) and (self.healthPct < -5)
+
+-- #10 Numeric Attribute Positive (UNSAT) in EdgeNode
+-- Difficulty: easy
+-- Mutation Strategy: contradictory_bounds
+context EdgeNode
+inv: (self.memoryMB > 0) and (self.memoryMB < -5)
+
+-- #11 Navigation Consistency (UNSAT) in EdgeNode
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context EdgeNode
+inv: (self.gateway.cluster = self.cluster) and (not(self.gateway.cluster = self.cluster))
+
+-- #12 Collection Maximum Size (UNSAT) in Cluster
+-- Difficulty: medium
+-- Mutation Strategy: contradictory_bounds
+context Cluster
+inv: (self.gateways->size() <= 3) and (self.gateways->size() > 3)
+
+-- #13 Collection As Sequence Conversion (UNSAT) in AccessPolicy
+-- Difficulty: unboxed
+-- Mutation Strategy: universal_negation
+context AccessPolicy
+inv: ((self.description <> '') and (self.roles->forAll(v | v.roleName <> ''))) and (self.roles->exists(v | not(v.roleName <> '')))
+
+-- #14 Collection Size Constraint (UNSAT) in AccessPolicy
+-- Difficulty: medium
+-- Mutation Strategy: contradictory_bounds
+context AccessPolicy
+inv: (self.roles->size() <= 1) and (self.roles->size() > 1)
+
+-- #15 Navigation Chain (UNSAT) in TelemetryRecord
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context TelemetryRecord
+inv: ((self.stream.device.name <> '') and (self.payload.toLowerCase() = 'test')) and (not((self.stream.device.name <> '') and (self.payload.toLowerCase() = 'test')))
+
+-- #16 Collection Sum (UNSAT) in SensorNode
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context SensorNode
+inv: ((self.metrics->collect(x | x.lastValue)->sum() >= 9) and (self.metrics->one(x | x.lastValue >= 10))) and (not((self.metrics->collect(x | x.lastValue)->sum() >= 9) and (self.metrics->one(x | x.lastValue >= 10))))
+
+-- #17 Collection Size in Range (UNSAT) in Cluster
+-- Difficulty: unboxed
+-- Mutation Strategy: universal_negation
+context Cluster
+inv: ((self.clusterId <> '') and (self.edgeNodes->forAll(v | v.cpuCores > 5))) and (self.edgeNodes->exists(v | not(v.cpuCores > 5)))
+

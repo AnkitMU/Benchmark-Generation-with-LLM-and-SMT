@@ -1,0 +1,553 @@
+-- Benchmark: HospitalSystem / balanced
+-- Generated: 2026-10-12T20:17:19.867301
+-- Seed: 42
+-- Complexity: standard
+-- Count: 91
+-- Advanced Features: ENABLED
+
+-- #1 Simple Navigation in Admission
+-- Difficulty: easy
+-- Type: SAT
+context Admission
+inv: self.patient.isInsured
+
+-- #2 Navigation Chain in Department
+-- Difficulty: easy
+-- Type: SAT
+context Department
+inv: self.hospital.name <> ''
+
+-- #3 Numeric Greater Than Value in Ward
+-- Difficulty: difficult
+-- Type: SAT
+context Ward
+inv: (self.floor > 1) and (self.rooms->forAll(v | v.roomNo <> ''))
+
+-- #4 Numeric Is Even in Ward
+-- Difficulty: difficult
+-- Type: SAT
+context Ward
+inv: (self.floor mod 2 = 0) and (self.rooms->forAll(v | v.roomNo <> ''))
+
+-- #5 Collection Navigation in Patient
+-- Difficulty: difficult
+-- Type: SAT
+context Patient
+inv: self.admissions->exists(x | x.admitDate <> '')
+
+-- #6 Numeric Is Odd in Ward
+-- Difficulty: difficult
+-- Type: SAT
+context Ward
+inv: (self.floor < 50) and (self.rooms->forAll(v | v.type <> ''))
+
+-- #7 Numeric Is Even in Ward
+-- Difficulty: difficult
+-- Type: SAT
+context Ward
+inv: (self.floor < 10) and (self.rooms->forAll(v | v.type <> ''))
+
+-- #8 Association Exists in Discharge
+-- Difficulty: easy
+-- Type: SAT
+context Discharge
+inv: self.admission <> null
+
+-- #9 Association Exists in Medication
+-- Difficulty: medium
+-- Type: SAT
+context Medication
+inv: (self.prescription <> null) and (self.prescription.oclIsTypeOf(Prescription))
+
+-- #10 Association Exists in Nurse
+-- Difficulty: easy
+-- Type: SAT
+context Nurse
+inv: self.department <> null
+
+-- #11 Association Exists in Diagnosis
+-- Difficulty: medium
+-- Type: SAT
+context Diagnosis
+inv: (self.record <> null) and (self.code.toUpperCase() = 'TEST')
+
+-- #12 Association Exists in LabResult
+-- Difficulty: easy
+-- Type: SAT
+context LabResult
+inv: self.test <> null
+
+-- #13 Association Exists in Payment
+-- Difficulty: medium
+-- Type: SAT
+context Payment
+inv: (self.invoice <> null) and (self.paidAt.size() >= 1)
+
+-- #14 Association Exists in LabTest
+-- Difficulty: easy
+-- Type: SAT
+context LabTest
+inv: self.record <> null
+
+-- #15 Association Exists in Department
+-- Difficulty: easy
+-- Type: SAT
+context Department
+inv: self.hospital <> null
+
+-- #16 Association Exists in Bed
+-- Difficulty: easy
+-- Type: SAT
+context Bed
+inv: self.room <> null
+
+-- #17 Association Exists in Appointment
+-- Difficulty: easy
+-- Type: SAT
+context Appointment
+inv: self.doctor <> null
+
+-- #18 Association Exists in InsurancePolicy
+-- Difficulty: medium
+-- Type: SAT
+context InsurancePolicy
+inv: (self.patient <> null) and (self.patient.oclIsTypeOf(Patient))
+
+-- #19 Association Exists in Admission
+-- Difficulty: medium
+-- Type: SAT
+context Admission
+inv: (self.patient <> null) and (self.patient.insurance.policyNo <> '')
+
+-- #20 Association Exists in Admission
+-- Difficulty: easy
+-- Type: SAT
+context Admission
+inv: self.patient <> null
+
+-- #21 Association Exists in Admission
+-- Difficulty: easy
+-- Type: SAT
+context Admission
+inv: self.discharge <> null
+
+-- #22 Navigation Chain in Appointment
+-- Difficulty: medium
+-- Type: SAT
+context Appointment
+inv: self.patient.insurance.policyNo <> ''
+
+-- #23 Simple Navigation in Appointment
+-- Difficulty: medium
+-- Type: SAT
+context Appointment
+inv: (self.patient.isInsured) and (self.dateTime <> null)
+
+-- #24 Navigation Chain in Bed
+-- Difficulty: medium
+-- Type: SAT
+context Bed
+inv: (self.room.ward.floor < 50) and (self.bedNo <> null)
+
+-- #25 Simple Navigation in Appointment
+-- Difficulty: medium
+-- Type: SAT
+context Appointment
+inv: (self.patient.isInsured) and (self.dateTime <> '' and self.dateTime.size() > 0)
+
+-- #26 Simple Navigation in Admission
+-- Difficulty: medium
+-- Type: SAT
+context Admission
+inv: (self.patient.isInsured) and (self.admitDate <> '' and self.admitDate.size() > 0)
+
+-- #27 Navigation Chain in Bed
+-- Difficulty: medium
+-- Type: SAT
+context Bed
+inv: self.room.ward.floor <= 50
+
+-- #28 Simple Navigation in Appointment
+-- Difficulty: medium
+-- Type: SAT
+context Appointment
+inv: (self.patient.isInsured) and (self.patient <> null)
+
+-- #29 Simple Navigation in InsurancePolicy
+-- Difficulty: medium
+-- Type: SAT
+context InsurancePolicy
+inv: ((self.patient.isInsured) and (self.validUntil.size() = 25)) and (self.patient <> null)
+
+-- #30 Numeric Attribute Positive in Ward
+-- Difficulty: easy
+-- Type: SAT
+context Ward
+inv: self.floor > 0
+
+-- #31 Numeric Less Than Value in Ward
+-- Difficulty: easy
+-- Type: SAT
+context Ward
+inv: self.floor < 81
+
+-- #32 Numeric Absolute Value Bounded in Payment
+-- Difficulty: easy
+-- Type: SAT
+context Payment
+inv: self.amount.abs() <= 10
+
+-- #33 Numeric Less Than Value in Ward
+-- Difficulty: easy
+-- Type: SAT
+context Ward
+inv: self.floor < 94
+
+-- #34 Numeric Greater Than Value in Ward
+-- Difficulty: easy
+-- Type: SAT
+context Ward
+inv: self.floor > 10
+
+-- #35 Numeric Multiple Of in Ward
+-- Difficulty: easy
+-- Type: SAT
+context Ward
+inv: self.floor mod 7 = 0
+
+-- #36 Numeric Absolute Value Bounded in Invoice
+-- Difficulty: easy
+-- Type: SAT
+context Invoice
+inv: self.totalAmount.abs() <= 7
+
+-- #37 Numeric Attribute Positive in Invoice
+-- Difficulty: easy
+-- Type: SAT
+context Invoice
+inv: self.totalAmount > 0
+
+-- #38 Numeric Greater Than Value in Invoice
+-- Difficulty: easy
+-- Type: SAT
+context Invoice
+inv: self.totalAmount > 60
+
+-- #39 Numeric Absolute Value Bounded in Invoice
+-- Difficulty: medium
+-- Type: SAT
+context Invoice
+inv: self.totalAmount.abs() <= 9
+
+-- #40 Numeric Attribute Bounded in Invoice
+-- Difficulty: medium
+-- Type: SAT
+context Invoice
+inv: self.totalAmount >= 5 and self.totalAmount <= 78
+
+-- #41 Numeric Attribute Bounded in Invoice
+-- Difficulty: medium
+-- Type: SAT
+context Invoice
+inv: self.totalAmount >= 39 and self.totalAmount <= 78
+
+-- #42 Numeric Absolute Value Bounded in Payment
+-- Difficulty: medium
+-- Type: SAT
+context Payment
+inv: self.amount.abs() <= 4
+
+-- #43 Numeric Absolute Value Bounded in Ward
+-- Difficulty: medium
+-- Type: SAT
+context Ward
+inv: self.floor.abs() <= 10
+
+-- #44 Numeric Multiple Of in Ward
+-- Difficulty: medium
+-- Type: SAT
+context Ward
+inv: (self.floor mod 2 = 0) and (self.name.size() = 41)
+
+-- #45 Numeric Absolute Value Bounded in Ward
+-- Difficulty: medium
+-- Type: SAT
+context Ward
+inv: self.floor.abs() <= 6
+
+-- #46 Numeric Attribute Bounded in Payment
+-- Difficulty: medium
+-- Type: SAT
+context Payment
+inv: self.amount >= 9 and self.amount <= 17
+
+-- #47 Any Operation in Hospital
+-- Difficulty: difficult
+-- Type: SAT
+context Hospital
+inv: self.departments->any(x | x.name <> '') <> null
+
+-- #48 Any Operation in Department
+-- Difficulty: difficult
+-- Type: SAT
+context Department
+inv: self.doctors->any(x | x.doctorId <> '') <> null
+
+-- #49 Collection Not Empty Check in MedicalRecord
+-- Difficulty: medium
+-- Type: SAT
+context MedicalRecord
+inv: (self.prescriptions->size() > 0) and (self.patient.oclIsTypeOf(Patient))
+
+-- #50 Collection Maximum Size in Patient
+-- Difficulty: medium
+-- Type: SAT
+context Patient
+inv: self.records->size() <= 1
+
+-- #51 Collection Size Constraint in Hospital
+-- Difficulty: medium
+-- Type: SAT
+context Hospital
+inv: self.departments->size() <= 1
+
+-- #52 Collection Has Specific Size in Doctor
+-- Difficulty: easy
+-- Type: SAT
+context Doctor
+inv: self.appointments->size() = 3
+
+-- #53 Collection Not Empty Check in MedicalRecord
+-- Difficulty: easy
+-- Type: SAT
+context MedicalRecord
+inv: self.prescriptions->size() > 0
+
+-- #54 Collection Maximum Size in Hospital
+-- Difficulty: medium
+-- Type: SAT
+context Hospital
+inv: self.departments->size() <= 3
+
+-- #55 Collection Not Empty Check in Hospital
+-- Difficulty: easy
+-- Type: SAT
+context Hospital
+inv: self.departments->size() > 0
+
+-- #56 Collection Not Empty Check in Patient
+-- Difficulty: easy
+-- Type: SAT
+context Patient
+inv: self.records->size() > 0
+
+-- #57 Collection Must Be Empty in MedicalRecord
+-- Difficulty: easy
+-- Type: SAT
+context MedicalRecord
+inv: self.procedures->isEmpty()
+
+-- #58 Collection Maximum Size in Department
+-- Difficulty: medium
+-- Type: SAT
+context Department
+inv: self.nurses->size() <= 3
+
+-- #59 Collection Size Constraint in MedicalRecord
+-- Difficulty: easy
+-- Type: SAT
+context MedicalRecord
+inv: self.procedures->size() <= 1
+
+-- #60 Collection Minimum Size in Doctor
+-- Difficulty: medium
+-- Type: SAT
+context Doctor
+inv: self.appointments->size() >= 2
+
+-- #61 Collection Not Empty (Simple) in Doctor
+-- Difficulty: easy
+-- Type: SAT
+context Doctor
+inv: self.appointments->notEmpty()
+
+-- #62 Collection Has Specific Size in Patient
+-- Difficulty: easy
+-- Type: SAT
+context Patient
+inv: self.appointments->size() = 2
+
+-- #63 Collection Nested Collection Flatten in Department
+-- Difficulty: difficult
+-- Type: SAT
+context Department
+inv: self.doctors->collect(x | x.appointments)->size() >= 2
+
+-- #64 Flatten Operation in Hospital
+-- Difficulty: difficult
+-- Type: SAT
+context Hospital
+inv: self.wards->collect(x | x.rooms)->flatten()->notEmpty()
+
+-- #65 Flatten Operation in Hospital
+-- Difficulty: difficult
+-- Type: SAT
+context Hospital
+inv: self.departments->collect(x | x.doctors)->flatten()->notEmpty()
+
+-- #66 Numeric Attribute Bounded in Ward
+-- Difficulty: difficult
+-- Type: SAT
+context Ward
+inv: (self.floor < 1000) and (self.rooms->forAll(v | v.roomNo <> ''))
+
+-- #67 Association Exists in Admission
+-- Difficulty: easy
+-- Type: SAT
+context Admission
+inv: self.bed <> null
+
+-- #68 Existential Quantification (exists) in Hospital
+-- Difficulty: difficult
+-- Type: SAT
+context Hospital
+inv: self.wards->exists(x | x.floor < 50)
+
+-- #69 Collection Not Empty (Simple) in Ward
+-- Difficulty: difficult
+-- Type: SAT
+context Ward
+inv: (self.rooms->notEmpty()) and (self.rooms->forAll(v | v.type <> ''))
+
+-- #70 Attribute Not Null (Simple) in Department
+-- Difficulty: difficult
+-- Type: SAT
+context Department
+inv: (self.name <> '') and (self.nurses->forAll(v | v.nurseId <> ''))
+
+-- #71 Collection As Sequence Conversion in MedicalRecord
+-- Difficulty: difficult
+-- Type: SAT
+context MedicalRecord
+inv: (self.recordNo <> '') and (self.procedures->forAll(v | v.performedAt <> ''))
+
+-- #72 Attribute Not Null (Simple) in Department
+-- Difficulty: difficult
+-- Type: SAT
+context Department
+inv: (self.phone <> '') and (self.nurses->forAll(v | v.shift <> ''))
+
+-- #73 Collection As Sequence Conversion in Ward
+-- Difficulty: difficult
+-- Type: SAT
+context Ward
+inv: (self.rooms->asSequence()->notEmpty()) and (self.rooms->forAll(v | v.type <> ''))
+
+-- #74 Collection Not Empty (Simple) (UNSAT) in Department
+-- Difficulty: medium
+-- Type: UNSAT
+context Department
+inv: (self.nurses->notEmpty()) and (self.nurses->isEmpty())
+
+-- #75 Navigation Chain (UNSAT) in Bed
+-- Difficulty: unboxed
+-- Type: UNSAT
+context Bed
+inv: (self.room.ward.floor <= 1000) and (not(self.room.ward.floor <= 1000))
+
+-- #76 Navigation Chain (UNSAT) in Room
+-- Difficulty: unboxed
+-- Type: UNSAT
+context Room
+inv: ((self.type <> '') and (self.beds->forAll(v | v.isOccupied = true))) and (not((self.type <> '') and (self.beds->forAll(v | v.isOccupied = true))))
+
+-- #77 Numeric Attribute Non-Negative (UNSAT) in Ward
+-- Difficulty: unboxed
+-- Type: UNSAT
+context Ward
+inv: ((self.floor > 0) and (self.rooms->forAll(v | v.roomNo <> ''))) and (self.floor < -5)
+
+-- #78 Collection Nested Collection Flatten (UNSAT) in Ward
+-- Difficulty: unboxed
+-- Type: UNSAT
+context Ward
+inv: (self.rooms->collect(x | x.beds)->size() >= 1) and (not(self.rooms->collect(x | x.beds)->size() >= 1))
+
+-- #79 Navigation Chain (UNSAT) in Prescription
+-- Difficulty: unboxed
+-- Type: UNSAT
+context Prescription
+inv: ((self.issuedAt <> '') and (self.medications->forAll(v | v.name <> ''))) and (not((self.issuedAt <> '') and (self.medications->forAll(v | v.name <> ''))))
+
+-- #80 Navigation Chain (UNSAT) in Diagnosis
+-- Difficulty: unboxed
+-- Type: UNSAT
+context Diagnosis
+inv: (self.record.patient.isInsured <> true) and (not(self.record.patient.isInsured <> true))
+
+-- #81 Attribute Not Null (Simple) (UNSAT) in Person
+-- Difficulty: unboxed
+-- Type: UNSAT
+context Person
+inv: (self.fullName <> null) and (not(self.fullName <> null))
+
+-- #82 Navigation Chain (UNSAT) in Bed
+-- Difficulty: unboxed
+-- Type: UNSAT
+context Bed
+inv: (self.room.ward.floor <= 10) and (not(self.room.ward.floor <= 10))
+
+-- #83 Navigation Chain (UNSAT) in Appointment
+-- Difficulty: unboxed
+-- Type: UNSAT
+context Appointment
+inv: (self.patient.insurance.validUntil <> '') and (not(self.patient.insurance.validUntil <> ''))
+
+-- #84 Association Exists (UNSAT) in Bed
+-- Difficulty: unboxed
+-- Type: UNSAT
+context Bed
+inv: ((self.room <> null) and (self.isOccupied = false)) and (not((self.room <> null) and (self.isOccupied = false)))
+
+-- #85 Collection Size Constraint (UNSAT) in MedicalRecord
+-- Difficulty: medium
+-- Type: UNSAT
+context MedicalRecord
+inv: (self.prescriptions->size() <= 1) and (self.prescriptions->size() > 1)
+
+-- #86 Flatten Operation (UNSAT) in MedicalRecord
+-- Difficulty: unboxed
+-- Type: UNSAT
+context MedicalRecord
+inv: (self.prescriptions->collect(x | x.medications)->flatten()->notEmpty()) and (not(self.prescriptions->collect(x | x.medications)->flatten()->notEmpty()))
+
+-- #87 Simple Navigation (UNSAT) in Admission
+-- Difficulty: medium
+-- Type: UNSAT
+context Admission
+inv: (self.bed.isOccupied) and (not(self.bed.isOccupied))
+
+-- #88 Navigation Chain (UNSAT) in Ward
+-- Difficulty: unboxed
+-- Type: UNSAT
+context Ward
+inv: (self.hospital.address <> '') and (not(self.hospital.address <> ''))
+
+-- #89 Association Exists (UNSAT) in Procedure
+-- Difficulty: unboxed
+-- Type: UNSAT
+context Procedure
+inv: ((self.doctor <> null) and (self.record.patient.isInsured = false)) and (not((self.doctor <> null) and (self.record.patient.isInsured = false)))
+
+-- #90 Numeric Less Than Value (UNSAT) in Payment
+-- Difficulty: easy
+-- Type: UNSAT
+context Payment
+inv: (self.amount < 15) and (self.amount > 20)
+
+-- #91 Numeric Absolute Value Bounded (UNSAT) in Payment
+-- Difficulty: unboxed
+-- Type: UNSAT
+context Payment
+inv: (self.amount.abs() <= 8) and (not(self.amount.abs() <= 8))
+

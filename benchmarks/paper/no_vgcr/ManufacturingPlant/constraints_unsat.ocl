@@ -1,0 +1,113 @@
+-- Benchmark: ManufacturingPlant / balanced
+-- Type: UNSAT Constraints Only
+-- Generated: 2026-10-12T20:26:19.476372
+-- Count: 18
+
+-- #1 Collection Size in Range (UNSAT) in ProductionLine
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context ProductionLine
+inv: ((self.isActive <> true) and (self.stations->forAll(v | v.stationId <> ''))) and (not((self.isActive <> true) and (self.stations->forAll(v | v.stationId <> ''))))
+
+-- #2 Two Attributes Not Equal (UNSAT) in Shift
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Shift
+inv: (self.startTime <> self.endTime) and (not(self.startTime <> self.endTime))
+
+-- #3 Collection Navigation (UNSAT) in Plant
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Plant
+inv: (self.suppliers->exists(x | x.name <> '')) and (not(self.suppliers->exists(x | x.name <> '')))
+
+-- #4 Collection Size in Range (UNSAT) in BillOfMaterials
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context BillOfMaterials
+inv: ((self.bomId <> '') and (self.items->forAll(v | v.requiredQty <= 50))) and (not((self.bomId <> '') and (self.items->forAll(v | v.requiredQty <= 50))))
+
+-- #5 Numeric Multiple Of (UNSAT) in BOMItem
+-- Difficulty: medium
+-- Mutation Strategy: self_contradiction
+context BOMItem
+inv: (self.requiredQty mod 4 = 0) and (not(self.requiredQty mod 4 = 0))
+
+-- #6 Navigation Chain (UNSAT) in Operator
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Operator
+inv: (self.shift.endTime <> '') and (not(self.shift.endTime <> ''))
+
+-- #7 Numeric Absolute Value Bounded (UNSAT) in InventoryItem
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context InventoryItem
+inv: (self.quantity.abs() <= 5) and (not(self.quantity.abs() <= 5))
+
+-- #8 Association Exists (UNSAT) in BOMItem
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context BOMItem
+inv: ((self.inventoryItem <> null) and (self.requiredQty mod 3 = 0)) and (not((self.inventoryItem <> null) and (self.requiredQty mod 3 = 0)))
+
+-- #9 Any Operation (UNSAT) in BillOfMaterials
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context BillOfMaterials
+inv: ((self.items->any(x | x.requiredQty > 1) <> null) and (self.bomId.indexOf('test') >= 0)) and (not((self.items->any(x | x.requiredQty > 1) <> null) and (self.bomId.indexOf('test') >= 0)))
+
+-- #10 Numeric Absolute Value Bounded (UNSAT) in WorkOrder
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context WorkOrder
+inv: ((self.plannedQuantity <= 50) and (self.qualityChecks->forAll(v | v.passed <> false))) and (not((self.plannedQuantity <= 50) and (self.qualityChecks->forAll(v | v.passed <> false))))
+
+-- #11 Flatten Operation (UNSAT) in ProductionLine
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context ProductionLine
+inv: (self.stations->collect(x | x.machines)->flatten()->notEmpty()) and (not(self.stations->collect(x | x.machines)->flatten()->notEmpty()))
+
+-- #12 Association Exists (UNSAT) in BOMItem
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context BOMItem
+inv: ((self.inventoryItem <> null) and (self.requiredQty > 77)) and (not((self.inventoryItem <> null) and (self.requiredQty > 77)))
+
+-- #13 Numeric Absolute Value Bounded (UNSAT) in BOMItem
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context BOMItem
+inv: (self.requiredQty.abs() <= 4) and (not(self.requiredQty.abs() <= 4))
+
+-- #14 Simple Navigation (UNSAT) in WorkOrder
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context WorkOrder
+inv: (((self.line.isActive) and (self.plannedQuantity > 0)) and (self.qualityChecks->size() >= 1)) and (not(((self.line.isActive) and (self.plannedQuantity > 0)) and (self.qualityChecks->size() >= 1)))
+
+-- #15 Numeric Greater Than Value (UNSAT) in InventoryItem
+-- Difficulty: easy
+-- Mutation Strategy: contradictory_bounds
+context InventoryItem
+inv: (self.quantity > 75) and (self.quantity < 70)
+
+-- #16 Numeric Absolute Value Bounded (UNSAT) in Product
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Product
+inv: (self.unitPrice.abs() <= 0) and (not(self.unitPrice.abs() <= 0))
+
+-- #17 Collection Size Constraint (UNSAT) in BillOfMaterials
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context BillOfMaterials
+inv: (self.items->size() <> 1) and (not(self.items->size() <> 1))
+
+-- #18 Collection Minimum Size (UNSAT) in Plant
+-- Difficulty: medium
+-- Mutation Strategy: contradictory_bounds
+context Plant
+inv: (self.workshops->size() >= 2) and (self.workshops->size() < 2)
+

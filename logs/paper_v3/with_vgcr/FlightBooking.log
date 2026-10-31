@@ -1,0 +1,146 @@
+
+======================================================================
+OCL Benchmark Suite Generator v3.0
+Semantic Admissibility + VGCR + SMT Verification
+======================================================================
+
+Config: logs/paper_v3/with_vgcr/FlightBooking.yaml
+Loaded suite: OCL-Paper-v3-VGCR__FlightBooking v3.0
+   Models: 1
+   Profiles: 1
+   Output: benchmarks/paper_v3/with_vgcr/
+   Generation Mode:   steered (from config)
+   Advanced Features: ENABLED
+   Semantic Filter:   ENABLED (phi4-mini)
+   VGCR:              ENABLED (retries=15)
+     Independence (q3): DISABLED
+
+[00:58:50 +  0.0s] Initializing advanced features...
+[00:58:50 +  0.0s]   metadata_enricher ready
+[00:58:50 +  0.0s]   manifest_generator ready
+[00:58:50 +  0.0s]   constraint_similarity ready
+[00:58:50 +  0.0s]   implication_checker ready
+[00:58:50 +  0.0s]   unsat_generator ready
+[00:58:50 +  0.0s]   All 6 advanced modules verified
+
+======================================================================
+BENCHMARK SUITE GENERATION: OCL-Paper-v3-VGCR__FlightBooking
+======================================================================
+[00:58:50 +  0.0s] Version: 3.0
+[00:58:50 +  0.0s] Framework Version: 2.0
+[00:58:50 +  0.0s] Output: benchmarks/paper_v3/with_vgcr
+[00:58:50 +  0.0s] Advanced Features: ENABLED
+
+----------------------------------------------------------------------
+MODEL 1/1: FlightBooking
+----------------------------------------------------------------------
+[00:58:50 +  0.0s] XMI: models/flight_booking.xmi
+[00:58:50 +  0.0s] Loading metamodel from XMI...
+[00:58:50 +  0.0s]   Loaded 12 classes
+[00:58:50 +  0.0s] Running LLM semantic analysis (phi4-mini)...
+[00:58:50 +  0.0s] Semantic analysis complete (from cache, generated 2026-06-18T17:22:58): 12 classes — 9 LLM-analysed, 3 heuristic
+[00:58:50 +  0.0s]   1 of 17 same-type attribute pairs approved as comparable, 7 explicitly rejected
+[00:58:50 +  0.0s] Initializing generation engine...
+Loaded 115 patterns from REVISED pattern library (validated)
+Semantic validation enabled (Tier 2)
+Advanced semantic analysis enabled (Tier 3): Structure, Patterns, Dependencies, Invariants
+[00:58:50 +  0.0s] Engine initialized (generation_mode=steered)
+[00:58:50 +  0.0s] Initializing constraint verifier...
+[00:58:50 +  0.0s] Verifier initialized (seed portfolio: 4 seeds after 20s)
+
+······································································
+PROFILE 1/1: balanced
+······································································
+[00:58:50 +  0.0s] Generating 100 base constraints (mode=steered)...
+
+=== STEERED GENERATION START ===
+Target: 100 invariants | families={'cardinality': 30, 'arithmetic': 25, 'navigation': 25, 'quantified': 20} | profiles=[('easy', 40.0), ('medium', 35.0), ('difficult', 25.0)]
+Filled 85/100  families={'arithmetic': 25, 'navigation': 24, 'quantified': 9, 'cardinality': 27}  profiles={'difficult+forall': 7, 'easy': 28, 'difficult': 14, 'medium+conjoin': 19, 'medium+conjoin+conjoin': 2, 'medium': 11, 'difficult+conjoin': 4}
+Assignment optimality: 85/89 of the certified outer-assignment optimum (ratio 0.955)
+Complexity fidelity: 85/85 inside their requested box (rate 1.0, mean deviation 0.0, mean center offset 0.319)
+Feasibility gaps reported (not padded): 16
+   - ('support_infeasible', ["no SAT pattern supports family 'quantified' x profile 'easy'"])
+   - ('unfilled', 'quantified', 'sat', 'easy')
+   - ('unfilled', 'quantified', 'sat', 'easy')
+   - ('unfilled', 'quantified', 'sat', 'easy')
+   - ('unfilled', 'quantified', 'sat', 'easy')
+   - ('unfilled', 'quantified', 'sat', 'easy')
+   - ('unfilled', 'quantified', 'sat', 'easy')
+   - ('unfilled', 'quantified', 'sat', 'easy')
+=== STEERED GENERATION COMPLETE ===
+
+[00:58:50 +  0.5s]   Steered report saved to benchmarks/paper_v3/with_vgcr/FlightBooking/report.json
+[00:58:50 +  0.0s]   Generated 85 base constraints
+[00:58:50 +  0.0s] Applying metadata enrichment (complexity metrics)...
+[00:58:50 +  0.1s]   TC distribution: min=2.0, avg=18.5, max=37.3
+[00:58:50 +  0.0s]   Enriched 85 constraints with complexity metrics
+[00:58:50 +  0.0s] Deduplicating candidates (tree-edit) with slot refill...
+[00:58:51 +  0.5s]   Near-duplicates (>90% similar): 11 removed, 7 refilled in the same family and box, 4 left unfilled (reported)
+[00:58:51 +  0.0s] Running VGCR refinement loop (SAT-core construction)...
+[03:06:03 +7631.9s]   VGCR: 81/81 slots verified — 63 passed first try, 18 regenerated in their exact box, 0 left unfilled (reported); 0 near-duplicate candidates rejected
+[03:06:03 +  0.0s]     Failure breakdown: {'tautology': 1, 'contradiction': 2, 'inconsistent': 13}
+[03:06:03 +  0.0s]     SMT queries: 232,   SMT time: 7631.5s
+[03:06:03 +  0.0s] Generating UNSAT constraints via mutation...
+[03:06:05 +  2.3s]   Generated 16 verified UNSAT constraints
+[03:06:05 +  0.0s]   Total constraints: 81 (65 SAT + 16 UNSAT)
+[03:06:05 +  0.0s]   UNSAT mutants re-measured: tiers={'unboxed': 11, 'medium': 2, 'difficult': 2, 'easy': 1}
+[03:06:05 +  0.0s] Checking SAT constraint compatibility...
+[03:06:07 +  2.4s]   SAT constraint set is globally consistent
+[03:06:07 +  0.0s] Checking for late structural duplicates (tree-edit)...
+[03:06:08 +  0.4s]   No duplicates found (threshold: 90%)
+[03:06:08 +  0.0s] Computing semantic similarity...
+[semantic-sim] clustering 81 constraints (threshold=0.75)
+[semantic-sim] backend env: USE_TF=0 USE_TORCH=1 TOKENIZERS_PARALLELISM=false
+[semantic-sim] importing torch...
+[semantic-sim] torch 2.9.0 ok (1.8s)
+[semantic-sim] importing sentence_transformers (transformers backend=torch only)...
+[semantic-sim] sentence_transformers imported (8.2s); loading model 'all-MiniLM-L6-v2'...
+[semantic-sim] model 'all-MiniLM-L6-v2' loaded (12.3s)
+[semantic-sim] encoding 81 constraints...
+[semantic-sim] encoded 81 constraints (1.0s)
+[semantic-sim] similarity matrix built; merging clusters...
+[semantic-sim] formed 10 clusters
+[semantic-sim] clustering finished in 13.4s
+[03:06:21 + 13.4s]   Clustered into 10 semantic groups
+[03:06:21 +  0.0s] Checking constraint implications...
+[03:06:21 +  0.0s]   Found 54 implication relationships
+[03:06:21 +  0.0s] Verifying constraints with Z3 (individual + global)...
+[03:06:21 +  0.0s]     SAT to verify: 65, intentional UNSAT (skipped): 16
+[03:06:21 +  0.0s]     Phase A: individual satisfiability check...
+[03:06:43 + 21.8s]     Phase A done: 65/65 constraints are individually satisfiable
+[03:06:43 +  0.0s]     Phase B: global consistency check (scope=6 per class, timeout=600000ms)...
+[03:06:46 +  2.5s]     Phase B: globally consistent ✓
+[03:06:46 +  0.0s]   Verification complete:
+[03:06:46 +  0.0s]     Phase A (individual): 65/65 constraints individually satisfiable
+[03:06:46 +  0.0s]     Phase B (global):     consistent ✓
+[03:06:46 +  0.0s]     Skipped: 16 UNSAT constraints (intentionally contradictory)
+[03:06:46 +  0.0s]     Valid: 65/65 (100.0%)
+[03:06:46 +  0.0s]     Result: 65 SAT, 16 UNSAT, 0 Unknown
+[03:06:46 +  0.0s] Saving outputs...
+[03:06:46 +  0.0s]   Final certificate: 81 delivered (65 SAT + 16 UNSAT) of 100 requested
+[03:06:46 +  0.0s]     Slot tiers {'difficult': 21, 'easy': 28, 'medium': 32} vs requested {'easy': 40, 'medium': 35, 'difficult': 25}
+[03:06:46 +  0.0s]     SAT in-box: 65/65 (unlabeled 0); UNSAT measured tiers {'unboxed': 11, 'medium': 2, 'difficult': 2, 'easy': 1}
+[03:06:46 +  0.0s]     Class coverage: 12/12 at min=1
+[03:06:46 +  0.0s]   Rewrote report.json with the final-suite certificate
+[03:06:46 +  0.0s]   Saved constraints.json and constraints.ocl
+[03:06:46 +  0.0s]   Saved constraints_sat.ocl and constraints_sat.json (65 SAT)
+[03:06:46 +  0.0s]   Saved constraints_unsat.ocl and constraints_unsat.json (16 UNSAT)
+[03:06:46 +  0.0s]   Saved manifest.jsonl (81 records)
+[03:06:46 +  0.0s] Profile 'balanced' complete in 2h 07m 56s
+[03:06:46 +  0.0s] Suite summary saved to: benchmarks/paper_v3/with_vgcr/OCL-Paper-v3-VGCR__FlightBooking_summary.json
+
+======================================================================
+SUITE GENERATION COMPLETE
+======================================================================
+Total Constraints: 81
+  Valid: 65
+  SAT:   65 (80.2%)
+  UNSAT: 16 (19.8%)
+  Total generation time: 127m 56s (7676.0s)
+
+──────────────────────────────────────────────────────────────────────
+VGCR Quality Assurance Summary
+──────────────────────────────────────────────────────────────────────
+  FlightBooking              81→81  pass=100.0%  taut=1 contr=2 redun=0 incon=13 tc=0
+
+Outputs saved to: benchmarks/paper_v3/with_vgcr/

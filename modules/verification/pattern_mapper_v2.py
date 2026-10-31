@@ -103,6 +103,26 @@ CANONICAL_PATTERNS = {
 }
 
 
+# ===== GENERIC-ONLY PATTERNS (no legacy canonical encoding) =====
+# Generator patterns whose OCL is encoded by the whole-expression (generic)
+# encoder, which the consistency checker tries first for every constraint, and
+# for which NO legacy regex encoder is a faithful target:
+#   navigation_consistency  'self.a.b = self.c'  -- the legacy navigation_chain
+#       encoder only matches 'self.a.b.attr OP self.attr' and would otherwise add
+#       NO assertion (silently encoding the invariant as true);
+#   conditional_existence   'self.flag implies self.opt <> null' -- the legacy
+#       boolean_guard_implies encoder expects attribute comparisons in the
+#       consequent.
+# They are therefore deliberately NOT mapped to a canonical pattern: if the
+# generic encoder ever declines them, the legacy dispatcher reports the
+# constraint as unsupported (status 'error': skipped by VGCR / reported as
+# unencoded) rather than mis-encoding it.
+GENERIC_ONLY_PATTERNS = {
+    "navigation_consistency",
+    "conditional_existence",
+}
+
+
 # ===== REWRITE FUNCTIONS =====
 
 def rewrite_not_empty(text: str) -> str:
@@ -639,6 +659,17 @@ class PatternMapperV2:
         
         Returns list of mappings (usually 1, but can be multiple for compound patterns).
         """
+        # Generic-only patterns: no faithful legacy encoding exists; pass the
+        # id through unmapped so the legacy dispatcher rejects it (unsupported)
+        # instead of routing it to a regex encoder that would mis-encode it.
+        if universal_pattern_id in GENERIC_ONLY_PATTERNS:
+            return [{
+                'canonical_pattern': universal_pattern_id,
+                'rewritten_text': constraint_text,
+                'mapping': 'generic whole-expression encoder only (no legacy canonical encoding)',
+                'universal_pattern': universal_pattern_id
+            }]
+
         # Check if it's a universal pattern
         if universal_pattern_id not in self.mappings:
             # Assume it's already canonical
@@ -714,7 +745,10 @@ class PatternMapperV2:
             return None
     
     def is_universal_pattern(self, pattern_id: str) -> bool:
-        """Check if pattern is universal (needs mapping)"""
+        """Check if pattern is universal (needs mapping). Generic-only
+        patterns (GENERIC_ONLY_PATTERNS) are never mapped to a legacy encoder."""
+        if pattern_id in GENERIC_ONLY_PATTERNS:
+            return False
         return pattern_id in self.mappings
     
     def get_mapping_info(self, universal_pattern_id: str) -> Optional[PatternMapping]:

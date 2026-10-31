@@ -1,0 +1,246 @@
+{
+  "suite_name": "OCL-Paper-v3-VGCR__HospitalSystem",
+  "version": "3.0",
+  "generated_at": "2026-10-16T01:00:18.251142",
+  "research_features_enabled": true,
+  "models": [
+    {
+      "model": "HospitalSystem",
+      "xmi": "models/hospital.xmi",
+      "profiles": [
+        {
+          "profile": "balanced",
+          "seed": 42,
+          "complexity": "standard",
+          "output_dir": "benchmarks/paper_v3/with_vgcr/HospitalSystem",
+          "research_features_applied": [
+            "metadata_enrichment",
+            "vgcr_refinement",
+            "unsat_generation",
+            "ast_similarity",
+            "semantic_similarity",
+            "implication_checking",
+            "manifest_generation"
+          ],
+          "constraint_count": 78,
+          "initial_sat_count": 91,
+          "dedup": {
+            "removed": 14,
+            "refilled": 12,
+            "unfilled": [
+              {
+                "pattern": "simple_navigation",
+                "context": "Admission",
+                "profile": "easy"
+              },
+              {
+                "pattern": "navigation_chain",
+                "context": "Ward",
+                "profile": "easy"
+              }
+            ]
+          },
+          "coverage_repairs": [
+            {
+              "class": "InsurancePolicy",
+              "action": "donor_swap",
+              "donor_class": "Bed",
+              "pattern": "simple_navigation",
+              "profile": "medium"
+            },
+            {
+              "class": "Room",
+              "action": "donor_swap",
+              "donor_class": "Hospital",
+              "pattern": "collection_navigation",
+              "profile": "difficult"
+            },
+            {
+              "class": "Person",
+              "action": "unrepaired",
+              "have": 0,
+              "min": 1
+            }
+          ],
+          "vgcr_stats": {
+            "total_candidates": 89,
+            "passed": 89,
+            "passed_first_try": 68,
+            "passed_after_retry": 21,
+            "failed": 0,
+            "pass_rate": "100.0%",
+            "total_retries": 27,
+            "failure_breakdown": {
+              "tautology": 2,
+              "contradiction": 3,
+              "inconsistent": 11
+            },
+            "total_smt_queries": 250,
+            "total_smt_time_s": 376.909,
+            "independence_checked": 0,
+            "independence_skipped": 100,
+            "total_time_s": 377.886,
+            "duplicates_rejected": 5,
+            "unfilled_slots": [],
+            "generator_refinement": {
+              "total_refinements": 16,
+              "blacklisted_pattern_contexts": 3,
+              "blacklisted_bindings": 26,
+              "weight_modifications": 9,
+              "action_breakdown": {
+                "blacklist_bindings_and_downweight": 11,
+                "down_weight_pattern": 2,
+                "blacklist_pattern_context": 3
+              }
+            }
+          },
+          "vgcr_accepted": 89,
+          "vgcr_rejected": 0,
+          "sat_count_after_mutation": 72,
+          "unsat_count_after_mutation": 17,
+          "unsat_measured_tiers": {
+            "unboxed": 4,
+            "difficult": 4,
+            "medium": 7,
+            "easy": 2
+          },
+          "conflicts_removed": 10,
+          "consistency_verified": true,
+          "semantic_clusters": 14,
+          "implication_count": 63,
+          "valid_count": 62,
+          "sat_count": 62,
+          "unsat_count": 16,
+          "unknown_count": 0,
+          "verified_count": 62,
+          "fallback_unknown_count": 0,
+          "skipped_unsat_count": 17,
+          "intentional_unsat_count": 17,
+          "unsat_trimmed_for_ratio": 1,
+          "post_refine_coverage_deficit": {
+            "min_per_class": 1,
+            "classes": {
+              "Bed": 0,
+              "Person": 0
+            }
+          },
+          "final_suite": {
+            "delivered": 78,
+            "sat": 62,
+            "unsat": 16,
+            "slot_tier_distribution": {
+              "easy": 28,
+              "difficult": 21,
+              "medium": 29
+            },
+            "requested_tier_distribution": {
+              "easy": 40,
+              "medium": 35,
+              "difficult": 25
+            },
+            "sat_tier_distribution": {
+              "easy": 21,
+              "difficult": 16,
+              "medium": 25
+            },
+            "unsat_measured_tier_distribution": {
+              "unboxed": 3,
+              "difficult": 4,
+              "medium": 7,
+              "easy": 2
+            },
+            "family_distribution": {
+              "navigation": 22,
+              "arithmetic": 24,
+              "quantified": 12,
+              "cardinality": 20
+            },
+            "requested_family_distribution": {
+              "cardinality": 30,
+              "arithmetic": 25,
+              "navigation": 25,
+              "quantified": 20
+            },
+            "complexity_fidelity_sat": {
+              "boxed_constraints": 62,
+              "in_box": 62,
+              "in_box_rate": 1.0,
+              "unlabeled_constraints": 0,
+              "out_of_box": []
+            },
+            "class_coverage": {
+              "min_per_class": 1,
+              "classes": 22,
+              "covered": 20,
+              "below_min": {
+                "Bed": 0,
+                "Person": 0
+              }
+            },
+            "slot_accounting": {
+              "requested": 100,
+              "generated": 91,
+              "generation_gaps": 9,
+              "dedup_removed": 14,
+              "dedup_refilled": 12,
+              "dedup_unfilled": 2,
+              "vgcr_regenerated": 21,
+              "vgcr_unfilled": 0,
+              "late_duplicates_removed": 0,
+              "unsat_trimmed_for_ratio": 1,
+              "delivered": 78
+            },
+            "dedup_unfilled_slots": [
+              {
+                "pattern": "simple_navigation",
+                "context": "Admission",
+                "profile": "easy"
+              },
+              {
+                "pattern": "navigation_chain",
+                "context": "Ward",
+                "profile": "easy"
+              }
+            ],
+            "vgcr_unfilled_slots": [],
+            "coverage_repairs": [
+              {
+                "class": "InsurancePolicy",
+                "action": "donor_swap",
+                "donor_class": "Bed",
+                "pattern": "simple_navigation",
+                "profile": "medium"
+              },
+              {
+                "class": "Room",
+                "action": "donor_swap",
+                "donor_class": "Hospital",
+                "pattern": "collection_navigation",
+                "profile": "difficult"
+              },
+              {
+                "class": "Person",
+                "action": "unrepaired",
+                "have": 0,
+                "min": 1
+              }
+            ]
+          },
+          "status": "success",
+          "generation_time_s": 532.3
+        }
+      ],
+      "total_constraints": 78,
+      "total_valid": 62,
+      "total_sat": 62,
+      "total_unsat": 16,
+      "total_unknown": 0
+    }
+  ],
+  "total_constraints": 78,
+  "total_sat": 62,
+  "total_unsat": 16,
+  "total_valid": 62,
+  "total_unknown": 0,
+  "total_generation_time_s": 532.3
+}

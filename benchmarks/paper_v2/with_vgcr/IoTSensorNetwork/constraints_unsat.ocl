@@ -1,0 +1,113 @@
+-- Benchmark: IoTSensorNetwork / balanced
+-- Type: UNSAT Constraints Only
+-- Generated: 2026-10-15T02:20:50.578930
+-- Count: 18
+
+-- #1 Boolean Is True (UNSAT) in Alert
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Alert
+inv: ((self.acknowledged = true) and (self.assignedTo <> null)) and (not((self.acknowledged = true) and (self.assignedTo <> null)))
+
+-- #2 Collection Not Empty Check (UNSAT) in Cluster
+-- Difficulty: difficult
+-- Mutation Strategy: contradictory_bounds
+context Cluster
+inv: ((self.gateways->size() > 0) and (self.gateways->collect(x | x.ipAddress)->notEmpty())) and (self.gateways->size() < -5)
+
+-- #3 Collection Size Constraint (UNSAT) in DataStream
+-- Difficulty: medium
+-- Mutation Strategy: contradictory_bounds
+context DataStream
+inv: (self.alertRules->size() = 1) and (self.alertRules->size() <> 1)
+
+-- #4 Flatten Operation (UNSAT) in DataStream
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context DataStream
+inv: (self.alertRules->collect(x | x.alerts)->flatten()->notEmpty()) and (not(self.alertRules->collect(x | x.alerts)->flatten()->notEmpty()))
+
+-- #5 Collection Size in Range (UNSAT) in AccessPolicy
+-- Difficulty: unboxed
+-- Mutation Strategy: universal_negation
+context AccessPolicy
+inv: ((self.policyId <> '') and (self.roles->forAll(v | v.roleName <> ''))) and (self.roles->exists(v | not(v.roleName <> '')))
+
+-- #6 Numeric Is Even (UNSAT) in CommunicationLink
+-- Difficulty: medium
+-- Mutation Strategy: self_contradiction
+context CommunicationLink
+inv: (self.bandwidthKbps mod 2 = 0) and (not(self.bandwidthKbps mod 2 = 0))
+
+-- #7 Select (Filter) Operation (UNSAT) in SensorNode
+-- Difficulty: difficult
+-- Mutation Strategy: self_contradiction
+context SensorNode
+inv: (self.metrics->select(x | x.lastValue <= 50)->size() >= 1) and (not(self.metrics->select(x | x.lastValue <= 50)->size() >= 1))
+
+-- #8 Numeric Less Than Value (UNSAT) in ActuatorNode
+-- Difficulty: medium
+-- Mutation Strategy: contradictory_bounds
+context ActuatorNode
+inv: ((self.maxLoad < 38) and (self.actuatorType.size() = 8)) and (self.maxLoad > 43)
+
+-- #9 Boolean Is True (UNSAT) in Alert
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Alert
+inv: ((self.acknowledged = true) and (self.acknowledged implies self.assignedTo <> null)) and (not((self.acknowledged = true) and (self.acknowledged implies self.assignedTo <> null)))
+
+-- #10 Collection Navigation (UNSAT) in Firmware
+-- Difficulty: difficult
+-- Mutation Strategy: universal_negation
+context Firmware
+inv: (self.devices->forAll(x | x.deviceId <> '')) and (self.devices->exists(x | not(x.deviceId <> '')))
+
+-- #11 Simple Navigation (UNSAT) in MaintenanceTicket
+-- Difficulty: medium
+-- Mutation Strategy: self_contradiction
+context MaintenanceTicket
+inv: (self.otaUpdate.applied) and (not(self.otaUpdate.applied))
+
+-- #12 Attribute Not Null (Simple) (UNSAT) in Device
+-- Difficulty: unboxed
+-- Mutation Strategy: universal_negation
+context Device
+inv: ((self.deviceId <> '') and (self.tickets->forAll(v | v.ticketId <> ''))) and (self.tickets->exists(v | not(v.ticketId <> '')))
+
+-- #13 One Operation (UNSAT) in AccessPolicy
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context AccessPolicy
+inv: ((self.roles->one(x | x.roleName <> '')) and (self.policyId.size() >= 16)) and (not((self.roles->one(x | x.roleName <> '')) and (self.policyId.size() >= 16)))
+
+-- #14 Collection Index Of Element (UNSAT) in DataStream
+-- Difficulty: unboxed
+-- Mutation Strategy: universal_negation
+context DataStream
+inv: ((self.topic <> '') and (self.records->forAll(v | v.timestamp <> ''))) and (self.records->exists(v | not(v.timestamp <> '')))
+
+-- #15 Collection Navigation (UNSAT) in IoTPlatform
+-- Difficulty: difficult
+-- Mutation Strategy: self_contradiction
+context IoTPlatform
+inv: (self.accessPolicies->exists(x | x.policyId <> '')) and (not(self.accessPolicies->exists(x | x.policyId <> '')))
+
+-- #16 Collection Maximum Size (UNSAT) in Cluster
+-- Difficulty: medium
+-- Mutation Strategy: contradictory_bounds
+context Cluster
+inv: (self.gateways->size() <= 3) and (self.gateways->size() > 3)
+
+-- #17 Association Exists (UNSAT) in DataStream
+-- Difficulty: medium
+-- Mutation Strategy: self_contradiction
+context DataStream
+inv: (self.link <> null) and (not(self.link <> null))
+
+-- #18 Collection Nested Collection Flatten (UNSAT) in Cluster
+-- Difficulty: unboxed
+-- Mutation Strategy: contradictory_bounds
+context Cluster
+inv: ((self.gateways->collect(x | x.connectedEdges)->size() >= 3) and (self.gateways->size() >= 1)) and (self.gateways->size() < 1)
+

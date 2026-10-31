@@ -2,7 +2,7 @@
   "_metadata": {
     "version": "2.0",
     "description": "Revised OCL patterns - validated and OCL-compliant",
-    "total_patterns": 113,
+    "total_patterns": 115,
     "validation_date": "2025-01-10",
     "excluded_patterns": [
       "isEmpty_notEmpty - Tautology",
@@ -2872,7 +2872,7 @@
       ]
     },
     "navigation": {
-      "count": 4,
+      "count": 6,
       "patterns": [
         {
           "id": "simple_navigation",
@@ -2994,8 +2994,9 @@
               "name": "association",
               "label": "Association",
               "type": "select",
-              "options": "associations",
-              "required": true
+              "options": "optional_associations",
+              "required": true,
+              "help_text": "Only [0..1] ends: 'self.x <> null' on a mandatory [1..1] end is a tautology"
             }
           ],
           "complexity": 1,
@@ -3003,6 +3004,80 @@
             "navigation",
             "existence",
             "universal"
+          ]
+        },
+        {
+          "id": "navigation_consistency",
+          "name": "Navigation Consistency",
+          "category": "navigation",
+          "description": "Two navigation paths from the context must reach the same object: a two-hop path self.a.b agrees with the direct end self.c (e.g. a rental's vehicle belongs to the rental's branch)",
+          "template": "self.{assoc_a}.{assoc_b} = self.{assoc_c}",
+          "parameters": [
+            {
+              "name": "assoc_a",
+              "label": "First Hop (single-valued end of the context)",
+              "type": "select",
+              "options": "single_associations",
+              "required": true
+            },
+            {
+              "name": "assoc_b",
+              "label": "Second Hop (single-valued end of the first hop's target)",
+              "type": "select",
+              "options": "target_single_associations",
+              "depends_on": "assoc_a",
+              "required": true
+            },
+            {
+              "name": "assoc_c",
+              "label": "Direct End (single-valued end of the context with the same target as the second hop)",
+              "type": "select",
+              "options": "single_associations",
+              "required": true,
+              "help_text": "Bound by the engine to an end whose target class equals the second hop's target class"
+            }
+          ],
+          "examples": [
+            "self.vehicle.branch = self.branch"
+          ],
+          "complexity": 1,
+          "tags": [
+            "navigation",
+            "consistency",
+            "equality"
+          ]
+        },
+        {
+          "id": "conditional_existence",
+          "name": "Conditional Existence",
+          "category": "navigation",
+          "description": "A boolean flag of the context implies that an optional association end is set (e.g. a completed rental has a payment)",
+          "template": "self.{bool_attribute} implies self.{optional_association} <> null",
+          "parameters": [
+            {
+              "name": "bool_attribute",
+              "label": "Guard Flag (Boolean attribute)",
+              "type": "select",
+              "options": "boolean_attributes",
+              "required": true
+            },
+            {
+              "name": "optional_association",
+              "label": "Optional Association ([0..1] end)",
+              "type": "select",
+              "options": "optional_associations",
+              "required": true
+            }
+          ],
+          "examples": [
+            "self.isCompleted implies self.payment <> null"
+          ],
+          "complexity": 1,
+          "tags": [
+            "navigation",
+            "existence",
+            "conditional",
+            "implies"
           ]
         }
       ]
@@ -5621,8 +5696,9 @@
           "name": "association",
           "label": "Association",
           "type": "select",
-          "options": "associations",
-          "required": true
+          "options": "optional_associations",
+          "required": true,
+          "help_text": "Only [0..1] ends: 'self.x <> null' on a mandatory [1..1] end is a tautology"
         }
       ],
       "complexity": 1,
@@ -5630,6 +5706,80 @@
         "navigation",
         "existence",
         "universal"
+      ]
+    },
+    {
+      "id": "navigation_consistency",
+      "name": "Navigation Consistency",
+      "category": "navigation",
+      "description": "Two navigation paths from the context must reach the same object: a two-hop path self.a.b agrees with the direct end self.c (e.g. a rental's vehicle belongs to the rental's branch)",
+      "template": "self.{assoc_a}.{assoc_b} = self.{assoc_c}",
+      "parameters": [
+        {
+          "name": "assoc_a",
+          "label": "First Hop (single-valued end of the context)",
+          "type": "select",
+          "options": "single_associations",
+          "required": true
+        },
+        {
+          "name": "assoc_b",
+          "label": "Second Hop (single-valued end of the first hop's target)",
+          "type": "select",
+          "options": "target_single_associations",
+          "depends_on": "assoc_a",
+          "required": true
+        },
+        {
+          "name": "assoc_c",
+          "label": "Direct End (single-valued end of the context with the same target as the second hop)",
+          "type": "select",
+          "options": "single_associations",
+          "required": true,
+          "help_text": "Bound by the engine to an end whose target class equals the second hop's target class"
+        }
+      ],
+      "examples": [
+        "self.vehicle.branch = self.branch"
+      ],
+      "complexity": 1,
+      "tags": [
+        "navigation",
+        "consistency",
+        "equality"
+      ]
+    },
+    {
+      "id": "conditional_existence",
+      "name": "Conditional Existence",
+      "category": "navigation",
+      "description": "A boolean flag of the context implies that an optional association end is set (e.g. a completed rental has a payment)",
+      "template": "self.{bool_attribute} implies self.{optional_association} <> null",
+      "parameters": [
+        {
+          "name": "bool_attribute",
+          "label": "Guard Flag (Boolean attribute)",
+          "type": "select",
+          "options": "boolean_attributes",
+          "required": true
+        },
+        {
+          "name": "optional_association",
+          "label": "Optional Association ([0..1] end)",
+          "type": "select",
+          "options": "optional_associations",
+          "required": true
+        }
+      ],
+      "examples": [
+        "self.isCompleted implies self.payment <> null"
+      ],
+      "complexity": 1,
+      "tags": [
+        "navigation",
+        "existence",
+        "conditional",
+        "implies"
       ]
     },
     {

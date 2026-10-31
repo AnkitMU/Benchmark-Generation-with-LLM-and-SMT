@@ -1,0 +1,5206 @@
+{
+  "metadata": {
+    "suite": "OCL-Paper-NoVGCR-v2-IoTSensorNetwork",
+    "model": "IoTSensorNetwork",
+    "profile": "balanced",
+    "generated_at": "2026-10-15T04:39:49.731196",
+    "seed": 42,
+    "complexity": "standard",
+    "framework_version": "2.0",
+    "git_commit": "2bbc3d135b258b2187e92ad2097dccd9ccbf4713",
+    "constraint_count": 84,
+    "research_features_enabled": true,
+    "consistency_verified": true,
+    "scope_per_class": 6
+  },
+  "constraints": [
+    {
+      "ocl": "context AccessPolicy\ninv: (self.policyId <> '') and (self.roles->forAll(v | v.roleName <> ''))",
+      "pattern_id": "collection_size_range",
+      "pattern_name": "Collection Size in Range",
+      "context": "AccessPolicy",
+      "parameters": {
+        "collection": "roles",
+        "min_size": 2,
+        "max_size": 2
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-15T03:57:40.043601",
+      "metadata": {
+        "category": "collection",
+        "complexity": 2,
+        "generation_number": 7211,
+        "profile": "difficult",
+        "operators_used": [
+          "-",
+          "<",
+          "<>",
+          ">",
+          "and",
+          "forAll"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "difficult",
+        "operator_count": 6,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 4.0,
+            "dn_ca": 3.0,
+            "wnc": 6.0,
+            "tnc": 4.3,
+            "vrc": 1,
+            "wno": 6.5,
+            "wnm": 1.0,
+            "total": 12.8
+          },
+          "computational": {
+            "oc": 6.5,
+            "tcc": 0.0,
+            "cic": 3.0,
+            "total": 9.5
+          },
+          "dependency": {
+            "ruc": 9,
+            "total": 9.0
+          },
+          "tc": 31.3
+        },
+        "semantic_cluster": 0,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context AlertRule\ninv: (self.ruleId <> '') and (self.alerts->forAll(v | v.acknowledged = true))",
+      "pattern_id": "collection_size_range",
+      "pattern_name": "Collection Size in Range",
+      "context": "AlertRule",
+      "parameters": {
+        "collection": "alerts",
+        "min_size": 1,
+        "max_size": 1
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-15T03:57:40.059038",
+      "metadata": {
+        "category": "collection",
+        "complexity": 2,
+        "generation_number": 7213,
+        "profile": "difficult",
+        "operators_used": [
+          "-",
+          "<",
+          "<>",
+          "=",
+          ">",
+          "and",
+          "forAll"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "difficult",
+        "operator_count": 7,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 4.0,
+            "dn_ca": 3.0,
+            "wnc": 6.0,
+            "tnc": 4.3,
+            "vrc": 1,
+            "wno": 6.5,
+            "wnm": 1.0,
+            "total": 12.8
+          },
+          "computational": {
+            "oc": 6.5,
+            "tcc": 0.0,
+            "cic": 3.0,
+            "total": 9.5
+          },
+          "dependency": {
+            "ruc": 5,
+            "total": 5.0
+          },
+          "tc": 27.3
+        },
+        "semantic_cluster": 1,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Device\ninv: (self.name <> '') and (self.dataStreams->forAll(v | v.streamId <> ''))",
+      "pattern_id": "collection_size_range",
+      "pattern_name": "Collection Size in Range",
+      "context": "Device",
+      "parameters": {
+        "collection": "eventLogs",
+        "min_size": 2,
+        "max_size": 2
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-15T03:57:40.063218",
+      "metadata": {
+        "category": "collection",
+        "complexity": 2,
+        "generation_number": 7214,
+        "profile": "difficult",
+        "operators_used": [
+          "-",
+          "<",
+          "<>",
+          ">",
+          "and",
+          "forAll"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "difficult",
+        "operator_count": 6,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 4.0,
+            "dn_ca": 3.0,
+            "wnc": 6.0,
+            "tnc": 4.3,
+            "vrc": 1,
+            "wno": 6.5,
+            "wnm": 1.0,
+            "total": 12.8
+          },
+          "computational": {
+            "oc": 6.5,
+            "tcc": 0.0,
+            "cic": 3.0,
+            "total": 9.5
+          },
+          "dependency": {
+            "ruc": 1,
+            "total": 1.0
+          },
+          "tc": 23.3
+        },
+        "semantic_cluster": 2,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Network\ninv: (self.networkId <> '') and (self.clusters->forAll(v | v.clusterId <> ''))",
+      "pattern_id": "collection_size_range",
+      "pattern_name": "Collection Size in Range",
+      "context": "Network",
+      "parameters": {
+        "collection": "links",
+        "min_size": 1,
+        "max_size": 2
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-15T03:57:40.066640",
+      "metadata": {
+        "category": "collection",
+        "complexity": 2,
+        "generation_number": 7215,
+        "profile": "difficult",
+        "operators_used": [
+          "-",
+          "<",
+          "<>",
+          ">",
+          "and",
+          "forAll"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "difficult",
+        "operator_count": 6,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 4.0,
+            "dn_ca": 3.0,
+            "wnc": 6.0,
+            "tnc": 4.3,
+            "vrc": 1,
+            "wno": 6.5,
+            "wnm": 1.0,
+            "total": 12.8
+          },
+          "computational": {
+            "oc": 6.5,
+            "tcc": 0.0,
+            "cic": 3.0,
+            "total": 9.5
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 22.3
+        },
+        "semantic_cluster": 3,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Gateway\ninv: (self.isPrimary = true) and (self.connectedEdges->forAll(v | v.memoryMB < 1000))",
+      "pattern_id": "collection_size_range",
+      "pattern_name": "Collection Size in Range",
+      "context": "Gateway",
+      "parameters": {
+        "collection": "connectedEdges",
+        "min_size": 1,
+        "max_size": 3
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-15T03:57:40.069989",
+      "metadata": {
+        "category": "collection",
+        "complexity": 2,
+        "generation_number": 7216,
+        "profile": "difficult",
+        "operators_used": [
+          "-",
+          "<",
+          "=",
+          ">",
+          "and",
+          "forAll"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "difficult",
+        "operator_count": 6,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 4.0,
+            "dn_ca": 3.0,
+            "wnc": 6.0,
+            "tnc": 4.3,
+            "vrc": 1,
+            "wno": 6.5,
+            "wnm": 1.0,
+            "total": 12.8
+          },
+          "computational": {
+            "oc": 6.5,
+            "tcc": 0.0,
+            "cic": 3.0,
+            "total": 9.5
+          },
+          "dependency": {
+            "ruc": 1,
+            "total": 1.0
+          },
+          "tc": 23.3
+        },
+        "semantic_cluster": 3,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Alert\ninv: self.acknowledged implies self.assignedTo <> null",
+      "pattern_id": "conditional_existence",
+      "pattern_name": "Conditional Existence",
+      "context": "Alert",
+      "parameters": {
+        "bool_attribute": "acknowledged",
+        "optional_association": "assignedTo"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-15T03:57:40.073608",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 1,
+        "generation_number": 7217,
+        "profile": "easy",
+        "operators_used": [
+          "<",
+          "<>",
+          ">",
+          "implies"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 4,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 1,
+            "wnc": 2.0,
+            "tnc": 1.7,
+            "vrc": 0,
+            "wno": 3.0,
+            "wnm": 0.0,
+            "total": 4.7
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 3,
+            "total": 3.0
+          },
+          "tc": 10.7
+        },
+        "semantic_cluster": 4,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Metric\ninv: self.sensor.sampleRateHz < 50",
+      "pattern_id": "navigation_chain",
+      "pattern_name": "Navigation Chain",
+      "context": "Metric",
+      "parameters": {
+        "navigation_path": "self.sensor.sampleRateHz < 50"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-15T03:57:40.076648",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 2,
+        "generation_number": 7218,
+        "profile": "easy",
+        "operators_used": [
+          "<"
+        ],
+        "navigation_depth": 3,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 1,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 2,
+            "wnc": 2.0,
+            "tnc": 2.0,
+            "vrc": 0,
+            "wno": 1.0,
+            "wnm": 0.0,
+            "total": 3.0
+          },
+          "computational": {
+            "oc": 1.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 1.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 4.0
+        },
+        "semantic_cluster": 5,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context User\ninv: self.platform.version <> ''",
+      "pattern_id": "navigation_chain",
+      "pattern_name": "Navigation Chain",
+      "context": "User",
+      "parameters": {
+        "navigation_path": "self.platform.version <> ''"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-15T03:57:40.080177",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 2,
+        "generation_number": 7219,
+        "profile": "easy",
+        "operators_used": [
+          "<",
+          "<>",
+          ">"
+        ],
+        "navigation_depth": 3,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 2,
+            "wnc": 2.0,
+            "tnc": 2.0,
+            "vrc": 0,
+            "wno": 1.0,
+            "wnm": 0.0,
+            "total": 3.0
+          },
+          "computational": {
+            "oc": 1.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 1.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 4.0
+        },
+        "semantic_cluster": 6,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context DataStream\ninv: self.link.isSecure",
+      "pattern_id": "simple_navigation",
+      "pattern_name": "Simple Navigation",
+      "context": "DataStream",
+      "parameters": {
+        "association": "link",
+        "attribute": "isSecure"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-15T03:57:40.083248",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 1,
+        "generation_number": 7220,
+        "profile": "easy",
+        "operators_used": [],
+        "navigation_depth": 3,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 0,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 2,
+            "wnc": 2.0,
+            "tnc": 2.0,
+            "vrc": 0,
+            "wno": 0.0,
+            "wnm": 0.0,
+            "total": 2.0
+          },
+          "computational": {
+            "oc": 0.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 0.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 2.0
+        },
+        "semantic_cluster": 7,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Role\ninv: self.platform.name <> ''",
+      "pattern_id": "navigation_chain",
+      "pattern_name": "Navigation Chain",
+      "context": "Role",
+      "parameters": {
+        "navigation_path": "self.platform.name <> ''"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-15T03:57:40.085899",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 2,
+        "generation_number": 7221,
+        "profile": "easy",
+        "operators_used": [
+          "<",
+          "<>",
+          ">"
+        ],
+        "navigation_depth": 3,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 2,
+            "wnc": 2.0,
+            "tnc": 2.0,
+            "vrc": 0,
+            "wno": 1.0,
+            "wnm": 0.0,
+            "total": 3.0
+          },
+          "computational": {
+            "oc": 1.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 1.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 4.0
+        },
+        "semantic_cluster": 6,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context MaintenanceTicket\ninv: self.otaUpdate.applied",
+      "pattern_id": "simple_navigation",
+      "pattern_name": "Simple Navigation",
+      "context": "MaintenanceTicket",
+      "parameters": {
+        "association": "otaUpdate",
+        "attribute": "applied"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-15T03:57:40.089207",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 1,
+        "generation_number": 7222,
+        "profile": "easy",
+        "operators_used": [],
+        "navigation_depth": 3,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 0,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 2,
+            "wnc": 2.0,
+            "tnc": 2.0,
+            "vrc": 0,
+            "wno": 0.0,
+            "wnm": 0.0,
+            "total": 2.0
+          },
+          "computational": {
+            "oc": 0.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 0.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 2.0
+        },
+        "semantic_cluster": 8,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context EdgeNode\ninv: self.gateway.isPrimary",
+      "pattern_id": "simple_navigation",
+      "pattern_name": "Simple Navigation",
+      "context": "EdgeNode",
+      "parameters": {
+        "association": "gateway",
+        "attribute": "isPrimary"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-15T03:57:40.093297",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 1,
+        "generation_number": 7223,
+        "profile": "easy",
+        "operators_used": [],
+        "navigation_depth": 3,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 0,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 2,
+            "wnc": 2.0,
+            "tnc": 2.0,
+            "vrc": 0,
+            "wno": 0.0,
+            "wnm": 0.0,
+            "total": 2.0
+          },
+          "computational": {
+            "oc": 0.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 0.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 2.0
+        },
+        "semantic_cluster": 9,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context CommunicationLink\ninv: self.stream <> null",
+      "pattern_id": "association_exists",
+      "pattern_name": "Association Exists",
+      "context": "CommunicationLink",
+      "parameters": {
+        "association": "stream"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-15T03:57:40.098508",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 1,
+        "generation_number": 7224,
+        "profile": "easy",
+        "operators_used": [
+          "<",
+          "<>",
+          ">"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 1.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.0,
+            "vrc": 0,
+            "wno": 1.0,
+            "wnm": 0.0,
+            "total": 2.0
+          },
+          "computational": {
+            "oc": 1.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 1.0
+          },
+          "dependency": {
+            "ruc": 1,
+            "total": 1.0
+          },
+          "tc": 4.0
+        },
+        "semantic_cluster": 2,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Alert\ninv: self.assignedTo <> null",
+      "pattern_id": "association_exists",
+      "pattern_name": "Association Exists",
+      "context": "Alert",
+      "parameters": {
+        "association": "assignedTo"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-15T03:57:40.108222",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 1,
+        "generation_number": 7234,
+        "profile": "easy",
+        "operators_used": [
+          "<",
+          "<>",
+          ">"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 1.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.0,
+            "vrc": 0,
+            "wno": 1.0,
+            "wnm": 0.0,
+            "total": 2.0
+          },
+          "computational": {
+            "oc": 1.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 1.0
+          },
+          "dependency": {
+            "ruc": 2,
+            "total": 2.0
+          },
+          "tc": 5.0
+        },
+        "semantic_cluster": 4,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Firmware\ninv: self.devices->forAll(x | x.deviceId <> '')",
+      "pattern_id": "collection_navigation",
+      "pattern_name": "Collection Navigation",
+      "context": "Firmware",
+      "parameters": {
+        "collection": "devices",
+        "operation": "forAll",
+        "iterator": "x",
+        "nested": "deviceId <> ''"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-15T03:57:40.114161",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 3,
+        "generation_number": 7236,
+        "profile": "difficult",
+        "operators_used": [
+          "-",
+          "<",
+          "<>",
+          ">",
+          "forAll"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "difficult",
+        "operator_count": 5,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 3.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 3.0,
+            "wnc": 5.0,
+            "tnc": 3.6,
+            "vrc": 1,
+            "wno": 4.0,
+            "wnm": 1.0,
+            "total": 9.6
+          },
+          "computational": {
+            "oc": 4.0,
+            "tcc": 0.0,
+            "cic": 3.0,
+            "total": 7.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 16.6
+        },
+        "semantic_cluster": 10,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context ConnectivityModule\ninv: (self.macAddress <> '') and (self.links->forAll(v | v.bandwidthKbps > 10))",
+      "pattern_id": "navigation_chain",
+      "pattern_name": "Navigation Chain",
+      "context": "ConnectivityModule",
+      "parameters": {
+        "navigation_path": "self.device.firmware.version <> ''"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-15T03:57:40.117194",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 2,
+        "generation_number": 7237,
+        "profile": "difficult",
+        "operators_used": [
+          "-",
+          "<",
+          "<>",
+          ">",
+          "and",
+          "forAll"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "difficult",
+        "operator_count": 6,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 4.0,
+            "dn_ca": 3.0,
+            "wnc": 6.0,
+            "tnc": 4.3,
+            "vrc": 1,
+            "wno": 6.5,
+            "wnm": 1.0,
+            "total": 12.8
+          },
+          "computational": {
+            "oc": 6.5,
+            "tcc": 0.0,
+            "cic": 3.0,
+            "total": 9.5
+          },
+          "dependency": {
+            "ruc": 1,
+            "total": 1.0
+          },
+          "tc": 23.3
+        },
+        "semantic_cluster": 11,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context OTAUpdate\ninv: self.tickets->forAll(x | x.status <> '')",
+      "pattern_id": "collection_navigation",
+      "pattern_name": "Collection Navigation",
+      "context": "OTAUpdate",
+      "parameters": {
+        "collection": "tickets",
+        "operation": "forAll",
+        "iterator": "x",
+        "nested": "status <> ''"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-15T03:57:40.120009",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 3,
+        "generation_number": 7238,
+        "profile": "difficult",
+        "operators_used": [
+          "-",
+          "<",
+          "<>",
+          ">",
+          "forAll"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "difficult",
+        "operator_count": 5,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 3.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 3.0,
+            "wnc": 5.0,
+            "tnc": 3.6,
+            "vrc": 1,
+            "wno": 4.0,
+            "wnm": 1.0,
+            "total": 9.6
+          },
+          "computational": {
+            "oc": 4.0,
+            "tcc": 0.0,
+            "cic": 3.0,
+            "total": 7.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 16.6
+        },
+        "semantic_cluster": 12,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context SensorNode\ninv: self.metrics->exists(x | x.lastValue >= 5)",
+      "pattern_id": "collection_navigation",
+      "pattern_name": "Collection Navigation",
+      "context": "SensorNode",
+      "parameters": {
+        "collection": "metrics",
+        "operation": "exists",
+        "iterator": "x",
+        "nested": "lastValue >= 5"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-15T03:57:40.122053",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 3,
+        "generation_number": 7239,
+        "profile": "difficult",
+        "operators_used": [
+          "-",
+          "=",
+          ">",
+          ">=",
+          "exists"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "difficult",
+        "operator_count": 5,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 3.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 3.0,
+            "wnc": 5.0,
+            "tnc": 3.6,
+            "vrc": 1,
+            "wno": 4.0,
+            "wnm": 1.0,
+            "total": 9.6
+          },
+          "computational": {
+            "oc": 4.0,
+            "tcc": 0.0,
+            "cic": 3.0,
+            "total": 7.0
+          },
+          "dependency": {
+            "ruc": 5,
+            "total": 5.0
+          },
+          "tc": 21.6
+        },
+        "semantic_cluster": 13,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context IoTPlatform\ninv: self.accessPolicies->exists(x | x.policyId <> '')",
+      "pattern_id": "collection_navigation",
+      "pattern_name": "Collection Navigation",
+      "context": "IoTPlatform",
+      "parameters": {
+        "collection": "accessPolicies",
+        "operation": "exists",
+        "iterator": "x",
+        "nested": "policyId <> ''"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-15T03:57:40.124214",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 3,
+        "generation_number": 7240,
+        "profile": "difficult",
+        "operators_used": [
+          "-",
+          "<",
+          "<>",
+          ">",
+          "exists"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "difficult",
+        "operator_count": 5,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 3.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 3.0,
+            "wnc": 5.0,
+            "tnc": 3.6,
+            "vrc": 1,
+            "wno": 4.0,
+            "wnm": 1.0,
+            "total": 9.6
+          },
+          "computational": {
+            "oc": 4.0,
+            "tcc": 0.0,
+            "cic": 3.0,
+            "total": 7.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 16.6
+        },
+        "semantic_cluster": 0,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context EventLog\ninv: ((self.device.firmware.checksum <> '') and (self.device.oclIsTypeOf(Device))) and (self.message.toLowerCase() = 'test')",
+      "pattern_id": "navigation_chain",
+      "pattern_name": "Navigation Chain",
+      "context": "EventLog",
+      "parameters": {
+        "navigation_path": "self.device.firmware.checksum <> ''"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-15T03:57:40.142416",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 2,
+        "generation_number": 7245,
+        "profile": "medium",
+        "operators_used": [
+          "<",
+          "<>",
+          "=",
+          ">",
+          "and",
+          "oclIsTypeOf"
+        ],
+        "navigation_depth": 4,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 6,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 5.0,
+            "nnc_plus": 5.0,
+            "dn_ca": 3,
+            "wnc": 5.0,
+            "tnc": 4.4,
+            "vrc": 0,
+            "wno": 5.0,
+            "wnm": 2.0,
+            "total": 11.4
+          },
+          "computational": {
+            "oc": 5.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 5.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 16.4
+        },
+        "semantic_cluster": 10,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context APIKey\ninv: (self.user.platform.version <> '') and (self.createdAt.size() <= 15)",
+      "pattern_id": "navigation_chain",
+      "pattern_name": "Navigation Chain",
+      "context": "APIKey",
+      "parameters": {
+        "navigation_path": "self.user.platform.version <> ''"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-15T03:57:40.150157",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 2,
+        "generation_number": 7248,
+        "profile": "medium",
+        "operators_used": [
+          "<",
+          "<=",
+          "<>",
+          "=",
+          ">",
+          "and",
+          "size"
+        ],
+        "navigation_depth": 4,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 7,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 4.0,
+            "dn_ca": 3,
+            "wnc": 4.0,
+            "tnc": 3.7,
+            "vrc": 0,
+            "wno": 3.5,
+            "wnm": 1.0,
+            "total": 8.2
+          },
+          "computational": {
+            "oc": 3.5,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.5
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 11.7
+        },
+        "semantic_cluster": 6,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context ConfigurationProfile\ninv: (self.device.firmware.version <> '') and (self.updatedAt.size() = 27)",
+      "pattern_id": "navigation_chain",
+      "pattern_name": "Navigation Chain",
+      "context": "ConfigurationProfile",
+      "parameters": {
+        "navigation_path": "self.device.firmware.version <> ''"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-15T03:57:40.155378",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 2,
+        "generation_number": 7250,
+        "profile": "medium",
+        "operators_used": [
+          "<",
+          "<>",
+          "=",
+          ">",
+          "and",
+          "size"
+        ],
+        "navigation_depth": 4,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 6,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 4.0,
+            "dn_ca": 3,
+            "wnc": 4.0,
+            "tnc": 3.7,
+            "vrc": 0,
+            "wno": 3.5,
+            "wnm": 1.0,
+            "total": 8.2
+          },
+          "computational": {
+            "oc": 3.5,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.5
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 11.7
+        },
+        "semantic_cluster": 10,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Location\ninv: (self.device.firmware.checksum <> '') and (self.longitude >= 7 and self.longitude <= 41)",
+      "pattern_id": "navigation_chain",
+      "pattern_name": "Navigation Chain",
+      "context": "Location",
+      "parameters": {
+        "navigation_path": "self.device.firmware.checksum <> ''"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-15T03:57:40.161325",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 2,
+        "generation_number": 7252,
+        "profile": "medium",
+        "operators_used": [
+          "<",
+          "<=",
+          "<>",
+          "=",
+          ">",
+          ">=",
+          "and"
+        ],
+        "navigation_depth": 4,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 7,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 5.0,
+            "nnc_plus": 5.0,
+            "dn_ca": 3,
+            "wnc": 5.0,
+            "tnc": 4.4,
+            "vrc": 0,
+            "wno": 6.0,
+            "wnm": 0.0,
+            "total": 10.4
+          },
+          "computational": {
+            "oc": 6.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 6.0
+          },
+          "dependency": {
+            "ruc": 2,
+            "total": 2.0
+          },
+          "tc": 18.4
+        },
+        "semantic_cluster": 10,
+        "implies": [
+          "numeric_non_negative_Location"
+        ]
+      }
+    },
+    {
+      "ocl": "context MaintenanceTicket\ninv: (self.otaUpdate.targetDevice = self.device) and (self.status <> '' and self.status.size() > 0)",
+      "pattern_id": "navigation_consistency",
+      "pattern_name": "Navigation Consistency",
+      "context": "MaintenanceTicket",
+      "parameters": {
+        "assoc_a": "otaUpdate",
+        "assoc_b": "targetDevice",
+        "assoc_c": "device"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-15T03:57:40.169123",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 1,
+        "generation_number": 7255,
+        "profile": "medium",
+        "operators_used": [
+          "<",
+          "<>",
+          "=",
+          ">",
+          "and",
+          "size"
+        ],
+        "navigation_depth": 3,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 6,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 5.0,
+            "nnc_plus": 5.0,
+            "dn_ca": 2,
+            "wnc": 5.0,
+            "tnc": 4.1,
+            "vrc": 0,
+            "wno": 6.0,
+            "wnm": 1.0,
+            "total": 11.1
+          },
+          "computational": {
+            "oc": 6.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 6.0
+          },
+          "dependency": {
+            "ruc": 1,
+            "total": 1.0
+          },
+          "tc": 18.1
+        },
+        "semantic_cluster": 10,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Cluster\ninv: self.edgeNodes->select(x | x.cpuCores < 50)->size() >= 1",
+      "pattern_id": "select_operation",
+      "pattern_name": "Select (Filter) Operation",
+      "context": "Cluster",
+      "parameters": {
+        "collection": "edgeNodes",
+        "iterator": "x",
+        "condition": "x.cpuCores < 50",
+        "result_operation": "->size() >= 1"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-15T03:57:40.175896",
+      "metadata": {
+        "category": "collection",
+        "complexity": 2,
+        "generation_number": 7257,
+        "profile": "medium",
+        "operators_used": [
+          "-",
+          "<",
+          "=",
+          ">",
+          ">=",
+          "select",
+          "size"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "medium",
+        "operator_count": 7,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 3.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 3.0,
+            "wnc": 5.0,
+            "tnc": 3.6,
+            "vrc": 1,
+            "wno": 4.0,
+            "wnm": 2.0,
+            "total": 10.6
+          },
+          "computational": {
+            "oc": 4.0,
+            "tcc": 0.0,
+            "cic": 2.0,
+            "total": 6.0
+          },
+          "dependency": {
+            "ruc": 4,
+            "total": 4.0
+          },
+          "tc": 20.6
+        },
+        "semantic_cluster": 3,
+        "implies": [
+          "exists_constraint_Cluster"
+        ]
+      }
+    },
+    {
+      "ocl": "context Network\ninv: self.links->select(x | x.bandwidthKbps >= 2)->size() >= 1",
+      "pattern_id": "select_operation",
+      "pattern_name": "Select (Filter) Operation",
+      "context": "Network",
+      "parameters": {
+        "collection": "links",
+        "iterator": "x",
+        "condition": "x.bandwidthKbps >= 2",
+        "result_operation": "->size() >= 1"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-15T03:57:40.185066",
+      "metadata": {
+        "category": "collection",
+        "complexity": 2,
+        "generation_number": 7258,
+        "profile": "medium",
+        "operators_used": [
+          "-",
+          "=",
+          ">",
+          ">=",
+          "select",
+          "size"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "medium",
+        "operator_count": 6,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 3.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 3.0,
+            "wnc": 5.0,
+            "tnc": 3.6,
+            "vrc": 1,
+            "wno": 4.0,
+            "wnm": 2.0,
+            "total": 10.6
+          },
+          "computational": {
+            "oc": 4.0,
+            "tcc": 0.0,
+            "cic": 2.0,
+            "total": 6.0
+          },
+          "dependency": {
+            "ruc": 1,
+            "total": 1.0
+          },
+          "tc": 17.6
+        },
+        "semantic_cluster": 11,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context AccessPolicy\ninv: (self.roles->collect(x | x.roleName)->notEmpty()) and (self.roles->size() >= 1)",
+      "pattern_id": "collect_operation",
+      "pattern_name": "Collect (Map) Operation",
+      "context": "AccessPolicy",
+      "parameters": {
+        "collection": "roles",
+        "iterator": "x",
+        "attribute": "roleName"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-15T03:57:40.189577",
+      "metadata": {
+        "category": "collection",
+        "complexity": 2,
+        "generation_number": 7259,
+        "profile": "medium",
+        "operators_used": [
+          "-",
+          "=",
+          ">",
+          ">=",
+          "and",
+          "collect",
+          "notEmpty",
+          "size"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "medium",
+        "operator_count": 8,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 5.0,
+            "nnc_plus": 4.0,
+            "dn_ca": 3.0,
+            "wnc": 6.0,
+            "tnc": 4.7,
+            "vrc": 1,
+            "wno": 4.5,
+            "wnm": 3.0,
+            "total": 13.2
+          },
+          "computational": {
+            "oc": 4.5,
+            "tcc": 0.0,
+            "cic": 2.0,
+            "total": 6.5
+          },
+          "dependency": {
+            "ruc": 9,
+            "total": 9.0
+          },
+          "tc": 28.7
+        },
+        "semantic_cluster": 0,
+        "implies": [
+          "collection_not_empty_simple_AccessPolicy",
+          "collection_not_empty_check_AccessPolicy",
+          "size_constraint_AccessPolicy"
+        ]
+      }
+    },
+    {
+      "ocl": "context DataStream\ninv: (self.records->any(x | x.timestamp <> '') <> null) and (self.streamId <> '' and self.streamId.size() > 0)",
+      "pattern_id": "any_operation",
+      "pattern_name": "Any Operation",
+      "context": "DataStream",
+      "parameters": {
+        "collection": "records",
+        "iterator": "x",
+        "condition": "x.timestamp <> ''"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-15T03:57:40.193462",
+      "metadata": {
+        "category": "collection",
+        "complexity": 2,
+        "generation_number": 7261,
+        "profile": "medium",
+        "operators_used": [
+          "-",
+          "<",
+          "<>",
+          ">",
+          "and",
+          "any",
+          "size"
+        ],
+        "navigation_depth": 3,
+        "quantifier_depth": 1,
+        "difficulty": "medium",
+        "operator_count": 7,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 5.0,
+            "nnc_plus": 5.0,
+            "dn_ca": 3.0,
+            "wnc": 7.0,
+            "tnc": 5.0,
+            "vrc": 1,
+            "wno": 7.0,
+            "wnm": 2.0,
+            "total": 15.0
+          },
+          "computational": {
+            "oc": 7.0,
+            "tcc": 0.0,
+            "cic": 2.0,
+            "total": 9.0
+          },
+          "dependency": {
+            "ruc": 2,
+            "total": 2.0
+          },
+          "tc": 26.0
+        },
+        "semantic_cluster": 2,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context SensorNode\ninv: self.metrics->select(x | x.lastValue <= 50)->size() >= 1",
+      "pattern_id": "select_operation",
+      "pattern_name": "Select (Filter) Operation",
+      "context": "SensorNode",
+      "parameters": {
+        "collection": "metrics",
+        "iterator": "x",
+        "condition": "x.lastValue <= 50",
+        "result_operation": "->size() >= 1"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-15T03:57:40.202920",
+      "metadata": {
+        "category": "collection",
+        "complexity": 2,
+        "generation_number": 7263,
+        "profile": "medium",
+        "operators_used": [
+          "-",
+          "<",
+          "<=",
+          "=",
+          ">",
+          ">=",
+          "select",
+          "size"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "medium",
+        "operator_count": 8,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 3.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 3.0,
+            "wnc": 5.0,
+            "tnc": 3.6,
+            "vrc": 1,
+            "wno": 4.0,
+            "wnm": 2.0,
+            "total": 10.6
+          },
+          "computational": {
+            "oc": 4.0,
+            "tcc": 0.0,
+            "cic": 2.0,
+            "total": 6.0
+          },
+          "dependency": {
+            "ruc": 5,
+            "total": 5.0
+          },
+          "tc": 21.6
+        },
+        "semantic_cluster": 13,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context AccessPolicy\ninv: (self.roles->one(x | x.roleName <> '')) and (self.policyId.size() >= 16)",
+      "pattern_id": "one_operation",
+      "pattern_name": "One Operation",
+      "context": "AccessPolicy",
+      "parameters": {
+        "collection": "roles",
+        "iterator": "x",
+        "condition": "x.roleName <> ''"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-15T03:57:40.213548",
+      "metadata": {
+        "category": "collection",
+        "complexity": 2,
+        "generation_number": 7266,
+        "profile": "medium",
+        "operators_used": [
+          "-",
+          "<",
+          "<>",
+          "=",
+          ">",
+          ">=",
+          "and",
+          "one",
+          "size"
+        ],
+        "navigation_depth": 3,
+        "quantifier_depth": 1,
+        "difficulty": "medium",
+        "operator_count": 9,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 4.0,
+            "dn_ca": 3.0,
+            "wnc": 6.0,
+            "tnc": 4.3,
+            "vrc": 1,
+            "wno": 3.5,
+            "wnm": 2.0,
+            "total": 10.8
+          },
+          "computational": {
+            "oc": 3.5,
+            "tcc": 0.0,
+            "cic": 2.0,
+            "total": 5.5
+          },
+          "dependency": {
+            "ruc": 9,
+            "total": 9.0
+          },
+          "tc": 25.3
+        },
+        "semantic_cluster": 0,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Device\ninv: (self.otaUpdates->collect(x | x.updateId)->notEmpty()) and (self.name.toUpperCase() = 'TEST')",
+      "pattern_id": "collect_operation",
+      "pattern_name": "Collect (Map) Operation",
+      "context": "Device",
+      "parameters": {
+        "collection": "otaUpdates",
+        "iterator": "x",
+        "attribute": "updateId"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-15T03:57:40.223389",
+      "metadata": {
+        "category": "collection",
+        "complexity": 2,
+        "generation_number": 7270,
+        "profile": "medium",
+        "operators_used": [
+          "-",
+          "=",
+          ">",
+          "and",
+          "collect",
+          "notEmpty"
+        ],
+        "navigation_depth": 3,
+        "quantifier_depth": 1,
+        "difficulty": "medium",
+        "operator_count": 6,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 4.0,
+            "dn_ca": 3.0,
+            "wnc": 6.0,
+            "tnc": 4.3,
+            "vrc": 1,
+            "wno": 4.5,
+            "wnm": 3.0,
+            "total": 12.8
+          },
+          "computational": {
+            "oc": 4.5,
+            "tcc": 0.0,
+            "cic": 2.0,
+            "total": 6.5
+          },
+          "dependency": {
+            "ruc": 2,
+            "total": 2.0
+          },
+          "tc": 21.3
+        },
+        "semantic_cluster": 14,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context AlertRule\ninv: self.alerts->exists(x | x.acknowledged <> false)",
+      "pattern_id": "exists_constraint",
+      "pattern_name": "Existential Quantification (exists)",
+      "context": "AlertRule",
+      "parameters": {
+        "collection": "alerts",
+        "iterator": "x",
+        "condition": "x.acknowledged <> false"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-15T03:57:40.228879",
+      "metadata": {
+        "category": "collection",
+        "complexity": 2,
+        "generation_number": 7273,
+        "profile": "difficult",
+        "operators_used": [
+          "-",
+          "<",
+          "<>",
+          ">",
+          "exists"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "difficult",
+        "operator_count": 5,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 3.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 3.0,
+            "wnc": 5.0,
+            "tnc": 3.6,
+            "vrc": 1,
+            "wno": 4.0,
+            "wnm": 1.0,
+            "total": 9.6
+          },
+          "computational": {
+            "oc": 4.0,
+            "tcc": 0.0,
+            "cic": 3.0,
+            "total": 7.0
+          },
+          "dependency": {
+            "ruc": 5,
+            "total": 5.0
+          },
+          "tc": 21.6
+        },
+        "semantic_cluster": 1,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Cluster\ninv: self.edgeNodes->forAll(x | x.memoryMB <= 10)",
+      "pattern_id": "forall_nested",
+      "pattern_name": "Universal Quantification (forAll)",
+      "context": "Cluster",
+      "parameters": {
+        "collection": "edgeNodes",
+        "iterator": "x",
+        "condition": "x.memoryMB <= 10"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-15T03:57:40.232618",
+      "metadata": {
+        "category": "collection",
+        "complexity": 2,
+        "generation_number": 7274,
+        "profile": "difficult",
+        "operators_used": [
+          "-",
+          "<",
+          "<=",
+          "=",
+          ">",
+          "forAll"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "difficult",
+        "operator_count": 6,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 3.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 3.0,
+            "wnc": 5.0,
+            "tnc": 3.6,
+            "vrc": 1,
+            "wno": 4.0,
+            "wnm": 1.0,
+            "total": 9.6
+          },
+          "computational": {
+            "oc": 4.0,
+            "tcc": 0.0,
+            "cic": 3.0,
+            "total": 7.0
+          },
+          "dependency": {
+            "ruc": 4,
+            "total": 4.0
+          },
+          "tc": 20.6
+        },
+        "semantic_cluster": 3,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context DataStream\ninv: self.records->exists(x | x.payload <> '')",
+      "pattern_id": "exists_constraint",
+      "pattern_name": "Existential Quantification (exists)",
+      "context": "DataStream",
+      "parameters": {
+        "collection": "records",
+        "iterator": "x",
+        "condition": "x.payload <> ''"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-15T03:57:40.236411",
+      "metadata": {
+        "category": "collection",
+        "complexity": 2,
+        "generation_number": 7275,
+        "profile": "difficult",
+        "operators_used": [
+          "-",
+          "<",
+          "<>",
+          ">",
+          "exists"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "difficult",
+        "operator_count": 5,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 3.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 3.0,
+            "wnc": 5.0,
+            "tnc": 3.6,
+            "vrc": 1,
+            "wno": 4.0,
+            "wnm": 1.0,
+            "total": 9.6
+          },
+          "computational": {
+            "oc": 4.0,
+            "tcc": 0.0,
+            "cic": 3.0,
+            "total": 7.0
+          },
+          "dependency": {
+            "ruc": 1,
+            "total": 1.0
+          },
+          "tc": 17.6
+        },
+        "semantic_cluster": 15,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Cluster\ninv: self.edgeNodes->exists(x | x.cpuCores <= 1000)",
+      "pattern_id": "exists_constraint",
+      "pattern_name": "Existential Quantification (exists)",
+      "context": "Cluster",
+      "parameters": {
+        "collection": "edgeNodes",
+        "iterator": "x",
+        "condition": "x.cpuCores <= 1000"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-15T03:57:40.243411",
+      "metadata": {
+        "category": "collection",
+        "complexity": 2,
+        "generation_number": 7277,
+        "profile": "difficult",
+        "operators_used": [
+          "-",
+          "<",
+          "<=",
+          "=",
+          ">",
+          "exists"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "difficult",
+        "operator_count": 6,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 3.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 3.0,
+            "wnc": 5.0,
+            "tnc": 3.6,
+            "vrc": 1,
+            "wno": 4.0,
+            "wnm": 1.0,
+            "total": 9.6
+          },
+          "computational": {
+            "oc": 4.0,
+            "tcc": 0.0,
+            "cic": 3.0,
+            "total": 7.0
+          },
+          "dependency": {
+            "ruc": 4,
+            "total": 4.0
+          },
+          "tc": 20.6
+        },
+        "semantic_cluster": 3,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Gateway\ninv: self.connectedEdges->forAll(x | x.memoryMB < 100)",
+      "pattern_id": "forall_nested",
+      "pattern_name": "Universal Quantification (forAll)",
+      "context": "Gateway",
+      "parameters": {
+        "collection": "connectedEdges",
+        "iterator": "x",
+        "condition": "x.memoryMB < 100"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-15T03:57:40.245395",
+      "metadata": {
+        "category": "collection",
+        "complexity": 2,
+        "generation_number": 7278,
+        "profile": "difficult",
+        "operators_used": [
+          "-",
+          "<",
+          ">",
+          "forAll"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "difficult",
+        "operator_count": 4,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 3.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 3.0,
+            "wnc": 5.0,
+            "tnc": 3.6,
+            "vrc": 1,
+            "wno": 4.0,
+            "wnm": 1.0,
+            "total": 9.6
+          },
+          "computational": {
+            "oc": 4.0,
+            "tcc": 0.0,
+            "cic": 3.0,
+            "total": 7.0
+          },
+          "dependency": {
+            "ruc": 1,
+            "total": 1.0
+          },
+          "tc": 17.6
+        },
+        "semantic_cluster": 3,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Battery\ninv: self.healthPct >= 1 and self.healthPct <= 80",
+      "pattern_id": "numeric_bounded",
+      "pattern_name": "Numeric Attribute Bounded",
+      "context": "Battery",
+      "parameters": {
+        "numeric_attribute": "healthPct",
+        "min_value": 1,
+        "max_value": 80
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-15T03:57:40.248152",
+      "metadata": {
+        "category": "arithmetic",
+        "complexity": 2,
+        "generation_number": 7279,
+        "profile": "medium",
+        "operators_used": [
+          "<",
+          "<=",
+          "=",
+          ">",
+          ">=",
+          "and"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 6,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 1,
+            "wnc": 2.0,
+            "tnc": 1.7,
+            "vrc": 0,
+            "wno": 3.5,
+            "wnm": 0.0,
+            "total": 5.2
+          },
+          "computational": {
+            "oc": 3.5,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.5
+          },
+          "dependency": {
+            "ruc": 2,
+            "total": 2.0
+          },
+          "tc": 10.7
+        },
+        "semantic_cluster": 16,
+        "implies": [
+          "numeric_positive_unsat_Battery"
+        ]
+      }
+    },
+    {
+      "ocl": "context SolarPanel\ninv: self.wattPeak >= 26 and self.wattPeak <= 51",
+      "pattern_id": "numeric_bounded",
+      "pattern_name": "Numeric Attribute Bounded",
+      "context": "SolarPanel",
+      "parameters": {
+        "numeric_attribute": "wattPeak",
+        "min_value": 26,
+        "max_value": 51
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-15T03:57:40.250182",
+      "metadata": {
+        "category": "arithmetic",
+        "complexity": 2,
+        "generation_number": 7280,
+        "profile": "easy",
+        "operators_used": [
+          "<",
+          "<=",
+          "=",
+          ">",
+          ">=",
+          "and"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 6,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 1,
+            "wnc": 2.0,
+            "tnc": 1.7,
+            "vrc": 0,
+            "wno": 3.5,
+            "wnm": 0.0,
+            "total": 5.2
+          },
+          "computational": {
+            "oc": 3.5,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.5
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 8.7
+        },
+        "semantic_cluster": 17,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context ActuatorNode\ninv: self.maxLoad >= 13 and self.maxLoad <= 54",
+      "pattern_id": "numeric_bounded",
+      "pattern_name": "Numeric Attribute Bounded",
+      "context": "ActuatorNode",
+      "parameters": {
+        "numeric_attribute": "maxLoad",
+        "min_value": 13,
+        "max_value": 54
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-15T03:57:40.252075",
+      "metadata": {
+        "category": "arithmetic",
+        "complexity": 2,
+        "generation_number": 7281,
+        "profile": "medium",
+        "operators_used": [
+          "<",
+          "<=",
+          "=",
+          ">",
+          ">=",
+          "and"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 6,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 1,
+            "wnc": 2.0,
+            "tnc": 1.7,
+            "vrc": 0,
+            "wno": 3.5,
+            "wnm": 0.0,
+            "total": 5.2
+          },
+          "computational": {
+            "oc": 3.5,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.5
+          },
+          "dependency": {
+            "ruc": 2,
+            "total": 2.0
+          },
+          "tc": 10.7
+        },
+        "semantic_cluster": 18,
+        "implies": [
+          "numeric_bounded_ActuatorNode"
+        ]
+      }
+    },
+    {
+      "ocl": "context EdgeNode\ninv: self.memoryMB mod 2 = 0",
+      "pattern_id": "numeric_even",
+      "pattern_name": "Numeric Is Even",
+      "context": "EdgeNode",
+      "parameters": {
+        "numeric_attribute": "memoryMB"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-15T03:57:40.253908",
+      "metadata": {
+        "category": "arithmetic",
+        "complexity": 2,
+        "generation_number": 7282,
+        "profile": "easy",
+        "operators_used": [
+          "=",
+          "mod"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 2,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 1.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.0,
+            "vrc": 0,
+            "wno": 2.0,
+            "wnm": 0.0,
+            "total": 3.0
+          },
+          "computational": {
+            "oc": 1.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 1.0
+          },
+          "dependency": {
+            "ruc": 2,
+            "total": 2.0
+          },
+          "tc": 6.0
+        },
+        "semantic_cluster": 19,
+        "implies": [
+          "numeric_abs_bounded_EdgeNode"
+        ]
+      }
+    },
+    {
+      "ocl": "context SensorNode\ninv: self.sampleRateHz mod 2 = 1",
+      "pattern_id": "numeric_odd",
+      "pattern_name": "Numeric Is Odd",
+      "context": "SensorNode",
+      "parameters": {
+        "numeric_attribute": "sampleRateHz"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-15T03:57:40.258856",
+      "metadata": {
+        "category": "arithmetic",
+        "complexity": 2,
+        "generation_number": 7290,
+        "profile": "easy",
+        "operators_used": [
+          "=",
+          "mod"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 2,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 1.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.0,
+            "vrc": 0,
+            "wno": 2.0,
+            "wnm": 0.0,
+            "total": 3.0
+          },
+          "computational": {
+            "oc": 1.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 1.0
+          },
+          "dependency": {
+            "ruc": 2,
+            "total": 2.0
+          },
+          "tc": 6.0
+        },
+        "semantic_cluster": 5,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context SensorNode\ninv: self.sampleRateHz mod 3 = 0",
+      "pattern_id": "numeric_multiple_of",
+      "pattern_name": "Numeric Multiple Of",
+      "context": "SensorNode",
+      "parameters": {
+        "numeric_attribute": "sampleRateHz",
+        "divisor": 3
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-15T03:57:40.261139",
+      "metadata": {
+        "category": "arithmetic",
+        "complexity": 2,
+        "generation_number": 7291,
+        "profile": "easy",
+        "operators_used": [
+          "=",
+          "mod"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 2,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 1.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.0,
+            "vrc": 0,
+            "wno": 2.0,
+            "wnm": 0.0,
+            "total": 3.0
+          },
+          "computational": {
+            "oc": 1.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 1.0
+          },
+          "dependency": {
+            "ruc": 2,
+            "total": 2.0
+          },
+          "tc": 6.0
+        },
+        "semantic_cluster": 5,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Battery\ninv: self.healthPct.abs() <= 7",
+      "pattern_id": "numeric_abs_bounded",
+      "pattern_name": "Numeric Absolute Value Bounded",
+      "context": "Battery",
+      "parameters": {
+        "numeric_attribute": "healthPct",
+        "max_abs": 7
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-15T03:57:40.263503",
+      "metadata": {
+        "category": "arithmetic",
+        "complexity": 2,
+        "generation_number": 7292,
+        "profile": "easy",
+        "operators_used": [
+          "<",
+          "<=",
+          "=",
+          "abs"
+        ],
+        "navigation_depth": 3,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 4,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 1.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.0,
+            "vrc": 0,
+            "wno": 2.0,
+            "wnm": 1.0,
+            "total": 4.0
+          },
+          "computational": {
+            "oc": 1.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 1.0
+          },
+          "dependency": {
+            "ruc": 2,
+            "total": 2.0
+          },
+          "tc": 7.0
+        },
+        "semantic_cluster": 16,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context ActuatorNode\ninv: self.maxLoad >= 7 and self.maxLoad <= 50",
+      "pattern_id": "numeric_bounded",
+      "pattern_name": "Numeric Attribute Bounded",
+      "context": "ActuatorNode",
+      "parameters": {
+        "numeric_attribute": "maxLoad",
+        "min_value": 7,
+        "max_value": 50
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-15T03:57:40.267825",
+      "metadata": {
+        "category": "arithmetic",
+        "complexity": 2,
+        "generation_number": 7294,
+        "profile": "medium",
+        "operators_used": [
+          "<",
+          "<=",
+          "=",
+          ">",
+          ">=",
+          "and"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 6,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 1,
+            "wnc": 2.0,
+            "tnc": 1.7,
+            "vrc": 0,
+            "wno": 3.5,
+            "wnm": 0.0,
+            "total": 5.2
+          },
+          "computational": {
+            "oc": 3.5,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.5
+          },
+          "dependency": {
+            "ruc": 2,
+            "total": 2.0
+          },
+          "tc": 10.7
+        },
+        "semantic_cluster": 18,
+        "implies": [
+          "numeric_bounded_ActuatorNode"
+        ]
+      }
+    },
+    {
+      "ocl": "context Location\ninv: (self.longitude >= 0) and (self.site.size() >= 9 implies self.site.substring(1, 9) = 'AB')",
+      "pattern_id": "numeric_non_negative",
+      "pattern_name": "Numeric Attribute Non-Negative",
+      "context": "Location",
+      "parameters": {
+        "numeric_attribute": "longitude"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-15T03:57:40.269748",
+      "metadata": {
+        "category": "arithmetic",
+        "complexity": 1,
+        "generation_number": 7295,
+        "profile": "medium",
+        "operators_used": [
+          "=",
+          ">",
+          ">=",
+          "and",
+          "implies",
+          "size",
+          "substring"
+        ],
+        "navigation_depth": 3,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 7,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 3.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 1,
+            "wnc": 3.0,
+            "tnc": 2.4,
+            "vrc": 0,
+            "wno": 7.5,
+            "wnm": 2.0,
+            "total": 11.9
+          },
+          "computational": {
+            "oc": 6.5,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 6.5
+          },
+          "dependency": {
+            "ruc": 2,
+            "total": 2.0
+          },
+          "tc": 20.4
+        },
+        "semantic_cluster": 20,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Location\ninv: (self.longitude < 15) and (self.site.toUpperCase() = 'TEST')",
+      "pattern_id": "numeric_less_than_value",
+      "pattern_name": "Numeric Less Than Value",
+      "context": "Location",
+      "parameters": {
+        "numeric_attribute": "longitude",
+        "value": 15
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-15T03:57:40.276402",
+      "metadata": {
+        "category": "arithmetic",
+        "complexity": 1,
+        "generation_number": 7299,
+        "profile": "medium",
+        "operators_used": [
+          "<",
+          "=",
+          "and"
+        ],
+        "navigation_depth": 3,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 1,
+            "wnc": 2.0,
+            "tnc": 1.7,
+            "vrc": 0,
+            "wno": 3.5,
+            "wnm": 1.0,
+            "total": 6.2
+          },
+          "computational": {
+            "oc": 3.5,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.5
+          },
+          "dependency": {
+            "ruc": 2,
+            "total": 2.0
+          },
+          "tc": 11.7
+        },
+        "semantic_cluster": 20,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context EdgeNode\ninv: (self.cpuCores mod 2 = 1) and (self.cpuCores.abs() <= 9)",
+      "pattern_id": "numeric_odd",
+      "pattern_name": "Numeric Is Odd",
+      "context": "EdgeNode",
+      "parameters": {
+        "numeric_attribute": "cpuCores"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-15T03:57:40.282567",
+      "metadata": {
+        "category": "arithmetic",
+        "complexity": 2,
+        "generation_number": 7302,
+        "profile": "medium",
+        "operators_used": [
+          "<",
+          "<=",
+          "=",
+          "abs",
+          "and",
+          "mod"
+        ],
+        "navigation_depth": 3,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 6,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 1,
+            "wnc": 2.0,
+            "tnc": 1.7,
+            "vrc": 0,
+            "wno": 5.5,
+            "wnm": 1.0,
+            "total": 8.2
+          },
+          "computational": {
+            "oc": 3.5,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.5
+          },
+          "dependency": {
+            "ruc": 1,
+            "total": 1.0
+          },
+          "tc": 12.7
+        },
+        "semantic_cluster": 19,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context SensorNode\ninv: (self.sampleRateHz mod 5 = 0) and (self.sensorType <> '' and self.sensorType.size() > 0)",
+      "pattern_id": "numeric_multiple_of",
+      "pattern_name": "Numeric Multiple Of",
+      "context": "SensorNode",
+      "parameters": {
+        "numeric_attribute": "sampleRateHz",
+        "divisor": 5
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-15T03:57:40.287229",
+      "metadata": {
+        "category": "arithmetic",
+        "complexity": 2,
+        "generation_number": 7304,
+        "profile": "medium",
+        "operators_used": [
+          "<",
+          "<>",
+          "=",
+          ">",
+          "and",
+          "mod",
+          "size"
+        ],
+        "navigation_depth": 3,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 7,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 3.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 1,
+            "wnc": 3.0,
+            "tnc": 2.4,
+            "vrc": 0,
+            "wno": 7.0,
+            "wnm": 1.0,
+            "total": 10.4
+          },
+          "computational": {
+            "oc": 6.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 6.0
+          },
+          "dependency": {
+            "ruc": 2,
+            "total": 2.0
+          },
+          "tc": 18.4
+        },
+        "semantic_cluster": 5,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context EdgeNode\ninv: (self.cpuCores.abs() <= 2) and (self.memoryMB mod 2 = 0)",
+      "pattern_id": "numeric_abs_bounded",
+      "pattern_name": "Numeric Absolute Value Bounded",
+      "context": "EdgeNode",
+      "parameters": {
+        "numeric_attribute": "cpuCores",
+        "max_abs": 2
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-15T03:57:40.292768",
+      "metadata": {
+        "category": "arithmetic",
+        "complexity": 2,
+        "generation_number": 7306,
+        "profile": "medium",
+        "operators_used": [
+          "<",
+          "<=",
+          "=",
+          "abs",
+          "and",
+          "mod"
+        ],
+        "navigation_depth": 3,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 6,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 1,
+            "wnc": 2.0,
+            "tnc": 1.7,
+            "vrc": 0,
+            "wno": 5.5,
+            "wnm": 1.0,
+            "total": 8.2
+          },
+          "computational": {
+            "oc": 3.5,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.5
+          },
+          "dependency": {
+            "ruc": 3,
+            "total": 3.0
+          },
+          "tc": 14.7
+        },
+        "semantic_cluster": 19,
+        "implies": [
+          "numeric_even_EdgeNode"
+        ]
+      }
+    },
+    {
+      "ocl": "context Location\ninv: self.latitude >= 0",
+      "pattern_id": "numeric_non_negative",
+      "pattern_name": "Numeric Attribute Non-Negative",
+      "context": "Location",
+      "parameters": {
+        "numeric_attribute": "latitude"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-15T03:57:40.301904",
+      "metadata": {
+        "category": "arithmetic",
+        "complexity": 1,
+        "generation_number": 7309,
+        "profile": "easy",
+        "operators_used": [
+          "=",
+          ">",
+          ">="
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 1.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.0,
+            "vrc": 0,
+            "wno": 1.0,
+            "wnm": 0.0,
+            "total": 2.0
+          },
+          "computational": {
+            "oc": 1.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 1.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 3.0
+        },
+        "semantic_cluster": 20,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context DataStream\ninv: self.alertRules->size() = 3",
+      "pattern_id": "collection_has_size",
+      "pattern_name": "Collection Has Specific Size",
+      "context": "DataStream",
+      "parameters": {
+        "collection": "alertRules",
+        "size": 3
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-15T03:57:40.314954",
+      "metadata": {
+        "category": "collection",
+        "complexity": 1,
+        "generation_number": 7314,
+        "profile": "easy",
+        "operators_used": [
+          "-",
+          "=",
+          ">",
+          "size"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 4,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.4,
+            "vrc": 0,
+            "wno": 1.0,
+            "wnm": 1.0,
+            "total": 3.4
+          },
+          "computational": {
+            "oc": 1.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 1.0
+          },
+          "dependency": {
+            "ruc": 5,
+            "total": 5.0
+          },
+          "tc": 9.4
+        },
+        "semantic_cluster": 1,
+        "implies": [
+          "collection_min_size_DataStream"
+        ]
+      }
+    },
+    {
+      "ocl": "context AlertRule\ninv: self.alerts->size() > 0",
+      "pattern_id": "collection_not_empty_check",
+      "pattern_name": "Collection Not Empty Check",
+      "context": "AlertRule",
+      "parameters": {
+        "collection": "alerts"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-15T03:57:40.322387",
+      "metadata": {
+        "category": "collection",
+        "complexity": 1,
+        "generation_number": 7315,
+        "profile": "easy",
+        "operators_used": [
+          "-",
+          ">",
+          "size"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.4,
+            "vrc": 0,
+            "wno": 1.0,
+            "wnm": 1.0,
+            "total": 3.4
+          },
+          "computational": {
+            "oc": 1.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 1.0
+          },
+          "dependency": {
+            "ruc": 5,
+            "total": 5.0
+          },
+          "tc": 9.4
+        },
+        "semantic_cluster": 1,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context DataStream\ninv: self.alertRules->size() >= 2",
+      "pattern_id": "collection_min_size",
+      "pattern_name": "Collection Minimum Size",
+      "context": "DataStream",
+      "parameters": {
+        "collection": "alertRules",
+        "min_size": 2
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-15T03:57:40.330521",
+      "metadata": {
+        "category": "collection",
+        "complexity": 1,
+        "generation_number": 7316,
+        "profile": "easy",
+        "operators_used": [
+          "-",
+          "=",
+          ">",
+          ">=",
+          "size"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 5,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.4,
+            "vrc": 0,
+            "wno": 1.0,
+            "wnm": 1.0,
+            "total": 3.4
+          },
+          "computational": {
+            "oc": 1.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 1.0
+          },
+          "dependency": {
+            "ruc": 5,
+            "total": 5.0
+          },
+          "tc": 9.4
+        },
+        "semantic_cluster": 1,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context AlertRule\ninv: self.alerts->size() <= 1",
+      "pattern_id": "collection_max_size",
+      "pattern_name": "Collection Maximum Size",
+      "context": "AlertRule",
+      "parameters": {
+        "collection": "alerts",
+        "max_size": 1
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-15T03:57:40.333811",
+      "metadata": {
+        "category": "collection",
+        "complexity": 1,
+        "generation_number": 7317,
+        "profile": "easy",
+        "operators_used": [
+          "-",
+          "<",
+          "<=",
+          "=",
+          ">",
+          "size"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 6,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.4,
+            "vrc": 0,
+            "wno": 1.0,
+            "wnm": 1.0,
+            "total": 3.4
+          },
+          "computational": {
+            "oc": 1.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 1.0
+          },
+          "dependency": {
+            "ruc": 5,
+            "total": 5.0
+          },
+          "tc": 9.4
+        },
+        "semantic_cluster": 1,
+        "implies": [
+          "collection_not_empty_simple_AlertRule"
+        ]
+      }
+    },
+    {
+      "ocl": "context AccessPolicy\ninv: self.roles->notEmpty()",
+      "pattern_id": "collection_not_empty_simple",
+      "pattern_name": "Collection Not Empty (Simple)",
+      "context": "AccessPolicy",
+      "parameters": {
+        "collection": "roles"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-15T03:57:40.343774",
+      "metadata": {
+        "category": "collection",
+        "complexity": 1,
+        "generation_number": 7319,
+        "profile": "easy",
+        "operators_used": [
+          "-",
+          ">",
+          "notEmpty"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.4,
+            "vrc": 0,
+            "wno": 0.0,
+            "wnm": 1.0,
+            "total": 2.4
+          },
+          "computational": {
+            "oc": 0.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 0.0
+          },
+          "dependency": {
+            "ruc": 9,
+            "total": 9.0
+          },
+          "tc": 11.4
+        },
+        "semantic_cluster": 0,
+        "implies": [
+          "collect_operation_AccessPolicy",
+          "collection_not_empty_check_AccessPolicy",
+          "size_constraint_AccessPolicy"
+        ]
+      }
+    },
+    {
+      "ocl": "context AccessPolicy\ninv: self.roles->size() > 0",
+      "pattern_id": "collection_not_empty_check",
+      "pattern_name": "Collection Not Empty Check",
+      "context": "AccessPolicy",
+      "parameters": {
+        "collection": "roles"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-15T03:57:40.353431",
+      "metadata": {
+        "category": "collection",
+        "complexity": 1,
+        "generation_number": 7321,
+        "profile": "easy",
+        "operators_used": [
+          "-",
+          ">",
+          "size"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.4,
+            "vrc": 0,
+            "wno": 1.0,
+            "wnm": 1.0,
+            "total": 3.4
+          },
+          "computational": {
+            "oc": 1.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 1.0
+          },
+          "dependency": {
+            "ruc": 9,
+            "total": 9.0
+          },
+          "tc": 13.4
+        },
+        "semantic_cluster": 0,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Cluster\ninv: (self.gateways->collect(x | x.connectedEdges)->size() >= 3) and (self.gateways->size() >= 1)",
+      "pattern_id": "collection_collectNested",
+      "pattern_name": "Collection Nested Collection Flatten",
+      "context": "Cluster",
+      "parameters": {
+        "collection": "gateways",
+        "nested_collection": "connectedEdges",
+        "min_size": 3
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-15T03:57:40.384674",
+      "metadata": {
+        "category": "collection",
+        "complexity": 4,
+        "generation_number": 7337,
+        "profile": "difficult",
+        "operators_used": [
+          "-",
+          "=",
+          ">",
+          ">=",
+          "and",
+          "collect",
+          "size"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "difficult",
+        "operator_count": 7,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 6.0,
+            "nnc_plus": 4.0,
+            "dn_ca": 3.0,
+            "wnc": 6.0,
+            "tnc": 5.1,
+            "vrc": 1,
+            "wno": 5.5,
+            "wnm": 3.0,
+            "total": 14.6
+          },
+          "computational": {
+            "oc": 5.5,
+            "tcc": 0.0,
+            "cic": 2.0,
+            "total": 7.5
+          },
+          "dependency": {
+            "ruc": 3,
+            "total": 3.0
+          },
+          "tc": 25.1
+        },
+        "semantic_cluster": 3,
+        "implies": [
+          "collection_not_empty_check_unsat_Cluster"
+        ]
+      }
+    },
+    {
+      "ocl": "context DataStream\ninv: self.alertRules->collect(x | x.alerts)->flatten()->notEmpty()",
+      "pattern_id": "flatten_operation",
+      "pattern_name": "Flatten Operation",
+      "context": "DataStream",
+      "parameters": {
+        "collection": "alertRules",
+        "iterator": "x",
+        "nested_collection": "alerts"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-15T03:57:40.403561",
+      "metadata": {
+        "category": "set_operations",
+        "complexity": 3,
+        "generation_number": 7342,
+        "profile": "difficult",
+        "operators_used": [
+          "-",
+          ">",
+          "collect",
+          "flatten",
+          "notEmpty"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "difficult",
+        "operator_count": 5,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 3.0,
+            "wnc": 5.0,
+            "tnc": 4.0,
+            "vrc": 1,
+            "wno": 4.0,
+            "wnm": 3.0,
+            "total": 12.0
+          },
+          "computational": {
+            "oc": 4.0,
+            "tcc": 2.0,
+            "cic": 2.0,
+            "total": 8.0
+          },
+          "dependency": {
+            "ruc": 5,
+            "total": 5.0
+          },
+          "tc": 25.0
+        },
+        "semantic_cluster": 1,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Alert\ninv: (self.message <> null) and (self.createdAt <> '' and self.createdAt.size() > 0)",
+      "pattern_id": "attribute_not_null_simple",
+      "pattern_name": "Attribute Not Null (Simple)",
+      "context": "Alert",
+      "parameters": {
+        "attribute": "message"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-15T03:57:40.442340",
+      "metadata": {
+        "category": "basic",
+        "complexity": 1,
+        "generation_number": 7352,
+        "profile": "medium",
+        "operators_used": [
+          "<",
+          "<>",
+          ">",
+          "and",
+          "size"
+        ],
+        "navigation_depth": 3,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 5,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 3.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 1,
+            "wnc": 3.0,
+            "tnc": 2.4,
+            "vrc": 0,
+            "wno": 6.0,
+            "wnm": 1.0,
+            "total": 9.4
+          },
+          "computational": {
+            "oc": 6.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 6.0
+          },
+          "dependency": {
+            "ruc": 1,
+            "total": 1.0
+          },
+          "tc": 16.4
+        },
+        "semantic_cluster": 21,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Alert\ninv: (self.acknowledged = true) and (self.acknowledged implies self.assignedTo <> null)",
+      "pattern_id": "boolean_is_true",
+      "pattern_name": "Boolean Is True",
+      "context": "Alert",
+      "parameters": {
+        "boolean_attribute": "acknowledged"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-15T03:57:40.447714",
+      "metadata": {
+        "category": "basic",
+        "complexity": 1,
+        "generation_number": 7354,
+        "profile": "medium",
+        "operators_used": [
+          "<",
+          "<>",
+          "=",
+          ">",
+          "and",
+          "implies"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 6,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 3.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 1,
+            "wnc": 3.0,
+            "tnc": 2.4,
+            "vrc": 0,
+            "wno": 5.5,
+            "wnm": 0.0,
+            "total": 7.9
+          },
+          "computational": {
+            "oc": 5.5,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 5.5
+          },
+          "dependency": {
+            "ruc": 3,
+            "total": 3.0
+          },
+          "tc": 16.4
+        },
+        "semantic_cluster": 4,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context AlertRule\ninv: ((self.alerts->notEmpty()) and (self.alerts->size() <= 1)) and (self.ruleId.toLowerCase() = 'test')",
+      "pattern_id": "collection_not_empty_simple",
+      "pattern_name": "Collection Not Empty (Simple)",
+      "context": "AlertRule",
+      "parameters": {
+        "collection": "alerts"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-15T03:57:40.488075",
+      "metadata": {
+        "category": "collection",
+        "complexity": 1,
+        "generation_number": 7367,
+        "profile": "medium",
+        "operators_used": [
+          "-",
+          "<",
+          "<=",
+          "=",
+          ">",
+          "and",
+          "notEmpty",
+          "size"
+        ],
+        "navigation_depth": 3,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 8,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 5.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 1,
+            "wnc": 3.0,
+            "tnc": 3.2,
+            "vrc": 0,
+            "wno": 5.0,
+            "wnm": 3.0,
+            "total": 11.2
+          },
+          "computational": {
+            "oc": 5.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 5.0
+          },
+          "dependency": {
+            "ruc": 5,
+            "total": 5.0
+          },
+          "tc": 21.2
+        },
+        "semantic_cluster": 1,
+        "implies": [
+          "collection_max_size_AlertRule"
+        ]
+      }
+    },
+    {
+      "ocl": "context DataStream\ninv: self.link <> null",
+      "pattern_id": "association_exists",
+      "pattern_name": "Association Exists",
+      "context": "DataStream",
+      "parameters": {
+        "association": "link"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-15T03:57:41.255611",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 1,
+        "generation_number": 7414,
+        "profile": "easy",
+        "regenerated_from": "navigation_chain",
+        "regen_box": "easy",
+        "regen_family": "navigation",
+        "refilled_after": "dedup",
+        "operators_used": [
+          "<",
+          "<>",
+          ">"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 1.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.0,
+            "vrc": 0,
+            "wno": 1.0,
+            "wnm": 0.0,
+            "total": 2.0
+          },
+          "computational": {
+            "oc": 1.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 1.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 3.0
+        },
+        "semantic_cluster": 7,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Device\ninv: (self.deviceId <> '') and (self.tickets->forAll(v | v.ticketId <> ''))",
+      "pattern_id": "attribute_not_null_simple",
+      "pattern_name": "Attribute Not Null (Simple)",
+      "context": "Device",
+      "parameters": {
+        "attribute": "status"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-15T03:57:41.349853",
+      "metadata": {
+        "category": "basic",
+        "complexity": 1,
+        "generation_number": 7440,
+        "profile": "difficult",
+        "regenerated_from": "flatten_operation",
+        "regen_box": "difficult+forall",
+        "regen_family": "cardinality",
+        "refilled_after": "dedup",
+        "operators_used": [
+          "-",
+          "<",
+          "<>",
+          ">",
+          "and",
+          "forAll"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "difficult",
+        "operator_count": 6,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 4.0,
+            "dn_ca": 3.0,
+            "wnc": 6.0,
+            "tnc": 4.3,
+            "vrc": 1,
+            "wno": 6.5,
+            "wnm": 1.0,
+            "total": 12.8
+          },
+          "computational": {
+            "oc": 6.5,
+            "tcc": 0.0,
+            "cic": 3.0,
+            "total": 9.5
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 22.3
+        },
+        "semantic_cluster": 12,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context DataStream\ninv: (self.topic <> '') and (self.records->forAll(v | v.timestamp <> ''))",
+      "pattern_id": "collection_indexOf",
+      "pattern_name": "Collection Index Of Element",
+      "context": "DataStream",
+      "parameters": {
+        "collection": "alertRules",
+        "element": "link"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-15T03:57:41.415877",
+      "metadata": {
+        "category": "collection",
+        "complexity": 3,
+        "generation_number": 7443,
+        "profile": "difficult",
+        "regenerated_from": "collection_collectNested",
+        "regen_box": "difficult+forall",
+        "regen_family": "cardinality",
+        "refilled_after": "dedup",
+        "operators_used": [
+          "-",
+          "<",
+          "<>",
+          ">",
+          "and",
+          "forAll"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "difficult",
+        "operator_count": 6,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 4.0,
+            "dn_ca": 3.0,
+            "wnc": 6.0,
+            "tnc": 4.3,
+            "vrc": 1,
+            "wno": 6.5,
+            "wnm": 1.0,
+            "total": 12.8
+          },
+          "computational": {
+            "oc": 6.5,
+            "tcc": 0.0,
+            "cic": 3.0,
+            "total": 9.5
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 22.3
+        },
+        "semantic_cluster": 22,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context SensorNode\ninv: (self.metrics->size() >= 1) and (self.metrics->size() <= 1)",
+      "pattern_id": "collection_min_size",
+      "pattern_name": "Collection Minimum Size",
+      "context": "SensorNode",
+      "parameters": {
+        "collection": "metrics",
+        "min_size": 1
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-15T03:57:41.458463",
+      "metadata": {
+        "category": "collection",
+        "complexity": 1,
+        "generation_number": 7452,
+        "profile": "medium",
+        "regenerated_from": "collection_sum",
+        "regen_box": "medium+conjoin",
+        "regen_family": "cardinality",
+        "refilled_after": "dedup",
+        "operators_used": [
+          "-",
+          "<",
+          "<=",
+          "=",
+          ">",
+          ">=",
+          "and",
+          "size"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 8,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 1,
+            "wnc": 2.0,
+            "tnc": 2.5,
+            "vrc": 0,
+            "wno": 3.5,
+            "wnm": 2.0,
+            "total": 8.0
+          },
+          "computational": {
+            "oc": 3.5,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.5
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 11.5
+        },
+        "semantic_cluster": 13,
+        "implies": [
+          "collection_not_empty_simple_SensorNode"
+        ]
+      }
+    },
+    {
+      "ocl": "context AccessPolicy\ninv: (self.roles->size() >= 1) and (self.roles->size() > 0)",
+      "pattern_id": "size_constraint",
+      "pattern_name": "Collection Size Constraint",
+      "context": "AccessPolicy",
+      "parameters": {
+        "collection": "roles",
+        "operator": ">=",
+        "value": 1
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-15T03:57:41.489800",
+      "metadata": {
+        "category": "basic",
+        "complexity": 1,
+        "generation_number": 7457,
+        "profile": "medium",
+        "regenerated_from": "collection_collectNested",
+        "regen_box": "medium+conjoin",
+        "regen_family": "cardinality",
+        "refilled_after": "dedup",
+        "operators_used": [
+          "-",
+          "=",
+          ">",
+          ">=",
+          "and",
+          "size"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 6,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 1,
+            "wnc": 2.0,
+            "tnc": 2.5,
+            "vrc": 0,
+            "wno": 3.5,
+            "wnm": 2.0,
+            "total": 8.0
+          },
+          "computational": {
+            "oc": 3.5,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.5
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 11.5
+        },
+        "semantic_cluster": 0,
+        "implies": [
+          "collect_operation_AccessPolicy",
+          "collection_not_empty_simple_AccessPolicy",
+          "collection_not_empty_check_AccessPolicy"
+        ]
+      }
+    },
+    {
+      "ocl": "context SensorNode\ninv: ((self.metrics->notEmpty()) and (self.sampleRateHz > 0)) and (self.sensorType.toUpperCase() = 'TEST')",
+      "pattern_id": "collection_not_empty_simple",
+      "pattern_name": "Collection Not Empty (Simple)",
+      "context": "SensorNode",
+      "parameters": {
+        "collection": "metrics"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-15T03:57:41.562966",
+      "metadata": {
+        "category": "collection",
+        "complexity": 1,
+        "generation_number": 7465,
+        "profile": "medium",
+        "regenerated_from": "collection_sum",
+        "regen_box": "medium+conjoin+conjoin",
+        "regen_family": "cardinality",
+        "refilled_after": "dedup",
+        "operators_used": [
+          "-",
+          "=",
+          ">",
+          "and",
+          "notEmpty"
+        ],
+        "navigation_depth": 3,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 5,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 1,
+            "wnc": 3.0,
+            "tnc": 2.8,
+            "vrc": 0,
+            "wno": 5.0,
+            "wnm": 2.0,
+            "total": 9.8
+          },
+          "computational": {
+            "oc": 5.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 5.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 14.8
+        },
+        "semantic_cluster": 14,
+        "implies": [
+          "collection_min_size_SensorNode"
+        ]
+      }
+    },
+    {
+      "ocl": "context MaintenanceTicket\ninv: (self.otaUpdate.targetDevice = self.device) and (not(self.otaUpdate.targetDevice = self.device))",
+      "pattern_id": "navigation_consistency_unsat",
+      "pattern_name": "Navigation Consistency (UNSAT)",
+      "context": "MaintenanceTicket",
+      "parameters": {
+        "assoc_a": "otaUpdate",
+        "assoc_b": "targetDevice",
+        "assoc_c": "device"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-15T03:57:41.595187",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 1,
+        "generation_number": 7233,
+        "profile": "unboxed",
+        "operators_used": [
+          "="
+        ],
+        "navigation_depth": 3,
+        "quantifier_depth": 0,
+        "difficulty": "unboxed",
+        "operator_count": 1,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 3.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 2,
+            "wnc": 3.0,
+            "tnc": 2.7,
+            "vrc": 0,
+            "wno": 1.0,
+            "wnm": 0.0,
+            "total": 3.7
+          },
+          "computational": {
+            "oc": 1.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 1.0
+          },
+          "dependency": {
+            "ruc": 1,
+            "total": 1.0
+          },
+          "tc": 5.7
+        },
+        "is_unsat": true,
+        "mutation": "self_contradiction",
+        "original_pattern_id": "navigation_consistency",
+        "slot_profile": "easy",
+        "semantic_cluster": 10,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context DataStream\ninv: (self.alertRules->size() = 1) and (self.alertRules->size() <> 1)",
+      "pattern_id": "size_constraint_unsat",
+      "pattern_name": "Collection Size Constraint (UNSAT)",
+      "context": "DataStream",
+      "parameters": {
+        "collection": "alertRules",
+        "operator": "=",
+        "value": 1
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-15T03:57:41.595507",
+      "metadata": {
+        "category": "basic",
+        "complexity": 1,
+        "generation_number": 7312,
+        "profile": "medium",
+        "operators_used": [
+          "-",
+          "=",
+          ">",
+          "size"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 4,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.4,
+            "vrc": 0,
+            "wno": 1.0,
+            "wnm": 1.0,
+            "total": 3.4
+          },
+          "computational": {
+            "oc": 1.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 1.0
+          },
+          "dependency": {
+            "ruc": 5,
+            "total": 5.0
+          },
+          "tc": 9.4
+        },
+        "is_unsat": true,
+        "mutation": "contradictory_bounds",
+        "original_pattern_id": "size_constraint",
+        "contradiction_ocl": "context DataStream\ninv: self.alertRules->size() <> 1",
+        "slot_profile": "easy",
+        "semantic_cluster": 1,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context AccessPolicy\ninv: (self.roles->size() > 1) and (self.roles->size() < -4)",
+      "pattern_id": "size_constraint_unsat",
+      "pattern_name": "Collection Size Constraint (UNSAT)",
+      "context": "AccessPolicy",
+      "parameters": {
+        "collection": "roles",
+        "operator": ">",
+        "value": 1
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-15T03:57:42.445844",
+      "metadata": {
+        "category": "basic",
+        "complexity": 1,
+        "generation_number": 7318,
+        "profile": "medium",
+        "operators_used": [
+          "-",
+          ">",
+          "size"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 3,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.4,
+            "vrc": 0,
+            "wno": 1.0,
+            "wnm": 1.0,
+            "total": 3.4
+          },
+          "computational": {
+            "oc": 1.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 1.0
+          },
+          "dependency": {
+            "ruc": 9,
+            "total": 9.0
+          },
+          "tc": 13.4
+        },
+        "is_unsat": true,
+        "mutation": "contradictory_bounds",
+        "original_pattern_id": "size_constraint",
+        "contradiction_ocl": "context AccessPolicy\ninv: self.roles->size() < -4",
+        "slot_profile": "easy",
+        "semantic_cluster": 0,
+        "implies": [
+          "collect_operation_AccessPolicy",
+          "collection_not_empty_simple_AccessPolicy",
+          "collection_not_empty_check_AccessPolicy",
+          "size_constraint_AccessPolicy"
+        ]
+      }
+    },
+    {
+      "ocl": "context CommunicationLink\ninv: (self.bandwidthKbps mod 2 = 0) and (not(self.bandwidthKbps mod 2 = 0))",
+      "pattern_id": "numeric_even_unsat",
+      "pattern_name": "Numeric Is Even (UNSAT)",
+      "context": "CommunicationLink",
+      "parameters": {
+        "numeric_attribute": "bandwidthKbps"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-15T03:57:44.164825",
+      "metadata": {
+        "category": "arithmetic",
+        "complexity": 2,
+        "generation_number": 7301,
+        "profile": "medium",
+        "operators_used": [
+          "=",
+          "mod"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 2,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 1.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.0,
+            "vrc": 0,
+            "wno": 2.0,
+            "wnm": 0.0,
+            "total": 3.0
+          },
+          "computational": {
+            "oc": 1.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 1.0
+          },
+          "dependency": {
+            "ruc": 1,
+            "total": 1.0
+          },
+          "tc": 5.0
+        },
+        "is_unsat": true,
+        "mutation": "self_contradiction",
+        "original_pattern_id": "numeric_even",
+        "slot_profile": "easy",
+        "semantic_cluster": 11,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context PowerSource\ninv: ((self.device.firmware.checksum <> '') and (self.capacity > 0)) and (self.capacity < -5)",
+      "pattern_id": "navigation_chain_unsat",
+      "pattern_name": "Navigation Chain (UNSAT)",
+      "context": "PowerSource",
+      "parameters": {
+        "navigation_path": "self.device.firmware.checksum <> ''"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-15T03:57:44.164927",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 2,
+        "generation_number": 7241,
+        "profile": "medium",
+        "operators_used": [
+          "<",
+          "<>",
+          ">",
+          "and"
+        ],
+        "navigation_depth": 4,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 4,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 4.0,
+            "dn_ca": 3,
+            "wnc": 4.0,
+            "tnc": 3.7,
+            "vrc": 0,
+            "wno": 3.5,
+            "wnm": 0.0,
+            "total": 7.2
+          },
+          "computational": {
+            "oc": 3.5,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.5
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 10.7
+        },
+        "is_unsat": true,
+        "mutation": "contradictory_bounds",
+        "original_pattern_id": "navigation_chain",
+        "contradiction_ocl": "context PowerSource\ninv: self.capacity < -5",
+        "slot_profile": "medium",
+        "semantic_cluster": 10,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context CommunicationLink\ninv: (self.bandwidthKbps >= 42 and self.bandwidthKbps <= 64) and (self.bandwidthKbps < 42)",
+      "pattern_id": "numeric_bounded_unsat",
+      "pattern_name": "Numeric Attribute Bounded (UNSAT)",
+      "context": "CommunicationLink",
+      "parameters": {
+        "numeric_attribute": "bandwidthKbps",
+        "min_value": 42,
+        "max_value": 64
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-15T03:57:45.151743",
+      "metadata": {
+        "category": "arithmetic",
+        "complexity": 2,
+        "generation_number": 7310,
+        "profile": "medium",
+        "operators_used": [
+          "<",
+          "<=",
+          "=",
+          ">",
+          ">=",
+          "and"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 6,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 1,
+            "wnc": 2.0,
+            "tnc": 1.7,
+            "vrc": 0,
+            "wno": 3.5,
+            "wnm": 0.0,
+            "total": 5.2
+          },
+          "computational": {
+            "oc": 3.5,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.5
+          },
+          "dependency": {
+            "ruc": 1,
+            "total": 1.0
+          },
+          "tc": 9.7
+        },
+        "is_unsat": true,
+        "mutation": "contradictory_bounds",
+        "original_pattern_id": "numeric_bounded",
+        "contradiction_ocl": "context CommunicationLink\ninv: self.bandwidthKbps < 42",
+        "slot_profile": "medium",
+        "semantic_cluster": 11,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Cluster\ninv: ((self.gateways->size() > 0) and (self.gateways->collect(x | x.ipAddress)->notEmpty())) and (self.gateways->size() < -5)",
+      "pattern_id": "collection_not_empty_check_unsat",
+      "pattern_name": "Collection Not Empty Check (UNSAT)",
+      "context": "Cluster",
+      "parameters": {
+        "collection": "gateways"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-15T03:57:47.839570",
+      "metadata": {
+        "category": "collection",
+        "complexity": 1,
+        "generation_number": 7444,
+        "profile": "difficult",
+        "regenerated_from": "collection_collectNested",
+        "regen_box": "medium+conjoin",
+        "regen_family": "cardinality",
+        "refilled_after": "dedup",
+        "operators_used": [
+          "-",
+          ">",
+          "and",
+          "collect",
+          "notEmpty",
+          "size"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "difficult",
+        "operator_count": 6,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 5.0,
+            "nnc_plus": 4.0,
+            "dn_ca": 3.0,
+            "wnc": 6.0,
+            "tnc": 4.7,
+            "vrc": 1,
+            "wno": 4.5,
+            "wnm": 3.0,
+            "total": 13.2
+          },
+          "computational": {
+            "oc": 4.5,
+            "tcc": 0.0,
+            "cic": 2.0,
+            "total": 6.5
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 19.7
+        },
+        "is_unsat": true,
+        "mutation": "contradictory_bounds",
+        "original_pattern_id": "collection_not_empty_check",
+        "contradiction_ocl": "context Cluster\ninv: self.gateways->size() < -5",
+        "slot_profile": "medium",
+        "semantic_cluster": 9,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context CommunicationLink\ninv: (self.isSecure implies self.stream <> null) and (not(self.isSecure implies self.stream <> null))",
+      "pattern_id": "conditional_existence_unsat",
+      "pattern_name": "Conditional Existence (UNSAT)",
+      "context": "CommunicationLink",
+      "parameters": {
+        "bool_attribute": "isSecure",
+        "optional_association": "stream"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-15T03:57:48.600221",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 1,
+        "generation_number": 7254,
+        "profile": "unboxed",
+        "operators_used": [
+          "<",
+          "<>",
+          ">",
+          "implies"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "unboxed",
+        "operator_count": 4,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 2.0,
+            "dn_ca": 1,
+            "wnc": 2.0,
+            "tnc": 1.7,
+            "vrc": 0,
+            "wno": 3.0,
+            "wnm": 0.0,
+            "total": 4.7
+          },
+          "computational": {
+            "oc": 3.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.0
+          },
+          "dependency": {
+            "ruc": 1,
+            "total": 1.0
+          },
+          "tc": 8.7
+        },
+        "is_unsat": true,
+        "mutation": "self_contradiction",
+        "original_pattern_id": "conditional_existence",
+        "slot_profile": "medium",
+        "semantic_cluster": 2,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Battery\ninv: (self.healthPct > 0) and (self.healthPct < -5)",
+      "pattern_id": "numeric_positive_unsat",
+      "pattern_name": "Numeric Attribute Positive (UNSAT)",
+      "context": "Battery",
+      "parameters": {
+        "numeric_attribute": "healthPct"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-15T03:57:48.600281",
+      "metadata": {
+        "category": "arithmetic",
+        "complexity": 1,
+        "generation_number": 7308,
+        "profile": "easy",
+        "operators_used": [
+          ">"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 1,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 1.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.0,
+            "vrc": 0,
+            "wno": 1.0,
+            "wnm": 0.0,
+            "total": 2.0
+          },
+          "computational": {
+            "oc": 1.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 1.0
+          },
+          "dependency": {
+            "ruc": 2,
+            "total": 2.0
+          },
+          "tc": 5.0
+        },
+        "is_unsat": true,
+        "mutation": "contradictory_bounds",
+        "original_pattern_id": "numeric_positive",
+        "contradiction_ocl": "context Battery\ninv: self.healthPct < -5",
+        "slot_profile": "easy",
+        "semantic_cluster": 16,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context EdgeNode\ninv: (self.memoryMB > 0) and (self.memoryMB < -5)",
+      "pattern_id": "numeric_positive_unsat",
+      "pattern_name": "Numeric Attribute Positive (UNSAT)",
+      "context": "EdgeNode",
+      "parameters": {
+        "numeric_attribute": "memoryMB"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-15T03:57:49.520438",
+      "metadata": {
+        "category": "arithmetic",
+        "complexity": 1,
+        "generation_number": 7293,
+        "profile": "easy",
+        "operators_used": [
+          ">"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "easy",
+        "operator_count": 1,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 1.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.0,
+            "vrc": 0,
+            "wno": 1.0,
+            "wnm": 0.0,
+            "total": 2.0
+          },
+          "computational": {
+            "oc": 1.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 1.0
+          },
+          "dependency": {
+            "ruc": 2,
+            "total": 2.0
+          },
+          "tc": 5.0
+        },
+        "is_unsat": true,
+        "mutation": "contradictory_bounds",
+        "original_pattern_id": "numeric_positive",
+        "contradiction_ocl": "context EdgeNode\ninv: self.memoryMB < -5",
+        "slot_profile": "easy",
+        "semantic_cluster": 19,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context EdgeNode\ninv: (self.gateway.cluster = self.cluster) and (not(self.gateway.cluster = self.cluster))",
+      "pattern_id": "navigation_consistency_unsat",
+      "pattern_name": "Navigation Consistency (UNSAT)",
+      "context": "EdgeNode",
+      "parameters": {
+        "assoc_a": "gateway",
+        "assoc_b": "cluster",
+        "assoc_c": "cluster"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-15T03:57:50.364874",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 1,
+        "generation_number": 7235,
+        "profile": "unboxed",
+        "operators_used": [
+          "="
+        ],
+        "navigation_depth": 3,
+        "quantifier_depth": 0,
+        "difficulty": "unboxed",
+        "operator_count": 1,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 3.0,
+            "nnc_plus": 3.0,
+            "dn_ca": 2,
+            "wnc": 3.0,
+            "tnc": 2.7,
+            "vrc": 0,
+            "wno": 1.0,
+            "wnm": 0.0,
+            "total": 3.7
+          },
+          "computational": {
+            "oc": 1.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 1.0
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 4.7
+        },
+        "is_unsat": true,
+        "mutation": "self_contradiction",
+        "original_pattern_id": "navigation_consistency",
+        "slot_profile": "easy",
+        "semantic_cluster": 9,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context Cluster\ninv: (self.gateways->size() <= 3) and (self.gateways->size() > 3)",
+      "pattern_id": "collection_max_size_unsat",
+      "pattern_name": "Collection Maximum Size (UNSAT)",
+      "context": "Cluster",
+      "parameters": {
+        "collection": "gateways",
+        "max_size": 3
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-15T03:57:50.364909",
+      "metadata": {
+        "category": "collection",
+        "complexity": 1,
+        "generation_number": 7323,
+        "profile": "medium",
+        "operators_used": [
+          "-",
+          "<",
+          "<=",
+          "=",
+          ">",
+          "size"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 6,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.4,
+            "vrc": 0,
+            "wno": 1.0,
+            "wnm": 1.0,
+            "total": 3.4
+          },
+          "computational": {
+            "oc": 1.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 1.0
+          },
+          "dependency": {
+            "ruc": 3,
+            "total": 3.0
+          },
+          "tc": 7.4
+        },
+        "is_unsat": true,
+        "mutation": "contradictory_bounds",
+        "original_pattern_id": "collection_max_size",
+        "contradiction_ocl": "context Cluster\ninv: self.gateways->size() > 3",
+        "slot_profile": "easy",
+        "semantic_cluster": 9,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context AccessPolicy\ninv: ((self.description <> '') and (self.roles->forAll(v | v.roleName <> ''))) and (self.roles->exists(v | not(v.roleName <> '')))",
+      "pattern_id": "collection_asSequence_unsat",
+      "pattern_name": "Collection As Sequence Conversion (UNSAT)",
+      "context": "AccessPolicy",
+      "parameters": {
+        "collection": "roles"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-15T03:57:51.254183",
+      "metadata": {
+        "category": "collection",
+        "complexity": 2,
+        "generation_number": 7441,
+        "profile": "unboxed",
+        "regenerated_from": "flatten_operation",
+        "regen_box": "difficult+forall",
+        "regen_family": "cardinality",
+        "refilled_after": "dedup",
+        "operators_used": [
+          "-",
+          "<",
+          "<>",
+          ">",
+          "and",
+          "forAll"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "unboxed",
+        "operator_count": 6,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 4.0,
+            "dn_ca": 3.0,
+            "wnc": 6.0,
+            "tnc": 4.3,
+            "vrc": 1,
+            "wno": 6.5,
+            "wnm": 1.0,
+            "total": 12.8
+          },
+          "computational": {
+            "oc": 6.5,
+            "tcc": 0.0,
+            "cic": 3.0,
+            "total": 9.5
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 22.3
+        },
+        "is_unsat": true,
+        "mutation": "universal_negation",
+        "original_pattern_id": "collection_asSequence",
+        "contradiction_ocl": "context AccessPolicy\ninv: self.roles->exists(v | not(v.roleName <> ''))",
+        "contradiction_pattern_id": "exists_nested",
+        "slot_profile": "difficult",
+        "semantic_cluster": 0,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context AccessPolicy\ninv: (self.roles->size() <= 1) and (self.roles->size() > 1)",
+      "pattern_id": "size_constraint_unsat",
+      "pattern_name": "Collection Size Constraint (UNSAT)",
+      "context": "AccessPolicy",
+      "parameters": {
+        "collection": "roles",
+        "operator": "<=",
+        "value": 1
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-15T03:57:52.211385",
+      "metadata": {
+        "category": "basic",
+        "complexity": 1,
+        "generation_number": 7335,
+        "profile": "medium",
+        "operators_used": [
+          "-",
+          "<",
+          "<=",
+          "=",
+          ">",
+          "size"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 0,
+        "difficulty": "medium",
+        "operator_count": 6,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 2.0,
+            "nnc_plus": 1.0,
+            "dn_ca": 1,
+            "wnc": 1.0,
+            "tnc": 1.4,
+            "vrc": 0,
+            "wno": 1.0,
+            "wnm": 1.0,
+            "total": 3.4
+          },
+          "computational": {
+            "oc": 1.0,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 1.0
+          },
+          "dependency": {
+            "ruc": 9,
+            "total": 9.0
+          },
+          "tc": 13.4
+        },
+        "is_unsat": true,
+        "mutation": "contradictory_bounds",
+        "original_pattern_id": "size_constraint",
+        "contradiction_ocl": "context AccessPolicy\ninv: self.roles->size() > 1",
+        "slot_profile": "easy",
+        "semantic_cluster": 0,
+        "implies": [
+          "collect_operation_AccessPolicy",
+          "collection_not_empty_simple_AccessPolicy",
+          "collection_not_empty_check_AccessPolicy",
+          "size_constraint_AccessPolicy"
+        ]
+      }
+    },
+    {
+      "ocl": "context TelemetryRecord\ninv: ((self.stream.device.name <> '') and (self.payload.toLowerCase() = 'test')) and (not((self.stream.device.name <> '') and (self.payload.toLowerCase() = 'test')))",
+      "pattern_id": "navigation_chain_unsat",
+      "pattern_name": "Navigation Chain (UNSAT)",
+      "context": "TelemetryRecord",
+      "parameters": {
+        "navigation_path": "self.stream.device.name <> ''"
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-15T03:57:53.293798",
+      "metadata": {
+        "category": "navigation",
+        "complexity": 2,
+        "generation_number": 7243,
+        "profile": "unboxed",
+        "operators_used": [
+          "<",
+          "<>",
+          "=",
+          ">",
+          "and"
+        ],
+        "navigation_depth": 4,
+        "quantifier_depth": 0,
+        "difficulty": "unboxed",
+        "operator_count": 5,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 4.0,
+            "dn_ca": 3,
+            "wnc": 4.0,
+            "tnc": 3.7,
+            "vrc": 0,
+            "wno": 3.5,
+            "wnm": 1.0,
+            "total": 8.2
+          },
+          "computational": {
+            "oc": 3.5,
+            "tcc": 0.0,
+            "cic": 0.0,
+            "total": 3.5
+          },
+          "dependency": {
+            "ruc": 0,
+            "total": 0.0
+          },
+          "tc": 11.7
+        },
+        "is_unsat": true,
+        "mutation": "self_contradiction",
+        "original_pattern_id": "navigation_chain",
+        "slot_profile": "medium",
+        "semantic_cluster": 2,
+        "implies": []
+      }
+    },
+    {
+      "ocl": "context SensorNode\ninv: ((self.metrics->collect(x | x.lastValue)->sum() >= 9) and (self.metrics->one(x | x.lastValue >= 10))) and (not((self.metrics->collect(x | x.lastValue)->sum() >= 9) and (self.metrics->one(x | x.lastValue >= 10))))",
+      "pattern_id": "collection_sum_unsat",
+      "pattern_name": "Collection Sum (UNSAT)",
+      "context": "SensorNode",
+      "parameters": {
+        "collection": "metrics",
+        "numeric_attribute": "lastValue",
+        "min_sum": 9
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-15T03:57:54.346601",
+      "metadata": {
+        "category": "collection",
+        "complexity": 3,
+        "generation_number": 7345,
+        "profile": "unboxed",
+        "operators_used": [
+          "-",
+          "=",
+          ">",
+          ">=",
+          "and",
+          "collect",
+          "one",
+          "sum"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "unboxed",
+        "operator_count": 8,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 6.0,
+            "nnc_plus": 6.0,
+            "dn_ca": 3.0,
+            "wnc": 10.0,
+            "tnc": 6.3,
+            "vrc": 1,
+            "wno": 5.5,
+            "wnm": 3.0,
+            "total": 15.8
+          },
+          "computational": {
+            "oc": 5.5,
+            "tcc": 0.0,
+            "cic": 4.0,
+            "total": 9.5
+          },
+          "dependency": {
+            "ruc": 5,
+            "total": 5.0
+          },
+          "tc": 30.3
+        },
+        "is_unsat": true,
+        "mutation": "self_contradiction",
+        "original_pattern_id": "collection_sum",
+        "slot_profile": "difficult",
+        "semantic_cluster": 13,
+        "implies": [
+          "collection_navigation_SensorNode"
+        ]
+      }
+    },
+    {
+      "ocl": "context Cluster\ninv: ((self.clusterId <> '') and (self.edgeNodes->forAll(v | v.cpuCores > 5))) and (self.edgeNodes->exists(v | not(v.cpuCores > 5)))",
+      "pattern_id": "collection_size_range_unsat",
+      "pattern_name": "Collection Size in Range (UNSAT)",
+      "context": "Cluster",
+      "parameters": {
+        "collection": "gateways",
+        "min_size": 2,
+        "max_size": 2
+      },
+      "confidence": 1.0,
+      "timestamp": "2026-10-15T03:57:55.280922",
+      "metadata": {
+        "category": "collection",
+        "complexity": 2,
+        "generation_number": 7212,
+        "profile": "unboxed",
+        "operators_used": [
+          "-",
+          "<",
+          "<>",
+          ">",
+          "and",
+          "forAll"
+        ],
+        "navigation_depth": 2,
+        "quantifier_depth": 1,
+        "difficulty": "unboxed",
+        "operator_count": 6,
+        "complexity_metrics": {
+          "structural": {
+            "nnr_c": 4.0,
+            "nnc_plus": 4.0,
+            "dn_ca": 3.0,
+            "wnc": 6.0,
+            "tnc": 4.3,
+            "vrc": 1,
+            "wno": 6.5,
+            "wnm": 1.0,
+            "total": 12.8
+          },
+          "computational": {
+            "oc": 6.5,
+            "tcc": 0.0,
+            "cic": 3.0,
+            "total": 9.5
+          },
+          "dependency": {
+            "ruc": 4,
+            "total": 4.0
+          },
+          "tc": 26.3
+        },
+        "is_unsat": true,
+        "mutation": "universal_negation",
+        "original_pattern_id": "collection_size_range",
+        "contradiction_ocl": "context Cluster\ninv: self.edgeNodes->exists(v | not(v.cpuCores > 5))",
+        "contradiction_pattern_id": "exists_nested",
+        "slot_profile": "difficult",
+        "semantic_cluster": 3,
+        "implies": []
+      }
+    }
+  ],
+  "verification": {
+    "enabled": true,
+    "results": [
+      {
+        "constraint_id": "collection_size_range_AccessPolicy",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.2872589417357943
+      },
+      {
+        "constraint_id": "collection_size_range_AlertRule",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.2872589417357943
+      },
+      {
+        "constraint_id": "collection_size_range_Device",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.2872589417357943
+      },
+      {
+        "constraint_id": "collection_size_range_Network",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.2872589417357943
+      },
+      {
+        "constraint_id": "collection_size_range_Gateway",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.2872589417357943
+      },
+      {
+        "constraint_id": "conditional_existence_Alert",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.2872589417357943
+      },
+      {
+        "constraint_id": "navigation_chain_Metric",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.2872589417357943
+      },
+      {
+        "constraint_id": "navigation_chain_User",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.2872589417357943
+      },
+      {
+        "constraint_id": "simple_navigation_DataStream",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.2872589417357943
+      },
+      {
+        "constraint_id": "navigation_chain_Role",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.2872589417357943
+      },
+      {
+        "constraint_id": "simple_navigation_MaintenanceTicket",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.2872589417357943
+      },
+      {
+        "constraint_id": "simple_navigation_EdgeNode",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.2872589417357943
+      },
+      {
+        "constraint_id": "association_exists_CommunicationLink",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.2872589417357943
+      },
+      {
+        "constraint_id": "association_exists_Alert",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.2872589417357943
+      },
+      {
+        "constraint_id": "collection_navigation_Firmware",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.2872589417357943
+      },
+      {
+        "constraint_id": "navigation_chain_ConnectivityModule",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.2872589417357943
+      },
+      {
+        "constraint_id": "collection_navigation_OTAUpdate",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.2872589417357943
+      },
+      {
+        "constraint_id": "collection_navigation_SensorNode",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.2872589417357943
+      },
+      {
+        "constraint_id": "collection_navigation_IoTPlatform",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.2872589417357943
+      },
+      {
+        "constraint_id": "navigation_chain_EventLog",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.2872589417357943
+      },
+      {
+        "constraint_id": "navigation_chain_APIKey",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.2872589417357943
+      },
+      {
+        "constraint_id": "navigation_chain_ConfigurationProfile",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.2872589417357943
+      },
+      {
+        "constraint_id": "navigation_chain_Location",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.2872589417357943
+      },
+      {
+        "constraint_id": "navigation_consistency_MaintenanceTicket",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.2872589417357943
+      },
+      {
+        "constraint_id": "select_operation_Cluster",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.2872589417357943
+      },
+      {
+        "constraint_id": "select_operation_Network",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.2872589417357943
+      },
+      {
+        "constraint_id": "collect_operation_AccessPolicy",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.2872589417357943
+      },
+      {
+        "constraint_id": "any_operation_DataStream",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.2872589417357943
+      },
+      {
+        "constraint_id": "select_operation_SensorNode",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.2872589417357943
+      },
+      {
+        "constraint_id": "one_operation_AccessPolicy",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.2872589417357943
+      },
+      {
+        "constraint_id": "collect_operation_Device",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.2872589417357943
+      },
+      {
+        "constraint_id": "exists_constraint_AlertRule",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.2872589417357943
+      },
+      {
+        "constraint_id": "forall_nested_Cluster",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.2872589417357943
+      },
+      {
+        "constraint_id": "exists_constraint_DataStream",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.2872589417357943
+      },
+      {
+        "constraint_id": "exists_constraint_Cluster",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.2872589417357943
+      },
+      {
+        "constraint_id": "forall_nested_Gateway",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.2872589417357943
+      },
+      {
+        "constraint_id": "numeric_bounded_Battery",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.2872589417357943
+      },
+      {
+        "constraint_id": "numeric_bounded_SolarPanel",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.2872589417357943
+      },
+      {
+        "constraint_id": "numeric_bounded_ActuatorNode",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.2872589417357943
+      },
+      {
+        "constraint_id": "numeric_even_EdgeNode",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.2872589417357943
+      },
+      {
+        "constraint_id": "numeric_odd_SensorNode",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.2872589417357943
+      },
+      {
+        "constraint_id": "numeric_multiple_of_SensorNode",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.2872589417357943
+      },
+      {
+        "constraint_id": "numeric_abs_bounded_Battery",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.2872589417357943
+      },
+      {
+        "constraint_id": "numeric_bounded_ActuatorNode",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.2872589417357943
+      },
+      {
+        "constraint_id": "numeric_non_negative_Location",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.2872589417357943
+      },
+      {
+        "constraint_id": "numeric_less_than_value_Location",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.2872589417357943
+      },
+      {
+        "constraint_id": "numeric_odd_EdgeNode",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.2872589417357943
+      },
+      {
+        "constraint_id": "numeric_multiple_of_SensorNode",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.2872589417357943
+      },
+      {
+        "constraint_id": "numeric_abs_bounded_EdgeNode",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.2872589417357943
+      },
+      {
+        "constraint_id": "numeric_non_negative_Location",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.2872589417357943
+      },
+      {
+        "constraint_id": "collection_has_size_DataStream",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.2872589417357943
+      },
+      {
+        "constraint_id": "collection_not_empty_check_AlertRule",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.2872589417357943
+      },
+      {
+        "constraint_id": "collection_min_size_DataStream",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.2872589417357943
+      },
+      {
+        "constraint_id": "collection_max_size_AlertRule",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.2872589417357943
+      },
+      {
+        "constraint_id": "collection_not_empty_simple_AccessPolicy",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.2872589417357943
+      },
+      {
+        "constraint_id": "collection_not_empty_check_AccessPolicy",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.2872589417357943
+      },
+      {
+        "constraint_id": "collection_collectNested_Cluster",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.2872589417357943
+      },
+      {
+        "constraint_id": "flatten_operation_DataStream",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.2872589417357943
+      },
+      {
+        "constraint_id": "attribute_not_null_simple_Alert",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.2872589417357943
+      },
+      {
+        "constraint_id": "boolean_is_true_Alert",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.2872589417357943
+      },
+      {
+        "constraint_id": "collection_not_empty_simple_AlertRule",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.2872589417357943
+      },
+      {
+        "constraint_id": "association_exists_DataStream",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.2872589417357943
+      },
+      {
+        "constraint_id": "attribute_not_null_simple_Device",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.2872589417357943
+      },
+      {
+        "constraint_id": "collection_indexOf_DataStream",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.2872589417357943
+      },
+      {
+        "constraint_id": "collection_min_size_SensorNode",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.2872589417357943
+      },
+      {
+        "constraint_id": "size_constraint_AccessPolicy",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.2872589417357943
+      },
+      {
+        "constraint_id": "collection_not_empty_simple_SensorNode",
+        "is_valid": true,
+        "solver_result": "sat",
+        "execution_time": 0.2872589417357943
+      }
+    ]
+  }
+}

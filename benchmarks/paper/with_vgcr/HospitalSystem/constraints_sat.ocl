@@ -1,0 +1,370 @@
+-- Benchmark: HospitalSystem / balanced
+-- Type: SAT Constraints Only
+-- Generated: 2026-10-12T20:17:19.874006
+-- Count: 73
+
+-- #1 Simple Navigation in Admission
+-- Difficulty: easy
+context Admission
+inv: self.patient.isInsured
+
+-- #2 Navigation Chain in Department
+-- Difficulty: easy
+context Department
+inv: self.hospital.name <> ''
+
+-- #3 Numeric Greater Than Value in Ward
+-- Difficulty: difficult
+context Ward
+inv: (self.floor > 1) and (self.rooms->forAll(v | v.roomNo <> ''))
+
+-- #4 Numeric Is Even in Ward
+-- Difficulty: difficult
+context Ward
+inv: (self.floor mod 2 = 0) and (self.rooms->forAll(v | v.roomNo <> ''))
+
+-- #5 Collection Navigation in Patient
+-- Difficulty: difficult
+context Patient
+inv: self.admissions->exists(x | x.admitDate <> '')
+
+-- #6 Numeric Is Odd in Ward
+-- Difficulty: difficult
+context Ward
+inv: (self.floor < 50) and (self.rooms->forAll(v | v.type <> ''))
+
+-- #7 Numeric Is Even in Ward
+-- Difficulty: difficult
+context Ward
+inv: (self.floor < 10) and (self.rooms->forAll(v | v.type <> ''))
+
+-- #8 Association Exists in Discharge
+-- Difficulty: easy
+context Discharge
+inv: self.admission <> null
+
+-- #9 Association Exists in Medication
+-- Difficulty: medium
+context Medication
+inv: (self.prescription <> null) and (self.prescription.oclIsTypeOf(Prescription))
+
+-- #10 Association Exists in Nurse
+-- Difficulty: easy
+context Nurse
+inv: self.department <> null
+
+-- #11 Association Exists in Diagnosis
+-- Difficulty: medium
+context Diagnosis
+inv: (self.record <> null) and (self.code.toUpperCase() = 'TEST')
+
+-- #12 Association Exists in LabResult
+-- Difficulty: easy
+context LabResult
+inv: self.test <> null
+
+-- #13 Association Exists in Payment
+-- Difficulty: medium
+context Payment
+inv: (self.invoice <> null) and (self.paidAt.size() >= 1)
+
+-- #14 Association Exists in LabTest
+-- Difficulty: easy
+context LabTest
+inv: self.record <> null
+
+-- #15 Association Exists in Department
+-- Difficulty: easy
+context Department
+inv: self.hospital <> null
+
+-- #16 Association Exists in Bed
+-- Difficulty: easy
+context Bed
+inv: self.room <> null
+
+-- #17 Association Exists in Appointment
+-- Difficulty: easy
+context Appointment
+inv: self.doctor <> null
+
+-- #18 Association Exists in InsurancePolicy
+-- Difficulty: medium
+context InsurancePolicy
+inv: (self.patient <> null) and (self.patient.oclIsTypeOf(Patient))
+
+-- #19 Association Exists in Admission
+-- Difficulty: medium
+context Admission
+inv: (self.patient <> null) and (self.patient.insurance.policyNo <> '')
+
+-- #20 Association Exists in Admission
+-- Difficulty: easy
+context Admission
+inv: self.patient <> null
+
+-- #21 Association Exists in Admission
+-- Difficulty: easy
+context Admission
+inv: self.discharge <> null
+
+-- #22 Navigation Chain in Appointment
+-- Difficulty: medium
+context Appointment
+inv: self.patient.insurance.policyNo <> ''
+
+-- #23 Simple Navigation in Appointment
+-- Difficulty: medium
+context Appointment
+inv: (self.patient.isInsured) and (self.dateTime <> null)
+
+-- #24 Navigation Chain in Bed
+-- Difficulty: medium
+context Bed
+inv: (self.room.ward.floor < 50) and (self.bedNo <> null)
+
+-- #25 Simple Navigation in Appointment
+-- Difficulty: medium
+context Appointment
+inv: (self.patient.isInsured) and (self.dateTime <> '' and self.dateTime.size() > 0)
+
+-- #26 Simple Navigation in Admission
+-- Difficulty: medium
+context Admission
+inv: (self.patient.isInsured) and (self.admitDate <> '' and self.admitDate.size() > 0)
+
+-- #27 Navigation Chain in Bed
+-- Difficulty: medium
+context Bed
+inv: self.room.ward.floor <= 50
+
+-- #28 Simple Navigation in Appointment
+-- Difficulty: medium
+context Appointment
+inv: (self.patient.isInsured) and (self.patient <> null)
+
+-- #29 Simple Navigation in InsurancePolicy
+-- Difficulty: medium
+context InsurancePolicy
+inv: ((self.patient.isInsured) and (self.validUntil.size() = 25)) and (self.patient <> null)
+
+-- #30 Numeric Attribute Positive in Ward
+-- Difficulty: easy
+context Ward
+inv: self.floor > 0
+
+-- #31 Numeric Less Than Value in Ward
+-- Difficulty: easy
+context Ward
+inv: self.floor < 81
+
+-- #32 Numeric Absolute Value Bounded in Payment
+-- Difficulty: easy
+context Payment
+inv: self.amount.abs() <= 10
+
+-- #33 Numeric Less Than Value in Ward
+-- Difficulty: easy
+context Ward
+inv: self.floor < 94
+
+-- #34 Numeric Greater Than Value in Ward
+-- Difficulty: easy
+context Ward
+inv: self.floor > 10
+
+-- #35 Numeric Multiple Of in Ward
+-- Difficulty: easy
+context Ward
+inv: self.floor mod 7 = 0
+
+-- #36 Numeric Absolute Value Bounded in Invoice
+-- Difficulty: easy
+context Invoice
+inv: self.totalAmount.abs() <= 7
+
+-- #37 Numeric Attribute Positive in Invoice
+-- Difficulty: easy
+context Invoice
+inv: self.totalAmount > 0
+
+-- #38 Numeric Greater Than Value in Invoice
+-- Difficulty: easy
+context Invoice
+inv: self.totalAmount > 60
+
+-- #39 Numeric Absolute Value Bounded in Invoice
+-- Difficulty: medium
+context Invoice
+inv: self.totalAmount.abs() <= 9
+
+-- #40 Numeric Attribute Bounded in Invoice
+-- Difficulty: medium
+context Invoice
+inv: self.totalAmount >= 5 and self.totalAmount <= 78
+
+-- #41 Numeric Attribute Bounded in Invoice
+-- Difficulty: medium
+context Invoice
+inv: self.totalAmount >= 39 and self.totalAmount <= 78
+
+-- #42 Numeric Absolute Value Bounded in Payment
+-- Difficulty: medium
+context Payment
+inv: self.amount.abs() <= 4
+
+-- #43 Numeric Absolute Value Bounded in Ward
+-- Difficulty: medium
+context Ward
+inv: self.floor.abs() <= 10
+
+-- #44 Numeric Multiple Of in Ward
+-- Difficulty: medium
+context Ward
+inv: (self.floor mod 2 = 0) and (self.name.size() = 41)
+
+-- #45 Numeric Absolute Value Bounded in Ward
+-- Difficulty: medium
+context Ward
+inv: self.floor.abs() <= 6
+
+-- #46 Numeric Attribute Bounded in Payment
+-- Difficulty: medium
+context Payment
+inv: self.amount >= 9 and self.amount <= 17
+
+-- #47 Any Operation in Hospital
+-- Difficulty: difficult
+context Hospital
+inv: self.departments->any(x | x.name <> '') <> null
+
+-- #48 Any Operation in Department
+-- Difficulty: difficult
+context Department
+inv: self.doctors->any(x | x.doctorId <> '') <> null
+
+-- #49 Collection Not Empty Check in MedicalRecord
+-- Difficulty: medium
+context MedicalRecord
+inv: (self.prescriptions->size() > 0) and (self.patient.oclIsTypeOf(Patient))
+
+-- #50 Collection Maximum Size in Patient
+-- Difficulty: medium
+context Patient
+inv: self.records->size() <= 1
+
+-- #51 Collection Size Constraint in Hospital
+-- Difficulty: medium
+context Hospital
+inv: self.departments->size() <= 1
+
+-- #52 Collection Has Specific Size in Doctor
+-- Difficulty: easy
+context Doctor
+inv: self.appointments->size() = 3
+
+-- #53 Collection Not Empty Check in MedicalRecord
+-- Difficulty: easy
+context MedicalRecord
+inv: self.prescriptions->size() > 0
+
+-- #54 Collection Maximum Size in Hospital
+-- Difficulty: medium
+context Hospital
+inv: self.departments->size() <= 3
+
+-- #55 Collection Not Empty Check in Hospital
+-- Difficulty: easy
+context Hospital
+inv: self.departments->size() > 0
+
+-- #56 Collection Not Empty Check in Patient
+-- Difficulty: easy
+context Patient
+inv: self.records->size() > 0
+
+-- #57 Collection Must Be Empty in MedicalRecord
+-- Difficulty: easy
+context MedicalRecord
+inv: self.procedures->isEmpty()
+
+-- #58 Collection Maximum Size in Department
+-- Difficulty: medium
+context Department
+inv: self.nurses->size() <= 3
+
+-- #59 Collection Size Constraint in MedicalRecord
+-- Difficulty: easy
+context MedicalRecord
+inv: self.procedures->size() <= 1
+
+-- #60 Collection Minimum Size in Doctor
+-- Difficulty: medium
+context Doctor
+inv: self.appointments->size() >= 2
+
+-- #61 Collection Not Empty (Simple) in Doctor
+-- Difficulty: easy
+context Doctor
+inv: self.appointments->notEmpty()
+
+-- #62 Collection Has Specific Size in Patient
+-- Difficulty: easy
+context Patient
+inv: self.appointments->size() = 2
+
+-- #63 Collection Nested Collection Flatten in Department
+-- Difficulty: difficult
+context Department
+inv: self.doctors->collect(x | x.appointments)->size() >= 2
+
+-- #64 Flatten Operation in Hospital
+-- Difficulty: difficult
+context Hospital
+inv: self.wards->collect(x | x.rooms)->flatten()->notEmpty()
+
+-- #65 Flatten Operation in Hospital
+-- Difficulty: difficult
+context Hospital
+inv: self.departments->collect(x | x.doctors)->flatten()->notEmpty()
+
+-- #66 Numeric Attribute Bounded in Ward
+-- Difficulty: difficult
+context Ward
+inv: (self.floor < 1000) and (self.rooms->forAll(v | v.roomNo <> ''))
+
+-- #67 Association Exists in Admission
+-- Difficulty: easy
+context Admission
+inv: self.bed <> null
+
+-- #68 Existential Quantification (exists) in Hospital
+-- Difficulty: difficult
+context Hospital
+inv: self.wards->exists(x | x.floor < 50)
+
+-- #69 Collection Not Empty (Simple) in Ward
+-- Difficulty: difficult
+context Ward
+inv: (self.rooms->notEmpty()) and (self.rooms->forAll(v | v.type <> ''))
+
+-- #70 Attribute Not Null (Simple) in Department
+-- Difficulty: difficult
+context Department
+inv: (self.name <> '') and (self.nurses->forAll(v | v.nurseId <> ''))
+
+-- #71 Collection As Sequence Conversion in MedicalRecord
+-- Difficulty: difficult
+context MedicalRecord
+inv: (self.recordNo <> '') and (self.procedures->forAll(v | v.performedAt <> ''))
+
+-- #72 Attribute Not Null (Simple) in Department
+-- Difficulty: difficult
+context Department
+inv: (self.phone <> '') and (self.nurses->forAll(v | v.shift <> ''))
+
+-- #73 Collection As Sequence Conversion in Ward
+-- Difficulty: difficult
+context Ward
+inv: (self.rooms->asSequence()->notEmpty()) and (self.rooms->forAll(v | v.type <> ''))
+

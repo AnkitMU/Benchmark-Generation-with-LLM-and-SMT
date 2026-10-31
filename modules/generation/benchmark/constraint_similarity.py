@@ -1,8 +1,26 @@
 from __future__ import annotations
 
+import os
 import re
+import time
 from typing import List, Dict, Any, Optional, Tuple
 from dataclasses import dataclass, field
+
+# The semantic-similarity path loads a SentenceTransformer. `transformers` will,
+# by default, EAGERLY import every installed DL backend — and if TensorFlow is
+# installed its native init deadlocks on some machines (macOS in particular),
+# hanging at `import sentence_transformers` with `[mutex.cc:452] RAW: Lock
+# blocking ... @cache` (TensorFlow's bundled Abseil mutex). The fix is to tell
+# transformers to use ONLY torch and skip the TF/Flax backends. These env vars
+# must be set before transformers is first imported, so do it at module load.
+os.environ.setdefault("USE_TF", "0")
+os.environ.setdefault("USE_FLAX", "0")
+os.environ.setdefault("USE_TORCH", "1")
+os.environ.setdefault("TRANSFORMERS_NO_ADVISORY_WARNINGS", "1")
+# Also keep the tokenizers/threads single-threaded to avoid native lock contention.
+os.environ.setdefault("TOKENIZERS_PARALLELISM", "false")
+os.environ.setdefault("OMP_NUM_THREADS", "1")
+os.environ.setdefault("MKL_NUM_THREADS", "1")
 
 try:
     import numpy as np
@@ -280,6 +298,13 @@ _model = None
 _model_name = 'all-MiniLM-L6-v2'
 
 
+def _slog(msg: str) -> None:
+    """Flushed, prefixed trace for the semantic-similarity path. Each heavy step
+    logs before it starts, so if the run stalls or dies the LAST '[semantic-sim]'
+    line printed pinpoints exactly which operation broke."""
+    print(f"[semantic-sim] {msg}", flush=True)
+
+
 def _require_numpy():
     if np is None:
         raise ImportError(
@@ -291,19 +316,98 @@ def _require_numpy():
 def get_sentence_transformer():
     global _model
     if _model is None:
+        # Re-assert the torch-only backend (skip the deadlocking TensorFlow import)
+        # and single-threading, in case the env was cleared since module load.
+        os.environ["USE_TF"] = "0"
+        os.environ["USE_FLAX"] = "0"
+        os.environ["USE_TORCH"] = "1"
+        os.environ["TOKENIZERS_PARALLELISM"] = "false"
+        _t0 = time.time()
+        _slog(f"backend env: USE_TF={os.environ.get('USE_TF')} "
+              f"USE_TORCH={os.environ.get('USE_TORCH')} "
+              f"TOKENIZERS_PARALLELISM={os.environ.get('TOKENIZERS_PARALLELISM')}")
         try:
+            try:
+                _slog("importing torch...")
+                import torch
+                torch.set_num_threads(1)
+                _slog(f"torch {torch.__version__} ok ({time.time()-_t0:.1f}s)")
+            except Exception as _te:
+                _slog(f"torch import skipped: {_te}")
+            # This import is where the run previously hung (transformers pulling in
+            # TensorFlow). With USE_TF=0 it must NOT import tensorflow.
+            _slog("importing sentence_transformers (transformers backend=torch only)...")
             from sentence_transformers import SentenceTransformer
-            print(f"Loading SentenceTransformer model: {_model_name}")
+            _slog(f"sentence_transformers imported ({time.time()-_t0:.1f}s); "
+                  f"loading model '{_model_name}'...")
             _model = SentenceTransformer(_model_name)
-            print("Model loaded successfully")
+            _slog(f"model '{_model_name}' loaded ({time.time()-_t0:.1f}s)")
         except ImportError:
             raise ImportError(
                 "sentence-transformers not installed. "
                 "Install with: pip install sentence-transformers"
             )
         except Exception as e:
+            _slog(f"model load FAILED: {type(e).__name__}: {e}")
             raise RuntimeError(f"Failed to load SentenceTransformer model: {e}")
     return _model
+
+
+def run_with_timeout(fn, timeout_s: float):
+    """Run ``fn`` in a daemon thread and abandon it if it exceeds ``timeout_s``.
+
+    The semantic-embedding stack occasionally stalls inside native code (a torch /
+    tokenizers lock that no Python ``try/except`` can interrupt). Running it under a
+    watchdog lets the caller fall back to a non-fatal "skip clustering" path instead
+    of hanging the whole run. A stalled worker is left as a daemon thread and reaped
+    at interpreter exit, so it never blocks process termination."""
+    import threading
+
+    box: Dict[str, Any] = {}
+
+    def _worker():
+        try:
+            box["value"] = fn()
+        except BaseException as exc:  # propagate to the caller's thread
+            box["error"] = exc
+
+    t = threading.Thread(target=_worker, daemon=True)
+    _t0 = time.time()
+    t.start()
+    t.join(timeout_s)
+    if t.is_alive():
+        # The worker is wedged. Dump every thread's stack so the log shows the
+        # EXACT native frame it is stuck in (e.g. a TF/torch import) — this is the
+        # "where is it broken" signal if the env guard ever fails to take effect.
+        _slog(f"TIMEOUT after {time.time()-_t0:.1f}s — dumping thread stacks to localize the stall:")
+        try:
+            import faulthandler
+            faulthandler.dump_traceback(all_threads=True)
+        except Exception:
+            pass
+        raise TimeoutError(
+            f"semantic-similarity step exceeded {timeout_s:.0f}s "
+            f"(native lock; stacks dumped above); skipping"
+        )
+    if "error" in box:
+        raise box["error"]
+    _slog(f"clustering finished in {time.time()-_t0:.1f}s")
+    return box.get("value")
+
+
+def cluster_by_semantic_similarity_safe(
+    constraints: List[OCLConstraint],
+    threshold: float = 0.8,
+    timeout_s: float = 90.0,
+) -> List[List[int]]:
+    """Clustering for the pipeline hot path, guarded by a wall-clock watchdog so a
+    slow first-time model download cannot stall the run indefinitely. The native
+    TensorFlow-import deadlock that previously hung here is prevented at the source
+    (``USE_TF=0`` set at module load); on timeout/failure this raises and the caller
+    falls back to a non-fatal "skip clustering"."""
+    return run_with_timeout(
+        lambda: cluster_by_semantic_similarity(constraints, threshold), timeout_s
+    )
 
 
 def normalize_ocl_for_embedding(ocl: str) -> str:
@@ -323,7 +427,11 @@ def compute_embeddings_batch(ocl_list: List[str]) -> np.ndarray:
     _require_numpy()
     model = get_sentence_transformer()
     normalized_list = [normalize_ocl_for_embedding(ocl) for ocl in ocl_list]
-    return model.encode(normalized_list, convert_to_numpy=True, show_progress_bar=False)
+    _slog(f"encoding {len(normalized_list)} constraints...")
+    _t0 = time.time()
+    emb = model.encode(normalized_list, convert_to_numpy=True, show_progress_bar=False)
+    _slog(f"encoded {len(normalized_list)} constraints ({time.time()-_t0:.1f}s)")
+    return emb
 
 
 def cosine_similarity(vec1: np.ndarray, vec2: np.ndarray) -> float:
@@ -374,13 +482,11 @@ def find_semantic_duplicates(
     return sorted(duplicates, key=lambda x: -x[2])
 
 
-def cluster_by_semantic_similarity(
-    constraints: List[OCLConstraint],
-    threshold: float = 0.8
-) -> List[List[int]]:
+def _cluster_from_sim_matrix(sim_matrix, threshold: float) -> List[List[int]]:
+    """Average-link agglomerative merge over a precomputed similarity matrix.
+    Pure numpy/python (no model load) -- safe to run in the main process."""
     _require_numpy()
-    sim_matrix = semantic_similarity_matrix(constraints)
-    n = len(constraints)
+    n = int(sim_matrix.shape[0]) if hasattr(sim_matrix, "shape") else len(sim_matrix)
     clusters = [[i] for i in range(n)]
     merged = True
     while merged:
@@ -399,6 +505,23 @@ def cluster_by_semantic_similarity(
                     break
             if merged:
                 break
+    return clusters
+
+
+def cluster_by_semantic_similarity(
+    constraints: List[OCLConstraint],
+    threshold: float = 0.8
+) -> List[List[int]]:
+    """In-process clustering (loads the embedding model in THIS process, once, then
+    reuses it). The TensorFlow-import deadlock is prevented at module load via
+    ``USE_TF=0``; the pipeline hot path wraps this in a watchdog (see
+    cluster_by_semantic_similarity_safe)."""
+    _require_numpy()
+    _slog(f"clustering {len(constraints)} constraints (threshold={threshold})")
+    sim_matrix = semantic_similarity_matrix(constraints)
+    _slog("similarity matrix built; merging clusters...")
+    clusters = _cluster_from_sim_matrix(sim_matrix, threshold)
+    _slog(f"formed {len(clusters)} clusters")
     return clusters
 
 

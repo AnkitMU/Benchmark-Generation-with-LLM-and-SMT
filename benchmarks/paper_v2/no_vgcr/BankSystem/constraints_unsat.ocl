@@ -1,0 +1,101 @@
+-- Benchmark: BankSystem / balanced
+-- Type: UNSAT Constraints Only
+-- Generated: 2026-10-15T03:57:14.579335
+-- Count: 16
+
+-- #1 Collection Has Specific Size (UNSAT) in Branch
+-- Difficulty: medium
+-- Mutation Strategy: contradictory_bounds
+context Branch
+inv: (self.employees->size() = 3) and (self.employees->size() <> 3)
+
+-- #2 Not Both Defined (UNSAT) in Address
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Address
+inv: (not(self.city <> null and self.line1 <> null)) and (not(not(self.city <> null and self.line1 <> null)))
+
+-- #3 Reverse Implication (UNSAT) in Address
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Address
+inv: (self.city <> null implies self.line1 <> null) and (not(self.city <> null implies self.line1 <> null))
+
+-- #4 Numeric Attribute Positive (UNSAT) in Loan
+-- Difficulty: unboxed
+-- Mutation Strategy: contradictory_bounds
+context Loan
+inv: ((self.principal > 0) and (if self.interestRate > self.principal then self.interestRate else self.principal endif >= 16)) and (self.principal < -5)
+
+-- #5 Attribute Not Null (Simple) (UNSAT) in AccountTransaction
+-- Difficulty: medium
+-- Mutation Strategy: self_contradiction
+context AccountTransaction
+inv: (self.type <> null) and (not(self.type <> null))
+
+-- #6 Simple Navigation (UNSAT) in CardTransaction
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context CardTransaction
+inv: (((self.card.isActive) and (self.merchant.toUpperCase() = 'TEST')) and (self.card.oclIsTypeOf(CreditCard))) and (not(((self.card.isActive) and (self.merchant.toUpperCase() = 'TEST')) and (self.card.oclIsTypeOf(CreditCard))))
+
+-- #7 Numeric Greater Than Value (UNSAT) in SavingsAccount
+-- Difficulty: easy
+-- Mutation Strategy: contradictory_bounds
+context SavingsAccount
+inv: (self.interestRate > 32) and (self.interestRate < 27)
+
+-- #8 Collection Not Empty Check (UNSAT) in Bank
+-- Difficulty: medium
+-- Mutation Strategy: contradictory_bounds
+context Bank
+inv: (self.branches->size() > 0) and (self.branches->size() < -5)
+
+-- #9 Navigation Chain (UNSAT) in Employee
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Employee
+inv: (((self.branch.bank.swiftCode <> '') and (self.branch.oclIsTypeOf(Branch))) and (self.name.toLowerCase() = 'test')) and (not(((self.branch.bank.swiftCode <> '') and (self.branch.oclIsTypeOf(Branch))) and (self.name.toLowerCase() = 'test')))
+
+-- #10 Collection As Sequence Conversion (UNSAT) in Branch
+-- Difficulty: unboxed
+-- Mutation Strategy: universal_negation
+context Branch
+inv: ((self.city <> '') and (self.employees->forAll(v | v.name <> ''))) and (self.employees->exists(v | not(v.name <> '')))
+
+-- #11 Collection Not Empty (Simple) (UNSAT) in Branch
+-- Difficulty: unboxed
+-- Mutation Strategy: empty_collection
+context Branch
+inv: (self.employees->notEmpty()) and (self.employees->isEmpty())
+
+-- #12 Collection Navigation (UNSAT) in Customer
+-- Difficulty: difficult
+-- Mutation Strategy: self_contradiction
+context Customer
+inv: (self.loans->exists(x | x.principal >= 1)) and (not(self.loans->exists(x | x.principal >= 1)))
+
+-- #13 Navigation Chain (UNSAT) in Payment
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Payment
+inv: (((self.transaction.payment.isConfirmed <> true) and (self.isConfirmed)) and (self.method.toUpperCase() = 'TEST')) and (not(((self.transaction.payment.isConfirmed <> true) and (self.isConfirmed)) and (self.method.toUpperCase() = 'TEST')))
+
+-- #14 Two Attributes Not Equal (UNSAT) in Address
+-- Difficulty: medium
+-- Mutation Strategy: self_contradiction
+context Address
+inv: (self.city <> self.line1) and (not(self.city <> self.line1))
+
+-- #15 Bi-directional Implication (UNSAT) in Address
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Address
+inv: ((self.line1 <> null) = (self.country <> null)) and (not((self.line1 <> null) = (self.country <> null)))
+
+-- #16 Collection Maximum Size (UNSAT) in Account
+-- Difficulty: unboxed
+-- Mutation Strategy: contradictory_bounds
+context Account
+inv: ((self.transactions->size() <= 3) and (self.balance >= 74 and self.balance <= 94)) and (self.transactions->size() > 3)
+

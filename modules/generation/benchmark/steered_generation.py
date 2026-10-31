@@ -12,6 +12,14 @@ this module uses in place of literal nav-depth/nesting/#vars knobs:
 Polarity is realized by restricting UNSAT slots to UNSAT-prone patterns; the
 *intended* polarity is verified downstream by VGCR (deviations are reported).
 
+The outer slot->class assignment is matching-guided: an exact b-matching
+witness over the profiled footprints (``optimality_bound``) reserves a class
+per slot, so the discrete layer realises the certified optimum N* by
+construction instead of greedily stranding classes later slots need. The
+preference is SOFT (binding search may deviate; each deviation re-matches the
+remaining slots against live capacities) and the realised N/N* ratio plus the
+deviation count are surfaced in the deviation report.
+
 The nine components (RUC/dependency is suite-level and handled by VGCR, not here):
   structural leaves : nnr_c, wnc, dn_ca, vrc, wno, wnm
   computational     : oc, tcc, cic
@@ -236,6 +244,17 @@ class SteeredGenerator:
                                      all_constraints=None, weights=self.w)
         return {k: float(getattr(r, k)) for k in COMPONENTS}
 
+    def _measure_cached(self, ocl: str, cls: str, cache: Dict[str, Vec]) -> Vec:
+        """Memoized ``_measure``: the GLOBAL cache maps Key(c)=ocl -> x(c) so a
+        candidate is never re-measured. Unlike a blacklist, caching does NOT make
+        the candidate ineligible for a later slot/box -- suppression of accepted
+        duplicates is H's responsibility, not the cache's."""
+        v = cache.get(ocl)
+        if v is None:
+            v = self._measure(ocl, cls)
+            cache[ocl] = v
+        return v
+
     # ---- Phase 0: profiling ------------------------------------------------
     def profile(self) -> None:
         for pid in self.pat_by_id:
@@ -365,7 +384,13 @@ class SteeredGenerator:
         return 0.0
 
     def select_pair(self, family: str, polarity: str, box, excl,
-                    cap, need, use) -> Optional[Tuple[str, str]]:
+                    cap, need, use,
+                    prefer: Optional[str] = None) -> Optional[Tuple[str, str]]:
+        """Select a (pattern, class) pair for a slot. ``prefer`` is the class
+        the optimal outer matching reserved for this slot: a SOFT preference --
+        the pool is restricted to it while it has eligible pairs, and falls
+        back to the full pool otherwise (binding search must never be starved
+        by the relaxation, which ignores duplicate/consistency effects)."""
         has_cap = lambda cls: cap.get(cls, 0) > 0
 
         if box is SKIP_BOX:  # box-free selection (skip policy)
@@ -373,6 +398,9 @@ class SteeredGenerator:
                      if has_cap(cls)]
             if not cands:
                 return None
+            if prefer is not None:
+                pref = [pc for pc in cands if pc[1] == prefer]
+                cands = pref or cands
             need_c = [pc for pc in cands if need.get(pc[1], 0) > 0]
             pool = need_c or cands
             pool.sort(key=lambda pc: self.spec.lam * use.get(pc[0], 0)
@@ -394,6 +422,9 @@ class SteeredGenerator:
         cands = c_in or c_near
         if not cands:
             return None
+        if prefer is not None:
+            pref = [t for t in cands if t[1] == prefer]
+            cands = pref or cands
         need_c = [t for t in cands if need.get(t[1], 0) > 0]
         pool = need_c or cands
         pool.sort(key=lambda t: t[2] + self.spec.lam * use.get(t[0], 0)
@@ -927,6 +958,44 @@ class SteeredGenerator:
                 n += 1
         return n
 
+    def _slot_support_classes(self, slot: Slot) -> Set[str]:
+        """Classes with at least one profiled in-family pattern whose footprint
+        reaches the slot's box -- the same support predicate the fill loop uses
+        (including actuator reachability via ``_box_reachable``)."""
+        out: Set[str] = set()
+        for pid, cls, vecs in self._eligible(slot.family, slot.polarity, set()):
+            if cls in out:
+                continue
+            split = self.splittable.get((pid, cls), False)
+            if any(self._box_reachable(v, slot.box, cls, split) for v in vecs):
+                out.add(cls)
+        return out
+
+    def _slot_support_sets(self, slots: List[Slot]) -> List[Set[str]]:
+        """Per-slot supporting-class sets, cached by (family, box label)."""
+        cache: Dict[Tuple[str, str], Set[str]] = {}
+        out: List[Set[str]] = []
+        for sl in slots:
+            key = (sl.family, sl.box.label)
+            if key not in cache:
+                cache[key] = self._slot_support_classes(sl)
+            out.append(cache[key])
+        return out
+
+    def assignment_upper_bound(self, slots: List[Slot]) -> int:
+        """Certified optimum N* of the outer slot-assignment relaxation.
+
+        Assigning slots to supporting classes under the per-class ceiling U is
+        a bipartite b-matching, solved exactly by max-flow (see
+        ``optimality_bound``). The relaxation drops only effects that can
+        REDUCE the achievable count (duplicate suppression, per-context joint
+        consistency, binding search), so N* is a sound upper bound for ANY
+        fill strategy and N/N* a true optimality ratio for the fill."""
+        from .optimality_bound import max_fill_upper_bound
+        _, U = self.spec.per_class
+        return max_fill_upper_bound(self._slot_support_sets(slots),
+                                    {c: U for c in self.classes})
+
     def _support_feasible(self, fam_q, prof_q, n_sat) -> Tuple[bool, List[str]]:
         reasons: List[str] = []
         L, U = self.spec.per_class
@@ -951,20 +1020,35 @@ class SteeredGenerator:
         return (len(reasons) == 0), reasons
 
     # ---- per-slot fill loop ------------------------------------------------
-    def _fill_slot(self, slot, cap, got, need, use, H, A, suite, report) -> bool:
+    def _fill_slot(self, slot, cap, got, need, use, H, A, suite, report,
+                   prefer: Optional[str] = None, reject=None, accept=None,
+                   allow_policy: bool = True,
+                   exclude_pairs: Optional[Set[Tuple[str, str]]] = None) -> bool:
+        # ``accept(constraint) -> bool`` is an optional pre-commit veto on the
+        # finished candidate (e.g. near-duplicate suppression against an
+        # external suite). It runs BEFORE the claims gate so a vetoed candidate
+        # leaves no claims, dedup entry or capacity behind.
+        # ``exclude_pairs`` pre-seeds the slot's (pattern, class) exclusion set
+        # (VGCR regeneration: patterns ruled out for the slot are never even
+        # selected, instead of burning T0 draws each before switching).
         box = slot.box
-        excl: Set[Tuple[str, str]] = set()
-        pair = self.select_pair(slot.family, slot.polarity, box, excl, cap, need, use)
+        excl: Set[Tuple[str, str]] = set(exclude_pairs or ())
+        pair = self.select_pair(slot.family, slot.polarity, box, excl, cap, need, use,
+                                prefer=prefer)
         if pair is None:
-            box2 = self.apply_policy(box)
+            # ``allow_policy=False`` (exact-box regeneration): the unsupported-
+            # box policy (skip/relax) must not swap the box for a weaker one.
+            box2 = self.apply_policy(box) if allow_policy else None
             if box2 is None:
                 report.append(("unfilled", slot.family, slot.polarity, box.label))
                 return False
             box = box2
-            report.append(("policy", self.spec.policy, slot.family, box.label))
-            pair = self.select_pair(slot.family, slot.polarity, box, excl, cap, need, use)
+            blabel = "skip" if box is SKIP_BOX else box.label
+            report.append(("policy", self.spec.policy, slot.family, blabel))
+            pair = self.select_pair(slot.family, slot.polarity, box, excl, cap, need, use,
+                                    prefer=prefer)
             if pair is None:
-                report.append(("unfilled", slot.family, slot.polarity, box.label))
+                report.append(("unfilled", slot.family, slot.polarity, blabel))
                 return False
 
         pid, cls = pair
@@ -972,20 +1056,32 @@ class SteeredGenerator:
         act_budget = 3            # max conjoin-actuator attempts for this slot
         g_prev = float("inf")
         active_box = box  # Box or SKIP_BOX
+        # Strings already drawn THIS slot. A deterministic pattern re-emitting the
+        # same OCL is a stall signal (switch the pair). Slot-local on purpose: the
+        # global cache A no longer blacklists, so a candidate rejected here stays
+        # eligible for other slots/boxes; only H suppresses accepted duplicates.
+        seen: Set[str] = set()
         for _ in range(self.spec.T):
             c = self._instantiate(pid, cls)
             switch = False
-            if c is None or c.ocl in A:
-                # failed draw or duplicate of an already-attempted candidate:
+            # VGCR regeneration: a blacklisted (pattern, class, bindings) draw
+            # counts as a failed draw so deterministic patterns switch out.
+            if (c is not None and reject is not None
+                    and reject(pid, cls, getattr(c, "parameters", None))):
+                c = None
+            if c is None or c.ocl in seen:
+                # failed draw or re-draw of a string already tried this slot:
                 # count as lack of progress so deterministic patterns switch out.
                 dup += 1
                 switch = dup >= self.spec.T0
             else:
-                A.add(c.ocl)
+                seen.add(c.ocl)
                 dup = 0
-                v = self._measure(c.ocl, cls)
+                v = self._measure_cached(c.ocl, cls, A)
                 in_box = (active_box is SKIP_BOX) or active_box.contains(v)
-                if in_box and c.ocl not in H and self._register_claims(cls, c.ocl):
+                if (in_box and c.ocl not in H
+                        and (accept is None or accept(c))
+                        and self._register_claims(cls, c.ocl)):
                     blabel = "skip" if active_box is SKIP_BOX else active_box.label
                     suite.append((c, slot.family, slot.polarity, cls, v, blabel))
                     H.add(c.ocl)
@@ -1004,10 +1100,12 @@ class SteeredGenerator:
                         if res is not None:
                             ac, kind = res
                             act_budget -= 1
-                            if ac.ocl not in A and ac.ocl not in H:
-                                A.add(ac.ocl)
-                                v2 = self._measure(ac.ocl, cls)
-                                if active_box.contains(v2) and self._register_claims(cls, ac.ocl):
+                            if ac.ocl not in seen and ac.ocl not in H:
+                                seen.add(ac.ocl)
+                                v2 = self._measure_cached(ac.ocl, cls, A)
+                                if (active_box.contains(v2)
+                                        and (accept is None or accept(ac))
+                                        and self._register_claims(cls, ac.ocl)):
                                     suite.append((ac, slot.family, slot.polarity, cls,
                                                   v2, active_box.label + "+" + kind))
                                     H.add(ac.ocl)
@@ -1026,7 +1124,7 @@ class SteeredGenerator:
             if switch:
                 excl.add((pid, cls))
                 nxt = self.select_pair(slot.family, slot.polarity, active_box,
-                                       excl, cap, need, use)
+                                       excl, cap, need, use, prefer=prefer)
                 if nxt is None:
                     break
                 pid, cls = nxt
@@ -1037,29 +1135,172 @@ class SteeredGenerator:
         return False
 
     # ---- Phase 6: minima repair by replacement -----------------------------
-    def _repair_minima(self, got, need, cap, use, H, suite, report):
-        L, _ = self.spec.per_class
-        for X in self.classes:
-            if got.get(X, 0) >= L:
-                continue
-            # find a constraint of an over-min class Y to replace
-            for i, (c, fam, pol, cls_y, v, blabel) in enumerate(suite):
-                if cls_y == X or got.get(cls_y, 0) <= L:
-                    continue
-                # regenerate the same (family, polarity) slot for X (box best-effort)
-                pair = self.select_pair(fam, pol, SKIP_BOX, set(), {X: 1}, {X: 0}, use)
+    def _relax_box(self, box: Box) -> Box:
+        """Policy-independent widening of a box by its per-component delta, used as
+        a REPAIR fallback so a hard class deficit can still be filled near its
+        original box (the relaxation is recorded in the replacement's label)."""
+        deltas = self.spec.deltas or {c: 1.0 for c in COMPONENTS}
+        new = {}
+        for c, (lo, hi) in box.ranges.items():
+            d = deltas.get(c, 1.0)
+            new[c] = (max(0.0, round(lo - d)), round(hi + d))
+        return Box(new, label=box.label + "+relax")
+
+    def _box_fallback(self, box, exact_only: bool = False):
+        """Repair box cascade: try the exact effective box, then a relaxed box,
+        then box-free (SKIP) so a class deficit is filled as a last resort. The
+        label of whichever level succeeds is recorded, keeping the realised
+        profile distribution honest rather than dumping repairs into a junk bucket.
+
+        ``exact_only`` stops after the exact box: the caller prefers an
+        unfilled, REPORTED slot over a replacement outside the requested box
+        (used by post-generation regeneration so the in-box certificate keeps
+        holding for the delivered suite)."""
+        if box is SKIP_BOX:
+            yield SKIP_BOX
+            return
+        yield box
+        if exact_only:
+            return
+        yield self._relax_box(box)
+        yield SKIP_BOX
+
+    def _draw_for_box(self, fam, pol, X, box, H, A, use, reject=None,
+                      exact_only: bool = False):
+        """Draw one class-``X`` candidate for (family, polarity) targeting ``box``.
+        With ``exact_only`` only the exact box is tried; otherwise the draw cascades
+        box -> relax -> skip. Returns ``(newc, vec, label)`` or ``None``.
+        Does NOT mutate suite/counters -- the caller commits the swap.
+        ``reject(pid, X, params)`` may veto a drawn candidate (used by VGCR
+        regeneration to honour its blacklists); a vetoed pair is excluded for
+        the rest of this draw."""
+        for active_box in self._box_fallback(box, exact_only=exact_only):
+            excl: Set[Tuple[str, str]] = set()
+            for _ in range(self.spec.T):
+                pair = self.select_pair(fam, pol, active_box, excl, {X: 1}, {X: 0}, use)
                 if pair is None:
-                    continue
+                    break
                 pid, _ = pair
                 newc = self._instantiate(pid, X)
                 if newc is None or newc.ocl in H:
+                    excl.add((pid, X))
                     continue
-                # swap
+                if reject is not None and reject(pid, X, getattr(newc, "parameters", None)):
+                    excl.add((pid, X))
+                    continue
+                v = self._measure_cached(newc.ocl, X, A)
+                if (active_box is SKIP_BOX) or active_box.contains(v):
+                    label = "skip" if active_box is SKIP_BOX else active_box.label
+                    return newc, v, label
+                excl.add((pid, X))
+        return None
+
+    # ---- Phase 5 re-entry: box-preserving regeneration for VGCR ------------
+    def regenerate_for(self, context: str, family: str, box, reject=None,
+                       exact_only: bool = False, only_classes=None, accept=None,
+                       exclude_patterns=None):
+        """Draw a replacement for a candidate that failed a VGCR check, re-using
+        the box-targeting draw of the fill phase so the replacement keeps the
+        failed slot's FAMILY and complexity BOX (cascading box -> relaxed ->
+        box-free, the realised level recorded). The failed candidate's context
+        class is tried first; other classes with remaining capacity follow.
+        ``reject`` vetoes blacklisted (pattern, class, bindings) draws. On
+        success the replacement is committed to the dedup set and pattern-use
+        counters and ``(constraint, vector, label)`` is returned; else None.
+        Structural claims are not re-checked here: VGCR's solver-based joint
+        consistency check is the authority for a replacement.
+
+        ``exact_only`` disables the relaxed and box-free levels: if the exact
+        box cannot be reached the slot is left unfilled (returns None) and the
+        caller reports it. ``only_classes`` restricts the candidate classes
+        (coverage repair). ``accept`` is a pre-commit veto on the finished
+        constraint (near-duplicate suppression). ``exclude_patterns`` are
+        pattern ids the VGCR loop ruled out for this slot (tautology / repeated
+        failure): they are excluded from pair selection on every class, so the
+        replacement switches to a different pattern of the same family and box."""
+        if not hasattr(self, "H"):
+            return None
+        excl_pairs: Set[Tuple[str, str]] = {
+            (pid, c) for pid in (exclude_patterns or ()) for c in self.classes
+        }
+        if only_classes is not None:
+            order = [c for c in only_classes if c in self.classes]
+        else:
+            order = [context] + [c for c in self.classes
+                                 if c != context and self.cap.get(c, 0) > 0]
+        # Box fidelity outranks class identity: try the EXACT box on the
+        # failed class and then on every other class with capacity before
+        # widening the box at all (relaxed, then box-free). Each attempt
+        # re-enters the FULL fill loop (binding redraw, actuators, pattern
+        # switching, claims gate) on a single-class capacity, so the
+        # replacement is steered into the box exactly as in Phase 3.
+        for active in self._box_fallback(box, exact_only=exact_only):
+            for X in order:
+                slot = Slot(family, "sat", active)
+                cap1 = {c: 0 for c in self.classes}; cap1[X] = 1
+                got1 = {c: 0 for c in self.classes}
+                need1 = {c: 0 for c in self.classes}
+                scratch: List[Any] = []
+                scratch_report: List[Any] = []
+                filled = self._fill_slot(slot, cap1, got1, need1, self.use,
+                                         self.H, self.A, scratch, scratch_report,
+                                         prefer=X, reject=reject, accept=accept,
+                                         allow_policy=not exact_only,
+                                         exclude_pairs=excl_pairs)
+                if not filled:
+                    continue
+                newc, _fam, _pol, cls, v, label = scratch[-1]
+                if cls != context:
+                    # The replaced constraint leaves ``context`` and the
+                    # replacement lands on ``cls``: move one unit of coverage.
+                    self.cap[cls] = self.cap.get(cls, 0) - 1
+                    self.got[cls] = self.got.get(cls, 0) + 1
+                    if context in self.got:
+                        self.cap[context] = self.cap.get(context, 0) + 1
+                        self.got[context] = max(0, self.got.get(context, 0) - 1)
+                self.report.append(("vgcr_regen", context, cls, label))
+                return newc, v, label
+        return None
+
+    def _repair_minima(self, got, need, cap, use, H, A, suite, report):
+        L, _ = self.spec.per_class
+        box_by_label = {b.label: b for b, _ in self.spec.profiles}
+        for X in self.classes:
+            if got.get(X, 0) >= L:
+                continue
+            # Replace a constraint of an over-min class Y with a class-X draw that
+            # preserves Y's (family, polarity, effective box) so the requested
+            # profile distribution is not damaged by the coverage repair.
+            for i, (c, fam, pol, cls_y, v, blabel) in enumerate(suite):
+                if cls_y == X or got.get(cls_y, 0) <= L:
+                    continue
+                target_box = box_by_label.get(str(blabel).split("+")[0], SKIP_BOX)
+                # Exact level only: a repair must never introduce an off-level
+                # constraint, so the suite's in-level guarantee holds by
+                # construction (same rule as the post-verification repair).
+                drawn = self._draw_for_box(fam, pol, X, target_box, H, A, use,
+                                           exact_only=True)
+                if drawn is None:
+                    continue
+                newc, v_new, new_label = drawn
+                # Joint-consistency check for X against the suite WITHOUT the removed
+                # constraint, then adopt the rebuilt claim set on commit so
+                # self.claims stays in step with the swap (a stale claim from the
+                # removed constraint must not survive, nor an unchecked new one).
+                trial: Dict[Tuple[str, str], Any] = {}
+                for j, rec in enumerate(suite):
+                    if j == i:
+                        continue
+                    self._check_register(rec[3], rec[0].ocl, trial)
+                if not self._check_register(X, newc.ocl, trial):
+                    continue
                 H.discard(c.ocl); H.add(newc.ocl)
                 got[cls_y] -= 1; got[X] += 1
                 cap[cls_y] += 1; cap[X] -= 1
                 need[X] = max(0, need[X] - 1)
-                suite[i] = (newc, fam, pol, X, self._measure(newc.ocl, X), "repair")
+                suite[i] = (newc, fam, pol, X, v_new, new_label)
+                self.claims = trial
+                report.append(("repair", X, cls_y, new_label))
                 break
             if got.get(X, 0) < L:
                 report.append(("below_min", X, got.get(X, 0), L))
@@ -1081,6 +1322,29 @@ class SteeredGenerator:
             report.append(("support_infeasible", reasons))
 
         slots = self._compile(fam_q, prof_q, n_sat)
+        # Exact optimum of the outer assignment relaxation (max-flow), computed
+        # WITH a witness matching. The bound is recorded for the report; the
+        # witness DRIVES the fill: each slot prefers its matched class, so the
+        # outer assignment realises the optimum by construction instead of
+        # greedily stranding classes that later slots need.
+        from .optimality_bound import max_fill_assignment
+        _, U0 = spec.per_class
+        support_sets = self._slot_support_sets(slots)
+        ub, match = max_fill_assignment(support_sets,
+                                        {c: U0 for c in self.classes})
+        report.append(("assignment_upper_bound", ub))
+        # The witness is informative exactly when the relaxation is TIGHT:
+        # ub < (slots with any supporting class) means per-class capacity
+        # binds and a greedy class choice can strand later slots. When slack,
+        # every feasible slot is assignable regardless of order, the matching
+        # is arbitrary, and pinning classes only concentrates draws (more
+        # duplicate/consistency collisions) -- so guidance is disabled and
+        # the diversity scoring keeps spreading load.
+        feasible_slots = sum(1 for s in support_sets if s)
+        guided = ub < feasible_slots
+        if not guided:
+            match = [None] * len(slots)
+        report.append(("matching_guided", guided))
         L, U = spec.per_class
         cap = {c: U for c in self.classes}
         got = {c: 0 for c in self.classes}
@@ -1088,14 +1352,44 @@ class SteeredGenerator:
         use: Dict[str, int] = {}
         suite: List[Any] = []
         H: Set[str] = set()
-        A: Set[str] = set()
+        # A is a GLOBAL measurement cache (Key(c)=ocl -> x(c)), NOT a blacklist: it
+        # only avoids re-measuring a candidate, leaving it eligible for any later
+        # slot/box. Accepted-duplicate suppression is H's job.
+        A: Dict[str, Vec] = {}
         # Per-context claims accumulated from accepted constraints, used to reject a
         # candidate that would make the context's invariant set jointly UNSAT.
         self.claims: Dict[Tuple[str, str], Any] = {}
 
-        for slot in slots:
-            self._fill_slot(slot, cap, got, need, use, H, A, suite, report)
-        self._repair_minima(got, need, cap, use, H, suite, report)
+        deviations = 0
+        for i, slot in enumerate(slots):
+            filled = self._fill_slot(slot, cap, got, need, use, H, A, suite,
+                                     report, prefer=match[i])
+            used_cls = suite[-1][3] if filled else None
+            # The witness matching assumed this slot would consume its matched
+            # class's capacity. If the fill deviated (different class, or the
+            # slot failed and the reservation is freed), the remaining witness
+            # may no longer be optimal for the LIVE capacities -- re-match the
+            # remaining slots so later preferences stay consistent. The flow is
+            # tiny (slots x classes), so this costs microseconds per event.
+            # (An UNMATCHED slot that still fills is a bonus, not a deviation,
+            # but it too consumed unplanned capacity -> re-match either way.)
+            if guided and used_cls != match[i]:
+                if match[i] is not None:
+                    deviations += 1
+                if i + 1 < len(slots):
+                    _, m2 = max_fill_assignment(support_sets[i + 1:], dict(cap))
+                    match[i + 1:] = m2
+        if deviations:
+            report.append(("matching_deviations", deviations))
+        self._repair_minima(got, need, cap, use, H, A, suite, report)
+
+        # Persist the fill state so VGCR regeneration (Phase 5) can re-enter
+        # the same box-targeting machinery for a failed candidate's slot,
+        # instead of drawing box-free replacements: see ``regenerate_for``.
+        self.H, self.A, self.use = H, A, use
+        self.cap, self.got, self.need = cap, got, need
+        self.suite, self.report = suite, report
+        self.box_by_label = {b.label: b for b, _ in spec.profiles}
 
         # Surface the four engine-reported (derived) components explicitly:
         # they are MEASURED, never user-set. Report their realised [min, max]

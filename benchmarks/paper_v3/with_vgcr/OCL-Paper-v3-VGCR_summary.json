@@ -1,0 +1,1917 @@
+{
+  "suite_name": "OCL-Paper-v3-VGCR",
+  "models": [
+    {
+      "model": "BankSystem",
+      "xmi": "models/bank.xmi",
+      "profiles": [
+        {
+          "profile": "balanced",
+          "seed": 42,
+          "complexity": "standard",
+          "output_dir": "benchmarks/paper_v3/with_vgcr/BankSystem",
+          "research_features_applied": [
+            "metadata_enrichment",
+            "vgcr_refinement",
+            "unsat_generation",
+            "ast_similarity",
+            "semantic_similarity",
+            "implication_checking",
+            "manifest_generation"
+          ],
+          "constraint_count": 80,
+          "initial_sat_count": 91,
+          "dedup": {
+            "removed": 15,
+            "refilled": 15,
+            "unfilled": []
+          },
+          "coverage_repairs": [
+            {
+              "class": "Payment",
+              "action": "donor_swap",
+              "donor_class": "Account",
+              "pattern": "boolean_is_false",
+              "profile": "easy"
+            },
+            {
+              "class": "KYCRecord",
+              "action": "donor_swap",
+              "donor_class": "Loan",
+              "pattern": "navigation_chain",
+              "profile": "medium"
+            },
+            {
+              "class": "Manager",
+              "action": "unrepaired",
+              "have": 0,
+              "min": 1
+            },
+            {
+              "class": "AccountTransaction",
+              "action": "unrepaired",
+              "have": 0,
+              "min": 1
+            }
+          ],
+          "vgcr_stats": {
+            "total_candidates": 91,
+            "passed": 91,
+            "passed_first_try": 77,
+            "passed_after_retry": 14,
+            "failed": 0,
+            "pass_rate": "100.0%",
+            "total_retries": 17,
+            "failure_breakdown": {
+              "tautology": 2,
+              "contradiction": 4,
+              "inconsistent": 6
+            },
+            "total_smt_queries": 232,
+            "total_smt_time_s": 186.532,
+            "independence_checked": 0,
+            "independence_skipped": 97,
+            "total_time_s": 187.15,
+            "duplicates_rejected": 0,
+            "unfilled_slots": [],
+            "generator_refinement": {
+              "total_refinements": 12,
+              "blacklisted_pattern_contexts": 4,
+              "blacklisted_bindings": 14,
+              "weight_modifications": 7,
+              "action_breakdown": {
+                "blacklist_pattern_context": 4,
+                "blacklist_bindings_and_downweight": 6,
+                "down_weight_pattern": 2
+              }
+            }
+          },
+          "vgcr_accepted": 91,
+          "vgcr_rejected": 0,
+          "sat_count_after_mutation": 73,
+          "unsat_count_after_mutation": 18,
+          "unsat_measured_tiers": {
+            "difficult": 4,
+            "medium": 4,
+            "unboxed": 10
+          },
+          "conflicts_removed": 9,
+          "consistency_verified": true,
+          "semantic_clusters": 17,
+          "implication_count": 41,
+          "valid_count": 64,
+          "sat_count": 64,
+          "unsat_count": 16,
+          "unknown_count": 0,
+          "verified_count": 64,
+          "fallback_unknown_count": 0,
+          "skipped_unsat_count": 18,
+          "intentional_unsat_count": 18,
+          "unsat_trimmed_for_ratio": 2,
+          "post_refine_coverage_deficit": {
+            "min_per_class": 1,
+            "classes": {
+              "Payment": 0,
+              "Manager": 0,
+              "AccountTransaction": 0
+            }
+          },
+          "final_suite": {
+            "delivered": 80,
+            "sat": 64,
+            "unsat": 16,
+            "slot_tier_distribution": {
+              "easy": 28,
+              "difficult": 23,
+              "medium": 29
+            },
+            "requested_tier_distribution": {
+              "easy": 40,
+              "medium": 35,
+              "difficult": 25
+            },
+            "sat_tier_distribution": {
+              "easy": 24,
+              "difficult": 18,
+              "medium": 22
+            },
+            "unsat_measured_tier_distribution": {
+              "difficult": 4,
+              "medium": 4,
+              "unboxed": 8
+            },
+            "family_distribution": {
+              "navigation": 23,
+              "arithmetic": 21,
+              "quantified": 12,
+              "cardinality": 24
+            },
+            "requested_family_distribution": {
+              "cardinality": 30,
+              "arithmetic": 25,
+              "navigation": 25,
+              "quantified": 20
+            },
+            "complexity_fidelity_sat": {
+              "boxed_constraints": 64,
+              "in_box": 64,
+              "in_box_rate": 1.0,
+              "unlabeled_constraints": 0,
+              "out_of_box": []
+            },
+            "class_coverage": {
+              "min_per_class": 1,
+              "classes": 17,
+              "covered": 14,
+              "below_min": {
+                "AccountTransaction": 0,
+                "Manager": 0,
+                "Payment": 0
+              }
+            },
+            "slot_accounting": {
+              "requested": 100,
+              "generated": 91,
+              "generation_gaps": 9,
+              "dedup_removed": 15,
+              "dedup_refilled": 15,
+              "dedup_unfilled": 0,
+              "vgcr_regenerated": 14,
+              "vgcr_unfilled": 0,
+              "late_duplicates_removed": 0,
+              "unsat_trimmed_for_ratio": 2,
+              "delivered": 80
+            },
+            "dedup_unfilled_slots": [],
+            "vgcr_unfilled_slots": [],
+            "coverage_repairs": [
+              {
+                "class": "Payment",
+                "action": "donor_swap",
+                "donor_class": "Account",
+                "pattern": "boolean_is_false",
+                "profile": "easy"
+              },
+              {
+                "class": "KYCRecord",
+                "action": "donor_swap",
+                "donor_class": "Loan",
+                "pattern": "navigation_chain",
+                "profile": "medium"
+              },
+              {
+                "class": "Manager",
+                "action": "unrepaired",
+                "have": 0,
+                "min": 1
+              },
+              {
+                "class": "AccountTransaction",
+                "action": "unrepaired",
+                "have": 0,
+                "min": 1
+              }
+            ]
+          },
+          "status": "success",
+          "generation_time_s": 455.2
+        }
+      ],
+      "total_constraints": 80,
+      "total_valid": 64,
+      "total_sat": 64,
+      "total_unsat": 16,
+      "total_unknown": 0
+    },
+    {
+      "model": "CarRental",
+      "xmi": "models/car_rental.xmi",
+      "profiles": [
+        {
+          "profile": "balanced",
+          "seed": 42,
+          "complexity": "standard",
+          "output_dir": "benchmarks/paper_v3/with_vgcr/CarRental",
+          "research_features_applied": [
+            "metadata_enrichment",
+            "vgcr_refinement",
+            "unsat_generation",
+            "ast_similarity",
+            "semantic_similarity",
+            "implication_checking",
+            "manifest_generation"
+          ],
+          "constraint_count": 89,
+          "initial_sat_count": 91,
+          "dedup": {
+            "removed": 16,
+            "refilled": 16,
+            "unfilled": []
+          },
+          "vgcr_stats": {
+            "total_candidates": 91,
+            "passed": 91,
+            "passed_first_try": 87,
+            "passed_after_retry": 4,
+            "failed": 0,
+            "pass_rate": "100.0%",
+            "total_retries": 4,
+            "failure_breakdown": {
+              "contradiction": 2,
+              "inconsistent": 1
+            },
+            "total_smt_queries": 202,
+            "total_smt_time_s": 43.779,
+            "independence_checked": 0,
+            "independence_skipped": 92,
+            "total_time_s": 44.224,
+            "duplicates_rejected": 0,
+            "unfilled_slots": [],
+            "generator_refinement": {
+              "total_refinements": 3,
+              "blacklisted_pattern_contexts": 2,
+              "blacklisted_bindings": 3,
+              "weight_modifications": 1,
+              "action_breakdown": {
+                "blacklist_pattern_context": 2,
+                "blacklist_bindings_and_downweight": 1
+              }
+            }
+          },
+          "vgcr_accepted": 91,
+          "vgcr_rejected": 0,
+          "sat_count_after_mutation": 73,
+          "unsat_count_after_mutation": 18,
+          "unsat_measured_tiers": {
+            "medium": 5,
+            "difficult": 3,
+            "unboxed": 10
+          },
+          "conflicts_removed": 2,
+          "consistency_verified": true,
+          "semantic_clusters": 18,
+          "implication_count": 15,
+          "valid_count": 71,
+          "sat_count": 71,
+          "unsat_count": 18,
+          "unknown_count": 0,
+          "verified_count": 71,
+          "fallback_unknown_count": 0,
+          "skipped_unsat_count": 18,
+          "intentional_unsat_count": 18,
+          "post_refine_coverage_deficit": {},
+          "final_suite": {
+            "delivered": 89,
+            "sat": 71,
+            "unsat": 18,
+            "slot_tier_distribution": {
+              "difficult": 23,
+              "easy": 32,
+              "medium": 34
+            },
+            "requested_tier_distribution": {
+              "easy": 40,
+              "medium": 35,
+              "difficult": 25
+            },
+            "sat_tier_distribution": {
+              "difficult": 20,
+              "easy": 28,
+              "medium": 23
+            },
+            "unsat_measured_tier_distribution": {
+              "medium": 5,
+              "difficult": 3,
+              "unboxed": 10
+            },
+            "family_distribution": {
+              "navigation": 23,
+              "quantified": 14,
+              "arithmetic": 25,
+              "cardinality": 27
+            },
+            "requested_family_distribution": {
+              "cardinality": 30,
+              "arithmetic": 25,
+              "navigation": 25,
+              "quantified": 20
+            },
+            "complexity_fidelity_sat": {
+              "boxed_constraints": 71,
+              "in_box": 71,
+              "in_box_rate": 1.0,
+              "unlabeled_constraints": 0,
+              "out_of_box": []
+            },
+            "class_coverage": {
+              "min_per_class": 1,
+              "classes": 8,
+              "covered": 8,
+              "below_min": {}
+            },
+            "slot_accounting": {
+              "requested": 100,
+              "generated": 91,
+              "generation_gaps": 9,
+              "dedup_removed": 16,
+              "dedup_refilled": 16,
+              "dedup_unfilled": 0,
+              "vgcr_regenerated": 4,
+              "vgcr_unfilled": 0,
+              "late_duplicates_removed": 0,
+              "unsat_trimmed_for_ratio": 0,
+              "delivered": 89
+            },
+            "dedup_unfilled_slots": [],
+            "vgcr_unfilled_slots": [],
+            "coverage_repairs": []
+          },
+          "status": "success",
+          "generation_time_s": 83.7
+        }
+      ],
+      "total_constraints": 89,
+      "total_valid": 71,
+      "total_sat": 71,
+      "total_unsat": 18,
+      "total_unknown": 0
+    },
+    {
+      "model": "EcommerceSystem",
+      "xmi": "models/ecommerce_system.xmi",
+      "profiles": [
+        {
+          "profile": "balanced",
+          "seed": 42,
+          "complexity": "standard",
+          "output_dir": "benchmarks/paper_v3/with_vgcr/EcommerceSystem",
+          "research_features_applied": [
+            "metadata_enrichment",
+            "vgcr_refinement",
+            "unsat_generation",
+            "ast_similarity",
+            "semantic_similarity",
+            "implication_checking",
+            "manifest_generation"
+          ],
+          "constraint_count": 91,
+          "initial_sat_count": 91,
+          "dedup": {
+            "removed": 15,
+            "refilled": 15,
+            "unfilled": []
+          },
+          "vgcr_stats": {
+            "total_candidates": 91,
+            "passed": 91,
+            "passed_first_try": 81,
+            "passed_after_retry": 10,
+            "failed": 0,
+            "pass_rate": "100.0%",
+            "total_retries": 11,
+            "failure_breakdown": {
+              "tautology": 2,
+              "contradiction": 2,
+              "inconsistent": 6
+            },
+            "total_smt_queries": 234,
+            "total_smt_time_s": 287.582,
+            "independence_checked": 0,
+            "independence_skipped": 97,
+            "total_time_s": 288.219,
+            "duplicates_rejected": 1,
+            "unfilled_slots": [],
+            "generator_refinement": {
+              "total_refinements": 10,
+              "blacklisted_pattern_contexts": 2,
+              "blacklisted_bindings": 13,
+              "weight_modifications": 7,
+              "action_breakdown": {
+                "blacklist_bindings_and_downweight": 6,
+                "blacklist_pattern_context": 2,
+                "down_weight_pattern": 2
+              }
+            }
+          },
+          "vgcr_accepted": 91,
+          "vgcr_rejected": 0,
+          "sat_count_after_mutation": 73,
+          "unsat_count_after_mutation": 18,
+          "unsat_measured_tiers": {
+            "unboxed": 7,
+            "easy": 1,
+            "difficult": 4,
+            "medium": 6
+          },
+          "consistency_verified": true,
+          "semantic_clusters": 18,
+          "implication_count": 41,
+          "valid_count": 73,
+          "sat_count": 73,
+          "unsat_count": 18,
+          "unknown_count": 0,
+          "verified_count": 73,
+          "fallback_unknown_count": 0,
+          "skipped_unsat_count": 18,
+          "intentional_unsat_count": 18,
+          "post_refine_coverage_deficit": {},
+          "final_suite": {
+            "delivered": 91,
+            "sat": 73,
+            "unsat": 18,
+            "slot_tier_distribution": {
+              "easy": 31,
+              "difficult": 25,
+              "medium": 35
+            },
+            "requested_tier_distribution": {
+              "easy": 40,
+              "medium": 35,
+              "difficult": 25
+            },
+            "sat_tier_distribution": {
+              "easy": 25,
+              "difficult": 18,
+              "medium": 30
+            },
+            "unsat_measured_tier_distribution": {
+              "unboxed": 7,
+              "easy": 1,
+              "difficult": 4,
+              "medium": 6
+            },
+            "family_distribution": {
+              "navigation": 24,
+              "arithmetic": 25,
+              "quantified": 12,
+              "cardinality": 30
+            },
+            "requested_family_distribution": {
+              "cardinality": 30,
+              "arithmetic": 25,
+              "navigation": 25,
+              "quantified": 20
+            },
+            "complexity_fidelity_sat": {
+              "boxed_constraints": 73,
+              "in_box": 73,
+              "in_box_rate": 1.0,
+              "unlabeled_constraints": 0,
+              "out_of_box": []
+            },
+            "class_coverage": {
+              "min_per_class": 1,
+              "classes": 19,
+              "covered": 19,
+              "below_min": {}
+            },
+            "slot_accounting": {
+              "requested": 100,
+              "generated": 91,
+              "generation_gaps": 9,
+              "dedup_removed": 15,
+              "dedup_refilled": 15,
+              "dedup_unfilled": 0,
+              "vgcr_regenerated": 10,
+              "vgcr_unfilled": 0,
+              "late_duplicates_removed": 0,
+              "unsat_trimmed_for_ratio": 0,
+              "delivered": 91
+            },
+            "dedup_unfilled_slots": [],
+            "vgcr_unfilled_slots": [],
+            "coverage_repairs": []
+          },
+          "status": "success",
+          "generation_time_s": 1107.7
+        }
+      ],
+      "total_constraints": 91,
+      "total_valid": 73,
+      "total_sat": 73,
+      "total_unsat": 18,
+      "total_unknown": 0
+    },
+    {
+      "model": "FlightBooking",
+      "xmi": "models/flight_booking.xmi",
+      "profiles": [
+        {
+          "profile": "balanced",
+          "seed": 42,
+          "complexity": "standard",
+          "output_dir": "benchmarks/paper_v3/with_vgcr/FlightBooking",
+          "research_features_applied": [
+            "metadata_enrichment",
+            "vgcr_refinement",
+            "unsat_generation",
+            "ast_similarity",
+            "semantic_similarity",
+            "implication_checking",
+            "manifest_generation"
+          ],
+          "constraint_count": 81,
+          "initial_sat_count": 85,
+          "dedup": {
+            "removed": 11,
+            "refilled": 7,
+            "unfilled": [
+              {
+                "pattern": "collection_size_range",
+                "context": "Booking",
+                "profile": "difficult"
+              },
+              {
+                "pattern": "flatten_operation",
+                "context": "Airline",
+                "profile": "difficult"
+              },
+              {
+                "pattern": "flatten_operation",
+                "context": "Passenger",
+                "profile": "difficult"
+              },
+              {
+                "pattern": "collection_collectNested",
+                "context": "Flight",
+                "profile": "difficult"
+              }
+            ]
+          },
+          "vgcr_stats": {
+            "total_candidates": 81,
+            "passed": 81,
+            "passed_first_try": 63,
+            "passed_after_retry": 18,
+            "failed": 0,
+            "pass_rate": "100.0%",
+            "total_retries": 25,
+            "failure_breakdown": {
+              "tautology": 1,
+              "contradiction": 2,
+              "inconsistent": 13
+            },
+            "total_smt_queries": 232,
+            "total_smt_time_s": 7631.477,
+            "independence_checked": 0,
+            "independence_skipped": 94,
+            "total_time_s": 7632.156,
+            "duplicates_rejected": 0,
+            "unfilled_slots": [],
+            "generator_refinement": {
+              "total_refinements": 16,
+              "blacklisted_pattern_contexts": 2,
+              "blacklisted_bindings": 28,
+              "weight_modifications": 10,
+              "action_breakdown": {
+                "blacklist_bindings_and_downweight": 13,
+                "down_weight_pattern": 1,
+                "blacklist_pattern_context": 2
+              }
+            }
+          },
+          "vgcr_accepted": 81,
+          "vgcr_rejected": 0,
+          "sat_count_after_mutation": 65,
+          "unsat_count_after_mutation": 16,
+          "unsat_measured_tiers": {
+            "unboxed": 11,
+            "medium": 2,
+            "difficult": 2,
+            "easy": 1
+          },
+          "consistency_verified": true,
+          "semantic_clusters": 10,
+          "implication_count": 54,
+          "valid_count": 65,
+          "sat_count": 65,
+          "unsat_count": 16,
+          "unknown_count": 0,
+          "verified_count": 65,
+          "fallback_unknown_count": 0,
+          "skipped_unsat_count": 16,
+          "intentional_unsat_count": 16,
+          "post_refine_coverage_deficit": {},
+          "final_suite": {
+            "delivered": 81,
+            "sat": 65,
+            "unsat": 16,
+            "slot_tier_distribution": {
+              "difficult": 21,
+              "easy": 28,
+              "medium": 32
+            },
+            "requested_tier_distribution": {
+              "easy": 40,
+              "medium": 35,
+              "difficult": 25
+            },
+            "sat_tier_distribution": {
+              "difficult": 13,
+              "easy": 25,
+              "medium": 27
+            },
+            "unsat_measured_tier_distribution": {
+              "unboxed": 11,
+              "medium": 2,
+              "difficult": 2,
+              "easy": 1
+            },
+            "family_distribution": {
+              "arithmetic": 24,
+              "navigation": 24,
+              "quantified": 9,
+              "cardinality": 24
+            },
+            "requested_family_distribution": {
+              "cardinality": 30,
+              "arithmetic": 25,
+              "navigation": 25,
+              "quantified": 20
+            },
+            "complexity_fidelity_sat": {
+              "boxed_constraints": 65,
+              "in_box": 65,
+              "in_box_rate": 1.0,
+              "unlabeled_constraints": 0,
+              "out_of_box": []
+            },
+            "class_coverage": {
+              "min_per_class": 1,
+              "classes": 12,
+              "covered": 12,
+              "below_min": {}
+            },
+            "slot_accounting": {
+              "requested": 100,
+              "generated": 85,
+              "generation_gaps": 15,
+              "dedup_removed": 11,
+              "dedup_refilled": 7,
+              "dedup_unfilled": 4,
+              "vgcr_regenerated": 18,
+              "vgcr_unfilled": 0,
+              "late_duplicates_removed": 0,
+              "unsat_trimmed_for_ratio": 0,
+              "delivered": 81
+            },
+            "dedup_unfilled_slots": [
+              {
+                "pattern": "collection_size_range",
+                "context": "Booking",
+                "profile": "difficult"
+              },
+              {
+                "pattern": "flatten_operation",
+                "context": "Airline",
+                "profile": "difficult"
+              },
+              {
+                "pattern": "flatten_operation",
+                "context": "Passenger",
+                "profile": "difficult"
+              },
+              {
+                "pattern": "collection_collectNested",
+                "context": "Flight",
+                "profile": "difficult"
+              }
+            ],
+            "vgcr_unfilled_slots": [],
+            "coverage_repairs": []
+          },
+          "status": "success",
+          "generation_time_s": 7676.0
+        }
+      ],
+      "total_constraints": 81,
+      "total_valid": 65,
+      "total_sat": 65,
+      "total_unsat": 16,
+      "total_unknown": 0
+    },
+    {
+      "model": "HospitalSystem",
+      "xmi": "models/hospital.xmi",
+      "profiles": [
+        {
+          "profile": "balanced",
+          "seed": 42,
+          "complexity": "standard",
+          "output_dir": "benchmarks/paper_v3/with_vgcr/HospitalSystem",
+          "research_features_applied": [
+            "metadata_enrichment",
+            "vgcr_refinement",
+            "unsat_generation",
+            "ast_similarity",
+            "semantic_similarity",
+            "implication_checking",
+            "manifest_generation"
+          ],
+          "constraint_count": 78,
+          "initial_sat_count": 91,
+          "dedup": {
+            "removed": 14,
+            "refilled": 12,
+            "unfilled": [
+              {
+                "pattern": "simple_navigation",
+                "context": "Admission",
+                "profile": "easy"
+              },
+              {
+                "pattern": "navigation_chain",
+                "context": "Ward",
+                "profile": "easy"
+              }
+            ]
+          },
+          "coverage_repairs": [
+            {
+              "class": "InsurancePolicy",
+              "action": "donor_swap",
+              "donor_class": "Bed",
+              "pattern": "simple_navigation",
+              "profile": "medium"
+            },
+            {
+              "class": "Room",
+              "action": "donor_swap",
+              "donor_class": "Hospital",
+              "pattern": "collection_navigation",
+              "profile": "difficult"
+            },
+            {
+              "class": "Person",
+              "action": "unrepaired",
+              "have": 0,
+              "min": 1
+            }
+          ],
+          "vgcr_stats": {
+            "total_candidates": 89,
+            "passed": 89,
+            "passed_first_try": 68,
+            "passed_after_retry": 21,
+            "failed": 0,
+            "pass_rate": "100.0%",
+            "total_retries": 27,
+            "failure_breakdown": {
+              "tautology": 2,
+              "contradiction": 3,
+              "inconsistent": 11
+            },
+            "total_smt_queries": 250,
+            "total_smt_time_s": 376.909,
+            "independence_checked": 0,
+            "independence_skipped": 100,
+            "total_time_s": 377.886,
+            "duplicates_rejected": 5,
+            "unfilled_slots": [],
+            "generator_refinement": {
+              "total_refinements": 16,
+              "blacklisted_pattern_contexts": 3,
+              "blacklisted_bindings": 26,
+              "weight_modifications": 9,
+              "action_breakdown": {
+                "blacklist_bindings_and_downweight": 11,
+                "down_weight_pattern": 2,
+                "blacklist_pattern_context": 3
+              }
+            }
+          },
+          "vgcr_accepted": 89,
+          "vgcr_rejected": 0,
+          "sat_count_after_mutation": 72,
+          "unsat_count_after_mutation": 17,
+          "unsat_measured_tiers": {
+            "unboxed": 4,
+            "difficult": 4,
+            "medium": 7,
+            "easy": 2
+          },
+          "conflicts_removed": 10,
+          "consistency_verified": true,
+          "semantic_clusters": 14,
+          "implication_count": 63,
+          "valid_count": 62,
+          "sat_count": 62,
+          "unsat_count": 16,
+          "unknown_count": 0,
+          "verified_count": 62,
+          "fallback_unknown_count": 0,
+          "skipped_unsat_count": 17,
+          "intentional_unsat_count": 17,
+          "unsat_trimmed_for_ratio": 1,
+          "post_refine_coverage_deficit": {
+            "min_per_class": 1,
+            "classes": {
+              "Bed": 0,
+              "Person": 0
+            }
+          },
+          "final_suite": {
+            "delivered": 78,
+            "sat": 62,
+            "unsat": 16,
+            "slot_tier_distribution": {
+              "easy": 28,
+              "difficult": 21,
+              "medium": 29
+            },
+            "requested_tier_distribution": {
+              "easy": 40,
+              "medium": 35,
+              "difficult": 25
+            },
+            "sat_tier_distribution": {
+              "easy": 21,
+              "difficult": 16,
+              "medium": 25
+            },
+            "unsat_measured_tier_distribution": {
+              "unboxed": 3,
+              "difficult": 4,
+              "medium": 7,
+              "easy": 2
+            },
+            "family_distribution": {
+              "navigation": 22,
+              "arithmetic": 24,
+              "quantified": 12,
+              "cardinality": 20
+            },
+            "requested_family_distribution": {
+              "cardinality": 30,
+              "arithmetic": 25,
+              "navigation": 25,
+              "quantified": 20
+            },
+            "complexity_fidelity_sat": {
+              "boxed_constraints": 62,
+              "in_box": 62,
+              "in_box_rate": 1.0,
+              "unlabeled_constraints": 0,
+              "out_of_box": []
+            },
+            "class_coverage": {
+              "min_per_class": 1,
+              "classes": 22,
+              "covered": 20,
+              "below_min": {
+                "Bed": 0,
+                "Person": 0
+              }
+            },
+            "slot_accounting": {
+              "requested": 100,
+              "generated": 91,
+              "generation_gaps": 9,
+              "dedup_removed": 14,
+              "dedup_refilled": 12,
+              "dedup_unfilled": 2,
+              "vgcr_regenerated": 21,
+              "vgcr_unfilled": 0,
+              "late_duplicates_removed": 0,
+              "unsat_trimmed_for_ratio": 1,
+              "delivered": 78
+            },
+            "dedup_unfilled_slots": [
+              {
+                "pattern": "simple_navigation",
+                "context": "Admission",
+                "profile": "easy"
+              },
+              {
+                "pattern": "navigation_chain",
+                "context": "Ward",
+                "profile": "easy"
+              }
+            ],
+            "vgcr_unfilled_slots": [],
+            "coverage_repairs": [
+              {
+                "class": "InsurancePolicy",
+                "action": "donor_swap",
+                "donor_class": "Bed",
+                "pattern": "simple_navigation",
+                "profile": "medium"
+              },
+              {
+                "class": "Room",
+                "action": "donor_swap",
+                "donor_class": "Hospital",
+                "pattern": "collection_navigation",
+                "profile": "difficult"
+              },
+              {
+                "class": "Person",
+                "action": "unrepaired",
+                "have": 0,
+                "min": 1
+              }
+            ]
+          },
+          "status": "success",
+          "generation_time_s": 532.3
+        }
+      ],
+      "total_constraints": 78,
+      "total_valid": 62,
+      "total_sat": 62,
+      "total_unsat": 16,
+      "total_unknown": 0
+    },
+    {
+      "model": "IoTSensorNetwork",
+      "xmi": "models/iotsensornetwork.xmi",
+      "profiles": [
+        {
+          "profile": "balanced",
+          "seed": 42,
+          "complexity": "standard",
+          "output_dir": "benchmarks/paper_v3/with_vgcr/IoTSensorNetwork",
+          "research_features_applied": [
+            "metadata_enrichment",
+            "vgcr_refinement",
+            "unsat_generation",
+            "ast_similarity",
+            "semantic_similarity",
+            "implication_checking",
+            "manifest_generation"
+          ],
+          "constraint_count": 90,
+          "initial_sat_count": 94,
+          "dedup": {
+            "removed": 11,
+            "refilled": 11,
+            "unfilled": []
+          },
+          "vgcr_stats": {
+            "total_candidates": 94,
+            "passed": 94,
+            "passed_first_try": 84,
+            "passed_after_retry": 10,
+            "failed": 0,
+            "pass_rate": "100.0%",
+            "total_retries": 17,
+            "failure_breakdown": {
+              "tautology": 3,
+              "contradiction": 4,
+              "inconsistent": 9
+            },
+            "total_smt_queries": 252,
+            "total_smt_time_s": 592.358,
+            "independence_checked": 0,
+            "independence_skipped": 103,
+            "total_time_s": 593.212,
+            "duplicates_rejected": 0,
+            "unfilled_slots": [],
+            "generator_refinement": {
+              "total_refinements": 16,
+              "blacklisted_pattern_contexts": 4,
+              "blacklisted_bindings": 19,
+              "weight_modifications": 6,
+              "action_breakdown": {
+                "blacklist_bindings_and_downweight": 9,
+                "down_weight_pattern": 3,
+                "blacklist_pattern_context": 4
+              }
+            }
+          },
+          "vgcr_accepted": 94,
+          "vgcr_rejected": 0,
+          "sat_count_after_mutation": 76,
+          "unsat_count_after_mutation": 18,
+          "unsat_measured_tiers": {
+            "unboxed": 6,
+            "medium": 10,
+            "difficult": 2
+          },
+          "conflicts_removed": 4,
+          "consistency_verified": true,
+          "semantic_clusters": 22,
+          "implication_count": 37,
+          "valid_count": 72,
+          "sat_count": 72,
+          "unsat_count": 18,
+          "unknown_count": 0,
+          "verified_count": 72,
+          "fallback_unknown_count": 0,
+          "skipped_unsat_count": 18,
+          "intentional_unsat_count": 18,
+          "post_refine_coverage_deficit": {},
+          "final_suite": {
+            "delivered": 90,
+            "sat": 72,
+            "unsat": 18,
+            "slot_tier_distribution": {
+              "difficult": 22,
+              "easy": 33,
+              "medium": 35
+            },
+            "requested_tier_distribution": {
+              "easy": 40,
+              "medium": 35,
+              "difficult": 25
+            },
+            "sat_tier_distribution": {
+              "difficult": 17,
+              "easy": 26,
+              "medium": 29
+            },
+            "unsat_measured_tier_distribution": {
+              "unboxed": 6,
+              "medium": 10,
+              "difficult": 2
+            },
+            "family_distribution": {
+              "arithmetic": 25,
+              "navigation": 25,
+              "quantified": 13,
+              "cardinality": 27
+            },
+            "requested_family_distribution": {
+              "cardinality": 30,
+              "arithmetic": 25,
+              "navigation": 25,
+              "quantified": 20
+            },
+            "complexity_fidelity_sat": {
+              "boxed_constraints": 72,
+              "in_box": 72,
+              "in_box_rate": 1.0,
+              "unlabeled_constraints": 0,
+              "out_of_box": []
+            },
+            "class_coverage": {
+              "min_per_class": 1,
+              "classes": 28,
+              "covered": 28,
+              "below_min": {}
+            },
+            "slot_accounting": {
+              "requested": 100,
+              "generated": 94,
+              "generation_gaps": 6,
+              "dedup_removed": 11,
+              "dedup_refilled": 11,
+              "dedup_unfilled": 0,
+              "vgcr_regenerated": 10,
+              "vgcr_unfilled": 0,
+              "late_duplicates_removed": 0,
+              "unsat_trimmed_for_ratio": 0,
+              "delivered": 90
+            },
+            "dedup_unfilled_slots": [],
+            "vgcr_unfilled_slots": [],
+            "coverage_repairs": []
+          },
+          "status": "success",
+          "generation_time_s": 812.6
+        }
+      ],
+      "total_constraints": 90,
+      "total_valid": 72,
+      "total_sat": 72,
+      "total_unsat": 18,
+      "total_unknown": 0
+    },
+    {
+      "model": "LibrarySystem",
+      "xmi": "models/library_system.xmi",
+      "profiles": [
+        {
+          "profile": "balanced",
+          "seed": 42,
+          "complexity": "standard",
+          "output_dir": "benchmarks/paper_v3/with_vgcr/LibrarySystem",
+          "research_features_applied": [
+            "metadata_enrichment",
+            "vgcr_refinement",
+            "unsat_generation",
+            "ast_similarity",
+            "semantic_similarity",
+            "implication_checking",
+            "manifest_generation"
+          ],
+          "constraint_count": 82,
+          "initial_sat_count": 87,
+          "dedup": {
+            "removed": 12,
+            "refilled": 12,
+            "unfilled": []
+          },
+          "coverage_repairs": [
+            {
+              "class": "Publisher",
+              "action": "donor_swap",
+              "donor_class": "Author",
+              "pattern": "collection_navigation",
+              "profile": "difficult"
+            }
+          ],
+          "vgcr_stats": {
+            "total_candidates": 87,
+            "passed": 87,
+            "passed_first_try": 78,
+            "passed_after_retry": 9,
+            "failed": 0,
+            "pass_rate": "100.0%",
+            "total_retries": 12,
+            "failure_breakdown": {
+              "tautology": 1,
+              "contradiction": 2,
+              "inconsistent": 7
+            },
+            "total_smt_queries": 220,
+            "total_smt_time_s": 150.562,
+            "independence_checked": 0,
+            "independence_skipped": 94,
+            "total_time_s": 151.159,
+            "duplicates_rejected": 0,
+            "unfilled_slots": [],
+            "generator_refinement": {
+              "total_refinements": 10,
+              "blacklisted_pattern_contexts": 2,
+              "blacklisted_bindings": 17,
+              "weight_modifications": 7,
+              "action_breakdown": {
+                "blacklist_bindings_and_downweight": 7,
+                "down_weight_pattern": 1,
+                "blacklist_pattern_context": 2
+              }
+            }
+          },
+          "vgcr_accepted": 87,
+          "vgcr_rejected": 0,
+          "sat_count_after_mutation": 70,
+          "unsat_count_after_mutation": 17,
+          "unsat_measured_tiers": {
+            "unboxed": 8,
+            "difficult": 5,
+            "medium": 2,
+            "easy": 2
+          },
+          "conflicts_removed": 4,
+          "consistency_verified": true,
+          "semantic_clusters": 13,
+          "implication_count": 27,
+          "valid_count": 66,
+          "sat_count": 66,
+          "unsat_count": 16,
+          "unknown_count": 0,
+          "verified_count": 66,
+          "fallback_unknown_count": 0,
+          "skipped_unsat_count": 17,
+          "intentional_unsat_count": 17,
+          "unsat_trimmed_for_ratio": 1,
+          "post_refine_coverage_deficit": {},
+          "final_suite": {
+            "delivered": 82,
+            "sat": 66,
+            "unsat": 16,
+            "slot_tier_distribution": {
+              "easy": 26,
+              "difficult": 24,
+              "medium": 32
+            },
+            "requested_tier_distribution": {
+              "easy": 40,
+              "medium": 35,
+              "difficult": 25
+            },
+            "sat_tier_distribution": {
+              "easy": 23,
+              "difficult": 18,
+              "medium": 25
+            },
+            "unsat_measured_tier_distribution": {
+              "unboxed": 8,
+              "difficult": 5,
+              "medium": 2,
+              "easy": 1
+            },
+            "family_distribution": {
+              "navigation": 25,
+              "arithmetic": 23,
+              "quantified": 6,
+              "cardinality": 28
+            },
+            "requested_family_distribution": {
+              "cardinality": 30,
+              "arithmetic": 25,
+              "navigation": 25,
+              "quantified": 20
+            },
+            "complexity_fidelity_sat": {
+              "boxed_constraints": 66,
+              "in_box": 66,
+              "in_box_rate": 1.0,
+              "unlabeled_constraints": 0,
+              "out_of_box": []
+            },
+            "class_coverage": {
+              "min_per_class": 1,
+              "classes": 15,
+              "covered": 15,
+              "below_min": {}
+            },
+            "slot_accounting": {
+              "requested": 100,
+              "generated": 87,
+              "generation_gaps": 13,
+              "dedup_removed": 12,
+              "dedup_refilled": 12,
+              "dedup_unfilled": 0,
+              "vgcr_regenerated": 9,
+              "vgcr_unfilled": 0,
+              "late_duplicates_removed": 0,
+              "unsat_trimmed_for_ratio": 1,
+              "delivered": 82
+            },
+            "dedup_unfilled_slots": [],
+            "vgcr_unfilled_slots": [],
+            "coverage_repairs": [
+              {
+                "class": "Publisher",
+                "action": "donor_swap",
+                "donor_class": "Author",
+                "pattern": "collection_navigation",
+                "profile": "difficult"
+              }
+            ]
+          },
+          "status": "success",
+          "generation_time_s": 227.9
+        }
+      ],
+      "total_constraints": 82,
+      "total_valid": 66,
+      "total_sat": 66,
+      "total_unsat": 16,
+      "total_unknown": 0
+    },
+    {
+      "model": "ManufacturingPlant",
+      "xmi": "models/manufacturing_plant.xmi",
+      "profiles": [
+        {
+          "profile": "balanced",
+          "seed": 42,
+          "complexity": "standard",
+          "output_dir": "benchmarks/paper_v3/with_vgcr/ManufacturingPlant",
+          "research_features_applied": [
+            "metadata_enrichment",
+            "vgcr_refinement",
+            "unsat_generation",
+            "ast_similarity",
+            "semantic_similarity",
+            "implication_checking",
+            "manifest_generation"
+          ],
+          "constraint_count": 92,
+          "initial_sat_count": 93,
+          "dedup": {
+            "removed": 9,
+            "refilled": 9,
+            "unfilled": []
+          },
+          "vgcr_stats": {
+            "total_candidates": 93,
+            "passed": 93,
+            "passed_first_try": 78,
+            "passed_after_retry": 15,
+            "failed": 0,
+            "pass_rate": "100.0%",
+            "total_retries": 21,
+            "failure_breakdown": {
+              "tautology": 2,
+              "contradiction": 3,
+              "inconsistent": 11
+            },
+            "total_smt_queries": 249,
+            "total_smt_time_s": 273.822,
+            "independence_checked": 0,
+            "independence_skipped": 104,
+            "total_time_s": 274.514,
+            "duplicates_rejected": 1,
+            "unfilled_slots": [],
+            "generator_refinement": {
+              "total_refinements": 16,
+              "blacklisted_pattern_contexts": 3,
+              "blacklisted_bindings": 23,
+              "weight_modifications": 9,
+              "action_breakdown": {
+                "blacklist_bindings_and_downweight": 11,
+                "blacklist_pattern_context": 3,
+                "down_weight_pattern": 2
+              }
+            }
+          },
+          "vgcr_accepted": 93,
+          "vgcr_rejected": 0,
+          "sat_count_after_mutation": 75,
+          "unsat_count_after_mutation": 18,
+          "unsat_measured_tiers": {
+            "medium": 11,
+            "unboxed": 4,
+            "difficult": 2,
+            "easy": 1
+          },
+          "conflicts_removed": 1,
+          "consistency_verified": false,
+          "semantic_clusters": 20,
+          "implication_count": 47,
+          "valid_count": 74,
+          "sat_count": 74,
+          "unsat_count": 18,
+          "unknown_count": 0,
+          "verified_count": 74,
+          "fallback_unknown_count": 0,
+          "skipped_unsat_count": 18,
+          "intentional_unsat_count": 18,
+          "post_refine_coverage_deficit": {},
+          "final_suite": {
+            "delivered": 92,
+            "sat": 74,
+            "unsat": 18,
+            "slot_tier_distribution": {
+              "easy": 33,
+              "difficult": 24,
+              "medium": 35
+            },
+            "requested_tier_distribution": {
+              "easy": 40,
+              "medium": 35,
+              "difficult": 25
+            },
+            "sat_tier_distribution": {
+              "easy": 21,
+              "difficult": 21,
+              "medium": 32
+            },
+            "unsat_measured_tier_distribution": {
+              "medium": 11,
+              "unboxed": 4,
+              "difficult": 2,
+              "easy": 1
+            },
+            "family_distribution": {
+              "navigation": 25,
+              "arithmetic": 25,
+              "quantified": 13,
+              "cardinality": 29
+            },
+            "requested_family_distribution": {
+              "cardinality": 30,
+              "arithmetic": 25,
+              "navigation": 25,
+              "quantified": 20
+            },
+            "complexity_fidelity_sat": {
+              "boxed_constraints": 74,
+              "in_box": 74,
+              "in_box_rate": 1.0,
+              "unlabeled_constraints": 0,
+              "out_of_box": []
+            },
+            "class_coverage": {
+              "min_per_class": 1,
+              "classes": 20,
+              "covered": 20,
+              "below_min": {}
+            },
+            "slot_accounting": {
+              "requested": 100,
+              "generated": 93,
+              "generation_gaps": 7,
+              "dedup_removed": 9,
+              "dedup_refilled": 9,
+              "dedup_unfilled": 0,
+              "vgcr_regenerated": 15,
+              "vgcr_unfilled": 0,
+              "late_duplicates_removed": 0,
+              "unsat_trimmed_for_ratio": 0,
+              "delivered": 92
+            },
+            "dedup_unfilled_slots": [],
+            "vgcr_unfilled_slots": [],
+            "coverage_repairs": []
+          },
+          "status": "success",
+          "generation_time_s": 2784.7
+        }
+      ],
+      "total_constraints": 92,
+      "total_valid": 74,
+      "total_sat": 74,
+      "total_unsat": 18,
+      "total_unknown": 0
+    },
+    {
+      "model": "SocialMedia",
+      "xmi": "models/social_media.xmi",
+      "profiles": [
+        {
+          "profile": "balanced",
+          "seed": 42,
+          "complexity": "standard",
+          "output_dir": "benchmarks/paper_v3/with_vgcr/SocialMedia",
+          "research_features_applied": [
+            "metadata_enrichment",
+            "vgcr_refinement",
+            "unsat_generation",
+            "ast_similarity",
+            "semantic_similarity",
+            "implication_checking",
+            "manifest_generation"
+          ],
+          "constraint_count": 73,
+          "initial_sat_count": 88,
+          "dedup": {
+            "removed": 21,
+            "refilled": 17,
+            "unfilled": [
+              {
+                "pattern": "simple_navigation",
+                "context": "Comment",
+                "profile": "easy"
+              },
+              {
+                "pattern": "flatten_operation",
+                "context": "Tag",
+                "profile": "difficult"
+              },
+              {
+                "pattern": "collection_collectNested",
+                "context": "User",
+                "profile": "difficult"
+              },
+              {
+                "pattern": "flatten_operation",
+                "context": "Tag",
+                "profile": "difficult"
+              }
+            ]
+          },
+          "vgcr_stats": {
+            "total_candidates": 84,
+            "passed": 82,
+            "passed_first_try": 65,
+            "passed_after_retry": 17,
+            "failed": 2,
+            "pass_rate": "97.6%",
+            "total_retries": 25,
+            "failure_breakdown": {
+              "tautology": 3,
+              "contradiction": 1,
+              "inconsistent": 13
+            },
+            "total_smt_queries": 233,
+            "total_smt_time_s": 18136.38,
+            "independence_checked": 0,
+            "independence_skipped": 95,
+            "total_time_s": 18137.281,
+            "duplicates_rejected": 2,
+            "unfilled_slots": [
+              {
+                "slot": 20,
+                "last_pattern": "collection_size_range",
+                "last_context": "Group",
+                "profile": "easy",
+                "excluded_patterns": []
+              },
+              {
+                "slot": 69,
+                "last_pattern": "collection_size_range",
+                "last_context": "Group",
+                "profile": "medium",
+                "excluded_patterns": []
+              }
+            ],
+            "generator_refinement": {
+              "total_refinements": 17,
+              "blacklisted_pattern_contexts": 1,
+              "blacklisted_bindings": 33,
+              "weight_modifications": 9,
+              "action_breakdown": {
+                "blacklist_bindings_and_downweight": 13,
+                "down_weight_pattern": 3,
+                "blacklist_pattern_context": 1
+              }
+            }
+          },
+          "vgcr_accepted": 82,
+          "vgcr_rejected": 2,
+          "sat_count_after_mutation": 66,
+          "unsat_count_after_mutation": 16,
+          "unsat_measured_tiers": {
+            "difficult": 4,
+            "unboxed": 9,
+            "medium": 3
+          },
+          "conflicts_removed": 8,
+          "consistency_verified": true,
+          "semantic_clusters": 11,
+          "implication_count": 27,
+          "valid_count": 58,
+          "sat_count": 58,
+          "unsat_count": 15,
+          "unknown_count": 0,
+          "verified_count": 58,
+          "fallback_unknown_count": 0,
+          "skipped_unsat_count": 16,
+          "intentional_unsat_count": 16,
+          "unsat_trimmed_for_ratio": 1,
+          "post_refine_coverage_deficit": {},
+          "final_suite": {
+            "delivered": 73,
+            "sat": 58,
+            "unsat": 15,
+            "slot_tier_distribution": {
+              "difficult": 19,
+              "easy": 22,
+              "medium": 32
+            },
+            "requested_tier_distribution": {
+              "easy": 40,
+              "medium": 35,
+              "difficult": 25
+            },
+            "sat_tier_distribution": {
+              "difficult": 14,
+              "easy": 18,
+              "medium": 26
+            },
+            "unsat_measured_tier_distribution": {
+              "difficult": 4,
+              "unboxed": 8,
+              "medium": 3
+            },
+            "family_distribution": {
+              "arithmetic": 22,
+              "navigation": 23,
+              "quantified": 9,
+              "cardinality": 19
+            },
+            "requested_family_distribution": {
+              "cardinality": 30,
+              "arithmetic": 25,
+              "navigation": 25,
+              "quantified": 20
+            },
+            "complexity_fidelity_sat": {
+              "boxed_constraints": 58,
+              "in_box": 58,
+              "in_box_rate": 1.0,
+              "unlabeled_constraints": 0,
+              "out_of_box": []
+            },
+            "class_coverage": {
+              "min_per_class": 1,
+              "classes": 14,
+              "covered": 14,
+              "below_min": {}
+            },
+            "slot_accounting": {
+              "requested": 100,
+              "generated": 88,
+              "generation_gaps": 12,
+              "dedup_removed": 21,
+              "dedup_refilled": 17,
+              "dedup_unfilled": 4,
+              "vgcr_regenerated": 17,
+              "vgcr_unfilled": 2,
+              "late_duplicates_removed": 0,
+              "unsat_trimmed_for_ratio": 1,
+              "delivered": 73
+            },
+            "dedup_unfilled_slots": [
+              {
+                "pattern": "simple_navigation",
+                "context": "Comment",
+                "profile": "easy"
+              },
+              {
+                "pattern": "flatten_operation",
+                "context": "Tag",
+                "profile": "difficult"
+              },
+              {
+                "pattern": "collection_collectNested",
+                "context": "User",
+                "profile": "difficult"
+              },
+              {
+                "pattern": "flatten_operation",
+                "context": "Tag",
+                "profile": "difficult"
+              }
+            ],
+            "vgcr_unfilled_slots": [
+              {
+                "slot": 20,
+                "last_pattern": "collection_size_range",
+                "last_context": "Group",
+                "profile": "easy",
+                "excluded_patterns": []
+              },
+              {
+                "slot": 69,
+                "last_pattern": "collection_size_range",
+                "last_context": "Group",
+                "profile": "medium",
+                "excluded_patterns": []
+              }
+            ],
+            "coverage_repairs": []
+          },
+          "status": "success",
+          "generation_time_s": 18308.6
+        }
+      ],
+      "total_constraints": 73,
+      "total_valid": 58,
+      "total_sat": 58,
+      "total_unsat": 15,
+      "total_unknown": 0
+    },
+    {
+      "model": "UniversitySystem",
+      "xmi": "models/university_system.xmi",
+      "profiles": [
+        {
+          "profile": "balanced",
+          "seed": 42,
+          "complexity": "standard",
+          "output_dir": "benchmarks/paper_v3/with_vgcr/UniversitySystem",
+          "research_features_applied": [
+            "metadata_enrichment",
+            "vgcr_refinement",
+            "unsat_generation",
+            "ast_similarity",
+            "semantic_similarity",
+            "implication_checking",
+            "manifest_generation"
+          ],
+          "constraint_count": 86,
+          "initial_sat_count": 88,
+          "dedup": {
+            "removed": 13,
+            "refilled": 11,
+            "unfilled": [
+              {
+                "pattern": "navigation_chain",
+                "context": "Faculty",
+                "profile": "easy"
+              },
+              {
+                "pattern": "navigation_chain",
+                "context": "Building",
+                "profile": "easy"
+              }
+            ]
+          },
+          "coverage_repairs": [
+            {
+              "class": "LibraryAccount",
+              "action": "donor_swap",
+              "donor_class": "Course",
+              "pattern": "navigation_chain",
+              "profile": "medium"
+            }
+          ],
+          "vgcr_stats": {
+            "total_candidates": 86,
+            "passed": 86,
+            "passed_first_try": 72,
+            "passed_after_retry": 14,
+            "failed": 0,
+            "pass_rate": "100.0%",
+            "total_retries": 19,
+            "failure_breakdown": {
+              "tautology": 2,
+              "contradiction": 4,
+              "inconsistent": 10
+            },
+            "total_smt_queries": 230,
+            "total_smt_time_s": 350.494,
+            "independence_checked": 0,
+            "independence_skipped": 96,
+            "total_time_s": 352.594,
+            "duplicates_rejected": 1,
+            "unfilled_slots": [],
+            "generator_refinement": {
+              "total_refinements": 16,
+              "blacklisted_pattern_contexts": 4,
+              "blacklisted_bindings": 22,
+              "weight_modifications": 8,
+              "action_breakdown": {
+                "blacklist_bindings_and_downweight": 10,
+                "blacklist_pattern_context": 4,
+                "down_weight_pattern": 2
+              }
+            }
+          },
+          "vgcr_accepted": 86,
+          "vgcr_rejected": 0,
+          "sat_count_after_mutation": 69,
+          "unsat_count_after_mutation": 17,
+          "unsat_measured_tiers": {
+            "difficult": 8,
+            "unboxed": 4,
+            "medium": 5
+          },
+          "consistency_verified": true,
+          "semantic_clusters": 12,
+          "implication_count": 57,
+          "valid_count": 69,
+          "sat_count": 69,
+          "unsat_count": 17,
+          "unknown_count": 0,
+          "verified_count": 69,
+          "fallback_unknown_count": 0,
+          "skipped_unsat_count": 17,
+          "intentional_unsat_count": 17,
+          "post_refine_coverage_deficit": {},
+          "final_suite": {
+            "delivered": 86,
+            "sat": 69,
+            "unsat": 17,
+            "slot_tier_distribution": {
+              "easy": 28,
+              "medium": 33,
+              "difficult": 25
+            },
+            "requested_tier_distribution": {
+              "easy": 40,
+              "medium": 35,
+              "difficult": 25
+            },
+            "sat_tier_distribution": {
+              "easy": 23,
+              "medium": 28,
+              "difficult": 18
+            },
+            "unsat_measured_tier_distribution": {
+              "difficult": 8,
+              "unboxed": 4,
+              "medium": 5
+            },
+            "family_distribution": {
+              "navigation": 21,
+              "quantified": 12,
+              "arithmetic": 25,
+              "cardinality": 28
+            },
+            "requested_family_distribution": {
+              "cardinality": 30,
+              "arithmetic": 25,
+              "navigation": 25,
+              "quantified": 20
+            },
+            "complexity_fidelity_sat": {
+              "boxed_constraints": 69,
+              "in_box": 69,
+              "in_box_rate": 1.0,
+              "unlabeled_constraints": 0,
+              "out_of_box": []
+            },
+            "class_coverage": {
+              "min_per_class": 1,
+              "classes": 18,
+              "covered": 18,
+              "below_min": {}
+            },
+            "slot_accounting": {
+              "requested": 100,
+              "generated": 88,
+              "generation_gaps": 12,
+              "dedup_removed": 13,
+              "dedup_refilled": 11,
+              "dedup_unfilled": 2,
+              "vgcr_regenerated": 14,
+              "vgcr_unfilled": 0,
+              "late_duplicates_removed": 0,
+              "unsat_trimmed_for_ratio": 0,
+              "delivered": 86
+            },
+            "dedup_unfilled_slots": [
+              {
+                "pattern": "navigation_chain",
+                "context": "Faculty",
+                "profile": "easy"
+              },
+              {
+                "pattern": "navigation_chain",
+                "context": "Building",
+                "profile": "easy"
+              }
+            ],
+            "vgcr_unfilled_slots": [],
+            "coverage_repairs": [
+              {
+                "class": "LibraryAccount",
+                "action": "donor_swap",
+                "donor_class": "Course",
+                "pattern": "navigation_chain",
+                "profile": "medium"
+              }
+            ]
+          },
+          "status": "success",
+          "generation_time_s": 458.3
+        }
+      ],
+      "total_constraints": 86,
+      "total_valid": 69,
+      "total_sat": 69,
+      "total_unsat": 17,
+      "total_unknown": 0
+    }
+  ],
+  "runs": {
+    "CarRental": {
+      "exit": 0,
+      "seconds": 86.2
+    },
+    "BankSystem": {
+      "exit": 0,
+      "seconds": 458.9
+    },
+    "HospitalSystem": {
+      "exit": 0,
+      "seconds": 535.0
+    },
+    "LibrarySystem": {
+      "exit": 0,
+      "seconds": 230.4
+    },
+    "EcommerceSystem": {
+      "exit": 0,
+      "seconds": 1110.1
+    },
+    "IoTSensorNetwork": {
+      "exit": 0,
+      "seconds": 815.7
+    },
+    "UniversitySystem": {
+      "exit": 0,
+      "seconds": 461.2
+    },
+    "ManufacturingPlant": {
+      "exit": 0,
+      "seconds": 2198.3
+    },
+    "FlightBooking": {
+      "exit": 0,
+      "seconds": 7678.1
+    },
+    "SocialMedia": {
+      "exit": 0,
+      "seconds": 18311.9
+    }
+  },
+  "wall_seconds": 19426.1
+}

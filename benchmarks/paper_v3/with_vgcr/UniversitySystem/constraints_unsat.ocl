@@ -1,0 +1,107 @@
+-- Benchmark: UniversitySystem / balanced
+-- Type: UNSAT Constraints Only
+-- Generated: 2026-10-16T01:27:47.262304
+-- Count: 17
+
+-- #1 Collection Navigation (UNSAT) in Semester
+-- Difficulty: difficult
+-- Mutation Strategy: self_contradiction
+context Semester
+inv: (self.offerings->exists(x | x.capacity > 1)) and (not(self.offerings->exists(x | x.capacity > 1)))
+
+-- #2 Navigation Chain (UNSAT) in Room
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Room
+inv: ((self.building.university.name <> '') and (self.capacity mod 2 = 0)) and (not((self.building.university.name <> '') and (self.capacity mod 2 = 0)))
+
+-- #3 Any Operation (UNSAT) in CourseOffering
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context CourseOffering
+inv: ((self.exams->any(x | x.maxMarks > 0) <> null) and (self.exams->collect(x | x.attempts)->flatten()->notEmpty())) and (not((self.exams->any(x | x.maxMarks > 0) <> null) and (self.exams->collect(x | x.attempts)->flatten()->notEmpty())))
+
+-- #4 Collection Has Specific Size (UNSAT) in Building
+-- Difficulty: medium
+-- Mutation Strategy: contradictory_bounds
+context Building
+inv: (self.rooms->size() = 3) and (self.rooms->size() <> 3)
+
+-- #5 Association Exists (UNSAT) in Student
+-- Difficulty: medium
+-- Mutation Strategy: self_contradiction
+context Student
+inv: (self.libraryAccount <> null) and (not(self.libraryAccount <> null))
+
+-- #6 Existential Quantification (exists) (UNSAT) in Department
+-- Difficulty: difficult
+-- Mutation Strategy: self_contradiction
+context Department
+inv: (self.courses->exists(x | x.credits <= 100)) and (not(self.courses->exists(x | x.credits <= 100)))
+
+-- #7 Numeric Comparison (UNSAT) in Scholarship
+-- Difficulty: medium
+-- Mutation Strategy: self_contradiction
+context Scholarship
+inv: (self.startYear <> self.endYear) and (not(self.startYear <> self.endYear))
+
+-- #8 Numeric Sum Constraint (UNSAT) in Scholarship
+-- Difficulty: medium
+-- Mutation Strategy: self_contradiction
+context Scholarship
+inv: (self.endYear + self.startYear > 71) and (not(self.endYear + self.startYear > 71))
+
+-- #9 Collection Not Empty Check (UNSAT) in Building
+-- Difficulty: difficult
+-- Mutation Strategy: contradictory_bounds
+context Building
+inv: ((self.rooms->size() > 0) and (self.rooms->one(x | x.capacity < 10))) and (self.rooms->size() < -5)
+
+-- #10 Navigation Chain (UNSAT) in Instructor
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Instructor
+inv: ((self.department.faculty.name <> '') and (self.email.size() >= 4 implies self.email.substring(1, 4) = 'AB')) and (not((self.department.faculty.name <> '') and (self.email.size() >= 4 implies self.email.substring(1, 4) = 'AB')))
+
+-- #11 Existential Quantification (exists) (UNSAT) in CourseOffering
+-- Difficulty: difficult
+-- Mutation Strategy: self_contradiction
+context CourseOffering
+inv: (self.enrollments->exists(x | x.enrolledAt <> '')) and (not(self.enrollments->exists(x | x.enrolledAt <> '')))
+
+-- #12 Navigation Chain (UNSAT) in Building
+-- Difficulty: unboxed
+-- Mutation Strategy: self_contradiction
+context Building
+inv: ((self.university.code <> '') and (self.code.size() = 19)) and (not((self.university.code <> '') and (self.code.size() = 19)))
+
+-- #13 Collect (Map) Operation (UNSAT) in Course
+-- Difficulty: difficult
+-- Mutation Strategy: contradictory_bounds
+context Course
+inv: ((self.offerings->collect(x | x.capacity)->notEmpty()) and (self.offerings->size() <= 1)) and (self.offerings->size() > 1)
+
+-- #14 Collection Minimum Size (UNSAT) in Exam
+-- Difficulty: medium
+-- Mutation Strategy: contradictory_bounds
+context Exam
+inv: (self.attempts->size() >= 2) and (self.attempts->size() < 2)
+
+-- #15 Numeric Is Odd (UNSAT) in Course
+-- Difficulty: difficult
+-- Mutation Strategy: contradictory_bounds
+context Course
+inv: ((self.credits < 50) and (self.offerings->forAll(v | v.capacity <= 50))) and (self.credits > 55)
+
+-- #16 Universal Quantification (forAll) (UNSAT) in Course
+-- Difficulty: difficult
+-- Mutation Strategy: universal_negation
+context Course
+inv: (self.offerings->forAll(x | x.capacity <= 100)) and (self.offerings->exists(x | not(x.capacity <= 100)))
+
+-- #17 Numeric Attribute Bounded (UNSAT) in Room
+-- Difficulty: difficult
+-- Mutation Strategy: contradictory_bounds
+context Room
+inv: ((self.capacity <= 100) and (self.offerings->forAll(v | v.capacity <= 1000))) and (self.capacity > 100)
+

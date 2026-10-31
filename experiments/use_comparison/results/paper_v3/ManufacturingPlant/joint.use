@@ -1,0 +1,310 @@
+model ManufacturingPlant
+
+enum MachineStatus {Idle, Running, Maintenance, Breakdown}
+enum WorkOrderStatus {Planned, InProgress, Completed, Cancelled}
+
+class Robot
+attributes
+  robotId : String
+  model_ : String
+  isCalibrated : Boolean
+end
+
+class DefectReport
+attributes
+  defectId : String
+  description : String
+  severity : Integer
+end
+
+class Machine
+attributes
+  serialNumber : String
+  status : MachineStatus
+  manufacturer : String
+end
+
+class Supplier
+attributes
+  supplierId : String
+  name : String
+end
+
+class MaintenanceTask
+attributes
+  taskId : String
+  scheduledAt : String
+  isDone : Boolean
+end
+
+class Sensor
+attributes
+  sensorId : String
+  type : String
+  lastReading : Integer
+end
+
+class InventoryItem
+attributes
+  itemCode : String
+  name : String
+  quantity : Integer
+end
+
+class Technician
+attributes
+  empId : String
+  name : String
+end
+
+class Workstation
+attributes
+  stationId : String
+  name : String
+end
+
+class BillOfMaterials
+attributes
+  bomId : String
+end
+
+class Operator
+attributes
+  empId : String
+  name : String
+end
+
+class QualityCheck
+attributes
+  checkId : String
+  checkedAt : String
+  passed : Boolean
+end
+
+class Workshop
+attributes
+  code : String
+  name : String
+end
+
+class ProductionLine
+attributes
+  lineId : String
+  isActive : Boolean
+end
+
+class Plant
+attributes
+  name : String
+  location : String
+end
+
+class Product
+attributes
+  sku : String
+  name : String
+  unitPrice : Integer
+end
+
+class Shipment
+attributes
+  shipmentId : String
+  shippedAt : String
+  received : Boolean
+end
+
+class WorkOrder
+attributes
+  orderId : String
+  status : WorkOrderStatus
+  plannedQuantity : Integer
+end
+
+class BOMItem
+attributes
+  name : String
+  requiredQty : Integer
+end
+
+class Shift
+attributes
+  shiftName : String
+  startTime : String
+  endTime : String
+end
+
+association DefectReport_qualityCheck between
+  DefectReport[0..*] role defects
+  QualityCheck[1] role qualityCheck
+end
+
+association Machine_station between
+  Machine[0..*] role machines
+  Workstation[1] role station
+end
+
+association Machine_sensors between
+  Machine[1] role machine
+  Sensor[0..*] role sensors
+end
+
+association Machine_maintenanceTasks between
+  Machine[1] role machine
+  MaintenanceTask[0..*] role maintenanceTasks
+end
+
+association Supplier_items between
+  Supplier[0..1] role supplier
+  InventoryItem[0..*] role items
+end
+
+association Supplier_shipments between
+  Supplier[1] role supplier
+  Shipment[0..*] role shipments
+end
+
+association MaintenanceTask_assignedTo between
+  MaintenanceTask[0..*] role tasks
+  Technician[0..1] role assignedTo
+end
+
+association InventoryItem_plant between
+  InventoryItem[0..*] role inventory
+  Plant[1] role plant
+end
+
+association Technician_shift between
+  Technician[0..*] role technician_shift_src
+  Shift[0..1] role shift
+end
+
+association Workstation_line between
+  Workstation[0..*] role stations
+  ProductionLine[1] role line
+end
+
+association Workstation_assignedOperator between
+  Workstation[0..*] role workstation_assignedOperator_src
+  Operator[0..1] role assignedOperator
+end
+
+association BillOfMaterials_product between
+  BillOfMaterials[0..1] role bom
+  Product[1] role product
+end
+
+association BillOfMaterials_items between
+  BillOfMaterials[1] role bom
+  BOMItem[0..*] role items
+end
+
+association Operator_shift between
+  Operator[0..*] role operators
+  Shift[0..1] role shift
+end
+
+association QualityCheck_workOrder between
+  QualityCheck[0..*] role qualityChecks
+  WorkOrder[1] role workOrder
+end
+
+association Workshop_plant between
+  Workshop[0..*] role workshops
+  Plant[1] role plant
+end
+
+association Workshop_lines between
+  Workshop[1] role workshop
+  ProductionLine[0..*] role lines
+end
+
+association ProductionLine_workOrders between
+  ProductionLine[1] role line
+  WorkOrder[0..*] role workOrders
+end
+
+association Plant_suppliers between
+  Plant[0..*] role plant_suppliers_src
+  Supplier[0..*] role suppliers
+end
+
+association Shipment_plant between
+  Shipment[0..*] role shipment_plant_src
+  Plant[1] role plant
+end
+
+association Shipment_items between
+  Shipment[0..*] role shipment_items_src
+  InventoryItem[0..*] role items
+end
+
+association WorkOrder_product between
+  WorkOrder[0..*] role workOrder_product_src
+  Product[1] role product
+end
+
+association BOMItem_inventoryItem between
+  BOMItem[0..*] role bOMItem_inventoryItem_src
+  InventoryItem[0..1] role inventoryItem
+end
+
+constraints
+context InventoryItem inv c000: self.plant.location <> ''
+context WorkOrder inv c001: self.line.isActive
+context Shipment inv c002: self.supplier.supplierId <> ''
+context Operator inv c003: self.shift <> null
+context MaintenanceTask inv c004: self.isDone implies self.assignedTo <> null
+context DefectReport inv c005: self.qualityCheck.passed
+context Machine inv c006: (self.manufacturer <> '') and (self.sensors->forAll(v | v.lastReading <= 100))
+context BillOfMaterials inv c007: (self.bomId <> '') and (self.items->forAll(v | v.requiredQty >= 1))
+context WorkOrder inv c008: (self.plannedQuantity >= 1) and (self.qualityChecks->forAll(v | v.passed = true))
+context Machine inv c009: (self.serialNumber <> '') and (self.maintenanceTasks->forAll(v | v.isDone = false))
+context Shift inv c010: self.operators->exists(x | x.name <> '')
+context Plant inv c011: self.inventory->exists(x | x.quantity >= 5)
+context Supplier inv c012: self.items->forAll(x | x.quantity < 10)
+context QualityCheck inv c013: self.defects->forAll(x | x.severity > 0)
+context BillOfMaterials inv c014: self.items->exists(x | x.requiredQty > 2)
+context Machine inv c015: self.sensors->forAll(x | x.lastReading <= 100)
+context Sensor inv c016: (self.machine.station.stationId <> '') and (self.lastReading >= 0)
+context InventoryItem inv c018: (self.plant.name <> '') and (self.quantity.mod(4) = 0)
+context Machine inv c024: self.sensors->select(x | x.lastReading <= 10)->size() >= 1
+context Machine inv c025: (self.maintenanceTasks->collect(x | x.taskId)->notEmpty()) and (self.maintenanceTasks->size() <= 3)
+context QualityCheck inv c027: self.defects->select(x | x.severity >= 2)->size() >= 1
+context BOMItem inv c030: self.requiredQty >= 44 and self.requiredQty <= 90
+context Sensor inv c031: (self.lastReading >= 0) and (self.type <> null)
+context BOMItem inv c032: (self.requiredQty.mod(5) = 0) and (self.requiredQty.mod(2) = 0)
+context BOMItem inv c033: self.requiredQty > 75
+context BOMItem inv c034: self.requiredQty.mod(2) = 0
+context DefectReport inv c035: self.severity >= 45 and self.severity <= 55
+context BOMItem inv c036: (self.requiredQty > 0) and (self.requiredQty > 55)
+context Sensor inv c038: self.lastReading > 0
+context DefectReport inv c040: (self.severity >= 0) and (self.severity <> null)
+context WorkOrder inv c041: (self.plannedQuantity.mod(7) = 0) and (self.qualityChecks->size() <= 1)
+context BOMItem inv c042: self.requiredQty >= 25 and self.requiredQty <= 99
+context InventoryItem inv c043: self.quantity > 0
+context DefectReport inv c044: self.severity >= 0
+context ProductionLine inv c046: self.workOrders->forAll(x | x.plannedQuantity <= 50)
+context Plant inv c047: self.workshops->exists(x | x.name <> '')
+context QualityCheck inv c048: self.defects->exists(x | x.severity >= 2)
+context WorkOrder inv c049: self.qualityChecks->collect(x | x.defects)->flatten()->notEmpty()
+context ProductionLine inv c050: (self.workOrders->collect(x | x.qualityChecks)->size() >= 3) and (self.stations->exists(x | x.name <> ''))
+context Workshop inv c051: self.lines->collect(x | x.workOrders)->flatten()->notEmpty()
+context Plant inv c052: self.suppliers->size() < 1
+context Plant inv c053: self.workshops->size() = 2
+context Machine inv c054: self.sensors->size() <= 1
+context Shift inv c055: (self.startTime <> null) = (self.endTime <> null)
+context Plant inv c056: self.workshops->notEmpty()
+context Plant inv c057: self.inventory->size() > 0
+context Machine inv c058: self.sensors->size() <= 2
+context Shift inv c059: (self.endTime <> null) = (self.startTime <> null)
+context Shift inv c060: self.startTime <> null implies self.endTime <> null
+context Shift inv c061: self.endTime <> null implies self.startTime <> null
+context Shift inv c062: self.startTime <> null and self.endTime <> null
+context Shift inv c063: self.endTime <> null and self.startTime <> null
+context Shift inv c065: (self.endTime <> self.startTime) and (self.operators->one(x | x.name <> ''))
+context Workstation inv c066: self.assignedOperator <> null
+context InventoryItem inv c067: self.plant.name <> ''
+context Machine inv c069: (self.sensors->one(x | x.lastReading <= 100)) and (self.sensors->exists(x | x.lastReading >= 1))
+context WorkOrder inv c070: (self.plannedQuantity <= 100) and (self.qualityChecks->forAll(v | v.passed <> false))
+context Workshop inv c071: (self.name <> '') and (self.lines->forAll(v | v.isActive = true))
+context Machine inv c072: (self.manufacturer <> '') and (self.maintenanceTasks->forAll(v | v.isDone = false))

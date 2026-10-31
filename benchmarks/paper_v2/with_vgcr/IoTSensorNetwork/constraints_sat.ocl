@@ -1,0 +1,370 @@
+-- Benchmark: IoTSensorNetwork / balanced
+-- Type: SAT Constraints Only
+-- Generated: 2026-10-15T02:20:50.572064
+-- Count: 73
+
+-- #1 Collection Size in Range in Cluster
+-- Difficulty: difficult
+context Cluster
+inv: (self.clusterId <> '') and (self.edgeNodes->forAll(v | v.cpuCores > 5))
+
+-- #2 Collection Size in Range in AlertRule
+-- Difficulty: difficult
+context AlertRule
+inv: (self.ruleId <> '') and (self.alerts->forAll(v | v.acknowledged = true))
+
+-- #3 Collection Size in Range in Device
+-- Difficulty: difficult
+context Device
+inv: (self.name <> '') and (self.dataStreams->forAll(v | v.streamId <> ''))
+
+-- #4 Collection Size in Range in Network
+-- Difficulty: difficult
+context Network
+inv: (self.networkId <> '') and (self.clusters->forAll(v | v.clusterId <> ''))
+
+-- #5 Collection Size in Range in Gateway
+-- Difficulty: difficult
+context Gateway
+inv: (self.isPrimary = true) and (self.connectedEdges->forAll(v | v.memoryMB < 1000))
+
+-- #6 Conditional Existence in Alert
+-- Difficulty: easy
+context Alert
+inv: self.acknowledged implies self.assignedTo <> null
+
+-- #7 Navigation Chain in Metric
+-- Difficulty: easy
+context Metric
+inv: self.sensor.sampleRateHz < 50
+
+-- #8 Navigation Chain in User
+-- Difficulty: easy
+context User
+inv: self.platform.version <> ''
+
+-- #9 Simple Navigation in DataStream
+-- Difficulty: easy
+context DataStream
+inv: self.link.isSecure
+
+-- #10 Navigation Chain in Role
+-- Difficulty: easy
+context Role
+inv: self.platform.name <> ''
+
+-- #11 Simple Navigation in EdgeNode
+-- Difficulty: easy
+context EdgeNode
+inv: self.gateway.isPrimary
+
+-- #12 Association Exists in CommunicationLink
+-- Difficulty: easy
+context CommunicationLink
+inv: self.stream <> null
+
+-- #13 Navigation Consistency in MaintenanceTicket
+-- Difficulty: easy
+context MaintenanceTicket
+inv: self.otaUpdate.targetDevice = self.device
+
+-- #14 Association Exists in Alert
+-- Difficulty: easy
+context Alert
+inv: self.assignedTo <> null
+
+-- #15 Navigation Consistency in EdgeNode
+-- Difficulty: easy
+context EdgeNode
+inv: self.gateway.cluster = self.cluster
+
+-- #16 Navigation Chain in ConnectivityModule
+-- Difficulty: difficult
+context ConnectivityModule
+inv: (self.macAddress <> '') and (self.links->forAll(v | v.bandwidthKbps > 10))
+
+-- #17 Collection Navigation in OTAUpdate
+-- Difficulty: difficult
+context OTAUpdate
+inv: self.tickets->forAll(x | x.status <> '')
+
+-- #18 Collection Navigation in SensorNode
+-- Difficulty: difficult
+context SensorNode
+inv: self.metrics->exists(x | x.lastValue >= 5)
+
+-- #19 Navigation Chain in PowerSource
+-- Difficulty: medium
+context PowerSource
+inv: (self.device.firmware.checksum <> '') and (self.capacity > 0)
+
+-- #20 Navigation Chain in TelemetryRecord
+-- Difficulty: medium
+context TelemetryRecord
+inv: (self.stream.device.name <> '') and (self.payload.toLowerCase() = 'test')
+
+-- #21 Navigation Chain in EventLog
+-- Difficulty: medium
+context EventLog
+inv: ((self.device.firmware.checksum <> '') and (self.device.oclIsTypeOf(Device))) and (self.message.toLowerCase() = 'test')
+
+-- #22 Navigation Chain in APIKey
+-- Difficulty: medium
+context APIKey
+inv: (self.user.platform.version <> '') and (self.createdAt.size() <= 15)
+
+-- #23 Navigation Chain in ConfigurationProfile
+-- Difficulty: medium
+context ConfigurationProfile
+inv: (self.device.firmware.version <> '') and (self.updatedAt.size() = 27)
+
+-- #24 Navigation Chain in Location
+-- Difficulty: medium
+context Location
+inv: (self.device.firmware.checksum <> '') and (self.longitude >= 7 and self.longitude <= 41)
+
+-- #25 Conditional Existence in CommunicationLink
+-- Difficulty: medium
+context CommunicationLink
+inv: self.isSecure implies self.stream <> null
+
+-- #26 Navigation Consistency in MaintenanceTicket
+-- Difficulty: medium
+context MaintenanceTicket
+inv: (self.otaUpdate.targetDevice = self.device) and (self.status <> '' and self.status.size() > 0)
+
+-- #27 Select (Filter) Operation in Cluster
+-- Difficulty: medium
+context Cluster
+inv: self.edgeNodes->select(x | x.cpuCores < 50)->size() >= 1
+
+-- #28 Select (Filter) Operation in Network
+-- Difficulty: medium
+context Network
+inv: self.links->select(x | x.bandwidthKbps >= 2)->size() >= 1
+
+-- #29 Collect (Map) Operation in AccessPolicy
+-- Difficulty: medium
+context AccessPolicy
+inv: (self.roles->collect(x | x.roleName)->notEmpty()) and (self.roles->size() >= 1)
+
+-- #30 Any Operation in DataStream
+-- Difficulty: medium
+context DataStream
+inv: (self.records->any(x | x.timestamp <> '') <> null) and (self.streamId <> '' and self.streamId.size() > 0)
+
+-- #31 Collect (Map) Operation in Device
+-- Difficulty: medium
+context Device
+inv: (self.otaUpdates->collect(x | x.updateId)->notEmpty()) and (self.name.toUpperCase() = 'TEST')
+
+-- #32 Universal Quantification (forAll) in Network
+-- Difficulty: difficult
+context Network
+inv: self.links->forAll(x | x.bandwidthKbps >= 10)
+
+-- #33 Existential Quantification (exists) in AlertRule
+-- Difficulty: difficult
+context AlertRule
+inv: self.alerts->exists(x | x.acknowledged <> false)
+
+-- #34 Universal Quantification (forAll) in Cluster
+-- Difficulty: difficult
+context Cluster
+inv: self.edgeNodes->forAll(x | x.memoryMB <= 10)
+
+-- #35 Existential Quantification (exists) in DataStream
+-- Difficulty: difficult
+context DataStream
+inv: self.records->exists(x | x.payload <> '')
+
+-- #36 Existential Quantification (exists) in Cluster
+-- Difficulty: difficult
+context Cluster
+inv: self.edgeNodes->exists(x | x.cpuCores <= 1000)
+
+-- #37 Universal Quantification (forAll) in Gateway
+-- Difficulty: difficult
+context Gateway
+inv: self.connectedEdges->forAll(x | x.memoryMB < 100)
+
+-- #38 Numeric Attribute Bounded in Battery
+-- Difficulty: medium
+context Battery
+inv: self.healthPct >= 1 and self.healthPct <= 80
+
+-- #39 Numeric Attribute Bounded in SolarPanel
+-- Difficulty: easy
+context SolarPanel
+inv: self.wattPeak >= 26 and self.wattPeak <= 51
+
+-- #40 Numeric Attribute Bounded in ActuatorNode
+-- Difficulty: medium
+context ActuatorNode
+inv: self.maxLoad >= 13 and self.maxLoad <= 54
+
+-- #41 Numeric Is Even in EdgeNode
+-- Difficulty: easy
+context EdgeNode
+inv: self.memoryMB mod 2 = 0
+
+-- #42 Numeric Is Odd in SensorNode
+-- Difficulty: easy
+context SensorNode
+inv: self.sampleRateHz mod 2 = 1
+
+-- #43 Numeric Multiple Of in SensorNode
+-- Difficulty: easy
+context SensorNode
+inv: self.sampleRateHz mod 3 = 0
+
+-- #44 Numeric Absolute Value Bounded in Battery
+-- Difficulty: easy
+context Battery
+inv: self.healthPct.abs() <= 7
+
+-- #45 Numeric Attribute Positive in EdgeNode
+-- Difficulty: easy
+context EdgeNode
+inv: self.memoryMB > 0
+
+-- #46 Numeric Attribute Bounded in ActuatorNode
+-- Difficulty: medium
+context ActuatorNode
+inv: self.maxLoad >= 7 and self.maxLoad <= 50
+
+-- #47 Numeric Less Than Value in Location
+-- Difficulty: medium
+context Location
+inv: (self.latitude < 88) and (self.site.toUpperCase() = 'TEST')
+
+-- #48 Numeric Less Than Value in Location
+-- Difficulty: medium
+context Location
+inv: (self.longitude < 15) and (self.site.toUpperCase() = 'TEST')
+
+-- #49 Numeric Is Odd in EdgeNode
+-- Difficulty: medium
+context EdgeNode
+inv: (self.cpuCores mod 2 = 1) and (self.cpuCores.abs() <= 9)
+
+-- #50 Numeric Multiple Of in SensorNode
+-- Difficulty: medium
+context SensorNode
+inv: (self.sampleRateHz mod 5 = 0) and (self.sensorType <> '' and self.sensorType.size() > 0)
+
+-- #51 Numeric Attribute Positive in Battery
+-- Difficulty: easy
+context Battery
+inv: self.healthPct > 0
+
+-- #52 Numeric Absolute Value Bounded in Location
+-- Difficulty: easy
+context Location
+inv: self.longitude.abs() <= 7
+
+-- #53 Numeric Attribute Bounded in CommunicationLink
+-- Difficulty: medium
+context CommunicationLink
+inv: self.bandwidthKbps >= 42 and self.bandwidthKbps <= 64
+
+-- #54 Collection Size Constraint in DataStream
+-- Difficulty: easy
+context DataStream
+inv: self.records->size() >= 1
+
+-- #55 Collection Not Empty Check in AlertRule
+-- Difficulty: easy
+context AlertRule
+inv: self.alerts->size() > 0
+
+-- #56 Collection Not Empty (Simple) in DataStream
+-- Difficulty: easy
+context DataStream
+inv: self.records->notEmpty()
+
+-- #57 Collection Maximum Size in AlertRule
+-- Difficulty: easy
+context AlertRule
+inv: self.alerts->size() <= 1
+
+-- #58 Collection Size Constraint in AccessPolicy
+-- Difficulty: easy
+context AccessPolicy
+inv: self.roles->size() > 1
+
+-- #59 Collection Not Empty (Simple) in AccessPolicy
+-- Difficulty: easy
+context AccessPolicy
+inv: self.roles->notEmpty()
+
+-- #60 Collection Maximum Size in AlertRule
+-- Difficulty: easy
+context AlertRule
+inv: self.alerts->size() <= 3
+
+-- #61 Collection Not Empty Check in AccessPolicy
+-- Difficulty: easy
+context AccessPolicy
+inv: self.roles->size() > 0
+
+-- #62 Collection Minimum Size in AccessPolicy
+-- Difficulty: easy
+context AccessPolicy
+inv: self.roles->size() >= 3
+
+-- #63 Collection Maximum Size in ConnectivityModule
+-- Difficulty: easy
+context ConnectivityModule
+inv: self.links->size() <= 2
+
+-- #64 Collection Minimum Size in AccessPolicy
+-- Difficulty: easy
+context AccessPolicy
+inv: self.roles->size() >= 2
+
+-- #65 Collection Sum in SensorNode
+-- Difficulty: difficult
+context SensorNode
+inv: (self.metrics->collect(x | x.lastValue)->sum() >= 9) and (self.metrics->one(x | x.lastValue >= 10))
+
+-- #66 Boolean Is True in Alert
+-- Difficulty: medium
+context Alert
+inv: (self.acknowledged = true) and (self.rule.stream.streamId <> '')
+
+-- #67 Collection Not Empty (Simple) in AlertRule
+-- Difficulty: medium
+context AlertRule
+inv: ((self.alerts->notEmpty()) and (self.alerts->size() <= 1)) and (self.ruleId.toLowerCase() = 'test')
+
+-- #68 Collection Minimum Size in DataStream
+-- Difficulty: medium
+context DataStream
+inv: (self.records->size() >= 3) and (self.device.firmware.version <> '')
+
+-- #69 Any Operation in Cluster
+-- Difficulty: difficult
+context Cluster
+inv: (self.edgeNodes->any(x | x.cpuCores > 1) <> null) and (self.clusterId.size() >= 13)
+
+-- #70 Collection As Sequence Conversion in AccessPolicy
+-- Difficulty: difficult
+context AccessPolicy
+inv: (self.description <> '') and (self.roles->forAll(v | v.roleName <> ''))
+
+-- #71 Collection Minimum Size in SensorNode
+-- Difficulty: medium
+context SensorNode
+inv: (self.metrics->size() >= 1) and (self.metrics->size() <= 1)
+
+-- #72 Collection Not Empty (Simple) in AccessPolicy
+-- Difficulty: medium
+context AccessPolicy
+inv: ((self.roles->notEmpty()) and (self.description.toLowerCase() = 'test')) and (self.roles->notEmpty())
+
+-- #73 Collection Not Empty (Simple) in SensorNode
+-- Difficulty: medium
+context SensorNode
+inv: ((self.metrics->notEmpty()) and (self.sampleRateHz > 0)) and (self.sensorType.toUpperCase() = 'TEST')
+

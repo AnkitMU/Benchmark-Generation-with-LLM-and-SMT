@@ -1,0 +1,148 @@
+
+======================================================================
+OCL Benchmark Suite Generator v3.0
+Semantic Admissibility + VGCR + SMT Verification
+======================================================================
+
+Config: logs/paper_v3/with_vgcr/CarRental.yaml
+Loaded suite: OCL-Paper-v3-VGCR__CarRental v3.0
+   Models: 1
+   Profiles: 1
+   Output: benchmarks/paper_v3/with_vgcr/
+   Generation Mode:   steered (from config)
+   Advanced Features: ENABLED
+   Semantic Filter:   ENABLED (phi4-mini)
+   VGCR:              ENABLED (retries=15)
+     Independence (q3): DISABLED
+
+[00:58:50 +  0.0s] Initializing advanced features...
+[00:58:50 +  0.0s]   metadata_enricher ready
+[00:58:50 +  0.0s]   manifest_generator ready
+[00:58:50 +  0.0s]   constraint_similarity ready
+[00:58:50 +  0.0s]   implication_checker ready
+[00:58:50 +  0.0s]   unsat_generator ready
+[00:58:50 +  0.0s]   All 6 advanced modules verified
+
+======================================================================
+BENCHMARK SUITE GENERATION: OCL-Paper-v3-VGCR__CarRental
+======================================================================
+[00:58:50 +  0.0s] Version: 3.0
+[00:58:50 +  0.0s] Framework Version: 2.0
+[00:58:50 +  0.0s] Output: benchmarks/paper_v3/with_vgcr
+[00:58:50 +  0.0s] Advanced Features: ENABLED
+
+----------------------------------------------------------------------
+MODEL 1/1: CarRental
+----------------------------------------------------------------------
+[00:58:50 +  0.0s] XMI: models/car_rental.xmi
+[00:58:50 +  0.0s] Loading metamodel from XMI...
+[00:58:50 +  0.0s]   Loaded 8 classes
+[00:58:50 +  0.0s] Running LLM semantic analysis (phi4-mini)...
+[00:58:50 +  0.0s] Semantic analysis complete (from cache, generated 2026-05-31T20:52:44): 8 classes — 7 LLM-analysed, 1 heuristic
+[00:58:50 +  0.0s]   18 of 56 same-type attribute pairs approved as comparable, 4 explicitly rejected
+[00:58:50 +  0.0s] Initializing generation engine...
+Loaded 115 patterns from REVISED pattern library (validated)
+Semantic validation enabled (Tier 2)
+Advanced semantic analysis enabled (Tier 3): Structure, Patterns, Dependencies, Invariants
+[00:58:50 +  0.0s] Engine initialized (generation_mode=steered)
+[00:58:50 +  0.0s] Initializing constraint verifier...
+[00:58:50 +  0.0s] Verifier initialized (seed portfolio: 4 seeds after 20s)
+
+······································································
+PROFILE 1/1: balanced
+······································································
+[00:58:50 +  0.0s] Generating 100 base constraints (mode=steered)...
+
+=== STEERED GENERATION START ===
+Target: 100 invariants | families={'cardinality': 30, 'arithmetic': 25, 'navigation': 25, 'quantified': 20} | profiles=[('easy', 40.0), ('medium', 35.0), ('difficult', 25.0)]
+Filled 91/100  families={'navigation': 23, 'quantified': 15, 'arithmetic': 25, 'cardinality': 28}  profiles={'difficult': 12, 'difficult+forall': 7, 'easy': 32, 'medium': 19, 'medium+conjoin': 14, 'medium+conjoin+conjoin': 1, 'difficult+conjoin': 6}
+Assignment optimality: 91/95 of the certified outer-assignment optimum (ratio 0.958)
+Complexity fidelity: 91/91 inside their requested box (rate 1.0, mean deviation 0.0, mean center offset 0.29)
+Feasibility gaps reported (not padded): 10
+   - ('support_infeasible', ["no SAT pattern supports family 'quantified' x profile 'easy'"])
+   - ('unfilled', 'quantified', 'sat', 'easy')
+   - ('unfilled', 'quantified', 'sat', 'easy')
+   - ('unfilled', 'quantified', 'sat', 'easy')
+   - ('unfilled', 'quantified', 'sat', 'easy')
+   - ('unfilled', 'quantified', 'sat', 'easy')
+   - ('unreached', 'navigation', 'sat', 'easy')
+   - ('unreached', 'navigation', 'sat', 'easy')
+=== STEERED GENERATION COMPLETE ===
+
+[00:58:50 +  0.6s]   Steered report saved to benchmarks/paper_v3/with_vgcr/CarRental/report.json
+[00:58:50 +  0.0s]   Generated 91 base constraints
+[00:58:50 +  0.0s] Applying metadata enrichment (complexity metrics)...
+[00:58:50 +  0.1s]   TC distribution: min=2.0, avg=17.2, max=39.3
+[00:58:50 +  0.0s]   Enriched 91 constraints with complexity metrics
+[00:58:50 +  0.0s] Deduplicating candidates (tree-edit) with slot refill...
+[00:58:51 +  0.5s]   Near-duplicates (>90% similar): 16 removed, 16 refilled in the same family and box, 0 left unfilled (reported)
+[00:58:51 +  0.0s] Running VGCR refinement loop (SAT-core construction)...
+[00:59:35 + 44.2s]   VGCR: 91/91 slots verified — 87 passed first try, 4 regenerated in their exact box, 0 left unfilled (reported); 0 near-duplicate candidates rejected
+[00:59:35 +  0.0s]     Failure breakdown: {'contradiction': 2, 'inconsistent': 1}
+[00:59:35 +  0.0s]     SMT queries: 202,   SMT time: 43.8s
+[00:59:35 +  0.0s] Generating UNSAT constraints via mutation...
+[00:59:37 +  1.9s]   Generated 18 verified UNSAT constraints
+[00:59:37 +  0.0s]   Total constraints: 91 (73 SAT + 18 UNSAT)
+[00:59:37 +  0.0s]   UNSAT mutants re-measured: tiers={'medium': 5, 'difficult': 3, 'unboxed': 10}
+[00:59:37 +  0.0s] Checking SAT constraint compatibility...
+[00:59:43 +  6.2s]   Removed 2 conflicting SAT constraints before deduplication
+[00:59:43 +  0.0s]   Post-pruning total: 89 (71 SAT + 18 UNSAT)
+[00:59:44 +  0.9s]   Post-pruning SAT set is globally consistent
+[00:59:44 +  0.0s] Checking for late structural duplicates (tree-edit)...
+[00:59:44 +  0.4s]   No duplicates found (threshold: 90%)
+[00:59:44 +  0.0s] Computing semantic similarity...
+[semantic-sim] clustering 89 constraints (threshold=0.75)
+[semantic-sim] backend env: USE_TF=0 USE_TORCH=1 TOKENIZERS_PARALLELISM=false
+[semantic-sim] importing torch...
+[semantic-sim] torch 2.9.0 ok (1.6s)
+[semantic-sim] importing sentence_transformers (transformers backend=torch only)...
+[semantic-sim] sentence_transformers imported (8.0s); loading model 'all-MiniLM-L6-v2'...
+[semantic-sim] model 'all-MiniLM-L6-v2' loaded (12.5s)
+[semantic-sim] encoding 89 constraints...
+[semantic-sim] encoded 89 constraints (1.4s)
+[semantic-sim] similarity matrix built; merging clusters...
+[semantic-sim] formed 18 clusters
+[semantic-sim] clustering finished in 14.1s
+[00:59:59 + 14.1s]   Clustered into 18 semantic groups
+[00:59:59 +  0.0s] Checking constraint implications...
+[00:59:59 +  0.0s]   Found 15 implication relationships
+[00:59:59 +  0.0s] Verifying constraints with Z3 (individual + global)...
+[00:59:59 +  0.0s]     SAT to verify: 71, intentional UNSAT (skipped): 18
+[00:59:59 +  0.0s]     Phase A: individual satisfiability check...
+[01:00:12 + 13.8s]     Phase A done: 71/71 constraints are individually satisfiable
+[01:00:12 +  0.0s]     Phase B: global consistency check (scope=6 per class, timeout=600000ms)...
+[01:00:13 +  0.8s]     Phase B: globally consistent ✓
+[01:00:13 +  0.0s]   Verification complete:
+[01:00:13 +  0.0s]     Phase A (individual): 71/71 constraints individually satisfiable
+[01:00:13 +  0.0s]     Phase B (global):     consistent ✓
+[01:00:13 +  0.0s]     Skipped: 18 UNSAT constraints (intentionally contradictory)
+[01:00:13 +  0.0s]     Valid: 71/71 (100.0%)
+[01:00:13 +  0.0s]     Result: 71 SAT, 18 UNSAT, 0 Unknown
+[01:00:13 +  0.0s] Saving outputs...
+[01:00:13 +  0.0s]   Final certificate: 89 delivered (71 SAT + 18 UNSAT) of 100 requested
+[01:00:13 +  0.0s]     Slot tiers {'difficult': 23, 'easy': 32, 'medium': 34} vs requested {'easy': 40, 'medium': 35, 'difficult': 25}
+[01:00:13 +  0.0s]     SAT in-box: 71/71 (unlabeled 0); UNSAT measured tiers {'medium': 5, 'difficult': 3, 'unboxed': 10}
+[01:00:13 +  0.0s]     Class coverage: 8/8 at min=1
+[01:00:13 +  0.0s]   Rewrote report.json with the final-suite certificate
+[01:00:13 +  0.0s]   Saved constraints.json and constraints.ocl
+[01:00:13 +  0.0s]   Saved constraints_sat.ocl and constraints_sat.json (71 SAT)
+[01:00:13 +  0.0s]   Saved constraints_unsat.ocl and constraints_unsat.json (18 UNSAT)
+[01:00:13 +  0.0s]   Saved manifest.jsonl (89 records)
+[01:00:13 +  0.0s] Profile 'balanced' complete in 1m 24s
+[01:00:13 +  0.0s] Suite summary saved to: benchmarks/paper_v3/with_vgcr/OCL-Paper-v3-VGCR__CarRental_summary.json
+
+======================================================================
+SUITE GENERATION COMPLETE
+======================================================================
+Total Constraints: 89
+  Valid: 71
+  SAT:   71 (79.8%)
+  UNSAT: 18 (20.2%)
+  Total generation time: 1m 23s (83.8s)
+
+──────────────────────────────────────────────────────────────────────
+VGCR Quality Assurance Summary
+──────────────────────────────────────────────────────────────────────
+  CarRental                  91→91  pass=100.0%  taut=0 contr=2 redun=0 incon=1 tc=0
+
+Outputs saved to: benchmarks/paper_v3/with_vgcr/

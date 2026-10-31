@@ -1,0 +1,285 @@
+-- Benchmark: SocialMedia / balanced
+-- Type: SAT Constraints Only
+-- Generated: 2026-10-12T20:21:25.913927
+-- Count: 56
+
+-- #1 Simple Navigation in Media
+-- Difficulty: easy
+context Media
+inv: self.post.isPublic
+
+-- #2 Collection Size in Range in Group
+-- Difficulty: medium
+context Group
+inv: (self.memberships->size() <= 3)
+
+-- #3 Collection Size in Range in Conversation
+-- Difficulty: easy
+context Conversation
+inv: (self.messages->size() <= 3)
+
+-- #4 Collection Size in Range in Tag
+-- Difficulty: medium
+context Tag
+inv: (self.posts->size() <= 3)
+
+-- #5 Collection Size in Range in Conversation
+-- Difficulty: medium
+context Conversation
+inv: (self.participants->size() <= 3)
+
+-- #6 Collection Size in Range in Group
+-- Difficulty: medium
+context Group
+inv: (self.memberships->size() <= 2)
+
+-- #7 Collection Size in Range in Tag
+-- Difficulty: medium
+context Tag
+inv: (self.posts->size() <= 2)
+
+-- #8 Collection Size in Range in Conversation
+-- Difficulty: easy
+context Conversation
+inv: (self.participants->size() <= 1)
+
+-- #9 Collection Size in Range in Conversation
+-- Difficulty: easy
+context Conversation
+inv: (self.messages->size() <= 2)
+
+-- #10 Collection Navigation in Group
+-- Difficulty: difficult
+context Group
+inv: self.memberships->exists(x | x.role <> '')
+
+-- #11 Collection Navigation in User
+-- Difficulty: difficult
+context User
+inv: (self.posts->exists(x | x.isPublic = false)) and (self.posts->notEmpty())
+
+-- #12 Collection Navigation in Group
+-- Difficulty: difficult
+context Group
+inv: self.memberships->forAll(x | x.role <> '')
+
+-- #13 Association Exists in Follow
+-- Difficulty: medium
+context Follow
+inv: (self.follower <> null) and (self.followedAt.size() = 16)
+
+-- #14 Association Exists in Notification
+-- Difficulty: easy
+context Notification
+inv: self.recipient <> null
+
+-- #15 Association Exists in FriendRequest
+-- Difficulty: easy
+context FriendRequest
+inv: self.fromUser <> null
+
+-- #16 Association Exists in Profile
+-- Difficulty: medium
+context Profile
+inv: (self.user <> null) and (self.bio.size() <= 65)
+
+-- #17 Association Exists in FriendRequest
+-- Difficulty: medium
+context FriendRequest
+inv: (self.fromUser <> null) and (self.createdAt.size() <= 45)
+
+-- #18 Association Exists in Membership
+-- Difficulty: medium
+context Membership
+inv: (self.group <> null) and (self.user <> null)
+
+-- #19 Association Exists in FriendRequest
+-- Difficulty: easy
+context FriendRequest
+inv: self.toUser <> null
+
+-- #20 Association Exists in Membership
+-- Difficulty: medium
+context Membership
+inv: (self.user <> null) and (self.role <> null)
+
+-- #21 Association Exists in Message
+-- Difficulty: medium
+context Message
+inv: (self.sender <> null) and (self.body <> null)
+
+-- #22 Association Exists in Message
+-- Difficulty: easy
+context Message
+inv: self.sender <> null
+
+-- #23 Association Exists in Membership
+-- Difficulty: easy
+context Membership
+inv: self.group <> null
+
+-- #24 Association Exists in Follow
+-- Difficulty: easy
+context Follow
+inv: self.followee <> null
+
+-- #25 Navigation Chain in Media
+-- Difficulty: medium
+context Media
+inv: self.post.author.username <> ''
+
+-- #26 Navigation Chain in FriendRequest
+-- Difficulty: medium
+context FriendRequest
+inv: self.fromUser.profile.fullName <> ''
+
+-- #27 Navigation Chain in Media
+-- Difficulty: medium
+context Media
+inv: self.post.author.createdAt <> ''
+
+-- #28 Navigation Chain in FriendRequest
+-- Difficulty: medium
+context FriendRequest
+inv: self.fromUser.profile.bio <> ''
+
+-- #29 Simple Navigation in Comment
+-- Difficulty: medium
+context Comment
+inv: (self.post.isPublic) and (self.text <> '' and self.text.size() > 0)
+
+-- #30 Navigation Chain in Follow
+-- Difficulty: medium
+context Follow
+inv: self.follower.profile.fullName <> ''
+
+-- #31 Navigation Chain in FriendRequest
+-- Difficulty: medium
+context FriendRequest
+inv: self.fromUser.profile.birthDate <> ''
+
+-- #32 Simple Navigation in Reaction
+-- Difficulty: medium
+context Reaction
+inv: (self.post.isPublic) and (self.type <> null)
+
+-- #33 Navigation Chain in Comment
+-- Difficulty: medium
+context Comment
+inv: self.post.author.email <> ''
+
+-- #34 Any Operation in Tag
+-- Difficulty: difficult
+context Tag
+inv: self.posts->any(x | x.isPublic <> false) <> null
+
+-- #35 Flatten Operation in User
+-- Difficulty: difficult
+context User
+inv: self.posts->collect(x | x.comments)->flatten()->notEmpty()
+
+-- #36 Collection Size Constraint in Conversation
+-- Difficulty: medium
+context Conversation
+inv: self.participants->size() <> 1
+
+-- #37 Collection Minimum Size in Conversation
+-- Difficulty: medium
+context Conversation
+inv: self.messages->size() >= 2
+
+-- #38 Collection Has Specific Size in User
+-- Difficulty: easy
+context User
+inv: self.posts->size() = 1
+
+-- #39 Collection Not Empty Check in Post
+-- Difficulty: easy
+context Post
+inv: self.comments->size() > 0
+
+-- #40 Collection Not Empty (Simple) in Post
+-- Difficulty: easy
+context Post
+inv: self.reactions->notEmpty()
+
+-- #41 Collection Minimum Size in Group
+-- Difficulty: medium
+context Group
+inv: self.memberships->size() >= 2
+
+-- #42 Collection Not Empty Check in User
+-- Difficulty: easy
+context User
+inv: self.posts->size() > 0
+
+-- #43 Collection Size Constraint in User
+-- Difficulty: easy
+context User
+inv: self.posts->size() >= 1
+
+-- #44 Collection Not Empty (Simple) in Tag
+-- Difficulty: easy
+context Tag
+inv: self.posts->notEmpty()
+
+-- #45 Collection Minimum Size in Conversation
+-- Difficulty: medium
+context Conversation
+inv: self.participants->size() >= 1
+
+-- #46 Collection Has Specific Size in Post
+-- Difficulty: easy
+context Post
+inv: self.comments->size() = 1
+
+-- #47 Collection Not Empty (Simple) in Conversation
+-- Difficulty: easy
+context Conversation
+inv: self.participants->notEmpty()
+
+-- #48 Association Exists in Membership
+-- Difficulty: easy
+context Membership
+inv: self.user <> null
+
+-- #49 Any Operation in Conversation
+-- Difficulty: difficult
+context Conversation
+inv: self.participants->any(x | x.createdAt <> '') <> null
+
+-- #50 Boolean Is True in Post
+-- Difficulty: difficult
+context Post
+inv: (self.isPublic = false) and (self.comments->forAll(v | v.createdAt <> ''))
+
+-- #51 Collection As Sequence Conversion in Post
+-- Difficulty: difficult
+context Post
+inv: (self.isPublic <> true) and (self.reactions->forAll(v | v.createdAt <> ''))
+
+-- #52 Attribute Not Null (Simple) in Tag
+-- Difficulty: medium
+context Tag
+inv: (self.label <> null) and (self.label.toUpperCase() = 'TEST')
+
+-- #53 Collection Not Empty (Simple) in User
+-- Difficulty: medium
+context User
+inv: (self.notifications->notEmpty()) and (self.email.toUpperCase() = 'TEST')
+
+-- #54 Attribute Not Null (Simple) in Tag
+-- Difficulty: easy
+context Tag
+inv: self.label <> null
+
+-- #55 Collection Size Constraint in Tag
+-- Difficulty: medium
+context Tag
+inv: self.posts->size() <> 1
+
+-- #56 Collection Minimum Size in Tag
+-- Difficulty: medium
+context Tag
+inv: self.posts->size() >= 2
+

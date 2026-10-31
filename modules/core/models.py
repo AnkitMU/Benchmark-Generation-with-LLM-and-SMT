@@ -310,6 +310,26 @@ class Parameter:
             # Only single associations
             return [a.ref_name for a in metamodel.get_single_associations(context)]
         
+        elif self.options == "optional_associations":
+            # Single-valued ends with lower bound 0 ([0..1]). An existence check
+            # ('self.x <> null') on a mandatory [1..1] end is a tautology under
+            # the metamodel axioms, so existence patterns bind only these.
+            return [a.ref_name for a in metamodel.get_single_associations(context)
+                    if a.lower == 0]
+        
+        elif self.options == "target_single_associations":
+            # Single-valued ends of the class reached through the sibling
+            # association parameter named by `depends_on` (the second hop of a
+            # navigation 'self.a.b'); defaults to 'association'.
+            dep_key = self.depends_on or 'association'
+            if dependency_values and dep_key in dependency_values:
+                assoc_name = dependency_values[dep_key]
+                assoc = next((a for a in metamodel.get_associations_for(context)
+                              if a.ref_name == assoc_name), None)
+                if assoc:
+                    return [a.ref_name for a in metamodel.get_single_associations(assoc.target_class)]
+            return []
+        
         elif self.options == "classes":
             # All classes
             return metamodel.get_class_names()

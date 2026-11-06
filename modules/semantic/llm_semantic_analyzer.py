@@ -38,6 +38,9 @@ OLLAMA_URL = "http://localhost:11434/api/generate"
 # DEFAULT_MODEL = "phi4"              # 14B — more accurate
 DEFAULT_MODEL = "phi4-mini"            # 3.8B — lighter, faster
 CACHE_DIR = Path(__file__).parent.parent.parent / "cache" / "semantic"
+# The LLM prompt lives in a plain-text file so it can be read and cited
+# without opening the code; {classes_block} is the only placeholder.
+PROMPT_FILE = Path(__file__).parent.parent.parent / "prompts" / "semantic_analysis.txt"
 
 # Smart batching: max attribute pairs per LLM call
 # phi4-mini needs ~100 output tokens per class (JSON structure + pairs)
@@ -225,6 +228,11 @@ def _create_smart_batches(classes_data: Dict[str, List[Dict[str, str]]],
 # Prompt Building
 # ──────────────────────────────────────────────────────────
 
+def _load_prompt_template() -> str:
+    """Read the semantic-analysis prompt template from PROMPT_FILE."""
+    return PROMPT_FILE.read_text(encoding="utf-8").rstrip("\n")
+
+
 def _build_batch_prompt(classes_data: Dict[str, List[Dict[str, str]]]) -> str:
     """Build prompt for a batch of classes.
 
@@ -256,64 +264,7 @@ def _build_batch_prompt(classes_data: Dict[str, List[Dict[str, str]]]) -> str:
 
     classes_block = "\n\n".join(class_sections)
 
-    return f"""You are a domain modeling expert for UML/OCL constraint generation. Your task: for each attribute pair, decide whether a comparison like attr1 > attr2 or attr1 = attr2 would make sense in a real-world business rule or OCL invariant.
-
-=== CORE RULE ===
-Two attributes are COMPARABLE if and only if:
-1. They measure the SAME kind of real-world quantity (e.g., both are temperatures, both are dates, both are prices), AND
-2. A comparison between them has a meaningful business interpretation (e.g., "startDate < endDate" enforces temporal ordering).
-
-If EITHER condition fails, the pair is NOT comparable.
-
-=== STEP-BY-STEP REASONING (apply for each pair) ===
-Step 1: What real-world quantity does each attribute represent?
-Step 2: Are they the SAME kind of quantity?
-Step 3: Does comparing them make business sense?
-→ If YES to all: COMPARABLE. If NO to any: NOT COMPARABLE.
-
-=== COMPARABLE EXAMPLES (include these) ===
-- startDate vs endDate → both dates in same process → "start < end" is valid → YES
-- minValue vs maxValue → both are value bounds → "min <= max" is valid → YES
-- minPrice vs maxPrice → both prices → "min <= max" is valid → YES
-- salary vs bonus → both money amounts → "salary > bonus" is valid → YES
-- departureTime vs arrivalTime → both times → "departure < arrival" is valid → YES
-- currentTemp vs threshold → both temperatures → "current > threshold" triggers alert → YES
-- batteryLevel vs lowBatteryThreshold → both percentages → "level < threshold" is valid → YES
-
-=== NOT COMPARABLE EXAMPLES (exclude these) ===
-- age vs salary → age is time-lived, salary is money → NO
-- cpuCores vs memoryMB → count vs storage size → NO
-- price vs quantity → money vs count → NO
-- latitude vs longitude → different spatial axes, comparing them is meaningless → NO
-- tankLevel vs mileage → fuel level vs distance → NO
-- id vs price → identifier vs money → NO
-- name vs date → label vs temporal → NO
-- sensorId vs value → identifier vs measurement → NO
-- batteryLevel vs signalStrength → different physical quantities → NO
-- temperature vs humidity → different physical quantities → NO
-- frequency vs power → rate vs energy → NO
-
-=== COMMON MISTAKES TO AVOID ===
-- Do NOT compare attributes just because they have the same data type (e.g., both are Integer, both are String). Type alone is not enough — they must represent the same KIND of quantity.
-- Do NOT compare an identifier (id, code, serial, no, ref) with anything else.
-- Do NOT compare labels/categories (name, type, kind, category, specialty, description, summary) with anything.
-- Do NOT compare attributes from different physical domains (temperature vs humidity, voltage vs current, distance vs weight, dose vs frequency).
-- latitude and longitude are NOT comparable — they represent different spatial axes.
-- String attributes like provider, method, shift, role, status, address, phone are NOT quantities — they cannot be compared with >, <.
-- When in doubt, mark as NOT comparable. False negatives are safer than false positives.
-
-=== YOUR TASK ===
-Classify each pair below. Include a pair ONLY if it is truly comparable.
-
-{classes_block}
-
-Respond with ONLY valid JSON, no explanation, no markdown:
-{{"ClassName": [["attr1", "attr2"]], "ClassName2": []}}
-
-Rules:
-- Use [] for classes with NO comparable pairs.
-- Include ALL class names from above.
-- Output ONLY the JSON object, nothing else."""
+    return _load_prompt_template().replace("{classes_block}", classes_block)
 
 
 # ──────────────────────────────────────────────────────────

@@ -37,6 +37,7 @@ Outputs are written to `benchmarks/`.
 - `examples/` — ready-to-run suite configs (`example_suite.yaml`, `paper_ten_models_*.yaml`, `one_model_*.yaml`)
 - `templates/` — OCL pattern library
 - `config/` — semantic rules and business-logic profiles
+- `prompts/` — the LLM prompt used by the semantic admissibility analysis (`semantic_analysis.txt`)
 - `benchmarks/` — generated suites; `paper/`, `paper_v2/`, `paper_v3/` are the runs reported in the paper (with and without VGCR)
 - `benchmarks_table/` — an earlier steered-generation suite kept for reference
 - `cache/` and `logs/` are created at runtime and are not tracked
